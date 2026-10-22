@@ -4,6 +4,8 @@ A small browser app for documenting DIN rail wiring. You place terminal blocks, 
 
 It isn't tied to any manufacturer. Every object is a simple rectangle with terminals, and you can design your own in a few seconds.
 
+**Use it online:** https://mmmlinux.github.io/DIN-Stack/
+
 ## Features
 
 - **Real-size parts.** Every object type has a width and height in mm. Parts snap flush against each other and centre on DIN rails (35 mm or 15 mm).
@@ -29,8 +31,9 @@ It isn't tied to any manufacturer. Every object is a simple rectangle with termi
 
 It's plain HTML, CSS and JavaScript with no build step and no dependencies.
 
+- **Online:** go to https://mmmlinux.github.io/DIN-Stack/. Nothing to install.
 - **Locally:** open `index.html` in a browser.
-- **GitHub Pages:** push the repository to GitHub, then go to *Settings → Pages*, choose *Deploy from a branch*, pick your branch and the `/ (root)` folder, and save. The site appears at `https://<user>.github.io/<repo>/`.
+- **Your own GitHub Pages copy:** push the repository to GitHub, then go to *Settings → Pages*, choose *Deploy from a branch*, pick your branch and the `/ (root)` folder, and save. The site appears at `https://<user>.github.io/<repo>/`.
 - **As an app:** from the GitHub Pages site (or any http/https server), the browser can install DIN Stack as an app in its own window. In Firefox on Windows, use the "Add to taskbar" button in the address bar. In Chrome or Edge, use the install button in the address bar or *Apps → Install*. Once installed it also works offline, and it picks up new versions automatically when online. This doesn't apply when opening `index.html` directly as a file.
 
 ## Files

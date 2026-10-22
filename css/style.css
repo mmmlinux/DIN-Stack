@@ -184,6 +184,8 @@ body.lib-dragging, body.lib-dragging * { cursor: copy !important; user-select: n
 .lib-foot { display: flex; gap: 6px; padding-top: 8px; border-top: 1px solid var(--border); margin-top: 6px; }
 .lib-foot button { flex: 1; }
 .version { font-size: 11px; color: var(--muted); margin-top: 8px; text-align: center; }
+.version a { color: inherit; }
+.version a:hover { color: var(--text); }
 
 /* Properties panel */
 .props h3 { margin: 4px 0 8px; font-size: 14px; }

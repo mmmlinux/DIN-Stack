@@ -1,5 +1,12 @@
 # Release notes
 
+## 1.0.34 — 2026-10-22
+
+Version number set by hand: kept in the 1.0 series rather than moving to 1.1.1.
+
+- A **GitHub** link next to the version number, at the bottom of the library panel, opens the project page.
+- The README links to the online version at https://mmmlinux.github.io/DIN-Stack/.
+
 ## 1.0.33 — 2026-10-22
 
 - Finished the rename to DIN Stack: the app's storage in the browser, its offline copy and the marker inside exported library files now use the new name too.
