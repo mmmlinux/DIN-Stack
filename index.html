@@ -1,0 +1,334 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>DIN Stack</title>
+  <meta name="description" content="Draw wiring documentation for DIN rail terminal blocks, power supplies and other modules.">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect x='2' y='11' width='28' height='10' fill='%238b929a'/%3E%3Crect x='6' y='4' width='5' height='24' rx='1' fill='%23c3c8ce' stroke='%2330353b'/%3E%3Crect x='13' y='4' width='5' height='24' rx='1' fill='%237fb2e0' stroke='%2330353b'/%3E%3Crect x='20' y='4' width='5' height='24' rx='1' fill='%23b5d86a' stroke='%2330353b'/%3E%3C/svg%3E">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+  <meta name="theme-color" content="#1f2933">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div id="app">
+    <header class="topbar">
+      <div class="brand">DIN Stack</div>
+      <input id="titleInput" class="title-input" type="text" spellcheck="false" aria-label="Diagram title">
+      <div class="tools">
+        <button id="btnNew" title="New diagram">New</button>
+        <button id="btnOpen" title="Open a saved diagram (.json)">Open</button>
+        <button id="btnSave" title="Download this diagram as a .json file (Ctrl+S)">Save</button>
+        <div class="menu">
+          <button id="btnExport" aria-haspopup="true">Export ▾</button>
+          <div class="menu-list" id="exportMenu" hidden>
+            <button data-export="svg">SVG image (true scale)</button>
+            <button data-export="png">PNG image</button>
+            <button data-export="csv">Wire list (CSV)</button>
+            <button data-export="print">Print / PDF…</button>
+          </div>
+        </div>
+        <span class="sep"></span>
+        <span class="tools-label">Add</span>
+        <button id="btnAddRail" title="Add a DIN rail">Rail</button>
+        <button id="btnAddText" title="Add a text note">Note</button>
+        <button id="btnAddBus" title="Bridge a row of terminals with a bus bar">Bus bar</button>
+        <button id="btnAddCable" title="A cable whose cores land on terminals here, with its other end off the drawing">Cable</button>
+        <span class="sep"></span>
+        <button id="btnUndo" title="Undo (Ctrl+Z)">↶</button>
+        <button id="btnRedo" title="Redo (Ctrl+Y)">↷</button>
+        <span class="sep"></span>
+        <button id="btnZoomOut" title="Zoom out">−</button>
+        <span id="zoomLabel" class="zoom-label">100%</span>
+        <button id="btnZoomIn" title="Zoom in">+</button>
+        <button id="btnFit" title="Fit diagram to window (F)">Fit</button>
+        <span class="sep"></span>
+        <label class="inline" title="How connections are drawn">Wires
+          <select id="linesSelect">
+            <option value="off">Labels only</option>
+            <option value="straight">Straight lines</option>
+            <option value="curved">Curved lines</option>
+          </select>
+        </label>
+        <button id="btnHelp" title="Help">?</button>
+      </div>
+    </header>
+
+    <aside class="sidebar left">
+      <button id="btnLeftExpand" class="left-expand" title="Show the library">»<span>Library</span></button>
+      <div class="panel-head">Library
+        <span class="head-tools">
+          <button id="btnLibFold" class="icon" title="Collapse all categories">⊟</button>
+          <button id="btnNewTpl" class="small primary" title="Design a new object type">+ New type</button>
+          <button id="btnLeftCollapse" class="icon" title="Hide the library for more drawing space">«</button>
+        </span>
+      </div>
+      <input id="libSearch" class="search" type="search" placeholder="Search…">
+      <div id="library" class="library"></div>
+      <div class="lib-foot">
+        <button id="btnLibExport" class="small" title="Download your object types and wire profiles to reuse in other diagrams">Export library</button>
+        <button id="btnLibImport" class="small" title="Add object types from a library or diagram file">Import library</button>
+      </div>
+      <div class="version" id="versionLabel"></div>
+    </aside>
+
+    <main class="canvas-wrap" id="canvasWrap">
+      <svg id="canvas" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <pattern id="gridMinor" width="5" height="5" patternUnits="userSpaceOnUse">
+            <path d="M5 0 L0 0 0 5" fill="none" stroke="#e3e7ec" stroke-width="0.15"/>
+          </pattern>
+          <pattern id="gridMajor" width="50" height="50" patternUnits="userSpaceOnUse">
+            <rect width="50" height="50" fill="url(#gridMinor)"/>
+            <path d="M50 0 L0 0 0 50" fill="none" stroke="#cfd6de" stroke-width="0.25"/>
+          </pattern>
+        </defs>
+        <rect id="gridRect" fill="url(#gridMajor)"/>
+        <g id="content"></g>
+        <g id="overlay"></g>
+      </svg>
+      <div id="hint" class="hint"></div>
+    </main>
+
+    <aside class="sidebar right" id="props"></aside>
+
+    <section class="drawer" id="drawer">
+      <div class="drawer-tabs">
+        <button data-tab="wires" class="active">Wire list</button>
+        <button data-tab="buses">Bus bars</button>
+        <button data-tab="cables">Cables</button>
+        <button data-tab="parts">Parts list</button>
+        <button id="btnDrawerToggle" class="drawer-toggle" title="Show / hide">▾</button>
+      </div>
+      <div class="drawer-body" id="drawerBody"></div>
+    </section>
+  </div>
+
+  <!-- Object type designer -->
+  <div class="modal-back" id="tplModal" hidden>
+    <div class="modal">
+      <div class="modal-head">
+        <h2 id="tplModalTitle">Object type</h2>
+        <button class="icon" id="tplClose" title="Close">✕</button>
+      </div>
+      <div class="modal-body tpl-editor">
+        <div class="tpl-form">
+          <label>Name <input id="teName" type="text"></label>
+          <label>Category <input id="teCategory" type="text" list="categoryList"></label>
+          <label title="Loose parts, like connectors on the enclosure wall, can be placed anywhere and don't snap onto DIN rails">Mounting
+            <select id="teMount">
+              <option value="rail">DIN rail</option>
+              <option value="free">Loose (enclosure, panel, cable)</option>
+            </select>
+          </label>
+          <datalist id="categoryList"></datalist>
+          <div class="row2">
+            <label>Width (mm) <input id="teW" type="number" min="1" step="0.1"></label>
+            <label>Height (mm) <input id="teH" type="number" min="1" step="0.1"></label>
+          </div>
+          <div class="row2">
+            <label>Tag prefix <input id="tePrefix" type="text" placeholder="e.g. X, PS, K"></label>
+            <label>Corner radius <input id="teRadius" type="number" min="0" step="0.5"></label>
+          </div>
+          <div class="row2">
+            <label>Colour <input id="teFill" type="color"></label>
+            <label class="check"><input id="teShowName" type="checkbox"> Show type name on part</label>
+          </div>
+          <fieldset>
+            <legend>Add a row of terminals</legend>
+            <div class="row2">
+              <label>Edge
+                <select id="rgEdge">
+                  <option value="top">Top</option>
+                  <option value="bottom">Bottom</option>
+                  <option value="left">Left</option>
+                  <option value="right">Right</option>
+                </select>
+              </label>
+              <label>Count <input id="rgCount" type="number" min="1" value="4"></label>
+            </div>
+            <div class="row2">
+              <label>First name <input id="rgName" type="text" value="1" title="Trailing numbers count up, e.g. 1, 2, 3 or IN1, IN2"></label>
+              <label>Inset from edge <input id="rgInset" type="number" step="0.5" value="5"></label>
+            </div>
+            <div class="row2">
+              <label>Pitch (mm) <input id="rgPitch" type="number" step="0.1" placeholder="even"></label>
+              <label>Start offset <input id="rgStart" type="number" step="0.1" placeholder="auto"></label>
+            </div>
+            <button id="rgAdd" class="small">Add row</button>
+          </fieldset>
+          <fieldset>
+            <legend>Add a grid of terminals</legend>
+            <div class="row2">
+              <label>Columns <input id="gdCols" type="number" min="1" value="2"></label>
+              <label>Rows <input id="gdRows" type="number" min="1" value="16"></label>
+            </div>
+            <div class="row2">
+              <label>Pitch across (mm) <input id="gdPx" type="number" step="0.01" value="2.54"></label>
+              <label>Pitch down (mm) <input id="gdPy" type="number" step="0.01" value="2.54"></label>
+            </div>
+            <div class="row2">
+              <label>Left (mm) <input id="gdLeft" type="number" step="0.1" placeholder="centred" title="X of the first column; leave blank to centre the grid"></label>
+              <label>Top (mm) <input id="gdTop" type="number" step="0.1" placeholder="centred" title="Y of the first row; leave blank to centre the grid"></label>
+            </div>
+            <label>Numbering
+              <select id="gdOrder">
+                <option value="rows">Rows, wrapping (1 2 / 3 4 …)</option>
+                <option value="cols">Columns, wrapping (down, then the next column)</option>
+                <option value="ccw">Around, counter-clockwise (like an IC)</option>
+                <option value="cw">Around, clockwise</option>
+                <option value="letters">Row letter + number (A1… B1…)</option>
+              </select>
+            </label>
+            <div class="row2">
+              <label>Pin 1 at
+                <select id="gdCorner">
+                  <option value="tl">Top left</option>
+                  <option value="tr">Top right</option>
+                  <option value="bl">Bottom left</option>
+                  <option value="br">Bottom right</option>
+                </select>
+              </label>
+              <label>First name <input id="gdName" type="text" value="1" title="Trailing numbers count up. For row letters, e.g. A1 or a1."></label>
+            </div>
+            <button id="gdAdd" class="small">Add grid</button>
+          </fieldset>
+        </div>
+        <div class="tpl-preview-col">
+          <div class="tpl-preview-tools">
+            <span>Click to add a terminal · drag to move · drag empty space to select several · Shift+click to add to the selection</span>
+            <label class="inline">Snap <select id="teSnap">
+              <option value="0.1">0.1 mm</option>
+              <option value="0.5" selected>0.5 mm</option>
+              <option value="1">1 mm</option>
+              <option value="2.5">2.5 mm</option>
+            </select></label>
+          </div>
+          <svg id="tePreview" xmlns="http://www.w3.org/2000/svg" tabindex="-1"></svg>
+          <div id="teSelBar" class="sel-bar" hidden></div>
+          <div class="term-table-wrap">
+            <table class="term-table">
+              <thead><tr><th>Name</th><th>X</th><th>Y</th><th title="Wire terminal, or a slot that takes bus bars only">Type</th><th>Label side</th><th title="Terminals with the same Link value are connected inside the part">Link</th><th></th></tr></thead>
+              <tbody id="teTerms"></tbody>
+            </table>
+          </div>
+          <div class="link-tools">
+            <span class="muted">Internal connections: terminals with the same <b>Link</b> value are connected inside the part (like both sides of a terminal block). Selecting a wire highlights its whole circuit through them.</span>
+            <button id="teLinkAll" class="small" title="Connect every terminal together">Link all</button>
+            <button id="teUnlinkAll" class="small">Clear links</button>
+          </div>
+        </div>
+      </div>
+      <div class="modal-foot">
+        <span id="teWarn" class="warn"></span>
+        <button id="tplCancel">Cancel</button>
+        <button id="tplSave" class="primary">Save object type</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Help -->
+  <div class="modal-back" id="helpModal" hidden>
+    <div class="modal narrow">
+      <div class="modal-head">
+        <h2>How to use DIN Stack</h2>
+        <button class="icon" data-close="helpModal" title="Close">✕</button>
+      </div>
+      <div class="modal-body help">
+        <h3>Placing things</h3>
+        <ul>
+          <li>Click an object in the library (or drag it onto the canvas) to add it.</li>
+          <li>Click a library category's name to fold it away, or ⊟ to fold them all. Searching still shows every match. <b>«</b> next to <i>+ New type</i> hides the library panel for more drawing space; <b>»</b> brings it back. Rails, notes, bus bars and cables are added from <b>Add</b> in the toolbar.</li>
+          <li>Drag parts to move them. They snap flush against neighbours and centre on DIN rails. Hold <b>Alt</b> while dragging to place freely.</li>
+          <li>Hold <b>Ctrl</b> (<b>Cmd</b> on a Mac) while dragging to push the parts touching it on that side along with it (and the ones touching those), e.g. to open a gap in a terminal strip. Anything past a gap stays put, and the move is kept straight. The whole moving group snaps against the parts it moves towards or away from, so it can close up flush with the next part. Add <b>Alt</b> to move freely.</li>
+          <li><b>Shift-click</b> to select several, or <b>Shift-drag</b> on empty space to box-select.</li>
+          <li>Drag empty space to pan, use the mouse wheel to zoom.</li>
+          <li>Select a terminal block and use <b>Repeat</b> to build a strip with numbered tags.</li>
+          <li>To renumber, select several parts (Shift-click, Shift-drag, or <b>All of this type</b> / <b>All “TB…”</b> on a part), then use <b>Renumber tags</b>. They're numbered in position order and their wires stay connected.</li>
+          <li>The <b>Left → right / Right → left</b> toggle sets which way strips grow: new parts added beside the selected one, repeats, and <b>Pack side by side</b>.</li>
+        </ul>
+        <h3>Wiring</h3>
+        <ul>
+          <li>Drag from one terminal to another, or click one terminal and then another.</li>
+          <li>Terminals are referenced as part tag plus terminal name, e.g. <code>TB101-1</code> (change the separator under Display).</li>
+          <li>Each terminal shows where its wire goes, e.g. <code>W3 → TB101-1</code>. Choose <b>Wires</b> in the toolbar to draw lines as well.</li>
+          <li>Click a label or line to set the wire number, colour, size and notes.</li>
+          <li><b>Stripe</b> on a wire's panel adds a tracer stripe, e.g. red with a white stripe. It's drawn as short dashes over the base colour and listed as "Red/White". Profiles can have a stripe too.</li>
+          <li><b>Wire profiles</b> (e.g. "+24 V DC, red, 1.5 mm², stranded") are set up under <b>Edit wire profiles…</b> with nothing selected. Assign one to a wire, or to several selected wires at once. Editing a profile updates all its wires.</li>
+          <li>A new wire added to a circuit that already has wires <b>matches them</b> (profile, colour, size, conductor) and keeps following: change the feed wire by hand and the matching wires change with it. Changing a wire by hand stops it following; tick <b>Match the circuit</b> to turn it back on. Bus bars work the same way for their colour.</li>
+          <li><b>Wire standard</b> under Display switches between metric (mm², brown line, blue neutral, green/yellow earth) and American (AWG, black hot, white neutral, green ground). Existing wires and profiles are converted to the nearest size.</li>
+          <li><b>Cables:</b> select the wires that run in one cable (Shift+click, or right-click → <i>Bundle into a cable</i>). They're drawn as a sheath that fans out into the coloured cores at each end. Give the cable a label and description (e.g. 3G1.5), and drag the orange dots on a selected cable to move where the cores fan out. For a cable coming in from outside, put a loose part such as the <i>Mains plug</i> at the far end.</li>
+          <li><b>One-ended cables:</b> when the other end isn't on the drawing, click <b>Cable</b> under Add in the toolbar (or right-click a terminal → <i>Cable from here…</i>), click the terminals its cores go to, and press Enter. The sheath runs off to a free end; fill in <b>Goes to</b> (e.g. "Pump P1") to label it. Each core is a wire, referenced as C1-1, C1-2…</li>
+          <li><b>Bus bars:</b> click <b>Bus bar</b> under Add in the toolbar, then click the terminals to bridge (or drag along a row), and press Enter. The bar is drawn through them and counts as part of the circuit.</li>
+          <li>Terminal blocks have two <b>bus bar slots</b> (the small squares in the middle) that take bus bars but not wires. To bridge alternate blocks, sweep along a row of slots, then click <b>Keep 1st, 3rd…</b> or <b>Keep 2nd, 4th…</b>. A dot marks each block a bar connects to, so a bar passing over a block without a dot skips it.</li>
+          <li>A selected wire also lights up the rest of its circuit in lighter blue: every wire connected to it, including through the other side of a terminal block. Which terminals are connected inside a part is set with <b>Link</b> in the object type designer.</li>
+          <li><b>Select whole circuit</b> selects everything in it. <b>Select daisy chain</b> selects only the wires and bus bars joined at the same terminals, such as a jumper chain along the tops of a strip, without crossing to the other side of the terminal blocks.</li>
+          <li><b>Circuit names:</b> select a wire and type a <b>Circuit name</b> (e.g. <code>+24V</code>). The whole circuit takes the name, and it shows in the wire list.</li>
+          <li><b>Connector labels:</b> select a part and type a label next to a terminal under Terminals. The label is drawn at the terminal as a boxed tag, so you don't have to draw a wire from where it comes from (handy for power feeds). Terminals and wires with the same name are treated as one circuit.</li>
+        </ul>
+        <h3>Your own objects</h3>
+        <ul>
+          <li><b>+ New type</b> opens the designer. Set the size in millimetres, then click where each terminal goes or add a whole row at once.</li>
+          <li><b>Add a grid of terminals</b> in the designer places blocks like a 2 × 16 header or an IC. Numbering can wrap by rows or columns, go around like an IC (counter-clockwise or clockwise), or use row letters (A1… B1…), starting from any corner.</li>
+          <li>In the designer, drag over empty space to select several terminals, then drag one of them to move them all. Shift+click adds to the selection, the arrow keys nudge, Ctrl+D copies, Delete removes, and Ctrl+Z undoes.</li>
+          <li>Set <b>Mounting</b> to <i>Loose</i> for parts that aren't on a DIN rail, like connectors on the enclosure. The library's <i>Enclosure connectors</i> group has some ready-made ones (tag prefix <code>X</code>).</li>
+          <li>The <a href="docs/library.md" target="_blank" rel="noopener">library guide</a> covers every setting, a worked example, sharing libraries and the file format.</li>
+          <li>Give terminals the same <b>Link</b> value when they're connected inside the part, such as both sides of a terminal block or a power supply's two +V terminals.</li>
+          <li>Set a terminal's <b>Type</b> to <i>Bus bar slot</i> for a point that takes bus bars only.</li>
+          <li>Editing a type updates every part that uses it.</li>
+        </ul>
+        <h3>Right-click menu</h3>
+        <ul>
+          <li>Right-click a part, terminal, wire, bus bar, rail or note for the things you can do with it. Right-click empty space to paste there, add a rail or note there, undo or fit the view.</li>
+          <li>Right-clicking something already in a multiple selection keeps the selection, so the menu applies to all of it.</li>
+        </ul>
+        <h3>Keyboard</h3>
+        <table class="keys">
+          <tr><td>Delete</td><td>Delete selection</td></tr>
+          <tr><td>Ctrl+Z / Ctrl+Y</td><td>Undo / redo</td></tr>
+          <tr><td>Ctrl+C / Ctrl+V / Ctrl+D</td><td>Copy / paste / duplicate</td></tr>
+          <tr><td>R</td><td>Rotate selected 90°</td></tr>
+          <tr><td>Arrow keys</td><td>Nudge (Shift = ×10)</td></tr>
+          <tr><td>F</td><td>Fit to window</td></tr>
+          <tr><td>Esc</td><td>Cancel wiring / clear selection</td></tr>
+        </table>
+        <p class="muted">Your work is saved automatically in this browser. Use <b>Save</b> to keep a file you can open elsewhere.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Wire profiles -->
+  <div class="modal-back" id="profModal" hidden>
+    <div class="modal">
+      <div class="modal-head">
+        <h2>Wire profiles</h2>
+        <button class="icon" data-close="profModal" title="Close">✕</button>
+      </div>
+      <div class="modal-body">
+        <p class="muted" style="margin-top:0">A profile is a named wire type. Wires assigned to a profile take its colour, stripe, size and conductor, and editing a profile here updates all of them. Changing a wire by hand makes it a custom wire again.</p>
+        <table class="term-table prof-table">
+          <thead><tr><th>Name</th><th>Colour</th><th>Stripe</th><th>Size</th><th>Conductor</th><th>Wires</th><th></th></tr></thead>
+          <tbody id="profRows"></tbody>
+        </table>
+        <div class="btn-row"><button id="profAdd" class="small primary">+ Add profile</button></div>
+      </div>
+      <div class="modal-foot"><button data-close="profModal" class="primary">Done</button></div>
+    </div>
+  </div>
+
+  <datalist id="gaugeList"></datalist>
+  <datalist id="netList"></datalist>
+  <div id="ctxMenu" class="ctx-menu" role="menu" hidden></div>
+  <div id="printArea" class="print-area"></div>
+  <input id="fileInput" type="file" accept=".json,application/json" hidden>
+  <input id="libFileInput" type="file" accept=".json,application/json" hidden>
+  <div id="toast" class="toast" hidden></div>
+
+  <script src="js/version.js"></script>
+  <script src="js/defaults.js"></script>
+  <script src="js/render.js"></script>
+  <script src="js/tpl-editor.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
