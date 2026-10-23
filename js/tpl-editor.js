@@ -129,7 +129,11 @@ const TplEditor = (() => {
         s += "</g>";
         continue; // slots take bus bars, not wires, so they get no label side
       }
-      s += `<circle cx="${term.x}" cy="${term.y}" r="${r}" fill="${on ? "#dbe7ff" : "#fff"}" stroke="${on ? "#2563eb" : "#30353b"}" stroke-width="${on ? unit * 2.5 : unit * 1.2}"/>`;
+      if (isPort(term)) {
+        const a = portSize(t), h = a * 0.78;
+        s += portGlyph(term.x, term.y, t);
+        if (on) s += `<rect x="${term.x - a / 2 - unit * 3}" y="${term.y - h / 2 - unit * 3}" width="${a + unit * 6}" height="${h + unit * 6}" fill="none" stroke="#2563eb" stroke-width="${unit * 2.5}"/>`;
+      } else s += `<circle cx="${term.x}" cy="${term.y}" r="${r}" fill="${on ? "#dbe7ff" : "#fff"}" stroke="${on ? "#2563eb" : "#30353b"}" stroke-width="${on ? unit * 2.5 : unit * 1.2}"/>`;
       const side = localSide(t, term);
       const v = SIDE_VEC[side];
       const tick = `<line x1="${term.x + v[0] * (r + unit * 3)}" y1="${term.y + v[1] * (r + unit * 3)}" x2="${term.x + v[0] * (r + unit * 14)}" y2="${term.y + v[1] * (r + unit * 14)}" stroke="#2563eb" stroke-width="${unit * 1.2}" stroke-opacity="0.55" pointer-events="none"/>`;
@@ -163,10 +167,10 @@ const TplEditor = (() => {
         <td><input data-k="name" type="text" value="${esc(t.name)}"></td>
         <td><input data-k="x" type="number" step="0.1" value="${round(t.x)}"></td>
         <td><input data-k="y" type="number" step="0.1" value="${round(t.y)}"></td>
-        <td><select data-k="kind" title="A bus bar slot takes bus bars only, not wires"><option value="wire">Wire</option><option value="bus"${isSlot(t) ? " selected" : ""}>Bus bar slot</option></select></td>
+        <td><select data-k="kind" title="A bus bar slot takes bus bars only, not wires. A cable connector (such as an RJ45 socket) takes a cable's plug, not single wires."><option value="wire">Wire</option><option value="bus"${isSlot(t) ? " selected" : ""}>Bus bar slot</option><option value="port"${isPort(t) ? " selected" : ""}>Cable connector</option></select></td>
         <td><select data-k="side"${isSlot(t) ? " disabled" : ""}>${sides.map((s) => `<option value="${s}"${(t.side || "auto") === s ? " selected" : ""}>${s === "auto" ? "Auto (" + localSide(ed.tpl, { ...t, side: "auto" }) + ")" : s}</option>`).join("")}</select></td>
         <td><input data-k="link" type="text" value="${esc(t.link || "")}" placeholder="—" title="Same value = connected inside the part"></td>
-        <td><button class="icon" data-del title="Delete terminal">✕</button></td>
+        <td><button class="icon-btn danger" data-del title="Delete terminal"><svg class="ic sm"><use href="#i-x"/></svg></button></td>
       </tr>`).join("") || `<tr><td colspan="7" class="muted" style="padding:10px">No terminals yet. Click on the drawing to add one.</td></tr>`;
   }
 

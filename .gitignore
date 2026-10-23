@@ -1,3 +1,6 @@
 .claude/
 CLAUDE.md
 CLAUDE.local.md
+
+# Local development marker: turns the logo banner red (see "Developing" in the README). Never commit it.
+.dev

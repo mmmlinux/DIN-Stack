@@ -97,6 +97,30 @@ function slotRect(x, y, tpl, extra = "") {
   return `<rect x="${n(x - a / 2)}" y="${n(y - a / 2)}" width="${n(a)}" height="${n(a)}" rx="${n(a * 0.18)}" fill="#4b5058" stroke="#24282d" stroke-width="0.25"${extra}/>`;
 }
 
+// Cable connectors (ports) are drawn as sockets, sized to the gap to the nearest other terminal.
+function portSize(tpl) {
+  let d = Infinity;
+  for (const p of tpl.terminals) {
+    if (!isPort(p)) continue;
+    for (const t of tpl.terminals) if (t !== p) d = Math.min(d, Math.hypot(p.x - t.x, p.y - t.y));
+  }
+  return Math.max(2.4, Math.min(7, d * 0.75, tpl.w * 0.7, tpl.h * 0.7));
+}
+
+function portGlyph(x, y, tpl, extra = "") {
+  const a = portSize(tpl), h = a * 0.78;
+  return `<rect x="${n(x - a / 2)}" y="${n(y - h / 2)}" width="${n(a)}" height="${n(h)}" rx="${n(a * 0.08)}" fill="#2b2f35" stroke="#15181b" stroke-width="0.25"${extra}/>`
+    + `<rect x="${n(x - a * 0.36)}" y="${n(y - h * 0.3)}" width="${n(a * 0.72)}" height="${n(h * 0.52)}" fill="#0e1012" pointer-events="none"/>`
+    + `<rect x="${n(x - a * 0.14)}" y="${n(y + h * 0.22)}" width="${n(a * 0.28)}" height="${n(h * 0.16)}" fill="#0e1012" pointer-events="none"/>`;
+}
+
+// Where a cable leaves a connector: a little way out from the socket, the way the connector faces.
+function portExit(p) {
+  const v = SIDE_VEC[p.side] || [0, 1];
+  const off = portSize(p.tpl) / 2 + 2.5;
+  return { x: p.x + v[0] * off, y: p.y + v[1] * off, at: p, v };
+}
+
 function rotTransform(tpl, rot) {
   switch (((rot || 0) % 360 + 360) % 360) {
     case 90: return ` translate(${n(tpl.h)} 0) rotate(90)`;
@@ -348,7 +372,7 @@ function renderPartBody(doc, it, tpl, attrs) {
     if (it.tag) {
       // Put the tag in the longest stretch free of terminals and bus bar slots, e.g. between a
       // terminal block's top screw and its slots.
-      const clearOf = (t) => isSlot(t) ? slotSize(tpl) / 2 + 0.5 : termRadius(tpl) + 0.5 + (st.showTermNames && t.name ? 2.2 : 0);
+      const clearOf = (t) => isSlot(t) ? slotSize(tpl) / 2 + 0.5 : isPort(t) ? portSize(tpl) / 2 + 2.6 : termRadius(tpl) + 0.5 + (st.showTermNames && t.name ? 2.2 : 0);
       const spans = tpl.terminals.map((t) => { const y = termWorld(it, tpl, t).y, c = clearOf(t); return [y - c, y + c]; }).sort((a, b) => a[0] - b[0]);
       let gap = { a: box.y, b: box.y + box.h };
       if (spans.length) {
@@ -376,7 +400,7 @@ function renderPartBody(doc, it, tpl, attrs) {
     const r = termRadius(tpl), inside = denseTerms(tpl);
     const spans = tpl.terminals.map((t) => {
       const p = termWorld(it, tpl, t);
-      const c = isSlot(t) ? slotSize(tpl) / 2 + 0.5 : r + 0.5 + (st.showTermNames && t.name && !inside && (p.side === "top" || p.side === "bottom") ? 2.2 : 0);
+      const c = isSlot(t) ? slotSize(tpl) / 2 + 0.5 : isPort(t) ? portSize(tpl) / 2 + 2.6 : r + 0.5 + (st.showTermNames && t.name && !inside && (p.side === "top" || p.side === "bottom") ? 2.2 : 0);
       return Math.abs(p.x - cx) < textW / 2 + c ? [p.y - c, p.y + c] : null;
     }).filter(Boolean).sort((a, b) => a[0] - b[0]);
     if (height() && spans.some(([a, b]) => a < ty + height() && b > ty)) {
@@ -399,10 +423,23 @@ function renderPartBody(doc, it, tpl, attrs) {
   return s + "</g>";
 }
 
-// Cables (bundled wires) whose wires still exist, each with only its valid wires; empty cables are dropped.
-function validCables(doc, conns) {
+// Cables whose wires still exist, each with only its valid wires. An end plugged into a cable connector
+// (portA / portB) is unplugged if the connector is gone (checked when items and tpls are given). A plugged
+// end with no cores is always end A, and a cable with neither cores nor a plug is dropped.
+function validCables(doc, conns, items, tpls) {
   const ok = new Set(conns.map((c) => c.id));
-  return (doc.cables || []).map((cb) => ({ ...cb, wires: cb.wires.filter((id) => ok.has(id)) })).filter((cb) => cb.wires.length);
+  const plug = (e) => {
+    if (!e) return null;
+    if (!items) return e;
+    const it = items.get(e.item);
+    const tpl = it && tpls.get(it.tpl);
+    return tpl && tpl.terminals.some((t) => t.id === e.term && isPort(t)) ? e : null;
+  };
+  return (doc.cables || []).map((cb) => {
+    const x = { ...cb, wires: cb.wires.filter((id) => ok.has(id)), portA: plug(cb.portA), portB: plug(cb.portB) };
+    if (!x.wires.length && !x.portA && x.portB) { x.portA = x.portB; x.portB = null; }
+    return x;
+  }).filter((cb) => cb.wires.length || cb.portA);
 }
 
 // Where a cable runs: its wires sorted into the two ends (A and B), the centre of each end's terminals,
@@ -410,11 +447,24 @@ function validCables(doc, conns) {
 // cable's own pa / pb when set, otherwise a little way from each end's terminals towards the other end.
 // pos(end) gives a wire end's { x, y, side }; clear is how far the wire labels stick out from the
 // terminals, so the sheath starts beyond them.
-function cableGeometry(cb, connById, pos, clear = 0) {
+// near keeps automatic breakout points close to their ends however far apart the ends are (for a cable
+// drawn broken), rather than up to 40% of the way along.
+// A one-ended cable (open) has its cores on terminals at end A only. Its end B is free (free: true, with a
+// tail), or plugged into a cable connector (plugB). A cable with no cores is plugged in at end A (plugA)
+// and runs to another connector or to a free end.
+function cableGeometry(cb, connById, pos, clear = 0, near = false) {
   const ws = cb.wires.map((id) => connById.get(id)).filter(Boolean);
+  const exitOf = (e) => { const p = e && pos(e); return p && p.tpl ? portExit(p) : null; };
+  const plugB = cb.open ? exitOf(cb.portB) : null;
+  if (cb.open && !ws.length) {
+    const plugA = exitOf(cb.portA);
+    if (!plugA) return null;
+    const tail = plugB || cb.pb || { x: plugA.x + plugA.v[0] * 30, y: plugA.y + plugA.v[1] * 30 };
+    return { cores: [], cA: plugA, cB: tail, bA: plugA, bB: tail, open: true, free: !plugB, plugA, plugB };
+  }
   if (!ws.length) return null;
   if (cb.open) {
-    // One-ended: the cores fan out to their terminals, and the sheath runs off to a free end (the tail).
+    // One-ended: the cores fan out to their terminals, and the sheath runs off to a free end (the tail) or a connector.
     const cores = ws.map((c) => ({ c, ea: pos(c.a.item === cb.id ? c.b : c.a), eb: null })).filter((k) => k.ea);
     if (!cores.length) return null;
     const cA = { x: cores.reduce((t, k) => t + k.ea.x, 0) / cores.length, y: cores.reduce((t, k) => t + k.ea.y, 0) / cores.length };
@@ -425,11 +475,11 @@ function cableGeometry(cb, connById, pos, clear = 0) {
     const dir = vl > 0.01 ? [vx / vl, vy / vl] : [0, 1];
     const spread = Math.max(...cores.map((k) => Math.hypot(k.ea.x - cA.x, k.ea.y - cA.y)));
     const reach = Math.max(8, spread * 0.8 + 6, clear + 3);
-    const tail = cb.pb || { x: cA.x + dir[0] * (reach + 30), y: cA.y + dir[1] * (reach + 30) };
+    const tail = plugB || cb.pb || { x: cA.x + dir[0] * (reach + 30), y: cA.y + dir[1] * (reach + 30) };
     const dl = Math.hypot(tail.x - cA.x, tail.y - cA.y) || 1;
     const off = Math.min(reach, dl * 0.5);
     const bA = cb.pa || { x: cA.x + ((tail.x - cA.x) / dl) * off, y: cA.y + ((tail.y - cA.y) / dl) * off };
-    return { cores, cA, cB: tail, bA, bB: tail, open: true };
+    return { cores, cA, cB: tail, bA, bB: tail, open: true, free: !plugB, plugB };
   }
   const first = ws[0];
   let A = pos(first.a), B = pos(first.b);
@@ -444,7 +494,8 @@ function cableGeometry(cb, connById, pos, clear = 0) {
   const auto = (from, to, ends) => {
     if (dist < 0.01) return { x: from.x, y: from.y + 10 };
     const spread = Math.max(...ends.map((p) => Math.sqrt(d2(p, from))));
-    const off = Math.min(Math.max(8, spread * 0.8 + 6, clear + 3), dist * 0.4);
+    const reach = Math.max(8, spread * 0.8 + 6, clear + 3);
+    const off = near ? reach : Math.min(reach, dist * 0.4);
     return { x: from.x + ((to.x - from.x) / dist) * off, y: from.y + ((to.y - from.y) / dist) * off };
   };
   const bA = cb.pa || auto(cA, cB, cores.map((k) => k.ea));
@@ -472,8 +523,27 @@ function renderDiagram(doc, opt = {}) {
   const tpls = tplMap(doc);
   const items = itemMap(doc);
   const sel = opt.sel || new Set();
-  const conns = validConnections(doc, items, tpls);
+  // opt.hideWires: ids of wires left off the drawing ("Show only these wires"), as if they didn't exist.
+  const conns = validConnections(doc, items, tpls).filter((c) => !opt.hideWires || !opt.hideWires.has(c.id));
   const ia = !!opt.interactive;
+  // Wires are drawn as a stub at each terminal ("off"), or as "straight" or "curved" lines between terminals.
+  // Labels say where each wire goes, at its terminals; wire names put its number in a stub's label, or at
+  // the middle of its line.
+  const showLines = st.lines === "straight" || st.lines === "curved";
+  const destOn = st.wireLabels !== false;
+  // A named circuit's wires can be labelled with the circuit's name instead of where they go: all of them
+  // with labelName "circuit", and each circuit can override that (doc.circuitLabels, by circuit name:
+  // "name" always, "dest" never), and each wire can override its circuit (c.labelShow, the same values).
+  // Otherwise labels say where the wire goes, led by the wire's number if labelWire is on.
+  const overrides = doc.circuitLabels || {};
+  const circNames = st.labelName === "circuit" || Object.keys(overrides).length || conns.some((c) => c.labelShow) ? circuitNames(doc).conn : null;
+  const circuitLabel = (c) => {
+    const cn = circNames && circNames.get(c.id);
+    if (!cn) return "";
+    const o = c.labelShow || overrides[netKey(cn)];
+    return o === "name" || (o !== "dest" && st.labelName === "circuit") ? cn : "";
+  };
+  const nameOf = (c) => (st.labelWire ? c.wire || "" : "");
 
   const rails = [], bodies = [], texts = [];
   for (const it of doc.items) {
@@ -529,19 +599,42 @@ function renderDiagram(doc, opt = {}) {
   }
 
   // Cables: each core sweeps from its terminal into a breakout point, and a sheath joins the two
-  // breakout points. Always drawn, whatever the Wires setting, since the grouping is the point.
-  const cables = validCables(doc, conns);
+  // breakout points. Drawn whenever wires are, with lines or labels, since the grouping is the point.
+  const cables = validCables(doc, conns, items, tpls);
   const bundled = new Set(cables.flatMap((cb) => cb.wires));
+  // Each wire is a line to its other end, or broken into a stub and label at each terminal: as the drawing's
+  // wire style says, unless the wire says otherwise (c.draw "line" or "break"). Cable cores follow the drawing.
+  const isLine = (c) => (!bundled.has(c.id) && c.draw ? c.draw === "line" : showLines);
+  const showLabels = destOn || conns.some((c) => !isLine(c)); // terminals get lanes for stubs and/or labels
   const connMap = new Map(conns.map((c) => [c.id, c]));
   let cableLayer = "", cableTop = "";
   for (const cb of cables) {
     // Roughly how far the longest wire label of the cable reaches out from its terminal.
-    const clear = st.showDest ? Math.max(0, ...cb.wires.map((id) => {
+    const clear = showLabels ? Math.max(0, ...cb.wires.map((id) => {
       const c = connMap.get(id);
       return c ? (String(c.wire || "").length + 3 + endLabel(doc, items, tpls, c.b, st.termSep).length) * st.labelSize * 0.6 + 4 : 0;
     })) : 0;
-    const g = cableGeometry(cb, connMap, (e) => termPos.get(e.item + "|" + e.term), clear);
+    // A broken cable (cb.draw, else the drawing's cables setting) is just a short tail of sheath at each
+    // end, ending in a break bar and the cable's label with where its other end goes ("C1 → K1"). It's
+    // drawn whole when there isn't room between its ends for both tails and labels, and when it's
+    // one-ended and runs to a free end.
+    const TAIL = 12, fs = Math.min(st.labelSize * 1.1, 3);
+    const pos = (e) => termPos.get(e.item + "|" + e.term);
+    const want = (cb.draw || st.cables) === "break";
+    let g = cableGeometry(cb, connMap, pos, clear, want);
     if (!g) continue;
+    const tagsOf = (ps) => [...new Set(ps.filter((p) => p && p.it).map((p) => p.it.tag || p.tpl.name))].join(", ");
+    const plugName = (pl) => (pl ? endRef(pl.at.it, pl.at.tpl, pl.at.t.id, st.termSep) : "");
+    // With cable names off (labelCable), just where it goes: "K1".
+    const goes = (name) => (st.labelCable ? `${cb.label || "Cable"} → ${name || "?"}` : name || "?");
+    // [where the tail starts, its plug if any, the other end, its label]
+    const tails = want && !g.free ? [
+      [g.bA, g.plugA, g.bB, goes(plugName(g.plugB) || tagsOf(g.cores.map((k) => k.eb)))],
+      [g.bB, g.plugB, g.bA, goes(plugName(g.plugA) || tagsOf(g.cores.map((k) => k.ea)))],
+    ] : [];
+    const gap = (g.bB.x - g.bA.x) * (g.cB.x - g.cA.x) + (g.bB.y - g.bA.y) * (g.cB.y - g.cA.y) > 0 ? Math.hypot(g.bB.x - g.bA.x, g.bB.y - g.bA.y) : 0;
+    const broken = tails.length > 0 && gap > tails.reduce((t, x) => t + TAIL + x[3].length * fs * 0.6 + 4, 0);
+    if (want && !broken) g = cableGeometry(cb, connMap, pos, clear);
     const on = sel.has(cb.id);
     for (const k of g.cores) {
       const c = k.c;
@@ -554,83 +647,144 @@ function renderDiagram(doc, opt = {}) {
     }
     const w = Math.max(1.6, 0.9 + 0.35 * g.cores.length);
     const sheath = cb.color || "#3a3f45";
-    const td = `M${n(g.bA.x)} ${n(g.bA.y)} L${n(g.bB.x)} ${n(g.bB.y)}`;
-    if (on) cableTop += `<path d="${td}" fill="none" stroke="#3b82f6" stroke-opacity="0.4" stroke-width="${n(w + 1.6)}" stroke-linecap="round" pointer-events="none"/>`;
-    cableTop += `<path d="${td}" fill="none" stroke="${darken(sheath, 0.6)}" stroke-width="${n(w + 0.4)}" stroke-linecap="round"/>`;
-    cableTop += `<path d="${td}" fill="none" stroke="${esc(sheath)}" stroke-width="${n(w)}" stroke-linecap="round"/>`;
-    if (g.open) {
-      // Free end: a short cross bar, then where it goes.
-      const L = Math.hypot(g.bB.x - g.bA.x, g.bB.y - g.bA.y) || 1;
-      const u = [(g.bB.x - g.bA.x) / L, (g.bB.y - g.bA.y) / L], q = [-u[1], u[0]];
-      const h = w / 2 + 1;
-      cableTop += `<path d="M${n(g.bB.x + q[0] * h)} ${n(g.bB.y + q[1] * h)} L${n(g.bB.x - q[0] * h)} ${n(g.bB.y - q[1] * h)}" stroke="${darken(sheath, 0.6)}" stroke-width="0.5" stroke-linecap="round" pointer-events="none"/>`;
-      if (cb.to) {
-        const fs = Math.min(st.labelSize * 1.1, 3);
-        const txt = "→ " + cb.to;
-        const half = txt.length * fs * 0.3;
-        const tx = g.bB.x + u[0] * (half + h + 0.8), ty = g.bB.y + u[1] * (half + h + 0.8);
-        let ang = (Math.atan2(u[1], u[0]) * 180) / Math.PI;
-        if (ang > 90) ang -= 180; else if (ang <= -90) ang += 180;
-        cableTop += `<text x="${n(tx)}" y="${n(ty)}" transform="rotate(${n(ang)} ${n(tx)} ${n(ty)})" font-family="${FONT}" font-size="${n(fs)}" text-anchor="middle" dominant-baseline="central" fill="${on ? "#1d5fd6" : "#1d2126"}" pointer-events="none">${esc(txt)}</text>`;
+    // A cable plugged into a connector leaves it straight out, then curves round to its other end.
+    const span = Math.hypot(g.bB.x - g.bA.x, g.bB.y - g.bA.y), bend = Math.max(6, Math.min(40, span * 0.4));
+    const c1 = g.plugA ? { x: g.bA.x + g.plugA.v[0] * bend, y: g.bA.y + g.plugA.v[1] * bend } : g.bA;
+    const c2 = g.plugB ? { x: g.bB.x + g.plugB.v[0] * bend, y: g.bB.y + g.plugB.v[1] * bend } : g.bB;
+    const curved = !!(g.plugA || g.plugB);
+    const td = curved
+      ? `M${n(g.bA.x)} ${n(g.bA.y)} C${n(c1.x)} ${n(c1.y)} ${n(c2.x)} ${n(c2.y)} ${n(g.bB.x)} ${n(g.bB.y)}`
+      : `M${n(g.bA.x)} ${n(g.bA.y)} L${n(g.bB.x)} ${n(g.bB.y)}`;
+    // The sheath's middle and its direction there, for the label.
+    const mid = { x: (g.bA.x + 3 * c1.x + 3 * c2.x + g.bB.x) / 8, y: (g.bA.y + 3 * c1.y + 3 * c2.y + g.bB.y) / 8 };
+    const dir = { x: g.bB.x + c2.x - c1.x - g.bA.x, y: g.bB.y + c2.y - c1.y - g.bA.y };
+    // Text running on from a point p along direction u (a unit vector), past a gap of h, kept upright, with
+    // a paper-coloured outline so it reads over wires.
+    const endText = (p, u, h, txt) => {
+      const half = txt.length * fs * 0.3;
+      const tx = p.x + u[0] * (half + h + 0.8), ty = p.y + u[1] * (half + h + 0.8);
+      let ang = (Math.atan2(u[1], u[0]) * 180) / Math.PI;
+      if (ang > 90) ang -= 180; else if (ang <= -90) ang += 180;
+      return `<text x="${n(tx)}" y="${n(ty)}" transform="rotate(${n(ang)} ${n(tx)} ${n(ty)})" font-family="${FONT}" font-size="${n(fs)}" text-anchor="middle" dominant-baseline="central" fill="${on ? "#1d5fd6" : "#1d2126"}" stroke="#ffffff" stroke-opacity="0.9" stroke-width="${n(fs * 0.22)}" stroke-linejoin="round" paint-order="stroke" pointer-events="none">${esc(txt)}</text>`;
+    };
+    // A short bar across the sheath at p, square to direction u: a free end, or a break.
+    const crossBar = (p, u) => {
+      const h = w / 2 + 1, q = [-u[1], u[0]];
+      return `<path d="M${n(p.x + q[0] * h)} ${n(p.y + q[1] * h)} L${n(p.x - q[0] * h)} ${n(p.y - q[1] * h)}" stroke="${darken(sheath, 0.6)}" stroke-width="0.5" stroke-linecap="round" pointer-events="none"/>`;
+    };
+    let paths = [td], breaks = "";
+    if (broken) {
+      paths = [];
+      for (const [p, pl, other, txt] of tails) {
+        const L = Math.hypot(other.x - p.x, other.y - p.y) || 1;
+        const u = pl ? pl.v : [(other.x - p.x) / L, (other.y - p.y) / L];
+        const e = { x: p.x + u[0] * TAIL, y: p.y + u[1] * TAIL };
+        paths.push(`M${n(p.x)} ${n(p.y)} L${n(e.x)} ${n(e.y)}`);
+        breaks += crossBar(e, u) + endText(e, u, w / 2 + 1, txt);
       }
     }
-    // Label along the sheath, kept upright.
-    const label = [cb.label, cb.desc].filter(Boolean).join(" · ");
-    const len = Math.hypot(g.bB.x - g.bA.x, g.bB.y - g.bA.y);
-    if (label && len > 4) {
-      let ang = (Math.atan2(g.bB.y - g.bA.y, g.bB.x - g.bA.x) * 180) / Math.PI;
+    for (const d of paths) {
+      if (on) cableTop += `<path d="${d}" fill="none" stroke="#3b82f6" stroke-opacity="0.4" stroke-width="${n(w + 1.6)}" stroke-linecap="round" pointer-events="none"/>`;
+      // A shielded cable shows its braid as a dashed outline along the sheath.
+      if (cb.shield) cableTop += `<path d="${d}" fill="none" stroke="#6b7280" stroke-width="${n(w + 1.5)}" stroke-dasharray="0.9 0.6" pointer-events="none"/>`;
+    }
+    // A plug where an end goes into a cable connector, over the socket.
+    for (const pl of [g.plugA, g.plugB]) {
+      if (!pl) continue;
+      const a = portSize(pl.at.tpl);
+      const back = { x: pl.at.x + pl.v[0] * a * 0.15, y: pl.at.y + pl.v[1] * a * 0.15 };
+      cableTop += `<path d="M${n(back.x)} ${n(back.y)} L${n(pl.x)} ${n(pl.y)}" stroke="${darken(sheath, 0.55)}" stroke-width="${n(a * 0.62)}" stroke-linecap="butt" pointer-events="none"/>`;
+      cableTop += `<path d="M${n(pl.x - pl.v[0] * 1.2)} ${n(pl.y - pl.v[1] * 1.2)} L${n(pl.x)} ${n(pl.y)}" stroke="${esc(sheath)}" stroke-width="${n(w + 0.6)}" stroke-linecap="butt" pointer-events="none"/>`;
+    }
+    for (const d of paths) {
+      cableTop += `<path d="${d}" fill="none" stroke="${darken(sheath, 0.6)}" stroke-width="${n(w + 0.4)}" stroke-linecap="round"/>`;
+      cableTop += `<path d="${d}" fill="none" stroke="${esc(sheath)}" stroke-width="${n(w)}" stroke-linecap="round"/>`;
+    }
+    cableTop += breaks;
+    if (g.free) {
+      // Free end: a short cross bar, then where it goes.
+      const L = Math.hypot(g.bB.x - g.bA.x, g.bB.y - g.bA.y) || 1;
+      const u = [(g.bB.x - g.bA.x) / L, (g.bB.y - g.bA.y) / L];
+      cableTop += crossBar(g.bB, u);
+      if (cb.to) cableTop += endText(g.bB, u, w / 2 + 1, (st.labelCable ? "→ " : "") + cb.to);
+    }
+    // Label along the sheath, kept upright (a broken cable has it at each break instead): its name if
+    // cable names are on, and its type.
+    const label = [st.labelCable && cb.label, cb.desc].filter(Boolean).join(" · ");
+    if (label && span > 4 && !broken) {
+      let ang = (Math.atan2(dir.y, dir.x) * 180) / Math.PI;
       if (ang > 90) ang -= 180; else if (ang <= -90) ang += 180;
-      const mx = (g.bA.x + g.bB.x) / 2, my = (g.bA.y + g.bB.y) / 2;
-      const fs = Math.min(st.labelSize * 1.1, 3);
+      const mx = mid.x, my = mid.y;
       const nrm = [Math.sin((ang * Math.PI) / 180), -Math.cos((ang * Math.PI) / 180)];
       const off = w / 2 + fs * 0.75;
       const tx = mx + nrm[0] * off, ty = my + nrm[1] * off;
       cableTop += `<text x="${n(tx)}" y="${n(ty)}" transform="rotate(${n(ang)} ${n(tx)} ${n(ty)})" font-family="${FONT}" font-size="${n(fs)}" font-weight="bold" text-anchor="middle" dominant-baseline="central" fill="${on ? "#1d5fd6" : "#1d2126"}" pointer-events="none">${esc(label)}</text>`;
     }
     if (ia) {
-      cableTop += `<path d="${td}" class="hit" data-cable="${esc(cb.id)}" fill="none" stroke="transparent" stroke-width="${n(w + 2)}"/>`;
+      for (const d of paths) cableTop += `<path d="${d}" class="hit" data-cable="${esc(cb.id)}" fill="none" stroke="transparent" stroke-width="${n(w + 2)}"/>`;
       if (on) {
         for (const [end, p] of [["a", g.bA], ["b", g.bB]]) {
-          const tip = g.open && end === "b" ? "Drag to move the cable's free end" : "Drag to move where the cores fan out";
+          if ((end === "a" && g.plugA) || (end === "b" && g.plugB)) continue; // fixed at its connector
+          const tip = g.free && end === "b" ? "Drag to move the cable's free end" : "Drag to move where the cores fan out";
           cableTop += `<circle cx="${n(p.x)}" cy="${n(p.y)}" r="${n(w / 2 + 0.9)}" fill="#f59e0b" fill-opacity="0.35" stroke="#f59e0b" stroke-width="0.4" class="cable-handle" data-cable-handle="${esc(cb.id)}|${end}"><title>${tip}</title></circle>`;
         }
       }
     }
   }
 
-  // Connection lines.
-  let lines = "";
-  if (st.lines !== "off") {
-    for (const c of conns) {
-      if (bundled.has(c.id)) continue; // drawn as part of their cable
-      const p1 = termPos.get(c.a.item + "|" + c.a.term), p2 = termPos.get(c.b.item + "|" + c.b.term);
-      let d;
-      if (st.lines === "curved") {
-        const dist = Math.hypot(p2.x - p1.x, p2.y - p1.y);
-        const k = Math.max(8, Math.min(80, dist * 0.45));
-        const v1 = SIDE_VEC[p1.side], v2 = SIDE_VEC[p2.side];
-        d = `M${n(p1.x)} ${n(p1.y)} C${n(p1.x + v1[0] * k)} ${n(p1.y + v1[1] * k)} ${n(p2.x + v2[0] * k)} ${n(p2.y + v2[1] * k)} ${n(p2.x)} ${n(p2.y)}`;
-      } else {
-        d = `M${n(p1.x)} ${n(p1.y)} L${n(p2.x)} ${n(p2.y)}`;
-      }
-      if (sel.has(c.id) || inCirc(c.id)) lines += glow(d, sel.has(c.id));
-      lines += wirePath(d, c.color, 0.55, 'opacity="0.92"', c.stripe);
-      if (ia) lines += `<path d="${d}" class="hit" data-conn="${esc(c.id)}" fill="none" stroke="transparent" stroke-width="3"/>`;
+  // Connection lines, each with its wire number at the middle.
+  let lines = "", lineLabels = "";
+  for (const c of conns) {
+    if (bundled.has(c.id) || !isLine(c)) continue; // cable cores are drawn as part of their cable
+    const p1 = termPos.get(c.a.item + "|" + c.a.term), p2 = termPos.get(c.b.item + "|" + c.b.term);
+    let d, mid;
+    if (st.lines === "curved") {
+      const dist = Math.hypot(p2.x - p1.x, p2.y - p1.y);
+      const k = Math.max(8, Math.min(80, dist * 0.45));
+      const v1 = SIDE_VEC[p1.side], v2 = SIDE_VEC[p2.side];
+      const c1 = { x: p1.x + v1[0] * k, y: p1.y + v1[1] * k }, c2 = { x: p2.x + v2[0] * k, y: p2.y + v2[1] * k };
+      d = `M${n(p1.x)} ${n(p1.y)} C${n(c1.x)} ${n(c1.y)} ${n(c2.x)} ${n(c2.y)} ${n(p2.x)} ${n(p2.y)}`;
+      mid = { x: (p1.x + 3 * c1.x + 3 * c2.x + p2.x) / 8, y: (p1.y + 3 * c1.y + 3 * c2.y + p2.y) / 8 }; // the curve at its halfway point
+    } else {
+      d = `M${n(p1.x)} ${n(p1.y)} L${n(p2.x)} ${n(p2.y)}`;
+      mid = { x: (p1.x + p2.x) / 2, y: (p1.y + p2.y) / 2 };
+    }
+    if (sel.has(c.id) || inCirc(c.id)) lines += glow(d, sel.has(c.id));
+    lines += wirePath(d, c.color, 0.55, 'opacity="0.92"', c.stripe);
+    if (ia) lines += `<path d="${d}" class="hit" data-conn="${esc(c.id)}" fill="none" stroke="transparent" stroke-width="3"/>`;
+    const name = circuitLabel(c) || nameOf(c);
+    if (name) {
+      const hl = sel.has(c.id) ? ' fill="#1d5fd6" font-weight="bold"' : inCirc(c.id) ? ' fill="#4a86ec"' : ' fill="#1d2126"';
+      lineLabels += `<text x="${n(mid.x)}" y="${n(mid.y)}" font-family="${FONT}" font-size="${n(st.labelSize)}" text-anchor="middle" dominant-baseline="central"${hl} stroke="#ffffff" stroke-opacity="0.9" stroke-width="${n(st.labelSize * 0.3)}" stroke-linejoin="round" paint-order="stroke"${ia ? ` data-conn="${esc(c.id)}" class="dest"` : ""}>${esc(name)}</text>`;
     }
   }
 
   // Stubs, destination labels, terminals.
-  let stubs = "", labels = "", terms = "", rings = "", slots = "";
+  let stubs = "", labels = "", terms = "", rings = "", slots = "", sockets = "";
   const ls = st.labelSize;
   for (const [k, p] of termPos) {
     const r = termRadius(p.tpl);
+    if (isPort(p.t)) {
+      // Cable connectors take a cable's plug, not wires. The name goes on the side away from the cable.
+      const a = portSize(p.tpl), h = a * 0.78;
+      sockets += portGlyph(p.x, p.y, p.tpl, ' pointer-events="none"');
+      if (ia) terms += `<g class="term port" data-term="${esc(k)}"><rect x="${n(p.x - a / 2 - 0.4)}" y="${n(p.y - h / 2 - 0.4)}" width="${n(a + 0.8)}" height="${n(h + 0.8)}" fill="transparent" class="term-hit"/></g>`;
+      if (st.showTermNames && p.t.name) {
+        const v = SIDE_VEC[p.side] || [0, 1], fs = Math.min(1.8, ls);
+        const reach = (Math.abs(v[0]) ? a / 2 : h / 2) + 0.5 + fs * 0.6;
+        const tx = p.x - v[0] * reach, ty = p.y - v[1] * reach;
+        const anchor = v[0] > 0 ? "end" : v[0] < 0 ? "start" : "middle";
+        terms += `<text x="${n(tx)}" y="${n(ty)}" font-family="${FONT}" font-size="${n(fs)}" text-anchor="${anchor}" dominant-baseline="central" fill="${inkFor(p.it.color || p.tpl.fill)}" pointer-events="none">${esc(p.t.name)}</text>`;
+      }
+      continue;
+    }
     if (isSlot(p.t)) {
       // Bus bar slots take bus bars only: no wires, and clickable only while picking for a bus bar.
       slots += slotRect(p.x, p.y, p.tpl, ' pointer-events="none"');
       if (be) terms += `<g class="term slot" data-term="${esc(k)}"><rect x="${n(p.x - slotSize(p.tpl) / 2 - 0.4)}" y="${n(p.y - slotSize(p.tpl) / 2 - 0.4)}" width="${n(slotSize(p.tpl) + 0.8)}" height="${n(slotSize(p.tpl) + 0.8)}" fill="transparent" class="term-hit"/></g>`;
       continue;
     }
-    const list = st.showDest ? atTerm.get(k) || [] : [];
+    const list = (atTerm.get(k) || []).filter((e) => destOn || !isLine(e.c)); // a stub needs a lane even without labels
     const flag = String(p.it.termLabels?.[p.t.id] || "").trim();
     const v = SIDE_VEC[p.side];
     if (list.length || flag) {
@@ -641,10 +795,21 @@ function renderDiagram(doc, opt = {}) {
       // Lanes follow where each wire goes: leftmost destination in the leftmost lane (or topmost for side terminals).
       const axis = perp[0] ? "x" : "y";
       const dest = (e) => termPos.get(e.other)?.[axis] ?? 0;
-      const wires = list.slice().sort((a, b) => {
+      const sorted = list.slice().sort((a, b) => {
         const d = dest(a) - dest(b);
         return Math.abs(d) > 0.01 ? d : String(a.c.wire).localeCompare(String(b.c.wire), undefined, { numeric: true });
       });
+      // Wires labelled with the same circuit name (e.g. a daisy chain) would say the same thing twice, so they
+      // share one stub and label. ids holds every wire in the lane, for highlighting.
+      const wires = [], byName = new Map();
+      for (const e of sorted) {
+        const cn = !isLine(e.c) && circuitLabel(e.c);
+        const key = cn && cn + "|" + bundled.has(e.c.id);
+        if (key && byName.has(key)) { byName.get(key).ids.push(e.c.id); continue; }
+        const lane = { ...e, ids: [e.c.id] };
+        if (key) byName.set(key, lane);
+        wires.push(lane);
+      }
       // A connector label takes the first lane, ahead of the terminal's wires.
       const lanes = flag ? [{ flag }, ...wires] : wires;
       lanes.forEach((e, i) => {
@@ -668,10 +833,25 @@ function renderDiagram(doc, opt = {}) {
           labels += `<text x="${n(ax)}" y="${n(ay)}" font-family="${FONT}" font-size="${n(ls)}" font-weight="bold" text-anchor="${anchor}" dominant-baseline="central" fill="#1d2126" class="flag">${esc(e.flag)}</text></g>`;
           return;
         }
-        if (sel.has(e.c.id) || inCirc(e.c.id)) stubs += glow(sd, sel.has(e.c.id));
-        stubs += wirePath(sd, e.c.color, 0.45, 'stroke-linejoin="round"', e.c.stripe);
-        const txt = (e.c.wire ? e.c.wire + " " : "") + "→ " + e.ref;
-        const hl = sel.has(e.c.id) ? ' fill="#1d5fd6" font-weight="bold"' : inCirc(e.c.id) ? ' fill="#4a86ec"' : ' fill="#1d2126"';
+        // A stub, except with lines (they reach the terminal) or for a cable core (it runs from the terminal into
+        // its cable), which get just the label.
+        const isSel = e.ids.some((id) => sel.has(id)), isNear = e.ids.some(inCirc);
+        if (!isLine(e.c) && !bundled.has(e.c.id)) {
+          if (isSel || isNear) stubs += glow(sd, isSel);
+          stubs += wirePath(sd, e.c.color, 0.45, 'stroke-linejoin="round"', e.c.stripe);
+        }
+        // The arrow only joins a name to where the wire goes ("W3 → TB101-1"); on its own it's just "TB101-1".
+        // A circuit name replaces the destination instead: "+24V" if the circuit has a name, else "TB101-1".
+        // (With lines, a named circuit's name is at the middle of the line, so its ends get no label.)
+        let txt;
+        const cn = circuitLabel(e.c);
+        if (cn) txt = isLine(e.c) ? "" : cn;
+        else {
+          const name = isLine(e.c) ? "" : nameOf(e.c);
+          txt = name && destOn ? `${name} → ${e.ref}` : name || (destOn ? e.ref : "");
+        }
+        if (!txt) return;
+        const hl = isSel ? ' fill="#1d5fd6" font-weight="bold"' : isNear ? ' fill="#4a86ec"' : ' fill="#1d2126"';
         // A thin paper-coloured outline keeps the label readable where a wire or cable runs under it.
         labels += `<text x="${n(ax)}" y="${n(ay)}"${tr} font-family="${FONT}" font-size="${n(ls)}" text-anchor="${anchor}" dominant-baseline="central"${hl} stroke="#ffffff" stroke-opacity="0.9" stroke-width="${n(ls * 0.22)}" stroke-linejoin="round" paint-order="stroke"${ia ? ` data-conn="${esc(e.c.id)}" class="dest"` : ""}>${esc(txt)}</text>`;
       });
@@ -733,7 +913,7 @@ function renderDiagram(doc, opt = {}) {
     }
   }
 
-  return rails.join("") + bodies.join("") + lines + cableLayer + cableTop + stubs + slots + busLayer + labels + terms + texts.join("") + rings + selBoxes;
+  return rails.join("") + bodies.join("") + sockets + lines + cableLayer + cableTop + stubs + slots + busLayer + labels + terms + lineLabels + texts.join("") + rings + selBoxes;
 }
 
 // Small standalone preview of an object type (used in the library and editor).
@@ -745,6 +925,7 @@ function renderTemplatePreview(tpl, size) {
   s += `<rect width="${n(tpl.w)}" height="${n(tpl.h)}" rx="${n(tpl.radius || 0)}" fill="${esc(tpl.fill)}" stroke="${darken(tpl.fill, 0.55)}" stroke-width="${n(Math.max(0.35, Math.max(vw, vh) / 80))}"/>`;
   for (const t of tpl.terminals) {
     if (isSlot(t)) s += slotRect(t.x, t.y, tpl);
+    else if (isPort(t)) s += portGlyph(t.x, t.y, tpl);
     else s += `<circle cx="${n(t.x)}" cy="${n(t.y)}" r="${n(r)}" fill="#fff" stroke="#30353b" stroke-width="${n(Math.max(0.3, Math.max(vw, vh) / 120))}"/>`;
   }
   return s + "</svg>";

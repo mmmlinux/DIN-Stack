@@ -46,6 +46,8 @@ self.addEventListener("fetch", (e) => {
         }
         return res;
       })
-      .catch(() => caches.match(req, { ignoreSearch: true }).then((hit) => hit || caches.match("index.html")))
+      // Offline: the cached copy, or the app's page for a page load. Anything else that isn't cached
+      // fails as it would online (so, for example, the .dev marker isn't mistaken for present).
+      .catch(() => caches.match(req, { ignoreSearch: true }).then((hit) => hit || (req.mode === "navigate" ? caches.match("index.html") : Response.error())))
   );
 });

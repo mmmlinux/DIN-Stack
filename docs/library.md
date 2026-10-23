@@ -23,11 +23,11 @@ The library is stored **inside each diagram**:
 - It's saved with the diagram, both in the browser's automatic save and in `.json` files from *Save*.
 - **New** starts an empty diagram but keeps the current library.
 - **Open** loads the library that was saved with that file.
-- To move object types between diagrams, use **Export library** and **Import library** at the bottom of the sidebar (see [Saving and sharing a library](#saving-and-sharing-a-library)).
+- To move object types between diagrams, use **Export** and **Import a library file…** in the **⋯** menu at the top of the library (see [Saving and sharing a library](#saving-and-sharing-a-library)).
 
 ### Several libraries
 
-A diagram can hold several libraries, and the sidebar shows one at a time. Pick which one with the drop-down above the search box:
+A diagram can hold several libraries, and the sidebar shows one at a time. Pick which one with the drop-down at the top of the library:
 
 - **Built-in** holds the types that come with DIN Stack.
 - **My types** holds types you made before libraries existed, and any type with no library set.
@@ -38,11 +38,20 @@ The search box searches the library shown. New types go into the library shown (
 
 Which library is shown is remembered in your browser and isn't saved with the diagram.
 
-### Adding a ready-made library
+### Managing the included libraries
 
-Pick **+ Add a library…** at the bottom of the drop-down to see the libraries that come with DIN Stack. Click **Add** next to one to load it into the diagram as its own library. A library that's already in the diagram shows **Update** instead, which loads it again to pick up any changes.
+Click **+** beside the library drop-down (or **⋯ → Manage included libraries…**) to open the library manager. It lists the ready-made libraries that come with DIN Stack, says whether each is loaded in this diagram and how many parts use it, and has a button for each job:
 
-The list is read from `libraries/index.json`, so it needs the online version, or an installed copy that has been online. A copy opened straight from `index.html` can't read it; download the library file and use **Import library** instead.
+- **Load** adds a library to the diagram as its own library and shows it in the sidebar.
+- **Refresh** loads a library that's already in the diagram again, replacing its types with the published ones. Types the library no longer has are removed, unless a part on the drawing still uses them. Changes you made to its types are replaced too.
+- **Unload** removes a library's types from the diagram. If parts on the drawing use them, it says how many first, and those parts and their wires are removed with it.
+- **Refresh all** (at the bottom) refreshes every included library in the diagram.
+
+The window stays open, so you can load, refresh and unload several in a row. **Undo** reverses each of them. Descriptions are folded away to keep the list short; click the arrow or a library's name to show what's in it.
+
+Each ready-made library has its own version number, separate from DIN Stack's, and its own history in [`libraries/RELEASE_NOTES.md`](../libraries/RELEASE_NOTES.md) (*What's new* in the list). The diagram remembers which version of each library it last loaded. When a newer one is available, or the library was added before it had a version number, the list says *Update available* and highlights **Refresh**.
+
+The list is read from `libraries/index.json`, so it needs the online version, or an installed copy that has been online. A copy opened straight from `index.html` can't read it; download the library file and use **Import a library file…** (in the same window, or the **⋯** menu) instead.
 
 To offer a new library in the list, put its file in `libraries/` and add an entry to `libraries/index.json`:
 
@@ -50,7 +59,7 @@ To offer a new library in the list, put its file in `libraries/` and add an entr
 {
   "type": "dinstack-catalog",
   "libraries": [
-    { "file": "my-parts.json", "name": "My parts", "description": "What's in it, in a sentence.", "types": 12 }
+    { "file": "my-parts.json", "version": "1.0.0", "name": "My parts", "description": "What's in it, in a sentence.", "types": 12 }
   ]
 }
 ```
@@ -58,6 +67,7 @@ To offer a new library in the list, put its file in `libraries/` and add an entr
 | Field | Meaning |
 | --- | --- |
 | `file` | The library file's name inside `libraries/`. |
+| `version` | Optional. The library's version, the same as the `version` in its file. It's shown in the list, and a diagram holding an older version is offered the update. |
 | `name` | The library's name, shown in the list and used for its types unless the file sets its own. |
 | `description` | Optional. A sentence shown under the name. |
 | `types` | Optional. How many object types it has, shown in the list. |
@@ -69,6 +79,8 @@ To offer a new library in the list, put its file in `libraries/` and add an entr
 | **AutomationDirect DIN-rail relays** ([`automationdirect-din-relays.json`](../libraries/automationdirect-din-relays.json)) | DIN-rail relays, timers, monitoring relays and relay sockets sold by AutomationDirect: 59 object types covering 206 part numbers (Murrelektronik, Klemsan, Dold, Gefran, Macromatic, Fuji and AutomationDirect's own sockets). |
 | **Phoenix Contact UT terminal blocks** ([`phoenix-contact-ut.json`](../libraries/phoenix-contact-ut.json)) | 64 types: UT screw terminal blocks (feed-through UT 1,5 to UT 35 in grey and blue, ground (PE), TWIN and QUATTRO, double-level UTTB, three-level, fuse (HESI), and disconnect (HEDI, MT, MTD) blocks) and the accessories that take up rail space: end covers, partition and spacer plates, and end clamps. Each type's name includes its order number. |
 | **Amphenol 26482 Series 2 connectors** ([`amphenol-26482-series-2.json`](../libraries/amphenol-26482-series-2.json)) | 68 MIL-DTL-26482 Series 2 circular receptacles: all 34 insert arrangements from shell size 8 to 24, each with pins (P) and with sockets (S). |
+| **AutomationDirect pushbuttons & pilot lights** ([`automationdirect-pushbuttons.json`](../libraries/automationdirect-pushbuttons.json)) | 52 types: 22 mm GCX pushbuttons, selector switches, E-stops and pilot lights (plastic and metal), Fuji Command 30 mm and Eaton HT800 30 mm devices, and Schmersal N (22 mm) and E (30 mm) series devices, their EF contact and light blocks, and NK-T/RK-T joysticks. One type per series and contact arrangement, drawn from the wiring side. |
+| **Misc networking** ([`misc-networking.json`](../libraries/misc-networking.json)) | 5 types: Tripp Lite (Eaton) NGI-U05E 5-port industrial switch and NPOEI-60W-1G PoE++ injector for DIN rail, the StarTech IH2006 HDMI KVM-over-IP transmitter and receiver, and an ASUS computer with six serial ports. |
 
 About the AutomationDirect library:
 
@@ -82,7 +94,7 @@ About the AutomationDirect library:
 About the Phoenix Contact UT library:
 
 - **Sizes** (width along the rail and length across it) come from Phoenix Contact's CLIPLINE complete catalog. UT 1,5 comes from distributor and CAD data. Screw and bridge positions are approximate.
-- **Feed-through and ground blocks** work like the built-in terminal blocks. Their terminals are linked, and two bus bar slots in the middle take the FBS plug-in bridges. They use the same internal terminal ids as the built-in blocks, so a part can be switched between a built-in block and a UT block (with **Type** in its panel) without losing its wires.
+- **Feed-through and ground blocks** work like the built-in terminal blocks. Their terminals are linked, and two bus bar slots in the middle take the FBS plug-in bridges. They use the same internal terminal ids as the built-in blocks, so a part can be switched between a built-in block and a UT block (with **Type** in the inspector) without losing its wires.
 - **Multi-level blocks:** each level is a separate circuit. The lowest level's screws are at the ends, and the upper levels' are further in. On the PE/L/N blocks the terminals are named after their level.
 - **Fuse and disconnect blocks** (HESI, HEDI, MT, MTD) don't link their two sides, since they're only connected while the fuse is in or the disconnect is closed. Each side has its own bridge slot.
 - **End covers** (D-UT…) are 2.2 mm wide parts with no terminals. Put one at the open end of a strip.
@@ -99,6 +111,28 @@ About the Amphenol 26482 Series 2 library:
 - **The outline** is the square flange of the MS3470 wall-mount receptacle. Jam-nut and cable-connecting receptacles are a different shape on the outside, but their inserts are the same.
 - Plugs (MS3476, MS3475), protective caps, backshells and the alternate insert positions (W, X, Y, Z) aren't included.
 
+About the AutomationDirect pushbuttons & pilot lights library:
+
+- **One type per series and contact arrangement**, not per colour or legend. A red 1 N.C. pushbutton and a red 1 N.C. mushroom E-stop wire the same way, so they share a type. Each name gives example part numbers; search for one, such as `GCX3100`, `AR30`, `NDT` or `EF103.2`, to find its type.
+- **Drawn from the wiring side**, as you see the device from inside the enclosure door. Types are *Loose*, with tag prefix `S` (or `PL` for pilot lights).
+- **Terminal names** use the block's position and function: the first block (left) is `13`/`14` when N.O. or `11`/`12` when N.C., the second block (right) `23`/`24` or `21`/`22`, and a lamp is `X1`/`X2`. The blocks themselves are marked 3-4 and 1-2, so rename the terminals if your drawings use those.
+- **Outlines** come from AutomationDirect's drawings (GCX 30 × 40 mm, Fuji AR30 30 × 44 mm). The Eaton HT800 outline (52 × 36 mm) and all terminal positions are approximate. Extra blocks stacked behind the first two sit in the same place in this view, so they're not drawn except where noted (Fuji 1 N.O. + 2 N.C. E-stop).
+- **Schmersal N and E series** are modular: you buy the operator (NDT, NDP, NDL, NW…, NDRZ, NML for 22 mm; EDT, EDP, EDL, EW…, ESS, EDRZ/EDRR, EML for 30 mm) and snap EF contact blocks and a light block onto its mounting flange. Both series use the same blocks, so they share types. There are two ways to draw them:
+  - **A whole device** (category *Schmersal N 22mm & E 30mm*): the common arrangements, such as 1 N.O., 1 N.O. + 1 N.C., the E-stop blocks, illuminated pushbuttons and pilot lights. Each name lists the blocks it assumes.
+  - **Single blocks** (category *Schmersal EF contact & light blocks*): one type for every EF contact block AutomationDirect sells, in each mounting position, and one for the light blocks. For any other arrangement, place the blocks side by side and give them the same tag (S1, S1, S1), so wires read `S1-11`, `S1-23` and so on.
+- **Schmersal terminal numbers** follow the block's mounting position, as printed on the blocks: a single block in position 1 is `11`/`12` (N.C.) or `13`/`14` (N.O.), in position 2 `21`/`22` or `23`/`24`, and in position 3 `31`/`32` or `33`/`34`. A double block takes two numbers: `11`-`12` and `23`-`24` for EF103.1, `31`-`32` and `43`-`44` for EF103.2, `51`-`52` and `61`-`62` for EF110.3. The light block is `X1`/`X2`.
+- **Schmersal flange positions** from the wiring side are taken as 1 (left), 3 (middle) and 2 (right). Position 3 is where the light block goes on illuminated devices. Schmersal marks position 1 with the bevel on the flange, so check whether your view is mirrored. The outline (30 × 45.2 mm) and block size (9.8 × 45.2 mm) come from AutomationDirect's drawings. Screw positions are approximate, and on double blocks the second contact is drawn at the ends.
+- **Schmersal blocks for E-stops:** AutomationDirect lists EF10, EF110 and EF103 as not suitable for E-stops, and EF220 and EF303 as not suitable for the maintained NWS/NWT selectors. The E-stop types use EF220.1 and EF303.1.
+- **Schmersal joysticks** (NK-T blue, RK-T grey) have their contacts built in and connect through one or two M12 8-pin sockets, drawn as cable ports `X1` and `X2`. Which socket is X1 is an assumption. Their 80 mm outline comes from AutomationDirect's drawings.
+- Schmersal accessories without terminals (legend plates, hole seals, the NUE adapter, spare flanges, seals and the EFR spring) aren't object types.
+- Stack lights, potentiometers, pendants, foot switches and enclosures aren't included, and nor are joysticks other than Schmersal's.
+
+About the Misc networking library:
+
+- **NGI-U05E** and **NPOEI-60W-1G** are DIN-rail parts, drawn from the front with the power terminals along the top. RJ45 sockets are cable ports. The names of the switch's three power pins (V+, V−, FG) and the order of the injector's six (PWR+, PWR−, ALM, ALM, RPS−, RPS+) weren't in the documents found, so check them against the label on the unit.
+- **IH2006** transmitter and receiver are *Loose* (they mount with brackets), drawn from above with the front panel along the top edge and the rear along the bottom. The RS-232 terminal block (GND, RxD, TxD) takes wires; the HDMI, USB, audio, LAN and 5 V DC sockets are cable ports. The receiver's two USB ports are an assumption; the guide just says "USB HID ports".
+- **ASUS computer** is *Loose* (it doesn't go on a DIN rail), 7.25 in tall by 5.25 in wide (184 × 133 mm), drawn with one connector side along the left edge and the other along the right. The left side has the two-terminal power connector (V+, V−, which take wires), LAN 1–2, COM1–2, USB 1–4, HDMI and DisplayPort; the right side has COM3–6 and USB 5–6. The connectors are cable ports. Their order along each side and the power pin polarity are assumptions, so check them against the unit.
+
 ## Creating an object type
 
 | To… | Do this |
@@ -114,7 +148,7 @@ The designer has the type's settings on the left and a full-size preview on the 
 
 | Setting | What it does |
 | --- | --- |
-| **Name** | Shown in the library, the part's panel and the parts list. |
+| **Name** | Shown in the library, the inspector and the parts list. |
 | **Library** | Which library the type belongs to. Pick an existing one or type a new name to start a new library. |
 | **Category** | Groups the library list, for example *Terminal blocks*, *Power*, *Control*. Type a new name to start a new group. |
 | **Mounting** | *DIN rail* parts snap onto rails and move with a rail when it's dragged. *Loose* parts, such as connectors on the enclosure wall, a panel or a cable, can be placed anywhere: they don't snap onto rails or move with them, though they still line up with neighbouring parts. Loose types show "loose" in the library. |
@@ -143,7 +177,7 @@ A terminal is a point where wires (or bus bars) attach. Each one has a name, a p
 | Method | How |
 | --- | --- |
 | **Click** | Click on the preview to add a terminal there. It's named after the previous one, counting up (1 → 2, IN1 → IN2). Drag a terminal to move it. **Snap** above the preview sets the grid it moves on (0.1–2.5 mm). |
-| **Add a row** | Fill in the *Add a row of terminals* box on the left and click **Add row**. This is the quickest way to get a neat screw row. |
+| **Add a row** | Fill in the *Add a row* tab on the left and click **Add row**. This is the quickest way to get a neat screw row. |
 | **Type it in** | Edit X and Y in the table for exact positions from a dimension drawing. |
 
 Settings for **Add a row**:
@@ -159,7 +193,7 @@ Settings for **Add a row**:
 
 ### Adding a grid of terminals
 
-**Add a grid of terminals** places a block of terminals in one go, such as a 2 × 16 pin header or an IC footprint.
+The **Add a grid** tab places a block of terminals in one go, such as a 2 × 16 pin header or an IC footprint.
 
 | Setting | Meaning |
 | --- | --- |
@@ -239,7 +273,7 @@ When you draw a new wire that doesn't join an existing circuit, DIN Stack guesse
 | `N` | AC neutral |
 | `L`, `L1`, `L2`, `L3` | AC line |
 
-The colours follow the wire standard set under Display (metric or American). Conventional names get sensible colours for free.
+The colours follow the wire standard set in Settings (metric or American). Conventional names get sensible colours for free.
 
 ## Internal links
 
@@ -285,21 +319,21 @@ If your relay's datasheet uses numbers like 13/14, 23/24 for its contacts, renam
 - **Renaming a terminal is safe.** Wires stay attached and their labels update.
 - **Deleting a terminal removes the wires attached to it.** The designer warns you before saving how many wires will go. Undo brings them back.
 - **To make a variant without touching existing parts**, use **Duplicate** and edit the copy.
-- **A part's type can also be changed** from its panel (**Type**). Wires stay on terminals that have the same internal id in the new type. Duplicated types keep their terminal ids, so swapping between a type and its copy keeps the wiring.
+- **A part's type can also be changed** from the inspector (**Type**). Wires stay on terminals that have the same internal id in the new type. Duplicated types keep their terminal ids, so swapping between a type and its copy keeps the wiring.
 
 ## Saving and sharing a library
 
 | Action | Result |
 | --- | --- |
-| **Export library** | Downloads the library shown, plus your wire profiles, as a file named after the library (for example `my-types.json`). With *All libraries* picked, it downloads `dinstack-library.json` with every type in the diagram. |
-| **Import library** | Merges a library file into the current diagram as its own library, and shows it. |
+| **⋯ → Export** | Downloads the library shown, plus your wire profiles, as a file named after the library (for example `my-types.json`). With *All libraries* picked, it downloads `dinstack-library.json` with every type in the diagram. |
+| **Import a library file…** (in **⋯**, or the **+** window) | Merges a library file into the current diagram as its own library, and shows it. |
 
 How importing merges:
 
 - **Same id** as a type you already have: your type is replaced by the imported one, and parts using it update.
 - **New id:** the type is added.
 - **Your other types are kept.**
-- **Wire profiles** merge the same way, by id, and wires using an updated profile change to match.
+- **Wire profiles** and **cable profiles** merge the same way, by id, and wires and cables using an updated profile change to match.
 - **Library name:** each imported type keeps the library it was exported from. Types without one go into a library named after the file: its `name` field if it has one, otherwise the file name (`automationdirect-din-relays.json` becomes *automationdirect din relays*). Built-in types stay in *Built-in*.
 
 To keep a standard library for all your work, build it in one diagram, export it, and import it into each new diagram. Alternatively, keep a "template" diagram file and start new work from it with *Open* then *Save*.
@@ -337,11 +371,14 @@ A library file is plain JSON, so you can also generate or edit one with a script
   ],
   "wireProfiles": [
     { "id": "wp_24v", "name": "+24 V DC", "color": "#d32f2f", "gauge": "1.5 mm²", "conductor": "Stranded" }
+  ],
+  "cableProfiles": [
+    { "id": "cp_cat6", "name": "Ethernet, Cat6", "color": "#1f63c6", "desc": "Cat6 U/UTP 4×2×AWG24", "shield": false, "twisted": true, "notes": "" }
   ]
 }
 ```
 
-The top-level `name` is optional: it names the library that types without their own `library` go into when the file is imported.
+The top-level `name` is optional: it names the library that types without their own `library` go into when the file is imported. `app` is the DIN Stack version that wrote the file. An optional `version` (such as `"1.0.1"`) is the library's own version; importing a file that has one records it in the diagram. Exported files don't include it.
 
 ### Object type fields
 
@@ -368,7 +405,7 @@ The top-level `name` is optional: it names the library that types without their 
 | `x`, `y` | Position in mm from the top-left of the unrotated outline. |
 | `side` | `auto`, `top`, `right`, `bottom` or `left`. |
 | `link` | Internal link value. Same value = connected inside the part. Empty for none. |
-| `kind` | `wire` (default) or `bus` for a bus bar slot. |
+| `kind` | `wire` (default), `bus` for a bus bar slot, or `port` for a cable connector (a socket such as an RJ45 port that takes a cable's plug, not single wires). |
 
 ### Wire profile fields
 

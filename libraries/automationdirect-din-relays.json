@@ -1,6 +1,7 @@
 {
   "type": "dinstack-library",
   "app": "1.1.2",
+  "version": "1.0.1",
   "name": "AutomationDirect DIN-rail relays",
   "templates": [
     {
@@ -155,7 +156,7 @@
           "id": "t-11",
           "name": "11",
           "x": 3.12,
-          "y": 17,
+          "y": 60.6,
           "side": "auto",
           "link": "",
           "kind": "wire"
@@ -164,7 +165,7 @@
           "id": "t-21",
           "name": "21",
           "x": 9.38,
-          "y": 17,
+          "y": 60.6,
           "side": "auto",
           "link": "",
           "kind": "wire"

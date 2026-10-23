@@ -3,21 +3,38 @@
   "libraries": [
     {
       "file": "automationdirect-din-relays.json",
+      "version": "1.0.1",
       "name": "AutomationDirect DIN-rail relays",
       "description": "Relays, timers, monitoring relays and relay sockets for 35 mm DIN rail sold by AutomationDirect: Murrelektronik, Klemsan, Dold, Gefran, Macromatic, Fuji and AutomationDirect sockets.",
       "types": 59
     },
     {
       "file": "phoenix-contact-ut.json",
+      "version": "1.0.0",
       "name": "Phoenix Contact UT terminal blocks",
       "description": "UT screw terminal blocks from 1.5 to 35 mm²: feed-through, ground, TWIN and QUATTRO, double- and three-level, fuse and disconnect blocks, with their end covers, partition and spacer plates, and end clamps.",
       "types": 64
     },
     {
       "file": "amphenol-26482-series-2.json",
+      "version": "1.0.0",
       "name": "Amphenol 26482 Series 2 connectors",
       "description": "MIL-DTL-26482 Series 2 circular receptacles (MS3470, MS3471, MS3474): all 34 insert arrangements, shell sizes 8 to 24, in pin and socket versions, with contacts placed as seen from the wire side.",
       "types": 68
+    },
+    {
+      "file": "automationdirect-pushbuttons.json",
+      "version": "1.0.2",
+      "name": "AutomationDirect pushbuttons & pilot lights",
+      "description": "22 mm GCX pushbuttons, selector switches, E-stops and pilot lights, Fuji Command and Eaton HT800 30 mm devices, and Schmersal N (22 mm) and E (30 mm) devices with their EF contact and light blocks and NK-T/RK-T joysticks, one type per contact arrangement, drawn from the wiring side.",
+      "types": 52
+    },
+    {
+      "file": "misc-networking.json",
+      "version": "1.0.2",
+      "name": "Misc networking",
+      "description": "Tripp Lite NGI-U05E industrial 5-port switch and NPOEI-60W-1G PoE++ injector for DIN rail, the StarTech IH2006 HDMI KVM-over-IP transmitter and receiver, and an ASUS computer with six serial ports.",
+      "types": 5
     }
   ]
 }

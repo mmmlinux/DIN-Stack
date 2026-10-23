@@ -1,5 +1,204 @@
 # Release notes
 
+Changes to the ready-made libraries are listed separately, in the [library release notes](libraries/RELEASE_NOTES.md).
+
+## 1.4.31 — 2026-10-23
+
+- **Cable menu of its own:** the cable settings have moved out of the wire menu into a new cable button beside it, at the bottom right of the drawing.
+- **Cable names are now optional:** a new **Cable names** tick box in that menu (and in Settings) shows or hides the cable's name in its labels. With it off, a broken cable's tails just say where the other end goes (*K1* rather than *C1 → K1*), a full-length cable shows only its type along the sheath (e.g. *3G1.5*), and a one-ended cable's free end shows where it goes without the arrow. It's off for new drawings; existing drawings keep showing cable names until you untick it.
+
+## 1.4.30 — 2026-10-23
+
+- **Broken wires:** any wire can now be drawn as a tail at each end instead of a line across the drawing. Select a wire (or several) and set **Draw as** to *Broken: a stub at each end*; each end then gets a short stub labelled with where the wire goes, as in *Stubs* mode. *A line to the other end* does the opposite, e.g. to draw a short jumper as a line when the drawing uses stubs. *As for the drawing* follows the wire menu. It's also on the right-click menu.
+- **Broken cables:** the wire menu at the bottom right has a new **Cables** choice: *Full length*, or *Broken (tails)*, which draws each cable as a short length of sheath at each end with a break bar and a label saying where the other end goes (e.g. *C1 → K1*). It's in Settings too, and each cable can override it with **Draw** in its panel or on the right-click menu. A cable whose ends are too close for two tails and their labels is still drawn whole, and a one-ended cable running to a free end is unchanged.
+- A cable's end labels now have a white outline, like wire labels, so they read over wires.
+
+## 1.4.29 — 2026-10-23
+
+- **ASUS computer** added to the *Misc networking* library (version 1.0.2): a free-standing computer with six serial ports, two LAN ports, six USB ports, HDMI, DisplayPort and a two-terminal power connector. Click **Refresh** next to the library in the library manager to get it. The README and library guide describe it; the details are in the [library release notes](libraries/RELEASE_NOTES.md).
+
+## 1.4.28 — 2026-10-23
+
+- **Cables move with their parts:** moving the parts a cable's wires land on now moves the cable too, instead of leaving its fan-out points behind (and, for a one-ended cable, its free end). Move everything at both ends and the whole cable moves; move just the parts at one end and that end's fan-out point moves with them. This works when dragging, nudging with the arrow keys, and aligning or packing. Cables whose fan-out points were never dragged already followed their parts, and still do.
+
+## 1.4.27 — 2026-10-23
+
+- **Wire names are now a separate on/off option:** labels that say where a wire goes can show just the connection (*TB101-1*) or lead with the wire's name (*W3 → TB101-1*). Tick or untick **Wire names** in the wire menu at the bottom right of the drawing, or in Settings. It's off for new drawings.
+- This works alongside circuit names: the menu's **Named circuits show** picks *Where each wire goes* or *Circuit name*, so a wire labelled with its connection no longer has to carry its wire name.
+- Existing drawings keep how they looked: if they showed wire names, *Wire names* is ticked; untick it to hide them.
+
+## 1.4.26 — 2026-10-23
+
+- **Edit several things at once:** with more than one thing selected, the panel now has a section for each kind in the selection, with the settings they share. A change there applies to all of them:
+  - *Wires:* profile, colour, stripe, size, conductor, *Match their circuits*, what their labels show, and notes.
+  - *Bus bars:* colour, *Match their circuits* and notes.
+  - *Cables:* cable profile, type, shielded, twisted pairs, sheath colour and notes.
+  - *Parts:* type, colour and description.
+  - *DIN rails:* length and profile.
+  - *Text notes:* size, colour and bold.
+- Settings that differ across the selection show as *Mixed* (an empty box, *(mixed)* in a drop-down, or a half-ticked box) until you change them. Things that are unique to each one, like tags, wire numbers and positions, are left out.
+
+## 1.4.25 — 2026-10-23
+
+- **Choose each wire's label:** a wire in a named circuit can now show either the circuit's name (e.g. *+24V*) or where it goes (e.g. *TB101-1*), whatever the rest of its circuit does. Select the wire and pick under **This wire's label shows** in its *Circuit* section, or right-click one or more wires → **Label shows**. *As for the circuit* goes back to following the circuit.
+- The circuit-wide choice is now called **Circuit's labels show**, to tell it apart.
+
+## 1.4.24 — 2026-10-23
+
+- **Land the other end of a cable:** a one-ended cable (cores on terminals, sheath running off to a free end) can now have its other end drawn too. Right-click the cable → **Land the other end…** (or use the button in its panel), then click the terminal each core goes to, in core order. The bar at the top says which core is next, and the panel lists each core with the terminal picked for it. Click a picked terminal again to take it off.
+- Press Enter or **Done** once every core has a terminal. The cable is then drawn with both ends, like wires bundled into a cable, and its **Goes to** label is dropped. Its cores keep their wire numbers, colours and profiles. Undo puts the free end back.
+
+## 1.4.23 — 2026-10-23
+
+- **Schmersal pushbuttons, pilot lights and joysticks** are now in the *AutomationDirect pushbuttons & pilot lights* library (version 1.0.2): N series 22 mm and E series 30 mm devices, each EF contact block and the light block, and the NK-T/RK-T joysticks. Click **Refresh** next to the library in the library manager to get them. The README and library guide describe them, including how Schmersal numbers its terminals.
+
+## 1.4.22 — 2026-10-23
+
+- **Two new ready-made libraries** in the library manager (**+** beside the library drop-down):
+  - *AutomationDirect pushbuttons & pilot lights*: GCX 22 mm, Fuji Command 30 mm and Eaton HT800 30 mm pushbuttons, selector switches, E-stops and pilot lights.
+  - *Misc networking*: a Tripp Lite industrial 5-port switch and PoE++ injector for DIN rail, and the StarTech IH2006 HDMI KVM-over-IP extender.
+- The README and library guide describe both. Their contents are in the [library release notes](libraries/RELEASE_NOTES.md).
+
+## 1.4.21 — 2026-10-23
+
+- **One label per circuit at a terminal:** when labels show circuit names and several wires of the same circuit meet at one terminal (a daisy chain, for example), the terminal now shows a single stub and label for them, e.g. one *+24V* instead of two. Clicking it selects the first of those wires, and it's highlighted when any of them is selected. Wires labelled by terminal or wire name still get a stub and label each, since their labels differ.
+
+## 1.4.20 — 2026-10-23
+
+- **Circuit labels per circuit:** a named circuit can now choose how its wires are labelled, whatever **Name in labels** is set to for the drawing. Select one of its wires (or bus bars) and set **Labels show** in the *Circuit* section of the right panel:
+  - *As set for the drawing* (the default);
+  - *Circuit name*: its wires show the circuit's name (e.g. *+24V*) instead of where they go;
+  - *Where each wire goes*: its wires never show the circuit's name.
+- For example, label only *+24V* and *0V* with their names and everything else with its terminals. The choice is saved with the diagram, by circuit name.
+
+## 1.4.19 — 2026-10-23
+
+- **Circuit name or terminal, not both:** with **Name in labels** set to *Circuit name*, a label now shows the circuit's name (e.g. *+24V*) if the wire's circuit has one, and otherwise the terminal it connects to (e.g. *TB101-1*), never both together. With straight or curved lines, a named circuit's wire shows its name at the middle of the line and no labels at its ends. *Wire name* is unchanged (*W3 → TB101-1*).
+
+## 1.4.18 — 2026-10-23
+
+- **Circuit names in labels:** *Include wire name* in the wire button's menu (and Settings) is now **Name in labels**, with three choices:
+  - **No name:** labels just say where each wire goes.
+  - **Wire name:** the wire's number, as before (*W3 → TB101-1*, or *W3* at the middle of each line).
+  - **Circuit name:** the circuit's name instead (*+24V → TB101-1*, or *+24V* at the middle of each line). Wires in a circuit with no name show no name.
+- **No stray arrows:** the arrow now only appears between a name and where the wire goes. Without a name, a label is just the destination, e.g. *TB101-1* rather than *→ TB101-1*. This includes the labels at the ends of straight and curved lines.
+
+## 1.4.17 — 2026-10-23
+
+- **Wire view options:** the wire button at the bottom right (and Settings) now sets the wire style and the labels separately.
+  - Style: **Stubs** (a short stub at each terminal), **Straight lines** or **Curved lines**.
+  - **Labels** (tick box): where each wire goes, shown at its terminals, e.g. *→ TB101-1*. This now works with lines too.
+  - **Include wire name** (tick box): adds the wire's number, in front of the label with stubs (*W3 → TB101-1*), or at the middle of each line.
+  - The tick boxes leave the menu open, so you can set both at once. The printout and exported images follow the same settings.
+- The *None* choice is gone. A diagram saved with *None* opens as stubs with both tick boxes off.
+
+## 1.4.16 — 2026-10-23
+
+- **Cleaner cable ends:** with **Wires** set to *Labels*, a wire that's a core of a cable no longer gets a short coloured stub at its terminal as well, since the cable already draws the core from the terminal into the sheath. Its label (e.g. *W1 → C2-1*) still shows in the same place. Wires that aren't in a cable keep their stubs.
+
+## 1.4.15 — 2026-10-23
+
+- **Tidier library:** every category in the library now starts folded, so a library first shows just its category names. Click one to open it; the ones you open stay open. The fold button beside the search box still opens or folds them all, and searching shows every match whatever is folded. (Because of this change, categories you'd opened or folded before start folded once.)
+
+## 1.4.14 — 2026-10-23
+
+- **Selection filter:** a new funnel button in the view tools at the bottom right, beside the wire button, limits what you can select. Its *Select only* menu has parts, wires, cables, bus bars, DIN rails and text notes. Pick one for only that kind; with a filter on, each tick adds or removes a kind, and *Anything (no filter)* turns it off.
+  - While it's on, the button turns blue and says what's allowed (e.g. *Only wires*), and the cursor over the drawing becomes a crosshair with a small funnel.
+  - Clicks pick only the allowed kinds, and terminals don't start wires. Dragging on empty space (or on something not allowed) draws a selection box that picks up the allowed kinds, including wires, bus bars and cables with an end inside the box. Shift adds to the selection. Ctrl+A selects everything allowed.
+  - **Space** or **Esc** turns the filter off. Esc keeps what you just selected, so you can act on it; press Esc again to clear the selection. Space + drag still pans the drawing.
+
+## 1.4.13 — 2026-10-23
+
+- **Cable connectors:** a terminal can now be a *Cable connector*: a socket, such as an RJ45 port or a motor connector, that takes a cable's plug rather than single wires. It's drawn as a socket, and set with **Type** in the object type designer.
+  - Drag from one connector to another to plug a cable in between them, e.g. a patch lead from a switch to a PLC. Dragging a single wire onto a connector is refused, with a hint.
+  - Right-click a connector for *Plug in a cable…*, or *Select cable* and *Unplug the cable* when one is plugged in.
+  - A cable whose cores land on terminals can plug into a connector at its other end, such as a motor cable from a drive's U, V, W and PE to the motor's socket. Click the connector while picking its terminals, or use **Plug into a connector…** in the cable's panel.
+  - A plugged cable leaves its socket straight out and curves round to its other end. A *Connectors* section in the cable's panel lists where it's plugged in, and the cable list has *From* and *To* columns.
+- **New built-in types** (category *Network* and others): Ethernet switches with 5 and 8 RJ45 ports and +V, 0V and FE terminals, an RJ45 panel feed-through, an M23 motor panel socket (U, V, W, PE inside and a plug outside), and a 3-phase motor with a connector. Diagrams that use the built-in library get them automatically.
+- **Cable profiles:** named cable types, alongside wire profiles: sheath colour, type (e.g. Cat6 S/FTP 4×2×AWG24), *Shielded*, *Twisted pairs* and notes. Five starter profiles are included (Ethernet Cat6, industrial Ethernet shielded, motor cable shielded, control cable, mains cable).
+  - Pick one under **Cable profile** in a cable's panel, or from its right-click menu. Editing a profile updates every cable that follows it; changing a cable by hand makes it custom.
+  - Edit them in the profiles window, now *Wire and cable profiles*, from *Edit cable profiles…* in the right panel with nothing selected.
+  - Any cable can be marked *Shielded* or *Twisted pairs*. A shielded cable is drawn with a dashed outline along its sheath. The wires inside a cable keep their own wire profiles.
+  - Exported libraries include cable profiles, and importing one merges them.
+
+## 1.4.12 — 2026-10-23
+
+- **Library sidebar fixes:**
+  - Long category names (such as the AutomationDirect library's) no longer make a sideways scroll bar appear under the library. They're shortened with "…", and the full name shows when you hover over them.
+  - The **⋯** menu beside the library drop-down no longer runs off the left edge of the window. It now fits the width of the sidebar, and long entries such as *Export "AutomationDirect DIN-rail relays"* are shortened, with the full text on hover.
+
+## 1.4.11 — 2026-10-23
+
+- **Show only these wires:** with wires selected (or a cable), right-click and choose *Show only these wires* (*Show only this wire* for one), or use the button under *Wiring* in the right panel. Every other wire is hidden from the drawing so you can follow just those.
+  - While wires are hidden, the view tools at the bottom right say how many are shown, e.g. *Showing 3 of 10 wires · Show all*. Click it, or right-click empty space and choose *Show all wires*, to bring them back.
+  - It's only a view: hidden wires stay in the diagram and the wire list, new wires you draw still show, and printouts and exported images include every wire. Opening a file, starting a new diagram or loading the example shows all wires again.
+
+## 1.4.10 — 2026-10-23
+
+- **View tools in their own group:** the wire button now sits in its own small box just left of the zoom buttons, instead of sharing their box. Future view options will join it there, keeping zoom separate.
+
+## 1.4.9 — 2026-10-23
+
+- **View tools:** the **Wires** strip across the top right of the drawing is now a single wire button in the bottom-right corner, next to the zoom buttons. Click it for a small menu of *None*, *Labels*, *Straight lines* and *Curved lines*, with a tick on the current one. Hover over the button to see which is in use. This leaves the top of the drawing clear.
+
+## 1.4.8 — 2026-10-23
+
+- **Help menu:** a new **Help** menu next to **Export** has *How to use DIN Stack* (the help, still also on the **?** key) and *Welcome tips*. The **?** button at the top right is gone.
+- **Getting started removed:** the right panel no longer shows the *Getting started* tips with nothing selected. Its buttons all live elsewhere now: *Welcome tips* and help in the **Help** menu, and Settings at the top right.
+
+## 1.4.7 — 2026-10-23
+
+- **Shorter library manager:** each library's description is folded away by default. Click the arrow (or the library's name) to show or hide it. Ones you open stay open while you load, refresh and unload.
+
+## 1.4.6 — 2026-10-23
+
+- **Library manager:** **+** beside the library drop-down now opens *Included libraries*, a manager for the ready-made libraries that come with DIN Stack. Each one shows whether it's loaded in this diagram, its version, and how many parts use it, with:
+  - **Load** to add it;
+  - **Refresh** to load it again and pick up changes. It's highlighted when a newer version is out, and it also removes types the library no longer has, unless a part still uses them;
+  - **Unload** to remove it. If parts use its types, it asks first and removes those parts and their wires too.
+- **Refresh all** at the bottom refreshes every included library in the diagram. The window stays open between actions, and **Undo** reverses each one.
+- In the **⋯** menu, *Add a ready-made library…* is now *Manage included libraries…*.
+
+## 1.4.5 — 2026-10-23
+
+- **Library versions:** each ready-made library now has its own version number and its own history, in the new [library release notes](libraries/RELEASE_NOTES.md). Library fixes are recorded there from now on, not here.
+- **+ Add a library…** shows each library's version with a *What's new* link. A diagram remembers which version of a library it loaded. When a newer version is available, or the library was added before it had a version number, its **Update** button is highlighted and the list says which version the diagram has.
+- The first library update under this scheme is *AutomationDirect DIN-rail relays* 1.0.1, which corrects the MIRO 12.4 relay's terminal layout. Use **Update** to get it.
+
+## 1.4.4 — 2026-10-23
+
+- **Wire lines replace the labels:** with **Wires** set to *Straight* or *Curved*, wires are drawn as lines between the terminals without the destination labels (`W3 → TB101-1`) at each end, which used to be drawn underneath the lines as well. Each line shows its wire number at the middle; click it or the line to select the wire.
+- **No wires:** a new **None** choice in **Wires** (and in Settings) hides wires and cables on the drawing, for a layout view. They're still in the wire list, a selected wire's terminals are still ringed, and printouts and exported images follow the setting. Bus bars and connector labels still show.
+- The *Show where each wire goes* tick box in Settings is gone, since *Labels* and *None* cover it. A diagram saved with it unticked opens with **Wires** set to *None*.
+
+## 1.4.3 — 2026-10-23
+
+- **Adding from the right-click menu:** the *Add* toolbar at the top left of the drawing is gone. Right-click empty space on the drawing for **Add**: *DIN rail here*, *Text note here*, *Bus bar…* and *Cable…*. Bus bars and cables can still be started from a terminal's right-click menu too.
+- The welcome tips, help and *Getting started* say where to find them.
+
+## 1.4.2 — 2026-10-23
+
+- **Welcome tips:** the first time DIN Stack is opened in a browser, a short welcome explains how to place parts, wire them, edit them and keep your work. From there you can explore the example, start a blank diagram, or open the help. It appears only once, and not at all for anyone who has already used DIN Stack in that browser.
+- **Welcome tips** in the *Getting started* section of the right panel (with nothing selected) shows it again.
+
+## 1.4.1 — 2026-10-23
+
+A reorganised interface. Everything works as before; some things have moved.
+
+- **Top bar:** *New*, *Open*, *Save* and *Load the example* are under **File**. Print, images and the CSV wire list are under **Export**. Undo and redo are at the right, with **Settings** (the sliders button) and **Help**.
+- **On the drawing:** **Add** (rail, note, bus bar, cable) is at the top left. **Wires** (labels, straight or curved lines) is at the top right, and zoom is at the bottom right.
+- **Bus bars and cables:** while you pick terminals, a bar across the top of the drawing shows how many are picked, with **Done**, **Cancel** and *Keep 1st, 3rd… / 2nd, 4th…*.
+- **Settings dialog:** the snap grid, text sizes, wire standard, terminal reference style, build direction and display options are in one place. They used to sit in the side panel with nothing selected.
+- **Inspector (right panel):** each item shows what it is, its name, and quick buttons (rotate, duplicate, edit type, delete, swap ends…) at the top. Its settings are in sections you can fold, such as *Part*, *Strip* and *Terminals* for a part, or *Wire*, *Cable* and *Circuit* for a wire. Folded sections stay folded.
+  - With nothing selected, it shows the diagram: counts of parts, wires, cables and bus bars (click one to open that list), the title block, wire profiles, and a few tips.
+  - A part's *Type* list is grouped by library.
+  - Selecting several wires offers *Select whole circuit* and *Select daisy chain* in the panel, not just the right-click menu.
+- **Lists (bottom):** each tab shows how many it holds. A **Filter** box narrows the list shown, and the wire list has a **CSV** button. Drag the top edge to make the lists taller or shorter, or double-click the tab bar to hide them. The tab, height and hidden state are remembered.
+- **Library:** the **+** next to the library drop-down adds a ready-made library, and its window now also has *Import a library file…*. The **⋯** menu has import and export. The fold button beside the search box folds or unfolds every category.
+- **Help** is split into topics, and **?** opens it.
+- Clicking the drawing now closes an open menu.
+- Icons throughout, and the dark theme is more consistent.
+
 ## 1.3.1 — 2026-10-23
 
 - **Amphenol 26482 Series 2 library:** a new ready-made library, *Amphenol 26482 Series 2 connectors*, in **+ Add a library…**. It has 68 circular panel receptacles: all 34 MIL-DTL-26482 Series 2 insert arrangements, from shell size 8 to 24, each with pins and with sockets.

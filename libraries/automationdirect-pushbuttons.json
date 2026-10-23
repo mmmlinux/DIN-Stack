@@ -1,0 +1,2381 @@
+{
+  "type": "dinstack-library",
+  "app": "1.4.23",
+  "version": "1.0.2",
+  "name": "AutomationDirect pushbuttons & pilot lights",
+  "templates": [
+    {
+      "id": "ad-gcx22-1no",
+      "name": "GCX 22mm pushbutton/selector, 1 N.O. (e.g. GCX3100, GCX3102-GCX3105, GCX3107, GCX1100, GCX1105, GCX1107; blocks ECX1040)",
+      "library": "AutomationDirect pushbuttons & pilot lights",
+      "category": "GCX 22mm (plastic & metal)",
+      "mount": "free",
+      "prefix": "S",
+      "w": 29.8,
+      "h": 40,
+      "fill": "#2f3134",
+      "radius": 2,
+      "showName": false,
+      "terminals": [
+        {
+          "id": "c13",
+          "name": "13",
+          "x": 7.4,
+          "y": 4,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "c14",
+          "name": "14",
+          "x": 7.4,
+          "y": 36,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        }
+      ]
+    },
+    {
+      "id": "ad-gcx22-1nc",
+      "name": "GCX 22mm pushbutton/E-stop, 1 N.C. (e.g. GCX3101, GCX3106, GCX1101, GCX1106; blocks ECX1030)",
+      "library": "AutomationDirect pushbuttons & pilot lights",
+      "category": "GCX 22mm (plastic & metal)",
+      "mount": "free",
+      "prefix": "S",
+      "w": 29.8,
+      "h": 40,
+      "fill": "#2f3134",
+      "radius": 2,
+      "showName": false,
+      "terminals": [
+        {
+          "id": "c11",
+          "name": "11",
+          "x": 7.4,
+          "y": 4,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "c12",
+          "name": "12",
+          "x": 7.4,
+          "y": 36,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        }
+      ]
+    },
+    {
+      "id": "ad-gcx22-1no2nc",
+      "name": "GCX 22mm double-headed/selector, 1 N.O. + 1 N.C. (e.g. GCX3150, GCX3152, GCX1150, GCX1152)",
+      "library": "AutomationDirect pushbuttons & pilot lights",
+      "category": "GCX 22mm (plastic & metal)",
+      "mount": "free",
+      "prefix": "S",
+      "w": 29.8,
+      "h": 40,
+      "fill": "#2f3134",
+      "radius": 2,
+      "showName": false,
+      "terminals": [
+        {
+          "id": "c13",
+          "name": "13",
+          "x": 7.4,
+          "y": 4,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "c14",
+          "name": "14",
+          "x": 7.4,
+          "y": 36,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "c21",
+          "name": "21",
+          "x": 22.4,
+          "y": 4,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "c22",
+          "name": "22",
+          "x": 22.4,
+          "y": 36,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        }
+      ]
+    },
+    {
+      "id": "ad-gcx22-1no2no",
+      "name": "GCX 22mm selector, 2 N.O.",
+      "library": "AutomationDirect pushbuttons & pilot lights",
+      "category": "GCX 22mm (plastic & metal)",
+      "mount": "free",
+      "prefix": "S",
+      "w": 29.8,
+      "h": 40,
+      "fill": "#2f3134",
+      "radius": 2,
+      "showName": false,
+      "terminals": [
+        {
+          "id": "c13",
+          "name": "13",
+          "x": 7.4,
+          "y": 4,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "c14",
+          "name": "14",
+          "x": 7.4,
+          "y": 36,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "c23",
+          "name": "23",
+          "x": 22.4,
+          "y": 4,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "c24",
+          "name": "24",
+          "x": 22.4,
+          "y": 36,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        }
+      ]
+    },
+    {
+      "id": "ad-gcx22-1nc2nc",
+      "name": "GCX 22mm E-stop/pushbutton, 2 N.C.",
+      "library": "AutomationDirect pushbuttons & pilot lights",
+      "category": "GCX 22mm (plastic & metal)",
+      "mount": "free",
+      "prefix": "S",
+      "w": 29.8,
+      "h": 40,
+      "fill": "#2f3134",
+      "radius": 2,
+      "showName": false,
+      "terminals": [
+        {
+          "id": "c11",
+          "name": "11",
+          "x": 7.4,
+          "y": 4,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "c12",
+          "name": "12",
+          "x": 7.4,
+          "y": 36,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "c21",
+          "name": "21",
+          "x": 22.4,
+          "y": 4,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "c22",
+          "name": "22",
+          "x": 22.4,
+          "y": 36,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        }
+      ]
+    },
+    {
+      "id": "ad-gcx22-1no-lit",
+      "name": "GCX 22mm illuminated pushbutton/selector, 1 N.O. + lamp (e.g. GCX119x, GCX120x, GCX319x, GCX320x, GCX124x, GCX324x)",
+      "library": "AutomationDirect pushbuttons & pilot lights",
+      "category": "GCX 22mm (plastic & metal)",
+      "mount": "free",
+      "prefix": "S",
+      "w": 29.8,
+      "h": 40,
+      "fill": "#2f3134",
+      "radius": 2,
+      "showName": false,
+      "terminals": [
+        {
+          "id": "c13",
+          "name": "13",
+          "x": 7.4,
+          "y": 4,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "c14",
+          "name": "14",
+          "x": 7.4,
+          "y": 36,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "x1",
+          "name": "X1",
+          "x": 14.9,
+          "y": 4,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "x2",
+          "name": "X2",
+          "x": 14.9,
+          "y": 36,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        }
+      ]
+    },
+    {
+      "id": "ad-gcx22-1nc-lit",
+      "name": "GCX 22mm illuminated pushbutton/mushroom, 1 N.C. + lamp (e.g. GCX1221, GCX3221)",
+      "library": "AutomationDirect pushbuttons & pilot lights",
+      "category": "GCX 22mm (plastic & metal)",
+      "mount": "free",
+      "prefix": "S",
+      "w": 29.8,
+      "h": 40,
+      "fill": "#2f3134",
+      "radius": 2,
+      "showName": false,
+      "terminals": [
+        {
+          "id": "c11",
+          "name": "11",
+          "x": 7.4,
+          "y": 4,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "c12",
+          "name": "12",
+          "x": 7.4,
+          "y": 36,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "x1",
+          "name": "X1",
+          "x": 14.9,
+          "y": 4,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "x2",
+          "name": "X2",
+          "x": 14.9,
+          "y": 36,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        }
+      ]
+    },
+    {
+      "id": "ad-gcx22-1no2nc-lit",
+      "name": "GCX 22mm illuminated double-headed, 1 N.O. + 1 N.C. + lamp (e.g. GCX3151-24/-120, GCX3153-24/-120, GCX1151-24/-120, GCX1153-24/-120)",
+      "library": "AutomationDirect pushbuttons & pilot lights",
+      "category": "GCX 22mm (plastic & metal)",
+      "mount": "free",
+      "prefix": "S",
+      "w": 29.8,
+      "h": 40,
+      "fill": "#2f3134",
+      "radius": 2,
+      "showName": false,
+      "terminals": [
+        {
+          "id": "c13",
+          "name": "13",
+          "x": 7.4,
+          "y": 4,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "c14",
+          "name": "14",
+          "x": 7.4,
+          "y": 36,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "c21",
+          "name": "21",
+          "x": 22.4,
+          "y": 4,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "c22",
+          "name": "22",
+          "x": 22.4,
+          "y": 36,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "x1",
+          "name": "X1",
+          "x": 14.9,
+          "y": 4,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "x2",
+          "name": "X2",
+          "x": 14.9,
+          "y": 36,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        }
+      ]
+    },
+    {
+      "id": "ad-gcx22-1no2no-lit",
+      "name": "GCX 22mm illuminated selector, 2 N.O. + lamp (e.g. GCX126x, GCX128x, GCX326x)",
+      "library": "AutomationDirect pushbuttons & pilot lights",
+      "category": "GCX 22mm (plastic & metal)",
+      "mount": "free",
+      "prefix": "S",
+      "w": 29.8,
+      "h": 40,
+      "fill": "#2f3134",
+      "radius": 2,
+      "showName": false,
+      "terminals": [
+        {
+          "id": "c13",
+          "name": "13",
+          "x": 7.4,
+          "y": 4,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "c14",
+          "name": "14",
+          "x": 7.4,
+          "y": 36,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "c23",
+          "name": "23",
+          "x": 22.4,
+          "y": 4,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "c24",
+          "name": "24",
+          "x": 22.4,
+          "y": 36,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "x1",
+          "name": "X1",
+          "x": 14.9,
+          "y": 4,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "x2",
+          "name": "X2",
+          "x": 14.9,
+          "y": 36,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        }
+      ]
+    },
+    {
+      "id": "ad-gcx22-pl",
+      "name": "GCX 22mm pilot light, lamp only (X1/X2 lamp terminals)",
+      "library": "AutomationDirect pushbuttons & pilot lights",
+      "category": "GCX 22mm (plastic & metal)",
+      "mount": "free",
+      "prefix": "PL",
+      "w": 29.8,
+      "h": 40,
+      "fill": "#2f3134",
+      "radius": 2,
+      "showName": false,
+      "terminals": [
+        {
+          "id": "x1",
+          "name": "X1",
+          "x": 14.9,
+          "y": 4,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "x2",
+          "name": "X2",
+          "x": 14.9,
+          "y": 36,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        }
+      ]
+    },
+    {
+      "id": "ad-fuji-ar30-1no",
+      "name": "Fuji Command AR30 30mm pushbutton, 1 N.O. (e.g. AR30B0R-10G/-10B/-10Y; block AR9B290)",
+      "library": "AutomationDirect pushbuttons & pilot lights",
+      "category": "Fuji Command 30mm",
+      "mount": "free",
+      "prefix": "S",
+      "w": 30,
+      "h": 44,
+      "fill": "#3a3c40",
+      "radius": 2,
+      "showName": false,
+      "terminals": [
+        {
+          "id": "c13",
+          "name": "13",
+          "x": 7.5,
+          "y": 4,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "c14",
+          "name": "14",
+          "x": 7.5,
+          "y": 40,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        }
+      ]
+    },
+    {
+      "id": "ad-fuji-ar30-1nc",
+      "name": "Fuji Command AR30 30mm pushbutton/E-stop, 1 N.C. (e.g. AR30B0R-01R, AR30Q2R-01RZC, AR30V0R-01RZC, AR30VPR-01R; block AR9B291)",
+      "library": "AutomationDirect pushbuttons & pilot lights",
+      "category": "Fuji Command 30mm",
+      "mount": "free",
+      "prefix": "S",
+      "w": 30,
+      "h": 44,
+      "fill": "#3a3c40",
+      "radius": 2,
+      "showName": false,
+      "terminals": [
+        {
+          "id": "c11",
+          "name": "11",
+          "x": 7.5,
+          "y": 4,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "c12",
+          "name": "12",
+          "x": 7.5,
+          "y": 40,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        }
+      ]
+    },
+    {
+      "id": "ad-fuji-ar30-1no2nc",
+      "name": "Fuji Command AR30 30mm pushbutton/E-stop, 1 N.O. + 1 N.C. (e.g. AR30Q2R-11RZC)",
+      "library": "AutomationDirect pushbuttons & pilot lights",
+      "category": "Fuji Command 30mm",
+      "mount": "free",
+      "prefix": "S",
+      "w": 30,
+      "h": 44,
+      "fill": "#3a3c40",
+      "radius": 2,
+      "showName": false,
+      "terminals": [
+        {
+          "id": "c13",
+          "name": "13",
+          "x": 7.5,
+          "y": 4,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "c14",
+          "name": "14",
+          "x": 7.5,
+          "y": 40,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "c21",
+          "name": "21",
+          "x": 22.5,
+          "y": 4,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "c22",
+          "name": "22",
+          "x": 22.5,
+          "y": 40,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        }
+      ]
+    },
+    {
+      "id": "ad-fuji-ar30-1no2nc3nc",
+      "name": "Fuji Command AR30 30mm E-stop, 1 N.O. + 2 N.C. (e.g. AR30VPR-12R; third block stacked behind)",
+      "library": "AutomationDirect pushbuttons & pilot lights",
+      "category": "Fuji Command 30mm",
+      "mount": "free",
+      "prefix": "S",
+      "w": 30,
+      "h": 44,
+      "fill": "#3a3c40",
+      "radius": 2,
+      "showName": false,
+      "terminals": [
+        {
+          "id": "c13",
+          "name": "13",
+          "x": 7.5,
+          "y": 4,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "c14",
+          "name": "14",
+          "x": 7.5,
+          "y": 40,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "c21",
+          "name": "21",
+          "x": 22.5,
+          "y": 4,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "c22",
+          "name": "22",
+          "x": 22.5,
+          "y": 40,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "c31",
+          "name": "31",
+          "x": 15,
+          "y": 11,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "c32",
+          "name": "32",
+          "x": 15,
+          "y": 33,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        }
+      ]
+    },
+    {
+      "id": "ad-fuji-ar30-1no-lit",
+      "name": "Fuji Command AR30 30mm LED illuminated pushbutton, 1 N.O. + lamp (e.g. AR30E0L-10E3*, AR30E0L-10L3*, AR30G2L-10E3*, AR30G2L-10L3*)",
+      "library": "AutomationDirect pushbuttons & pilot lights",
+      "category": "Fuji Command 30mm",
+      "mount": "free",
+      "prefix": "S",
+      "w": 30,
+      "h": 44,
+      "fill": "#3a3c40",
+      "radius": 2,
+      "showName": false,
+      "terminals": [
+        {
+          "id": "c13",
+          "name": "13",
+          "x": 7.5,
+          "y": 4,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "c14",
+          "name": "14",
+          "x": 7.5,
+          "y": 40,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "x1",
+          "name": "X1",
+          "x": 15,
+          "y": 12,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "x2",
+          "name": "X2",
+          "x": 15,
+          "y": 32,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        }
+      ]
+    },
+    {
+      "id": "ad-fuji-ar30-1nc-lit",
+      "name": "Fuji Command AR30 30mm LED illuminated pushbutton/E-stop, 1 N.C. + lamp (e.g. AR30E0L-01E3RZC, AR30G2L-01E3RZC, AR30V0L-01E3RZC, AR30VPL-01E3R)",
+      "library": "AutomationDirect pushbuttons & pilot lights",
+      "category": "Fuji Command 30mm",
+      "mount": "free",
+      "prefix": "S",
+      "w": 30,
+      "h": 44,
+      "fill": "#3a3c40",
+      "radius": 2,
+      "showName": false,
+      "terminals": [
+        {
+          "id": "c11",
+          "name": "11",
+          "x": 7.5,
+          "y": 4,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "c12",
+          "name": "12",
+          "x": 7.5,
+          "y": 40,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "x1",
+          "name": "X1",
+          "x": 15,
+          "y": 12,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "x2",
+          "name": "X2",
+          "x": 15,
+          "y": 32,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        }
+      ]
+    },
+    {
+      "id": "ad-fuji-ar30-1no2nc-lit",
+      "name": "Fuji Command AR30 30mm LED illuminated push-pull, 1 N.O. + 1 N.C. + lamp (e.g. AR30Q7L-11E3RZC/GZC)",
+      "library": "AutomationDirect pushbuttons & pilot lights",
+      "category": "Fuji Command 30mm",
+      "mount": "free",
+      "prefix": "S",
+      "w": 30,
+      "h": 44,
+      "fill": "#3a3c40",
+      "radius": 2,
+      "showName": false,
+      "terminals": [
+        {
+          "id": "c13",
+          "name": "13",
+          "x": 7.5,
+          "y": 4,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "c14",
+          "name": "14",
+          "x": 7.5,
+          "y": 40,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "c21",
+          "name": "21",
+          "x": 22.5,
+          "y": 4,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "c22",
+          "name": "22",
+          "x": 22.5,
+          "y": 40,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "x1",
+          "name": "X1",
+          "x": 15,
+          "y": 12,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "x2",
+          "name": "X2",
+          "x": 15,
+          "y": 32,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        }
+      ]
+    },
+    {
+      "id": "ad-fuji-ar30-pl",
+      "name": "Fuji Command AR30 30mm pilot light, lamp only (e.g. DR30 series)",
+      "library": "AutomationDirect pushbuttons & pilot lights",
+      "category": "Fuji Command 30mm",
+      "mount": "free",
+      "prefix": "PL",
+      "w": 30,
+      "h": 44,
+      "fill": "#3a3c40",
+      "radius": 2,
+      "showName": false,
+      "terminals": [
+        {
+          "id": "x1",
+          "name": "X1",
+          "x": 15,
+          "y": 12,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "x2",
+          "name": "X2",
+          "x": 15,
+          "y": 32,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        }
+      ]
+    },
+    {
+      "id": "ad-ht800-1no",
+      "name": "Eaton HT800 30mm pushbutton/selector, 1 N.O. (block HT8A)",
+      "library": "AutomationDirect pushbuttons & pilot lights",
+      "category": "Eaton HT800 30mm",
+      "mount": "free",
+      "prefix": "S",
+      "w": 52,
+      "h": 36,
+      "fill": "#26282b",
+      "radius": 2,
+      "showName": false,
+      "terminals": [
+        {
+          "id": "c13",
+          "name": "13",
+          "x": 13,
+          "y": 5,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "c14",
+          "name": "14",
+          "x": 13,
+          "y": 31,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        }
+      ]
+    },
+    {
+      "id": "ad-ht800-1nc",
+      "name": "Eaton HT800 30mm pushbutton/E-stop, 1 N.C. (block HT8B)",
+      "library": "AutomationDirect pushbuttons & pilot lights",
+      "category": "Eaton HT800 30mm",
+      "mount": "free",
+      "prefix": "S",
+      "w": 52,
+      "h": 36,
+      "fill": "#26282b",
+      "radius": 2,
+      "showName": false,
+      "terminals": [
+        {
+          "id": "c11",
+          "name": "11",
+          "x": 13,
+          "y": 5,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "c12",
+          "name": "12",
+          "x": 13,
+          "y": 31,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        }
+      ]
+    },
+    {
+      "id": "ad-ht800-1no2nc",
+      "name": "Eaton HT800 30mm pushbutton/selector, 1 N.O. + 1 N.C. (e.g. HT8ABHAB)",
+      "library": "AutomationDirect pushbuttons & pilot lights",
+      "category": "Eaton HT800 30mm",
+      "mount": "free",
+      "prefix": "S",
+      "w": 52,
+      "h": 36,
+      "fill": "#26282b",
+      "radius": 2,
+      "showName": false,
+      "terminals": [
+        {
+          "id": "c13",
+          "name": "13",
+          "x": 13,
+          "y": 5,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "c14",
+          "name": "14",
+          "x": 13,
+          "y": 31,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "c21",
+          "name": "21",
+          "x": 39,
+          "y": 5,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "c22",
+          "name": "22",
+          "x": 39,
+          "y": 31,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        }
+      ]
+    },
+    {
+      "id": "ad-ht800-1no2no",
+      "name": "Eaton HT800 30mm selector, 2 N.O.",
+      "library": "AutomationDirect pushbuttons & pilot lights",
+      "category": "Eaton HT800 30mm",
+      "mount": "free",
+      "prefix": "S",
+      "w": 52,
+      "h": 36,
+      "fill": "#26282b",
+      "radius": 2,
+      "showName": false,
+      "terminals": [
+        {
+          "id": "c13",
+          "name": "13",
+          "x": 13,
+          "y": 5,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "c14",
+          "name": "14",
+          "x": 13,
+          "y": 31,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "c23",
+          "name": "23",
+          "x": 39,
+          "y": 5,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "c24",
+          "name": "24",
+          "x": 39,
+          "y": 31,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        }
+      ]
+    },
+    {
+      "id": "ad-ht800-1no2nc-lit",
+      "name": "Eaton HT800 30mm illuminated pushbutton, 1 N.O. + 1 N.C. + lamp (e.g. HT8GB...V3, HT8GD...V3 guarded flush, HT8FB... push-pull)",
+      "library": "AutomationDirect pushbuttons & pilot lights",
+      "category": "Eaton HT800 30mm",
+      "mount": "free",
+      "prefix": "S",
+      "w": 52,
+      "h": 36,
+      "fill": "#26282b",
+      "radius": 2,
+      "showName": false,
+      "terminals": [
+        {
+          "id": "c13",
+          "name": "13",
+          "x": 13,
+          "y": 5,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "c14",
+          "name": "14",
+          "x": 13,
+          "y": 31,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "c21",
+          "name": "21",
+          "x": 39,
+          "y": 5,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "c22",
+          "name": "22",
+          "x": 39,
+          "y": 31,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "x1",
+          "name": "X1",
+          "x": 26,
+          "y": 5,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "x2",
+          "name": "X2",
+          "x": 26,
+          "y": 31,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        }
+      ]
+    },
+    {
+      "id": "ad-ht800-pl",
+      "name": "Eaton HT800 30mm pilot light, lamp only (e.g. HT8GV...V3/V7)",
+      "library": "AutomationDirect pushbuttons & pilot lights",
+      "category": "Eaton HT800 30mm",
+      "mount": "free",
+      "prefix": "PL",
+      "w": 36,
+      "h": 36,
+      "fill": "#26282b",
+      "radius": 2,
+      "showName": false,
+      "terminals": [
+        {
+          "id": "x1",
+          "name": "X1",
+          "x": 18,
+          "y": 5,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "x2",
+          "name": "X2",
+          "x": 18,
+          "y": 31,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        }
+      ]
+    },
+    {
+      "id": "ad-sch-1no",
+      "name": "Schmersal N/E pushbutton/selector, 1 N.O. (e.g. NDT.., NDP50.., NWS.., NWT.., NWTS.., EDT.., EDP40.., EDP55.., EWS.., EWT.., ESS.. + EF03.1)",
+      "library": "AutomationDirect pushbuttons & pilot lights",
+      "category": "Schmersal N 22mm & E 30mm",
+      "mount": "free",
+      "prefix": "S",
+      "w": 30,
+      "h": 45.2,
+      "fill": "#34373b",
+      "radius": 2,
+      "showName": false,
+      "terminals": [
+        {
+          "id": "c13",
+          "name": "13",
+          "x": 5,
+          "y": 11,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "c14",
+          "name": "14",
+          "x": 5,
+          "y": 34.2,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        }
+      ]
+    },
+    {
+      "id": "ad-sch-1nc",
+      "name": "Schmersal N/E pushbutton/selector, 1 N.C. (e.g. NDT.., NDP50.., NWS.., NWT.., NWTS.., EDT.., EDP40.., EDP55.., EWS.., EWT.., ESS.. + EF10.1)",
+      "library": "AutomationDirect pushbuttons & pilot lights",
+      "category": "Schmersal N 22mm & E 30mm",
+      "mount": "free",
+      "prefix": "S",
+      "w": 30,
+      "h": 45.2,
+      "fill": "#34373b",
+      "radius": 2,
+      "showName": false,
+      "terminals": [
+        {
+          "id": "c11",
+          "name": "11",
+          "x": 5,
+          "y": 11,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "c12",
+          "name": "12",
+          "x": 5,
+          "y": 34.2,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        }
+      ]
+    },
+    {
+      "id": "ad-sch-1no2nc",
+      "name": "Schmersal N/E pushbutton/selector, 1 N.O. + 1 N.C. (e.g. NDT.., NDP50.., NWS.., NWT.., NWTS.., EDT.., EDP40.., EDP55.., EWS.., EWT.., ESS.. + EF03.1 + EF10.2)",
+      "library": "AutomationDirect pushbuttons & pilot lights",
+      "category": "Schmersal N 22mm & E 30mm",
+      "mount": "free",
+      "prefix": "S",
+      "w": 30,
+      "h": 45.2,
+      "fill": "#34373b",
+      "radius": 2,
+      "showName": false,
+      "terminals": [
+        {
+          "id": "c13",
+          "name": "13",
+          "x": 5,
+          "y": 11,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "c14",
+          "name": "14",
+          "x": 5,
+          "y": 34.2,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "c21",
+          "name": "21",
+          "x": 25,
+          "y": 11,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "c22",
+          "name": "22",
+          "x": 25,
+          "y": 34.2,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        }
+      ]
+    },
+    {
+      "id": "ad-sch-1no2no",
+      "name": "Schmersal N/E pushbutton/selector, 2 N.O. (e.g. NWS.., NWT.., NWTS.., EWS.., EWT.., ESS.., NDT.., NDP50.., EDT.., EDP40.., EDP55.. + EF03.1 + EF03.2)",
+      "library": "AutomationDirect pushbuttons & pilot lights",
+      "category": "Schmersal N 22mm & E 30mm",
+      "mount": "free",
+      "prefix": "S",
+      "w": 30,
+      "h": 45.2,
+      "fill": "#34373b",
+      "radius": 2,
+      "showName": false,
+      "terminals": [
+        {
+          "id": "c13",
+          "name": "13",
+          "x": 5,
+          "y": 11,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "c14",
+          "name": "14",
+          "x": 5,
+          "y": 34.2,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "c23",
+          "name": "23",
+          "x": 25,
+          "y": 11,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "c24",
+          "name": "24",
+          "x": 25,
+          "y": 34.2,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        }
+      ]
+    },
+    {
+      "id": "ad-sch-1nc2nc",
+      "name": "Schmersal N/E pushbutton/selector, 2 N.C. (e.g. NDT.., NDP50.., NWS.., NWT.., NWTS.., EDT.., EDP40.., EDP55.., EWS.., EWT.., ESS.. + EF10.1 + EF10.2)",
+      "library": "AutomationDirect pushbuttons & pilot lights",
+      "category": "Schmersal N 22mm & E 30mm",
+      "mount": "free",
+      "prefix": "S",
+      "w": 30,
+      "h": 45.2,
+      "fill": "#34373b",
+      "radius": 2,
+      "showName": false,
+      "terminals": [
+        {
+          "id": "c11",
+          "name": "11",
+          "x": 5,
+          "y": 11,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "c12",
+          "name": "12",
+          "x": 5,
+          "y": 34.2,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "c21",
+          "name": "21",
+          "x": 25,
+          "y": 11,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "c22",
+          "name": "22",
+          "x": 25,
+          "y": 34.2,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        }
+      ]
+    },
+    {
+      "id": "ad-sch-estop-2nc",
+      "name": "Schmersal N/E E-stop, 2 N.C. in one block (e.g. NDRZ50RT, NDRZ50RT-2905-1, EDRZ40.VHRT, EDRR40.VHRT + EF220.1)",
+      "library": "AutomationDirect pushbuttons & pilot lights",
+      "category": "Schmersal N 22mm & E 30mm",
+      "mount": "free",
+      "prefix": "S",
+      "w": 30,
+      "h": 45.2,
+      "fill": "#34373b",
+      "radius": 2,
+      "showName": false,
+      "terminals": [
+        {
+          "id": "c11",
+          "name": "11",
+          "x": 5,
+          "y": 11,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "c12",
+          "name": "12",
+          "x": 5,
+          "y": 34.2,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "c21",
+          "name": "21",
+          "x": 5,
+          "y": 4,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "c22",
+          "name": "22",
+          "x": 5,
+          "y": 41.2,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        }
+      ]
+    },
+    {
+      "id": "ad-sch-estop-ncno",
+      "name": "Schmersal N/E E-stop, 1 N.C. + 1 N.O. in one block (e.g. NDRZ50RT, NDRZ50RT-2905-1, EDRZ40.VHRT, EDRR40.VHRT + EF303.1)",
+      "library": "AutomationDirect pushbuttons & pilot lights",
+      "category": "Schmersal N 22mm & E 30mm",
+      "mount": "free",
+      "prefix": "S",
+      "w": 30,
+      "h": 45.2,
+      "fill": "#34373b",
+      "radius": 2,
+      "showName": false,
+      "terminals": [
+        {
+          "id": "c11",
+          "name": "11",
+          "x": 5,
+          "y": 11,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "c12",
+          "name": "12",
+          "x": 5,
+          "y": 34.2,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "c23",
+          "name": "23",
+          "x": 5,
+          "y": 4,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "c24",
+          "name": "24",
+          "x": 5,
+          "y": 41.2,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        }
+      ]
+    },
+    {
+      "id": "ad-sch-1no-lit",
+      "name": "Schmersal N/E illuminated pushbutton, 1 N.O. + lamp (e.g. NDL.., EDL.. + EF03.1 + ELE, ELE230 or ELDE.N..)",
+      "library": "AutomationDirect pushbuttons & pilot lights",
+      "category": "Schmersal N 22mm & E 30mm",
+      "mount": "free",
+      "prefix": "S",
+      "w": 30,
+      "h": 45.2,
+      "fill": "#34373b",
+      "radius": 2,
+      "showName": false,
+      "terminals": [
+        {
+          "id": "c13",
+          "name": "13",
+          "x": 5,
+          "y": 11,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "c14",
+          "name": "14",
+          "x": 5,
+          "y": 34.2,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "x1",
+          "name": "X1",
+          "x": 15,
+          "y": 11,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "x2",
+          "name": "X2",
+          "x": 15,
+          "y": 34.2,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        }
+      ]
+    },
+    {
+      "id": "ad-sch-1no2nc-lit",
+      "name": "Schmersal N/E illuminated pushbutton, 1 N.O. + 1 N.C. + lamp (e.g. NDL.., EDL.. + EF03.1 + EF10.2 + ELE, ELE230 or ELDE.N..)",
+      "library": "AutomationDirect pushbuttons & pilot lights",
+      "category": "Schmersal N 22mm & E 30mm",
+      "mount": "free",
+      "prefix": "S",
+      "w": 30,
+      "h": 45.2,
+      "fill": "#34373b",
+      "radius": 2,
+      "showName": false,
+      "terminals": [
+        {
+          "id": "c13",
+          "name": "13",
+          "x": 5,
+          "y": 11,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "c14",
+          "name": "14",
+          "x": 5,
+          "y": 34.2,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "c21",
+          "name": "21",
+          "x": 25,
+          "y": 11,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "c22",
+          "name": "22",
+          "x": 25,
+          "y": 34.2,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "x1",
+          "name": "X1",
+          "x": 15,
+          "y": 11,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "x2",
+          "name": "X2",
+          "x": 15,
+          "y": 34.2,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        }
+      ]
+    },
+    {
+      "id": "ad-sch-pl",
+      "name": "Schmersal N/E pilot light, lamp only (e.g. NML.., EML.., EMLH.. + ELE, ELE230 or ELDE.N..)",
+      "library": "AutomationDirect pushbuttons & pilot lights",
+      "category": "Schmersal N 22mm & E 30mm",
+      "mount": "free",
+      "prefix": "PL",
+      "w": 30,
+      "h": 45.2,
+      "fill": "#34373b",
+      "radius": 2,
+      "showName": false,
+      "terminals": [
+        {
+          "id": "x1",
+          "name": "X1",
+          "x": 15,
+          "y": 11,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "x2",
+          "name": "X2",
+          "x": 15,
+          "y": 34.2,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        }
+      ]
+    },
+    {
+      "id": "ad-sch-ef-nc-1",
+      "name": "Schmersal EF10.1 contact block, 1 N.C., position 1",
+      "library": "AutomationDirect pushbuttons & pilot lights",
+      "category": "Schmersal EF contact & light blocks",
+      "mount": "free",
+      "prefix": "S",
+      "w": 9.8,
+      "h": 45.2,
+      "fill": "#3c3f44",
+      "radius": 1,
+      "showName": false,
+      "terminals": [
+        {
+          "id": "c11",
+          "name": "11",
+          "x": 4.9,
+          "y": 11,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "c12",
+          "name": "12",
+          "x": 4.9,
+          "y": 34.2,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        }
+      ]
+    },
+    {
+      "id": "ad-sch-ef-nc-2",
+      "name": "Schmersal EF10.2 contact block, 1 N.C., position 2",
+      "library": "AutomationDirect pushbuttons & pilot lights",
+      "category": "Schmersal EF contact & light blocks",
+      "mount": "free",
+      "prefix": "S",
+      "w": 9.8,
+      "h": 45.2,
+      "fill": "#3c3f44",
+      "radius": 1,
+      "showName": false,
+      "terminals": [
+        {
+          "id": "c21",
+          "name": "21",
+          "x": 4.9,
+          "y": 11,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "c22",
+          "name": "22",
+          "x": 4.9,
+          "y": 34.2,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        }
+      ]
+    },
+    {
+      "id": "ad-sch-ef-nc-3",
+      "name": "Schmersal EF10.3 contact block, 1 N.C., position 3 (middle)",
+      "library": "AutomationDirect pushbuttons & pilot lights",
+      "category": "Schmersal EF contact & light blocks",
+      "mount": "free",
+      "prefix": "S",
+      "w": 9.8,
+      "h": 45.2,
+      "fill": "#3c3f44",
+      "radius": 1,
+      "showName": false,
+      "terminals": [
+        {
+          "id": "c31",
+          "name": "31",
+          "x": 4.9,
+          "y": 11,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "c32",
+          "name": "32",
+          "x": 4.9,
+          "y": 34.2,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        }
+      ]
+    },
+    {
+      "id": "ad-sch-ef-no-1",
+      "name": "Schmersal EF03.1 contact block, 1 N.O., position 1",
+      "library": "AutomationDirect pushbuttons & pilot lights",
+      "category": "Schmersal EF contact & light blocks",
+      "mount": "free",
+      "prefix": "S",
+      "w": 9.8,
+      "h": 45.2,
+      "fill": "#3c3f44",
+      "radius": 1,
+      "showName": false,
+      "terminals": [
+        {
+          "id": "c13",
+          "name": "13",
+          "x": 4.9,
+          "y": 11,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "c14",
+          "name": "14",
+          "x": 4.9,
+          "y": 34.2,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        }
+      ]
+    },
+    {
+      "id": "ad-sch-ef-no-2",
+      "name": "Schmersal EF03.2 contact block, 1 N.O., position 2",
+      "library": "AutomationDirect pushbuttons & pilot lights",
+      "category": "Schmersal EF contact & light blocks",
+      "mount": "free",
+      "prefix": "S",
+      "w": 9.8,
+      "h": 45.2,
+      "fill": "#3c3f44",
+      "radius": 1,
+      "showName": false,
+      "terminals": [
+        {
+          "id": "c23",
+          "name": "23",
+          "x": 4.9,
+          "y": 11,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "c24",
+          "name": "24",
+          "x": 4.9,
+          "y": 34.2,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        }
+      ]
+    },
+    {
+      "id": "ad-sch-ef-no-3",
+      "name": "Schmersal EF03.3 contact block, 1 N.O., position 3 (middle)",
+      "library": "AutomationDirect pushbuttons & pilot lights",
+      "category": "Schmersal EF contact & light blocks",
+      "mount": "free",
+      "prefix": "S",
+      "w": 9.8,
+      "h": 45.2,
+      "fill": "#3c3f44",
+      "radius": 1,
+      "showName": false,
+      "terminals": [
+        {
+          "id": "c33",
+          "name": "33",
+          "x": 4.9,
+          "y": 11,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "c34",
+          "name": "34",
+          "x": 4.9,
+          "y": 34.2,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        }
+      ]
+    },
+    {
+      "id": "ad-sch-ef-2nc-1",
+      "name": "Schmersal EF110.1, EF220.1 contact block, 2 N.C., position 1",
+      "library": "AutomationDirect pushbuttons & pilot lights",
+      "category": "Schmersal EF contact & light blocks",
+      "mount": "free",
+      "prefix": "S",
+      "w": 9.8,
+      "h": 45.2,
+      "fill": "#3c3f44",
+      "radius": 1,
+      "showName": false,
+      "terminals": [
+        {
+          "id": "c11",
+          "name": "11",
+          "x": 4.9,
+          "y": 11,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "c12",
+          "name": "12",
+          "x": 4.9,
+          "y": 34.2,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "c21",
+          "name": "21",
+          "x": 4.9,
+          "y": 4,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "c22",
+          "name": "22",
+          "x": 4.9,
+          "y": 41.2,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        }
+      ]
+    },
+    {
+      "id": "ad-sch-ef-2nc-2",
+      "name": "Schmersal EF110.2, EF220.2 contact block, 2 N.C., position 2",
+      "library": "AutomationDirect pushbuttons & pilot lights",
+      "category": "Schmersal EF contact & light blocks",
+      "mount": "free",
+      "prefix": "S",
+      "w": 9.8,
+      "h": 45.2,
+      "fill": "#3c3f44",
+      "radius": 1,
+      "showName": false,
+      "terminals": [
+        {
+          "id": "c31",
+          "name": "31",
+          "x": 4.9,
+          "y": 11,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "c32",
+          "name": "32",
+          "x": 4.9,
+          "y": 34.2,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "c41",
+          "name": "41",
+          "x": 4.9,
+          "y": 4,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "c42",
+          "name": "42",
+          "x": 4.9,
+          "y": 41.2,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        }
+      ]
+    },
+    {
+      "id": "ad-sch-ef-2nc-3",
+      "name": "Schmersal EF110.3, EF220.3 contact block, 2 N.C., position 3 (middle)",
+      "library": "AutomationDirect pushbuttons & pilot lights",
+      "category": "Schmersal EF contact & light blocks",
+      "mount": "free",
+      "prefix": "S",
+      "w": 9.8,
+      "h": 45.2,
+      "fill": "#3c3f44",
+      "radius": 1,
+      "showName": false,
+      "terminals": [
+        {
+          "id": "c51",
+          "name": "51",
+          "x": 4.9,
+          "y": 11,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "c52",
+          "name": "52",
+          "x": 4.9,
+          "y": 34.2,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "c61",
+          "name": "61",
+          "x": 4.9,
+          "y": 4,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "c62",
+          "name": "62",
+          "x": 4.9,
+          "y": 41.2,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        }
+      ]
+    },
+    {
+      "id": "ad-sch-ef-2no-1",
+      "name": "Schmersal EF033.1 contact block, 2 N.O., position 1",
+      "library": "AutomationDirect pushbuttons & pilot lights",
+      "category": "Schmersal EF contact & light blocks",
+      "mount": "free",
+      "prefix": "S",
+      "w": 9.8,
+      "h": 45.2,
+      "fill": "#3c3f44",
+      "radius": 1,
+      "showName": false,
+      "terminals": [
+        {
+          "id": "c13",
+          "name": "13",
+          "x": 4.9,
+          "y": 11,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "c14",
+          "name": "14",
+          "x": 4.9,
+          "y": 34.2,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "c23",
+          "name": "23",
+          "x": 4.9,
+          "y": 4,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "c24",
+          "name": "24",
+          "x": 4.9,
+          "y": 41.2,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        }
+      ]
+    },
+    {
+      "id": "ad-sch-ef-2no-2",
+      "name": "Schmersal EF033.2 contact block, 2 N.O., position 2",
+      "library": "AutomationDirect pushbuttons & pilot lights",
+      "category": "Schmersal EF contact & light blocks",
+      "mount": "free",
+      "prefix": "S",
+      "w": 9.8,
+      "h": 45.2,
+      "fill": "#3c3f44",
+      "radius": 1,
+      "showName": false,
+      "terminals": [
+        {
+          "id": "c33",
+          "name": "33",
+          "x": 4.9,
+          "y": 11,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "c34",
+          "name": "34",
+          "x": 4.9,
+          "y": 34.2,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "c43",
+          "name": "43",
+          "x": 4.9,
+          "y": 4,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "c44",
+          "name": "44",
+          "x": 4.9,
+          "y": 41.2,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        }
+      ]
+    },
+    {
+      "id": "ad-sch-ef-2no-3",
+      "name": "Schmersal EF033.3 contact block, 2 N.O., position 3 (middle)",
+      "library": "AutomationDirect pushbuttons & pilot lights",
+      "category": "Schmersal EF contact & light blocks",
+      "mount": "free",
+      "prefix": "S",
+      "w": 9.8,
+      "h": 45.2,
+      "fill": "#3c3f44",
+      "radius": 1,
+      "showName": false,
+      "terminals": [
+        {
+          "id": "c53",
+          "name": "53",
+          "x": 4.9,
+          "y": 11,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "c54",
+          "name": "54",
+          "x": 4.9,
+          "y": 34.2,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "c63",
+          "name": "63",
+          "x": 4.9,
+          "y": 4,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "c64",
+          "name": "64",
+          "x": 4.9,
+          "y": 41.2,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        }
+      ]
+    },
+    {
+      "id": "ad-sch-ef-ncno-1",
+      "name": "Schmersal EF103.1, EF303.1 contact block, 1 N.C. + 1 N.O., position 1",
+      "library": "AutomationDirect pushbuttons & pilot lights",
+      "category": "Schmersal EF contact & light blocks",
+      "mount": "free",
+      "prefix": "S",
+      "w": 9.8,
+      "h": 45.2,
+      "fill": "#3c3f44",
+      "radius": 1,
+      "showName": false,
+      "terminals": [
+        {
+          "id": "c11",
+          "name": "11",
+          "x": 4.9,
+          "y": 11,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "c12",
+          "name": "12",
+          "x": 4.9,
+          "y": 34.2,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "c23",
+          "name": "23",
+          "x": 4.9,
+          "y": 4,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "c24",
+          "name": "24",
+          "x": 4.9,
+          "y": 41.2,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        }
+      ]
+    },
+    {
+      "id": "ad-sch-ef-ncno-2",
+      "name": "Schmersal EF103.2, EF303.2 contact block, 1 N.C. + 1 N.O., position 2",
+      "library": "AutomationDirect pushbuttons & pilot lights",
+      "category": "Schmersal EF contact & light blocks",
+      "mount": "free",
+      "prefix": "S",
+      "w": 9.8,
+      "h": 45.2,
+      "fill": "#3c3f44",
+      "radius": 1,
+      "showName": false,
+      "terminals": [
+        {
+          "id": "c31",
+          "name": "31",
+          "x": 4.9,
+          "y": 11,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "c32",
+          "name": "32",
+          "x": 4.9,
+          "y": 34.2,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "c43",
+          "name": "43",
+          "x": 4.9,
+          "y": 4,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "c44",
+          "name": "44",
+          "x": 4.9,
+          "y": 41.2,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        }
+      ]
+    },
+    {
+      "id": "ad-sch-ef-ncno-3",
+      "name": "Schmersal EF103.3, EF303.3 contact block, 1 N.C. + 1 N.O., position 3 (middle)",
+      "library": "AutomationDirect pushbuttons & pilot lights",
+      "category": "Schmersal EF contact & light blocks",
+      "mount": "free",
+      "prefix": "S",
+      "w": 9.8,
+      "h": 45.2,
+      "fill": "#3c3f44",
+      "radius": 1,
+      "showName": false,
+      "terminals": [
+        {
+          "id": "c51",
+          "name": "51",
+          "x": 4.9,
+          "y": 11,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "c52",
+          "name": "52",
+          "x": 4.9,
+          "y": 34.2,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "c63",
+          "name": "63",
+          "x": 4.9,
+          "y": 4,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "c64",
+          "name": "64",
+          "x": 4.9,
+          "y": 41.2,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        }
+      ]
+    },
+    {
+      "id": "ad-sch-ele",
+      "name": "Schmersal light block, lamp X1/X2 (ELE, ELE230, ELDE.NBL24/230, ELDE.NGB24/230, ELDE.NGN24/230, ELDE.NRT24/230, ELDE.NWS24/230), position 3 (middle)",
+      "library": "AutomationDirect pushbuttons & pilot lights",
+      "category": "Schmersal EF contact & light blocks",
+      "mount": "free",
+      "prefix": "PL",
+      "w": 9.8,
+      "h": 45.2,
+      "fill": "#3c3f44",
+      "radius": 1,
+      "showName": false,
+      "terminals": [
+        {
+          "id": "x1",
+          "name": "X1",
+          "x": 4.9,
+          "y": 11,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "x2",
+          "name": "X2",
+          "x": 4.9,
+          "y": 34.2,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        }
+      ]
+    },
+    {
+      "id": "ad-sch-joy-1",
+      "name": "Schmersal joystick, 1 M12 8-pin connector (NK-T-21-1ST8-2, NK-T-41-1ST8-2, RK-T-21-1ST8-2, RK-T-41-1ST8-2)",
+      "library": "AutomationDirect pushbuttons & pilot lights",
+      "category": "Schmersal joysticks 22mm",
+      "mount": "free",
+      "prefix": "S",
+      "w": 80,
+      "h": 80,
+      "fill": "#2c2e31",
+      "radius": 40,
+      "showName": false,
+      "terminals": [
+        {
+          "id": "x1",
+          "name": "X1",
+          "x": 59.5,
+          "y": 59.5,
+          "side": "auto",
+          "link": "",
+          "kind": "port"
+        }
+      ]
+    },
+    {
+      "id": "ad-sch-joy-2",
+      "name": "Schmersal joystick, 2 M12 8-pin connectors (NK-T-22-2ST8-2, NK-T-42-2ST8-2, RK-T-22-2ST8-2, RK-T-42-2ST8-2)",
+      "library": "AutomationDirect pushbuttons & pilot lights",
+      "category": "Schmersal joysticks 22mm",
+      "mount": "free",
+      "prefix": "S",
+      "w": 80,
+      "h": 80,
+      "fill": "#2c2e31",
+      "radius": 40,
+      "showName": false,
+      "terminals": [
+        {
+          "id": "x1",
+          "name": "X1",
+          "x": 59.5,
+          "y": 59.5,
+          "side": "auto",
+          "link": "",
+          "kind": "port"
+        },
+        {
+          "id": "x2",
+          "name": "X2",
+          "x": 20.5,
+          "y": 20.5,
+          "side": "auto",
+          "link": "",
+          "kind": "port"
+        }
+      ]
+    }
+  ]
+}

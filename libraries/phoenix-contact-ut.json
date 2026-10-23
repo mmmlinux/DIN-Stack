@@ -1,6 +1,7 @@
 {
   "type": "dinstack-library",
   "app": "1.2.2",
+  "version": "1.0.0",
   "name": "Phoenix Contact UT terminal blocks",
   "templates": [
     {

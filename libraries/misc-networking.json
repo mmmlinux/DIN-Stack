@@ -1,0 +1,560 @@
+{
+  "type": "dinstack-library",
+  "app": "1.4.29",
+  "version": "1.0.2",
+  "name": "Misc networking",
+  "templates": [
+    {
+      "id": "net-trippl-ngi-u05e",
+      "name": "NGI-U05E 5-port unmanaged gigabit switch, 12-48 V DC · Tripp Lite/Eaton",
+      "library": "Misc networking",
+      "category": "Switches",
+      "mount": "rail",
+      "prefix": "A",
+      "w": 23.4,
+      "h": 109,
+      "fill": "#5b6168",
+      "radius": 1.5,
+      "showName": false,
+      "terminals": [
+        {
+          "id": "vp",
+          "name": "V+",
+          "x": 6.6,
+          "y": 4,
+          "side": "top",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "vn",
+          "name": "V-",
+          "x": 11.7,
+          "y": 4,
+          "side": "top",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "fg",
+          "name": "FG",
+          "x": 16.8,
+          "y": 4,
+          "side": "top",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "p1",
+          "name": "P1",
+          "x": 11.7,
+          "y": 32,
+          "side": "left",
+          "link": "",
+          "kind": "port"
+        },
+        {
+          "id": "p2",
+          "name": "P2",
+          "x": 11.7,
+          "y": 47,
+          "side": "left",
+          "link": "",
+          "kind": "port"
+        },
+        {
+          "id": "p3",
+          "name": "P3",
+          "x": 11.7,
+          "y": 62,
+          "side": "left",
+          "link": "",
+          "kind": "port"
+        },
+        {
+          "id": "p4",
+          "name": "P4",
+          "x": 11.7,
+          "y": 77,
+          "side": "left",
+          "link": "",
+          "kind": "port"
+        },
+        {
+          "id": "p5",
+          "name": "P5",
+          "x": 11.7,
+          "y": 92,
+          "side": "left",
+          "link": "",
+          "kind": "port"
+        }
+      ]
+    },
+    {
+      "id": "net-trippl-npoei-60w-1g",
+      "name": "NPOEI-60W-1G PoE++ injector, 60 W 802.3bt, dual 24-57 V DC · Tripp Lite/Eaton",
+      "library": "Misc networking",
+      "category": "PoE",
+      "mount": "rail",
+      "prefix": "A",
+      "w": 25,
+      "h": 116,
+      "fill": "#5b6168",
+      "radius": 1.5,
+      "showName": false,
+      "terminals": [
+        {
+          "id": "pwrp",
+          "name": "PWR+",
+          "x": 3.0,
+          "y": 4,
+          "side": "top",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "pwrn",
+          "name": "PWR-",
+          "x": 6.81,
+          "y": 4,
+          "side": "top",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "alm1",
+          "name": "ALM",
+          "x": 10.62,
+          "y": 4,
+          "side": "top",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "alm2",
+          "name": "ALM",
+          "x": 14.43,
+          "y": 4,
+          "side": "top",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "rpsn",
+          "name": "RPS-",
+          "x": 18.24,
+          "y": 4,
+          "side": "top",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "rpsp",
+          "name": "RPS+",
+          "x": 22.05,
+          "y": 4,
+          "side": "top",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "din",
+          "name": "DATA IN",
+          "x": 12.5,
+          "y": 62,
+          "side": "left",
+          "link": "",
+          "kind": "port"
+        },
+        {
+          "id": "pout",
+          "name": "PoE OUT",
+          "x": 12.5,
+          "y": 88,
+          "side": "left",
+          "link": "",
+          "kind": "port"
+        },
+        {
+          "id": "pe",
+          "name": "PE",
+          "x": 12.5,
+          "y": 112,
+          "side": "bottom",
+          "link": "",
+          "kind": "wire"
+        }
+      ]
+    },
+    {
+      "id": "net-startech-ih2006-tx",
+      "name": "IH2006 HDMI KVM over IP transmitter, 4K60 · StarTech (IH2006-KVM-EXTENDER kit)",
+      "library": "Misc networking",
+      "category": "KVM extenders",
+      "mount": "free",
+      "prefix": "A",
+      "w": 103,
+      "h": 106,
+      "fill": "#2b2d31",
+      "radius": 3,
+      "showName": true,
+      "terminals": [
+        {
+          "id": "audin",
+          "name": "AUDIO IN",
+          "x": 28,
+          "y": 4,
+          "side": "top",
+          "link": "",
+          "kind": "port"
+        },
+        {
+          "id": "gnd",
+          "name": "GND",
+          "x": 48,
+          "y": 4,
+          "side": "top",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "rxd",
+          "name": "RxD",
+          "x": 53,
+          "y": 4,
+          "side": "top",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "txd",
+          "name": "TxD",
+          "x": 58,
+          "y": 4,
+          "side": "top",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "usbc",
+          "name": "USB-C HOST",
+          "x": 14,
+          "y": 102,
+          "side": "bottom",
+          "link": "",
+          "kind": "port"
+        },
+        {
+          "id": "hdmiin",
+          "name": "HDMI IN",
+          "x": 34,
+          "y": 102,
+          "side": "bottom",
+          "link": "",
+          "kind": "port"
+        },
+        {
+          "id": "hdmiout",
+          "name": "HDMI OUT",
+          "x": 54,
+          "y": 102,
+          "side": "bottom",
+          "link": "",
+          "kind": "port"
+        },
+        {
+          "id": "lan",
+          "name": "LAN",
+          "x": 74,
+          "y": 102,
+          "side": "bottom",
+          "link": "",
+          "kind": "port"
+        },
+        {
+          "id": "dc",
+          "name": "DC 5V",
+          "x": 92,
+          "y": 102,
+          "side": "bottom",
+          "link": "",
+          "kind": "port"
+        }
+      ]
+    },
+    {
+      "id": "net-startech-ih2006-rx",
+      "name": "IH2006 HDMI KVM over IP receiver, 4K60 · StarTech (IH2006-KVM-RX, also in IH2006-KVM-EXTENDER kit)",
+      "library": "Misc networking",
+      "category": "KVM extenders",
+      "mount": "free",
+      "prefix": "A",
+      "w": 103,
+      "h": 106,
+      "fill": "#2b2d31",
+      "radius": 3,
+      "showName": true,
+      "terminals": [
+        {
+          "id": "usb1",
+          "name": "USB 1",
+          "x": 26,
+          "y": 4,
+          "side": "top",
+          "link": "",
+          "kind": "port"
+        },
+        {
+          "id": "usb2",
+          "name": "USB 2",
+          "x": 36,
+          "y": 4,
+          "side": "top",
+          "link": "",
+          "kind": "port"
+        },
+        {
+          "id": "gnd",
+          "name": "GND",
+          "x": 52,
+          "y": 4,
+          "side": "top",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "rxd",
+          "name": "RxD",
+          "x": 57,
+          "y": 4,
+          "side": "top",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "txd",
+          "name": "TxD",
+          "x": 62,
+          "y": 4,
+          "side": "top",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "audout",
+          "name": "AUDIO OUT",
+          "x": 14,
+          "y": 102,
+          "side": "bottom",
+          "link": "",
+          "kind": "port"
+        },
+        {
+          "id": "lan",
+          "name": "LAN",
+          "x": 36,
+          "y": 102,
+          "side": "bottom",
+          "link": "",
+          "kind": "port"
+        },
+        {
+          "id": "hdmiout",
+          "name": "HDMI OUT",
+          "x": 60,
+          "y": 102,
+          "side": "bottom",
+          "link": "",
+          "kind": "port"
+        },
+        {
+          "id": "dc",
+          "name": "DC 5V",
+          "x": 92,
+          "y": 102,
+          "side": "bottom",
+          "link": "",
+          "kind": "port"
+        }
+      ]
+    },
+    {
+      "id": "net-asus-pc-6com",
+      "name": "Computer, 7.25 × 5.25 in, 6 serial ports (COM1-6), 2 LAN, 6 USB, HDMI, DisplayPort · ASUS",
+      "library": "Misc networking",
+      "category": "Computers",
+      "mount": "free",
+      "prefix": "A",
+      "w": 133.35,
+      "h": 184.15,
+      "fill": "#2b2d31",
+      "radius": 3,
+      "showName": true,
+      "terminals": [
+        {
+          "id": "vp",
+          "name": "V+",
+          "x": 6,
+          "y": 12,
+          "side": "left",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "vn",
+          "name": "V-",
+          "x": 6,
+          "y": 17,
+          "side": "left",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "lan1",
+          "name": "LAN 1",
+          "x": 6,
+          "y": 32,
+          "side": "left",
+          "link": "",
+          "kind": "port"
+        },
+        {
+          "id": "lan2",
+          "name": "LAN 2",
+          "x": 6,
+          "y": 44,
+          "side": "left",
+          "link": "",
+          "kind": "port"
+        },
+        {
+          "id": "com1",
+          "name": "COM1",
+          "x": 6,
+          "y": 60,
+          "side": "left",
+          "link": "",
+          "kind": "port"
+        },
+        {
+          "id": "com2",
+          "name": "COM2",
+          "x": 6,
+          "y": 72,
+          "side": "left",
+          "link": "",
+          "kind": "port"
+        },
+        {
+          "id": "usb1",
+          "name": "USB 1",
+          "x": 6,
+          "y": 88,
+          "side": "left",
+          "link": "",
+          "kind": "port"
+        },
+        {
+          "id": "usb2",
+          "name": "USB 2",
+          "x": 6,
+          "y": 100,
+          "side": "left",
+          "link": "",
+          "kind": "port"
+        },
+        {
+          "id": "usb3",
+          "name": "USB 3",
+          "x": 6,
+          "y": 112,
+          "side": "left",
+          "link": "",
+          "kind": "port"
+        },
+        {
+          "id": "usb4",
+          "name": "USB 4",
+          "x": 6,
+          "y": 124,
+          "side": "left",
+          "link": "",
+          "kind": "port"
+        },
+        {
+          "id": "hdmi",
+          "name": "HDMI",
+          "x": 6,
+          "y": 140,
+          "side": "left",
+          "link": "",
+          "kind": "port"
+        },
+        {
+          "id": "dp",
+          "name": "DP",
+          "x": 6,
+          "y": 152,
+          "side": "left",
+          "link": "",
+          "kind": "port"
+        },
+        {
+          "id": "com3",
+          "name": "COM3",
+          "x": 127.35,
+          "y": 40,
+          "side": "right",
+          "link": "",
+          "kind": "port"
+        },
+        {
+          "id": "com4",
+          "name": "COM4",
+          "x": 127.35,
+          "y": 52,
+          "side": "right",
+          "link": "",
+          "kind": "port"
+        },
+        {
+          "id": "com5",
+          "name": "COM5",
+          "x": 127.35,
+          "y": 64,
+          "side": "right",
+          "link": "",
+          "kind": "port"
+        },
+        {
+          "id": "com6",
+          "name": "COM6",
+          "x": 127.35,
+          "y": 76,
+          "side": "right",
+          "link": "",
+          "kind": "port"
+        },
+        {
+          "id": "usb5",
+          "name": "USB 5",
+          "x": 127.35,
+          "y": 100,
+          "side": "right",
+          "link": "",
+          "kind": "port"
+        },
+        {
+          "id": "usb6",
+          "name": "USB 6",
+          "x": 127.35,
+          "y": 112,
+          "side": "right",
+          "link": "",
+          "kind": "port"
+        }
+      ]
+    }
+  ]
+}

@@ -95,6 +95,25 @@ const DEFAULT_PROFILES = [
   { id: "wp_sig", name: "Control signal", color: "#7b3fb0", gauge: "0.75 mm²", conductor: "Stranded" },
 ];
 
+// Starter cable profiles: named cable types (sheath colour, type, shield, twisted pairs) that cables can follow.
+// The wires inside a cable keep their own wire profiles.
+const DEFAULT_CABLE_PROFILES = [
+  { id: "cp_cat6", name: "Ethernet, Cat6", color: "#1f63c6", desc: "Cat6 U/UTP 4×2×AWG24", shield: false, twisted: true, notes: "" },
+  { id: "cp_ie", name: "Industrial Ethernet, shielded", color: "#2e9b3c", desc: "Cat6A S/FTP 4×2×AWG26", shield: true, twisted: true, notes: "" },
+  { id: "cp_motor", name: "Motor cable, shielded", color: "#ef7d00", desc: "4G1.5 + 2×0.75", shield: true, twisted: false, notes: "" },
+  { id: "cp_ctrl", name: "Control cable", color: "#8a8f96", desc: "7G0.75 LiYY", shield: false, twisted: false, notes: "" },
+  { id: "cp_mains", name: "Mains cable", color: "#1f1f1f", desc: "3G1.5 H07RN-F", shield: false, twisted: false, notes: "" },
+];
+
+// Copy a cable profile's properties onto a cable and remember which profile it follows.
+function applyCableProfile(cb, p) {
+  cb.profile = p.id;
+  cb.color = p.color;
+  cb.desc = p.desc;
+  cb.shield = !!p.shield;
+  cb.twisted = !!p.twisted;
+}
+
 // Copy a profile's properties onto a wire and remember which profile it follows.
 function applyProfile(conn, p) {
   conn.profile = p.id;
@@ -201,6 +220,41 @@ const DEFAULT_TEMPLATES = [
     w: 22, h: 14, fill: "#2b2f35", radius: 4, showName: false,
     terminals: [{ ...T("l", "L", 5, 3.5), side: "top" }, { ...T("n", "N", 11, 3.5), side: "top" }, { ...T("pe", "PE", 17, 3.5), side: "top" }],
   },
+  // Network and cable connectors: "port" terminals take a cable's plug rather than single wires.
+  {
+    id: "ethsw5", name: "Ethernet switch, 5-port", category: "Network", prefix: "SW",
+    w: 52, h: 90, fill: "#3c4148", radius: 2, showName: true,
+    terminals: [
+      T("vp", "+V", 8, 6), T("vn", "0V", 16, 6), T("fe", "FE", 24, 6),
+      ...[1, 2, 3, 4, 5].map((i) => ({ ...T("p" + i, "P" + i, 7 + (i - 1) * 9.5, 80), side: "bottom", kind: "port" })),
+    ],
+  },
+  {
+    id: "ethsw8", name: "Ethernet switch, 8-port", category: "Network", prefix: "SW",
+    w: 84, h: 90, fill: "#3c4148", radius: 2, showName: true,
+    terminals: [
+      T("vp", "+V", 8, 6), T("vn", "0V", 16, 6), T("fe", "FE", 24, 6),
+      ...[1, 2, 3, 4, 5, 6, 7, 8].map((i) => ({ ...T("p" + i, "P" + i, 7 + (i - 1) * 10, 80), side: "bottom", kind: "port" })),
+    ],
+  },
+  {
+    id: "rj45ft", name: "RJ45 panel feed-through", category: "Network", prefix: "X", mount: "free",
+    w: 18, h: 28, fill: "#5b6168", radius: 1.5, showName: false,
+    terminals: [{ ...T("in", "IN", 9, 7), side: "top", kind: "port" }, { ...T("out", "OUT", 9, 21), side: "bottom", kind: "port" }],
+  },
+  {
+    id: "connm23", name: "Motor connector, M23 panel socket", category: "Enclosure connectors", prefix: "X", mount: "free",
+    w: 28, h: 30, fill: "#9aa3ad", radius: 3, showName: false,
+    terminals: [
+      { ...T("u", "U", 5, 4), side: "top" }, { ...T("v", "V", 11, 4), side: "top" }, { ...T("w", "W", 17, 4), side: "top" }, { ...T("pe", "PE", 23, 4), side: "top" },
+      { ...T("plug", "PLUG", 14, 22), side: "bottom", kind: "port" },
+    ],
+  },
+  {
+    id: "motor3", name: "Motor, 3-phase (with connector)", category: "Field devices", prefix: "M", mount: "free",
+    w: 40, h: 40, fill: "#4a6b8a", radius: 20, showName: false,
+    terminals: [{ ...T("x1", "X1", 20, 7), side: "top", kind: "port" }],
+  },
   {
     id: "mod8", name: "Generic module, 4+4", category: "Generic", prefix: "A",
     w: 36, h: 90, fill: "#dfe6ee", radius: 1.5, showName: true,
@@ -245,6 +299,8 @@ const DEFAULT_SLOTS = {
 };
 
 const isSlot = (t) => t.kind === "bus";
+// Cable connectors (ports, e.g. an RJ45 socket) take a cable's plug, not single wires.
+const isPort = (t) => t.kind === "port";
 
 // Give a built-in terminal block its bus bar slots, unless its terminals already say what kind they are
 // (so slots someone deleted in the designer don't come back).
@@ -261,7 +317,7 @@ function applyDefaultSlots(tpl) {
 
 // Built-in types added after the first version, by batch. A diagram saved before a batch existed gets
 // its types once (recorded in doc.packs), so deleting one of them later doesn't bring it back.
-const TEMPLATE_PACKS = { connectors: ["conn2", "conn4", "conn8", "connm12"], plugs: ["plug3"] };
+const TEMPLATE_PACKS = { connectors: ["conn2", "conn4", "conn8", "connm12"], plugs: ["plug3"], network: ["ethsw5", "ethsw8", "rj45ft", "connm23", "motor3"] };
 
 function addTemplatePacks(d) {
   d.packs = Array.isArray(d.packs) ? d.packs : [];
@@ -297,8 +353,14 @@ const DEFAULT_SETTINGS = {
   grid: 1,            // snap step in mm
   labelSize: 2,       // destination label text height in mm
   tagSize: 3,         // part tag text height in mm
-  lines: "off",       // off | straight | curved
-  showDest: true,     // destination labels at terminals
+  lines: "off",       // how wires are drawn: off (a stub at each terminal) | straight | curved (lines between terminals)
+                      // (a wire can say otherwise with draw: "line" or "break")
+  cables: "full",     // how cables are drawn: full (the sheath runs end to end) | break (a short tail at each end)
+  labelCable: false,  // the cable's name in its labels: along the sheath ("C1 · 3G1.5"), and at a break ("C1 → K1")
+  wireLabels: true,   // where each wire goes, at its terminals ("→ TB101-1")
+  labelName: "dest",  // what a named circuit's wire labels show: "dest" (where each goes, TB101-1) or "circuit" (+24V)
+  labelWire: false,   // the wire's number in its labels too: in a stub's label ("W3 → TB101-1"), or at the middle of a line
+  showDest: true,     // only read from older diagrams: false there means no wires shown
   showTermNames: true,
   snapEdges: true,
   direction: "ltr",   // ltr | rtl: which way strips grow when adding, repeating and packing
@@ -316,6 +378,7 @@ function newProject(templates) {
     connections: [],
     buses: [],
     wireProfiles: JSON.parse(JSON.stringify(DEFAULT_PROFILES)),
+    cableProfiles: JSON.parse(JSON.stringify(DEFAULT_CABLE_PROFILES)),
     packs: Object.keys(TEMPLATE_PACKS),
   };
 }
