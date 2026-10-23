@@ -1,0 +1,4937 @@
+{
+  "type": "dinstack-library",
+  "app": "1.1.2",
+  "name": "AutomationDirect DIN-rail relays",
+  "templates": [
+    {
+      "id": "ad-murr-miro62-spdt",
+      "name": "MIRO 6.2 slim relay SPDT · Murrelektronik (52000, 52001, 52003, 52010, 52030, 52040, 52050)",
+      "category": "AD relays: interface",
+      "mount": "rail",
+      "prefix": "K",
+      "w": 6.2,
+      "h": 89.0,
+      "fill": "#2f3134",
+      "radius": 0.5,
+      "showName": false,
+      "terminals": [
+        {
+          "id": "t-a1",
+          "name": "A1",
+          "x": 3.1,
+          "y": 8.3,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-a2",
+          "name": "A2",
+          "x": 3.1,
+          "y": 21.3,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-14",
+          "name": "14",
+          "x": 3.1,
+          "y": 54.5,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-11",
+          "name": "11",
+          "x": 3.1,
+          "y": 67.4,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-12",
+          "name": "12",
+          "x": 3.1,
+          "y": 80.5,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        }
+      ]
+    },
+    {
+      "id": "ad-murr-miro62-hoa",
+      "name": "MIRO 6.2 slim relay SPST H-O-A · Murrelektronik (52007)",
+      "category": "AD relays: interface",
+      "mount": "rail",
+      "prefix": "K",
+      "w": 6.2,
+      "h": 89.0,
+      "fill": "#2f3134",
+      "radius": 0.5,
+      "showName": false,
+      "terminals": [
+        {
+          "id": "t-a1",
+          "name": "A1",
+          "x": 3.1,
+          "y": 8.5,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-a2",
+          "name": "A2",
+          "x": 3.1,
+          "y": 21.6,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-a3",
+          "name": "A3",
+          "x": 3.1,
+          "y": 34.5,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-14",
+          "name": "14",
+          "x": 3.1,
+          "y": 67.7,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-13",
+          "name": "13",
+          "x": 3.1,
+          "y": 80.7,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        }
+      ]
+    },
+    {
+      "id": "ad-murr-miro124-dpdt",
+      "name": "MIRO 12.4 relay DPDT · Murrelektronik (52102, 52103, 52111, 52130, 52140)",
+      "category": "AD relays: interface",
+      "mount": "rail",
+      "prefix": "K",
+      "w": 12.5,
+      "h": 88.6,
+      "fill": "#2f3134",
+      "radius": 0.5,
+      "showName": false,
+      "terminals": [
+        {
+          "id": "t-a1",
+          "name": "A1",
+          "x": 3.12,
+          "y": 6,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-a2",
+          "name": "A2",
+          "x": 9.38,
+          "y": 6,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-11",
+          "name": "11",
+          "x": 3.12,
+          "y": 17,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-21",
+          "name": "21",
+          "x": 9.38,
+          "y": 17,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-12",
+          "name": "12",
+          "x": 3.12,
+          "y": 71.6,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-22",
+          "name": "22",
+          "x": 9.38,
+          "y": 71.6,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-14",
+          "name": "14",
+          "x": 3.12,
+          "y": 82.6,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-24",
+          "name": "24",
+          "x": 9.38,
+          "y": 82.6,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        }
+      ]
+    },
+    {
+      "id": "ad-murr-rmm-spst",
+      "name": "RMM relay SPST manual-auto · Murrelektronik (51101)",
+      "category": "AD relays: interface",
+      "mount": "rail",
+      "prefix": "K",
+      "w": 12.0,
+      "h": 82.0,
+      "fill": "#2f3134",
+      "radius": 0.5,
+      "showName": false,
+      "terminals": [
+        {
+          "id": "t-a1",
+          "name": "A1",
+          "x": 3.0,
+          "y": 4,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-a2",
+          "name": "A2",
+          "x": 9.0,
+          "y": 4,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-13",
+          "name": "13",
+          "x": 3.0,
+          "y": 78,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-14",
+          "name": "14",
+          "x": 9.0,
+          "y": 78,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        }
+      ]
+    },
+    {
+      "id": "ad-murr-rmm-spdt",
+      "name": "RMM relay SPDT H-O-A · Murrelektronik (51152)",
+      "category": "AD relays: interface",
+      "mount": "rail",
+      "prefix": "K",
+      "w": 12.0,
+      "h": 82.0,
+      "fill": "#2f3134",
+      "radius": 0.5,
+      "showName": false,
+      "terminals": [
+        {
+          "id": "t-a1",
+          "name": "A1",
+          "x": 2.0,
+          "y": 4,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-a3",
+          "name": "A3",
+          "x": 6.0,
+          "y": 4,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-a2",
+          "name": "A2",
+          "x": 10.0,
+          "y": 4,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-12",
+          "name": "12",
+          "x": 2.0,
+          "y": 78,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-14",
+          "name": "14",
+          "x": 6.0,
+          "y": 78,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-11",
+          "name": "11",
+          "x": 10.0,
+          "y": 78,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        }
+      ]
+    },
+    {
+      "id": "ad-klemsan-kpr-sc",
+      "name": "KPR-SC slim relay SPDT · Klemsan (KPR-SCS-12VACDC-1, KPR-SCS-24VACDC-1, KPR-SCS-230VACDC-1, KPR-SCL-115VACDC-1, KPR-SCL-230VAC-1)",
+      "category": "AD relays: interface",
+      "mount": "rail",
+      "prefix": "K",
+      "w": 6.2,
+      "h": 90.5,
+      "fill": "#4a4d52",
+      "radius": 0.5,
+      "showName": false,
+      "terminals": [
+        {
+          "id": "t-12",
+          "name": "12",
+          "x": 3.1,
+          "y": 5,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-11",
+          "name": "11",
+          "x": 3.1,
+          "y": 15.5,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-14",
+          "name": "14",
+          "x": 3.1,
+          "y": 26,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-a1",
+          "name": "A1",
+          "x": 3.1,
+          "y": 74.5,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-a2",
+          "name": "A2",
+          "x": 3.1,
+          "y": 85.5,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        }
+      ]
+    },
+    {
+      "id": "ad-murr-miro-opto-dc",
+      "name": "MIRO optocoupler DC out · Murrelektronik (52501, 52502, 52507, 52511, 52519, 52520)",
+      "category": "AD relays: solid state & optocoupler",
+      "mount": "rail",
+      "prefix": "K",
+      "w": 6.2,
+      "h": 76.0,
+      "fill": "#2f3134",
+      "radius": 0.5,
+      "showName": false,
+      "terminals": [
+        {
+          "id": "t-a1",
+          "name": "A1",
+          "x": 3.1,
+          "y": 7,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-a2",
+          "name": "A2",
+          "x": 3.1,
+          "y": 18,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-13p",
+          "name": "13+",
+          "x": 3.1,
+          "y": 58,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-14",
+          "name": "14",
+          "x": 3.1,
+          "y": 69,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        }
+      ]
+    },
+    {
+      "id": "ad-murr-miro-opto-ac",
+      "name": "MIRO optocoupler AC TRIAC out · Murrelektronik (52550)",
+      "category": "AD relays: solid state & optocoupler",
+      "mount": "rail",
+      "prefix": "K",
+      "w": 6.2,
+      "h": 76.0,
+      "fill": "#2f3134",
+      "radius": 0.5,
+      "showName": false,
+      "terminals": [
+        {
+          "id": "t-a1",
+          "name": "A1",
+          "x": 3.1,
+          "y": 7,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-a2",
+          "name": "A2",
+          "x": 3.1,
+          "y": 18,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-13",
+          "name": "13",
+          "x": 3.1,
+          "y": 58,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-14",
+          "name": "14",
+          "x": 3.1,
+          "y": 69,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        }
+      ]
+    },
+    {
+      "id": "ad-murr-miro-opto-spdt",
+      "name": "MIRO optocoupler SPDT transistor · Murrelektronik (52510)",
+      "category": "AD relays: solid state & optocoupler",
+      "mount": "rail",
+      "prefix": "K",
+      "w": 6.2,
+      "h": 89.0,
+      "fill": "#2f3134",
+      "radius": 0.5,
+      "showName": false,
+      "terminals": [
+        {
+          "id": "t-a1",
+          "name": "A1",
+          "x": 3.1,
+          "y": 8.3,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-a2",
+          "name": "A2",
+          "x": 3.1,
+          "y": 21.3,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-11p",
+          "name": "11+",
+          "x": 3.1,
+          "y": 54.5,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-12",
+          "name": "12",
+          "x": 3.1,
+          "y": 67.4,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-14",
+          "name": "14",
+          "x": 3.1,
+          "y": 80.5,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        }
+      ]
+    },
+    {
+      "id": "ad-gefran-grsh-17-0",
+      "name": "GRSH 15–30 A · Gefran SSR (GRSH-15/25/30-48/60-A/D-0-0)",
+      "category": "AD relays: solid state & optocoupler",
+      "mount": "rail",
+      "prefix": "K",
+      "w": 17.5,
+      "h": 110.0,
+      "fill": "#7fd6c4",
+      "radius": 1,
+      "showName": false,
+      "terminals": [
+        {
+          "id": "t-pe",
+          "name": "PE",
+          "x": 8.75,
+          "y": 2.5,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-1l1",
+          "name": "1/L1",
+          "x": 8.75,
+          "y": 8.5,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-a1",
+          "name": "A1",
+          "x": 8.75,
+          "y": 72,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-a2",
+          "name": "A2",
+          "x": 8.75,
+          "y": 76.5,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-2t1",
+          "name": "2/T1",
+          "x": 8.75,
+          "y": 102.0,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        }
+      ]
+    },
+    {
+      "id": "ad-gefran-grsh-17-a5",
+      "name": "GRSH 15–30 A + alarm · Gefran SSR (GRSH-15/25/30-48/60-A-5-0)",
+      "category": "AD relays: solid state & optocoupler",
+      "mount": "rail",
+      "prefix": "K",
+      "w": 17.5,
+      "h": 110.0,
+      "fill": "#7fd6c4",
+      "radius": 1,
+      "showName": false,
+      "terminals": [
+        {
+          "id": "t-pe",
+          "name": "PE",
+          "x": 8.75,
+          "y": 2.5,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-1l1",
+          "name": "1/L1",
+          "x": 8.75,
+          "y": 8.5,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-al",
+          "name": "AL",
+          "x": 8.75,
+          "y": 33,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-al-2",
+          "name": "AL",
+          "x": 8.75,
+          "y": 37.5,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-a1",
+          "name": "A1",
+          "x": 8.75,
+          "y": 72,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-a2",
+          "name": "A2",
+          "x": 8.75,
+          "y": 76.5,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-2t1",
+          "name": "2/T1",
+          "x": 8.75,
+          "y": 102.0,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        }
+      ]
+    },
+    {
+      "id": "ad-gefran-grsh-17-d2",
+      "name": "GRSH 15–30 A DC + alarm · Gefran SSR (GRSH-15/25/30-48/60-D-2-0)",
+      "category": "AD relays: solid state & optocoupler",
+      "mount": "rail",
+      "prefix": "K",
+      "w": 17.5,
+      "h": 110.0,
+      "fill": "#7fd6c4",
+      "radius": 1,
+      "showName": false,
+      "terminals": [
+        {
+          "id": "t-pe",
+          "name": "PE",
+          "x": 8.75,
+          "y": 2.5,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-1l1",
+          "name": "1/L1",
+          "x": 8.75,
+          "y": 8.5,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-al",
+          "name": "AL",
+          "x": 8.75,
+          "y": 58,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-al-2",
+          "name": "AL",
+          "x": 8.75,
+          "y": 62,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-a2n",
+          "name": "A2-",
+          "x": 8.75,
+          "y": 66,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-a1p",
+          "name": "A1+",
+          "x": 8.75,
+          "y": 70,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-usp",
+          "name": "Us+",
+          "x": 8.75,
+          "y": 74,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-usn",
+          "name": "Us-",
+          "x": 8.75,
+          "y": 78,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-2t1",
+          "name": "2/T1",
+          "x": 8.75,
+          "y": 102.0,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        }
+      ]
+    },
+    {
+      "id": "ad-gefran-grsh-35-0",
+      "name": "GRSH 40–50 A · Gefran SSR (GRSH-40/50-48/60-A/D-0-0)",
+      "category": "AD relays: solid state & optocoupler",
+      "mount": "rail",
+      "prefix": "K",
+      "w": 35.0,
+      "h": 110.0,
+      "fill": "#7fd6c4",
+      "radius": 1,
+      "showName": false,
+      "terminals": [
+        {
+          "id": "t-pe",
+          "name": "PE",
+          "x": 17.5,
+          "y": 2.5,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-1l1",
+          "name": "1/L1",
+          "x": 17.5,
+          "y": 8.5,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-a1",
+          "name": "A1",
+          "x": 17.5,
+          "y": 72,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-a2",
+          "name": "A2",
+          "x": 17.5,
+          "y": 76.5,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-2t1",
+          "name": "2/T1",
+          "x": 17.5,
+          "y": 102.0,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        }
+      ]
+    },
+    {
+      "id": "ad-gefran-grsh-35-a5",
+      "name": "GRSH 40–50 A + alarm · Gefran SSR (GRSH-40/50-48/60-A-5-0)",
+      "category": "AD relays: solid state & optocoupler",
+      "mount": "rail",
+      "prefix": "K",
+      "w": 35.0,
+      "h": 110.0,
+      "fill": "#7fd6c4",
+      "radius": 1,
+      "showName": false,
+      "terminals": [
+        {
+          "id": "t-pe",
+          "name": "PE",
+          "x": 17.5,
+          "y": 2.5,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-1l1",
+          "name": "1/L1",
+          "x": 17.5,
+          "y": 8.5,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-al",
+          "name": "AL",
+          "x": 17.5,
+          "y": 33,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-al-2",
+          "name": "AL",
+          "x": 17.5,
+          "y": 37.5,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-a1",
+          "name": "A1",
+          "x": 17.5,
+          "y": 72,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-a2",
+          "name": "A2",
+          "x": 17.5,
+          "y": 76.5,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-2t1",
+          "name": "2/T1",
+          "x": 17.5,
+          "y": 102.0,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        }
+      ]
+    },
+    {
+      "id": "ad-gefran-grsh-35-d2",
+      "name": "GRSH 40–50 A DC + alarm · Gefran SSR (GRSH-40/50-48/60-D-2-0)",
+      "category": "AD relays: solid state & optocoupler",
+      "mount": "rail",
+      "prefix": "K",
+      "w": 35.0,
+      "h": 110.0,
+      "fill": "#7fd6c4",
+      "radius": 1,
+      "showName": false,
+      "terminals": [
+        {
+          "id": "t-pe",
+          "name": "PE",
+          "x": 17.5,
+          "y": 2.5,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-1l1",
+          "name": "1/L1",
+          "x": 17.5,
+          "y": 8.5,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-al",
+          "name": "AL",
+          "x": 17.5,
+          "y": 58,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-al-2",
+          "name": "AL",
+          "x": 17.5,
+          "y": 62,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-a2n",
+          "name": "A2-",
+          "x": 17.5,
+          "y": 66,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-a1p",
+          "name": "A1+",
+          "x": 17.5,
+          "y": 70,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-usp",
+          "name": "Us+",
+          "x": 17.5,
+          "y": 74,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-usn",
+          "name": "Us-",
+          "x": 17.5,
+          "y": 78,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-2t1",
+          "name": "2/T1",
+          "x": 17.5,
+          "y": 102.0,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        }
+      ]
+    },
+    {
+      "id": "ad-gefran-grsh-70-0",
+      "name": "GRSH 60–75 A · Gefran SSR (GRSH-60/75-48/60-A/D-0-0)",
+      "category": "AD relays: solid state & optocoupler",
+      "mount": "rail",
+      "prefix": "K",
+      "w": 70.0,
+      "h": 110.0,
+      "fill": "#7fd6c4",
+      "radius": 1,
+      "showName": false,
+      "terminals": [
+        {
+          "id": "t-pe",
+          "name": "PE",
+          "x": 35.0,
+          "y": 2.5,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-1l1",
+          "name": "1/L1",
+          "x": 35.0,
+          "y": 8.5,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-a1",
+          "name": "A1",
+          "x": 35.0,
+          "y": 72,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-a2",
+          "name": "A2",
+          "x": 35.0,
+          "y": 76.5,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-2t1",
+          "name": "2/T1",
+          "x": 35.0,
+          "y": 102.0,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        }
+      ]
+    },
+    {
+      "id": "ad-gefran-grsh-70-a5",
+      "name": "GRSH 60–75 A + alarm · Gefran SSR (GRSH-60/75-48/60-A-5-0)",
+      "category": "AD relays: solid state & optocoupler",
+      "mount": "rail",
+      "prefix": "K",
+      "w": 70.0,
+      "h": 110.0,
+      "fill": "#7fd6c4",
+      "radius": 1,
+      "showName": false,
+      "terminals": [
+        {
+          "id": "t-pe",
+          "name": "PE",
+          "x": 35.0,
+          "y": 2.5,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-1l1",
+          "name": "1/L1",
+          "x": 35.0,
+          "y": 8.5,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-al",
+          "name": "AL",
+          "x": 35.0,
+          "y": 33,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-al-2",
+          "name": "AL",
+          "x": 35.0,
+          "y": 37.5,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-a1",
+          "name": "A1",
+          "x": 35.0,
+          "y": 72,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-a2",
+          "name": "A2",
+          "x": 35.0,
+          "y": 76.5,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-2t1",
+          "name": "2/T1",
+          "x": 35.0,
+          "y": 102.0,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        }
+      ]
+    },
+    {
+      "id": "ad-gefran-grsh-70-d2",
+      "name": "GRSH 60–75 A DC + alarm · Gefran SSR (GRSH-60/75-48/60-D-2-0)",
+      "category": "AD relays: solid state & optocoupler",
+      "mount": "rail",
+      "prefix": "K",
+      "w": 70.0,
+      "h": 110.0,
+      "fill": "#7fd6c4",
+      "radius": 1,
+      "showName": false,
+      "terminals": [
+        {
+          "id": "t-pe",
+          "name": "PE",
+          "x": 35.0,
+          "y": 2.5,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-1l1",
+          "name": "1/L1",
+          "x": 35.0,
+          "y": 8.5,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-al",
+          "name": "AL",
+          "x": 35.0,
+          "y": 58,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-al-2",
+          "name": "AL",
+          "x": 35.0,
+          "y": 62,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-a2n",
+          "name": "A2-",
+          "x": 35.0,
+          "y": 66,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-a1p",
+          "name": "A1+",
+          "x": 35.0,
+          "y": 70,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-usp",
+          "name": "Us+",
+          "x": 35.0,
+          "y": 74,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-usn",
+          "name": "Us-",
+          "x": 35.0,
+          "y": 78,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-2t1",
+          "name": "2/T1",
+          "x": 35.0,
+          "y": 102.0,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        }
+      ]
+    },
+    {
+      "id": "ad-gefran-grsh-80-0",
+      "name": "GRSH 90–120 A fan · Gefran SSR (GRSH-90/120-48/60-A/D-0-60/61/62/63)",
+      "category": "AD relays: solid state & optocoupler",
+      "mount": "rail",
+      "prefix": "K",
+      "w": 80.0,
+      "h": 146.0,
+      "fill": "#7fd6c4",
+      "radius": 1,
+      "showName": false,
+      "terminals": [
+        {
+          "id": "t-pe",
+          "name": "PE",
+          "x": 40.0,
+          "y": 2.5,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-1l1",
+          "name": "1/L1",
+          "x": 40.0,
+          "y": 8.5,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-a1",
+          "name": "A1",
+          "x": 40.0,
+          "y": 72,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-a2",
+          "name": "A2",
+          "x": 40.0,
+          "y": 76.5,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-2t1",
+          "name": "2/T1",
+          "x": 40.0,
+          "y": 93.0,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        }
+      ]
+    },
+    {
+      "id": "ad-gefran-grsh-80-a5",
+      "name": "GRSH 90–120 A fan + alarm · Gefran SSR (GRSH-90/120-48/60-A-5-60/61/62/63)",
+      "category": "AD relays: solid state & optocoupler",
+      "mount": "rail",
+      "prefix": "K",
+      "w": 80.0,
+      "h": 146.0,
+      "fill": "#7fd6c4",
+      "radius": 1,
+      "showName": false,
+      "terminals": [
+        {
+          "id": "t-pe",
+          "name": "PE",
+          "x": 40.0,
+          "y": 2.5,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-1l1",
+          "name": "1/L1",
+          "x": 40.0,
+          "y": 8.5,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-al",
+          "name": "AL",
+          "x": 40.0,
+          "y": 33,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-al-2",
+          "name": "AL",
+          "x": 40.0,
+          "y": 37.5,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-a1",
+          "name": "A1",
+          "x": 40.0,
+          "y": 72,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-a2",
+          "name": "A2",
+          "x": 40.0,
+          "y": 76.5,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-2t1",
+          "name": "2/T1",
+          "x": 40.0,
+          "y": 93.0,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        }
+      ]
+    },
+    {
+      "id": "ad-gefran-grsh-80-d2",
+      "name": "GRSH 90–120 A fan DC + alarm · Gefran SSR (GRSH-90/120-48/60-D-2-60/61/62/63)",
+      "category": "AD relays: solid state & optocoupler",
+      "mount": "rail",
+      "prefix": "K",
+      "w": 80.0,
+      "h": 146.0,
+      "fill": "#7fd6c4",
+      "radius": 1,
+      "showName": false,
+      "terminals": [
+        {
+          "id": "t-pe",
+          "name": "PE",
+          "x": 40.0,
+          "y": 2.5,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-1l1",
+          "name": "1/L1",
+          "x": 40.0,
+          "y": 8.5,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-al",
+          "name": "AL",
+          "x": 40.0,
+          "y": 58,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-al-2",
+          "name": "AL",
+          "x": 40.0,
+          "y": 62,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-a2n",
+          "name": "A2-",
+          "x": 40.0,
+          "y": 66,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-a1p",
+          "name": "A1+",
+          "x": 40.0,
+          "y": 70,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-usp",
+          "name": "Us+",
+          "x": 40.0,
+          "y": 74,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-usn",
+          "name": "Us-",
+          "x": 40.0,
+          "y": 78,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-2t1",
+          "name": "2/T1",
+          "x": 40.0,
+          "y": 93.0,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        }
+      ]
+    },
+    {
+      "id": "ad-dold-hc3096n",
+      "name": "HC3096N force guided 4-pole · Dold (HC3096N-48-900-24, HC3096N-52-900-24, HC3096N-102-24)",
+      "category": "AD relays: force guided",
+      "mount": "rail",
+      "prefix": "K",
+      "w": 17.9,
+      "h": 105.2,
+      "fill": "#2b2d30",
+      "radius": 1,
+      "showName": false,
+      "terminals": [
+        {
+          "id": "t-1113",
+          "name": "11/13",
+          "x": 2.98,
+          "y": 5,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-1214",
+          "name": "12/14",
+          "x": 8.95,
+          "y": 5,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-2123",
+          "name": "21/23",
+          "x": 14.92,
+          "y": 5,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-a1p",
+          "name": "A1+",
+          "x": 4.47,
+          "y": 15,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-a2",
+          "name": "A2",
+          "x": 13.42,
+          "y": 15,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-4143",
+          "name": "41/43",
+          "x": 4.47,
+          "y": 88,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-4244",
+          "name": "42/44",
+          "x": 13.42,
+          "y": 88,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-2224",
+          "name": "22/24",
+          "x": 2.98,
+          "y": 99,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-3133",
+          "name": "31/33",
+          "x": 8.95,
+          "y": 99,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-3234",
+          "name": "32/34",
+          "x": 14.92,
+          "y": 99,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        }
+      ]
+    },
+    {
+      "id": "ad-dold-hl3096n",
+      "name": "HL3096N force guided 6-pole · Dold (HL3096N-18-900-24, HL3096N-50-900-24, HL3096N-54-900-24, HL3096N-60-900-24, HL3096N-102-24)",
+      "category": "AD relays: force guided",
+      "mount": "rail",
+      "prefix": "K",
+      "w": 35.8,
+      "h": 105.4,
+      "fill": "#2b2d30",
+      "radius": 1,
+      "showName": false,
+      "terminals": [
+        {
+          "id": "t-a1p",
+          "name": "A1+",
+          "x": 2.98,
+          "y": 6,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-1311",
+          "name": "13/11",
+          "x": 8.95,
+          "y": 6,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-1412",
+          "name": "14/12",
+          "x": 14.92,
+          "y": 6,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-2321",
+          "name": "23/21",
+          "x": 20.88,
+          "y": 6,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-2422",
+          "name": "24/22",
+          "x": 26.85,
+          "y": 6,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-a2",
+          "name": "A2",
+          "x": 32.82,
+          "y": 6,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-3133",
+          "name": "31/33",
+          "x": 4.47,
+          "y": 88,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-3234",
+          "name": "32/34",
+          "x": 13.42,
+          "y": 88,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-4143",
+          "name": "41/43",
+          "x": 22.38,
+          "y": 88,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-4244",
+          "name": "42/44",
+          "x": 31.32,
+          "y": 88,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-5153",
+          "name": "51/53",
+          "x": 4.47,
+          "y": 99,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-5254",
+          "name": "52/54",
+          "x": 13.42,
+          "y": 99,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-6163",
+          "name": "61/63",
+          "x": 22.38,
+          "y": 99,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-6264",
+          "name": "62/64",
+          "x": 31.32,
+          "y": 99,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        }
+      ]
+    },
+    {
+      "id": "ad-macromatic-isdur4",
+      "name": "ISDUR4 intrinsically safe relay, 4-channel · Macromatic",
+      "category": "AD relays: intrinsically safe",
+      "mount": "rail",
+      "prefix": "K",
+      "w": 60.0,
+      "h": 110.8,
+      "fill": "#f1f2f0",
+      "radius": 1,
+      "showName": false,
+      "terminals": [
+        {
+          "id": "t-1",
+          "name": "1",
+          "x": 9.3,
+          "y": 5,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-2",
+          "name": "2",
+          "x": 13.9,
+          "y": 5,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-3",
+          "name": "3",
+          "x": 18.5,
+          "y": 5,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-4",
+          "name": "4",
+          "x": 23.1,
+          "y": 5,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-5",
+          "name": "5",
+          "x": 27.7,
+          "y": 5,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-6",
+          "name": "6",
+          "x": 32.3,
+          "y": 5,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-7",
+          "name": "7",
+          "x": 36.9,
+          "y": 5,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-8",
+          "name": "8",
+          "x": 41.5,
+          "y": 5,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-9",
+          "name": "9",
+          "x": 46.1,
+          "y": 5,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-10",
+          "name": "10",
+          "x": 50.7,
+          "y": 5,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-13",
+          "name": "13",
+          "x": 13.9,
+          "y": 105.8,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-14",
+          "name": "14",
+          "x": 18.5,
+          "y": 105.8,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-15",
+          "name": "15",
+          "x": 23.1,
+          "y": 105.8,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-16",
+          "name": "16",
+          "x": 27.7,
+          "y": 105.8,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-17",
+          "name": "17",
+          "x": 32.3,
+          "y": 105.8,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-18",
+          "name": "18",
+          "x": 36.9,
+          "y": 105.8,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-19",
+          "name": "19",
+          "x": 41.5,
+          "y": 105.8,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-20",
+          "name": "20",
+          "x": 46.1,
+          "y": 105.8,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        }
+      ]
+    },
+    {
+      "id": "ad-macromatic-iseur1",
+      "name": "ISEUR1 intrinsically safe relay, 1-channel · Macromatic",
+      "category": "AD relays: intrinsically safe",
+      "mount": "rail",
+      "prefix": "K",
+      "w": 17.5,
+      "h": 112.7,
+      "fill": "#f1f2f0",
+      "radius": 1,
+      "showName": false,
+      "terminals": [
+        {
+          "id": "t-1",
+          "name": "1",
+          "x": 2.92,
+          "y": 5,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-2",
+          "name": "2",
+          "x": 8.75,
+          "y": 5,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-3",
+          "name": "3",
+          "x": 14.58,
+          "y": 5,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-7",
+          "name": "7",
+          "x": 2.92,
+          "y": 17,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-8",
+          "name": "8",
+          "x": 8.75,
+          "y": 17,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-9",
+          "name": "9",
+          "x": 14.58,
+          "y": 17,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-4",
+          "name": "4",
+          "x": 2.92,
+          "y": 107.7,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-5",
+          "name": "5",
+          "x": 8.75,
+          "y": 107.7,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-6",
+          "name": "6",
+          "x": 14.58,
+          "y": 107.7,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        }
+      ]
+    },
+    {
+      "id": "ad-klemsan-p1-3w",
+      "name": "Phase monitor 3-wire · Klemsan P1D/FP1D (P1D-ASF-400, P1D-M1WASF-175-345, P1D-M1WASF-295-480, FP1D-ASF-400, FP1D-SF-400)",
+      "category": "AD relays: monitoring",
+      "mount": "rail",
+      "prefix": "K",
+      "w": 18.0,
+      "h": 97.6,
+      "fill": "#ef7d22",
+      "radius": 1,
+      "showName": false,
+      "terminals": [
+        {
+          "id": "t-16",
+          "name": "16",
+          "x": 3.0,
+          "y": 4.5,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-15",
+          "name": "15",
+          "x": 9.0,
+          "y": 4.5,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-18",
+          "name": "18",
+          "x": 15.0,
+          "y": 4.5,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-l3",
+          "name": "L3",
+          "x": 4.5,
+          "y": 81.5,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-l2",
+          "name": "L2",
+          "x": 13.5,
+          "y": 81.5,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-l1",
+          "name": "L1",
+          "x": 13.5,
+          "y": 93,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        }
+      ]
+    },
+    {
+      "id": "ad-klemsan-p1-4w",
+      "name": "Phase monitor 4-wire + N · Klemsan P1Y/FP1Y (P1Y-ASF-230, P1Y-M1WASFN-100-200, P1Y-M1WASFN-170-280, FP1Y-AF-230, FP1Y-ASF-230, FP1Y-SF-230, FP1YA-ASF8-230)",
+      "category": "AD relays: monitoring",
+      "mount": "rail",
+      "prefix": "K",
+      "w": 18.0,
+      "h": 97.6,
+      "fill": "#ef7d22",
+      "radius": 1,
+      "showName": false,
+      "terminals": [
+        {
+          "id": "t-16",
+          "name": "16",
+          "x": 3.0,
+          "y": 4.5,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-15",
+          "name": "15",
+          "x": 9.0,
+          "y": 4.5,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-18",
+          "name": "18",
+          "x": 15.0,
+          "y": 4.5,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-l3",
+          "name": "L3",
+          "x": 4.5,
+          "y": 81.5,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-l2",
+          "name": "L2",
+          "x": 13.5,
+          "y": 81.5,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-n",
+          "name": "N",
+          "x": 4.5,
+          "y": 93,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-l1",
+          "name": "L1",
+          "x": 13.5,
+          "y": 93,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        }
+      ]
+    },
+    {
+      "id": "ad-klemsan-p1-3w-ptc",
+      "name": "Phase monitor 3-wire + PTC · Klemsan (P1D-M2WSP-175-345, P1D-M2WSP-295-480, FP1D-SFP-400)",
+      "category": "AD relays: monitoring",
+      "mount": "rail",
+      "prefix": "K",
+      "w": 18.0,
+      "h": 97.6,
+      "fill": "#ef7d22",
+      "radius": 1,
+      "showName": false,
+      "terminals": [
+        {
+          "id": "t-16",
+          "name": "16",
+          "x": 3.0,
+          "y": 4.5,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-15",
+          "name": "15",
+          "x": 9.0,
+          "y": 4.5,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-18",
+          "name": "18",
+          "x": 15.0,
+          "y": 4.5,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-t1",
+          "name": "T1",
+          "x": 4.5,
+          "y": 16,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-t2t3",
+          "name": "T2/T3",
+          "x": 13.5,
+          "y": 16,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-l3",
+          "name": "L3",
+          "x": 4.5,
+          "y": 81.5,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-l2",
+          "name": "L2",
+          "x": 13.5,
+          "y": 81.5,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-l1",
+          "name": "L1",
+          "x": 13.5,
+          "y": 93,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        }
+      ]
+    },
+    {
+      "id": "ad-klemsan-p1-4w-ptc",
+      "name": "Phase monitor 4-wire + N + PTC · Klemsan (P1Y-M2WSP-100-200, P1Y-M2WSP-170-280, FP1Y-SFP-230)",
+      "category": "AD relays: monitoring",
+      "mount": "rail",
+      "prefix": "K",
+      "w": 18.0,
+      "h": 97.6,
+      "fill": "#ef7d22",
+      "radius": 1,
+      "showName": false,
+      "terminals": [
+        {
+          "id": "t-16",
+          "name": "16",
+          "x": 3.0,
+          "y": 4.5,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-15",
+          "name": "15",
+          "x": 9.0,
+          "y": 4.5,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-18",
+          "name": "18",
+          "x": 15.0,
+          "y": 4.5,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-t1",
+          "name": "T1",
+          "x": 4.5,
+          "y": 16,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-t2t3",
+          "name": "T2/T3",
+          "x": 13.5,
+          "y": 16,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-l3",
+          "name": "L3",
+          "x": 4.5,
+          "y": 81.5,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-l2",
+          "name": "L2",
+          "x": 13.5,
+          "y": 81.5,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-n",
+          "name": "N",
+          "x": 4.5,
+          "y": 93,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-l1",
+          "name": "L1",
+          "x": 13.5,
+          "y": 93,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        }
+      ]
+    },
+    {
+      "id": "ad-dold-rl9877",
+      "name": "RL9877 phase monitor + N · Dold (RL9877-11, RL9877-11-120)",
+      "category": "AD relays: monitoring",
+      "mount": "rail",
+      "prefix": "K",
+      "w": 35.8,
+      "h": 89.8,
+      "fill": "#e4e6e3",
+      "radius": 1,
+      "showName": false,
+      "terminals": [
+        {
+          "id": "t-l1",
+          "name": "L1",
+          "x": 8.9,
+          "y": 5,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-l2",
+          "name": "L2",
+          "x": 14.9,
+          "y": 5,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-l3",
+          "name": "L3",
+          "x": 20.9,
+          "y": 5,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-n",
+          "name": "N",
+          "x": 26.9,
+          "y": 5,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-11",
+          "name": "11",
+          "x": 11.9,
+          "y": 85,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-12",
+          "name": "12",
+          "x": 17.9,
+          "y": 85,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-14",
+          "name": "14",
+          "x": 23.9,
+          "y": 85,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        }
+      ]
+    },
+    {
+      "id": "ad-dold-rl9836",
+      "name": "RL9836 DC voltage monitor · Dold (RL9836DC24-130V, RL9836DC50-250V)",
+      "category": "AD relays: monitoring",
+      "mount": "rail",
+      "prefix": "K",
+      "w": 35.8,
+      "h": 89.8,
+      "fill": "#e4e6e3",
+      "radius": 1,
+      "showName": false,
+      "terminals": [
+        {
+          "id": "t-lp",
+          "name": "L+",
+          "x": 11.9,
+          "y": 5,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-ln",
+          "name": "L-",
+          "x": 23.9,
+          "y": 5,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-11",
+          "name": "11",
+          "x": 11.9,
+          "y": 85,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-12",
+          "name": "12",
+          "x": 17.9,
+          "y": 85,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-14",
+          "name": "14",
+          "x": 23.9,
+          "y": 85,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        }
+      ]
+    },
+    {
+      "id": "ad-dold-rl9854",
+      "name": "RL9854 AC voltage monitor · Dold (RL9854AC45-135V, RL9854AC100-300V)",
+      "category": "AD relays: monitoring",
+      "mount": "rail",
+      "prefix": "K",
+      "w": 35.8,
+      "h": 89.8,
+      "fill": "#e4e6e3",
+      "radius": 1,
+      "showName": false,
+      "terminals": [
+        {
+          "id": "t-l",
+          "name": "L",
+          "x": 11.9,
+          "y": 5,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-n",
+          "name": "N",
+          "x": 23.9,
+          "y": 5,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-11",
+          "name": "11",
+          "x": 11.9,
+          "y": 85,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-12",
+          "name": "12",
+          "x": 17.9,
+          "y": 85,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-14",
+          "name": "14",
+          "x": 23.9,
+          "y": 85,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        }
+      ]
+    },
+    {
+      "id": "ad-dold-rn9877-3w",
+      "name": "RN9877 phase monitor 3-wire · Dold (RN9877-0103P3W525V)",
+      "category": "AD relays: monitoring",
+      "mount": "rail",
+      "prefix": "K",
+      "w": 53.9,
+      "h": 89.8,
+      "fill": "#e4e6e3",
+      "radius": 1,
+      "showName": false,
+      "terminals": [
+        {
+          "id": "t-l1",
+          "name": "L1",
+          "x": 19.95,
+          "y": 5,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-l2",
+          "name": "L2",
+          "x": 26.95,
+          "y": 5,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-l3",
+          "name": "L3",
+          "x": 33.95,
+          "y": 5,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-11",
+          "name": "11",
+          "x": 20.95,
+          "y": 85,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-12",
+          "name": "12",
+          "x": 26.95,
+          "y": 85,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-14",
+          "name": "14",
+          "x": 32.95,
+          "y": 85,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        }
+      ]
+    },
+    {
+      "id": "ad-dold-rn9877-4w",
+      "name": "RN9877 phase monitor + N · Dold (RN9877-1203P4W525V, RN98773P4W525V)",
+      "category": "AD relays: monitoring",
+      "mount": "rail",
+      "prefix": "K",
+      "w": 53.9,
+      "h": 89.8,
+      "fill": "#e4e6e3",
+      "radius": 1,
+      "showName": false,
+      "terminals": [
+        {
+          "id": "t-l1",
+          "name": "L1",
+          "x": 16.45,
+          "y": 5,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-l2",
+          "name": "L2",
+          "x": 23.45,
+          "y": 5,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-l3",
+          "name": "L3",
+          "x": 30.45,
+          "y": 5,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-n",
+          "name": "N",
+          "x": 37.45,
+          "y": 5,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-11",
+          "name": "11",
+          "x": 20.95,
+          "y": 85,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-12",
+          "name": "12",
+          "x": 26.95,
+          "y": 85,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-14",
+          "name": "14",
+          "x": 32.95,
+          "y": 85,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        }
+      ]
+    },
+    {
+      "id": "ad-murr-miro-timer",
+      "name": "MIRO multi-mode timer · Murrelektronik (52350)",
+      "category": "AD relays: timers",
+      "mount": "rail",
+      "prefix": "K",
+      "w": 6.2,
+      "h": 89.0,
+      "fill": "#2f3134",
+      "radius": 0.5,
+      "showName": false,
+      "terminals": [
+        {
+          "id": "t-a1",
+          "name": "A1",
+          "x": 3.1,
+          "y": 8.5,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-a2",
+          "name": "A2",
+          "x": 3.1,
+          "y": 21.6,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-b1",
+          "name": "B1",
+          "x": 3.1,
+          "y": 34.5,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-18",
+          "name": "18",
+          "x": 3.1,
+          "y": 67.7,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-17",
+          "name": "17",
+          "x": 3.1,
+          "y": 80.7,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        }
+      ]
+    },
+    {
+      "id": "ad-dold-rk7814",
+      "name": "RK7814 on-delay timer · Dold (RK7814-81-61)",
+      "category": "AD relays: timers",
+      "mount": "rail",
+      "prefix": "K",
+      "w": 17.8,
+      "h": 89.8,
+      "fill": "#e4e6e3",
+      "radius": 1,
+      "showName": false,
+      "terminals": [
+        {
+          "id": "t-a1",
+          "name": "A1",
+          "x": 2.97,
+          "y": 5,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-a2",
+          "name": "A2",
+          "x": 8.9,
+          "y": 5,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-a3p",
+          "name": "A3+",
+          "x": 14.83,
+          "y": 5,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-z3",
+          "name": "Z3",
+          "x": 2.97,
+          "y": 15,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-z4",
+          "name": "Z4",
+          "x": 8.9,
+          "y": 15,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-z5",
+          "name": "Z5",
+          "x": 14.83,
+          "y": 15,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-15",
+          "name": "15",
+          "x": 2.97,
+          "y": 85,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-16",
+          "name": "16",
+          "x": 8.9,
+          "y": 85,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-18",
+          "name": "18",
+          "x": 14.83,
+          "y": 85,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        }
+      ]
+    },
+    {
+      "id": "ad-dold-rk7815",
+      "name": "RK7815 / RK7816 timer · Dold (RK7815-71-61, RK7816-81-61)",
+      "category": "AD relays: timers",
+      "mount": "rail",
+      "prefix": "K",
+      "w": 17.8,
+      "h": 89.8,
+      "fill": "#e4e6e3",
+      "radius": 1,
+      "showName": false,
+      "terminals": [
+        {
+          "id": "t-a1",
+          "name": "A1",
+          "x": 2.97,
+          "y": 5,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-a2",
+          "name": "A2",
+          "x": 8.9,
+          "y": 5,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-a3p",
+          "name": "A3+",
+          "x": 14.83,
+          "y": 5,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-15",
+          "name": "15",
+          "x": 2.97,
+          "y": 85,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-16",
+          "name": "16",
+          "x": 8.9,
+          "y": 85,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-18",
+          "name": "18",
+          "x": 14.83,
+          "y": 85,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        }
+      ]
+    },
+    {
+      "id": "ad-dold-rk7817",
+      "name": "RK7817 multi-mode timer · Dold (RK7817-81-61)",
+      "category": "AD relays: timers",
+      "mount": "rail",
+      "prefix": "K",
+      "w": 17.8,
+      "h": 89.8,
+      "fill": "#e4e6e3",
+      "radius": 1,
+      "showName": false,
+      "terminals": [
+        {
+          "id": "t-a1",
+          "name": "A1",
+          "x": 2.97,
+          "y": 5,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-a2",
+          "name": "A2",
+          "x": 8.9,
+          "y": 5,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-a3p",
+          "name": "A3+",
+          "x": 14.83,
+          "y": 5,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-b1p",
+          "name": "B1+",
+          "x": 2.97,
+          "y": 15,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-15",
+          "name": "15",
+          "x": 2.97,
+          "y": 85,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-16",
+          "name": "16",
+          "x": 8.9,
+          "y": 85,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-18",
+          "name": "18",
+          "x": 14.83,
+          "y": 85,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        }
+      ]
+    },
+    {
+      "id": "ad-dold-mk7854n",
+      "name": "MK7854N / MK7873N timer · Dold (MK7854N-82-61, MK7873N-82-61-3S, MK7873N-82-61-30S, MK7873N-82-61-300S)",
+      "category": "AD relays: timers",
+      "mount": "rail",
+      "prefix": "K",
+      "w": 23.0,
+      "h": 89.9,
+      "fill": "#e4e6e3",
+      "radius": 1,
+      "showName": false,
+      "terminals": [
+        {
+          "id": "t-a1p",
+          "name": "A1+",
+          "x": 2.88,
+          "y": 5,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-15",
+          "name": "15",
+          "x": 8.62,
+          "y": 5,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-25",
+          "name": "25",
+          "x": 14.38,
+          "y": 5,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-26",
+          "name": "26",
+          "x": 2.88,
+          "y": 75,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-28",
+          "name": "28",
+          "x": 8.62,
+          "y": 75,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-16",
+          "name": "16",
+          "x": 2.88,
+          "y": 85,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-18",
+          "name": "18",
+          "x": 8.62,
+          "y": 85,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-a2",
+          "name": "A2",
+          "x": 14.38,
+          "y": 85,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        }
+      ]
+    },
+    {
+      "id": "ad-dold-mk9962n",
+      "name": "MK9962N off-delay timer · Dold (MK9962N-82-61)",
+      "category": "AD relays: timers",
+      "mount": "rail",
+      "prefix": "K",
+      "w": 23.0,
+      "h": 89.9,
+      "fill": "#e4e6e3",
+      "radius": 1,
+      "showName": false,
+      "terminals": [
+        {
+          "id": "t-a1p",
+          "name": "A1+",
+          "x": 2.88,
+          "y": 5,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-15",
+          "name": "15",
+          "x": 8.62,
+          "y": 5,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-25",
+          "name": "25",
+          "x": 14.38,
+          "y": 5,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-b1p",
+          "name": "B1+",
+          "x": 20.12,
+          "y": 5,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-x3",
+          "name": "X3",
+          "x": 20.12,
+          "y": 15,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-26",
+          "name": "26",
+          "x": 2.88,
+          "y": 75,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-28",
+          "name": "28",
+          "x": 8.62,
+          "y": 75,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-x2",
+          "name": "X2",
+          "x": 20.12,
+          "y": 75,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-16",
+          "name": "16",
+          "x": 2.88,
+          "y": 85,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-18",
+          "name": "18",
+          "x": 8.62,
+          "y": 85,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-a2",
+          "name": "A2",
+          "x": 14.38,
+          "y": 85,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        }
+      ]
+    },
+    {
+      "id": "ad-dold-mk7850n",
+      "name": "MK7850N multi-mode timer · Dold (MK7850N-82-200-61)",
+      "category": "AD relays: timers",
+      "mount": "rail",
+      "prefix": "K",
+      "w": 23.0,
+      "h": 89.9,
+      "fill": "#e4e6e3",
+      "radius": 1,
+      "showName": false,
+      "terminals": [
+        {
+          "id": "t-a1p",
+          "name": "A1+",
+          "x": 2.88,
+          "y": 5,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-15",
+          "name": "15",
+          "x": 8.62,
+          "y": 5,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-2521",
+          "name": "25/21",
+          "x": 14.38,
+          "y": 5,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-b1p",
+          "name": "B1+",
+          "x": 20.12,
+          "y": 5,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-x3",
+          "name": "X3",
+          "x": 20.12,
+          "y": 15,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-2622",
+          "name": "26/22",
+          "x": 2.88,
+          "y": 75,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-2824",
+          "name": "28/24",
+          "x": 8.62,
+          "y": 75,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-x1",
+          "name": "X1",
+          "x": 14.38,
+          "y": 75,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-x2",
+          "name": "X2",
+          "x": 20.12,
+          "y": 75,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-16",
+          "name": "16",
+          "x": 2.88,
+          "y": 85,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-18",
+          "name": "18",
+          "x": 8.62,
+          "y": 85,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-a2",
+          "name": "A2",
+          "x": 14.38,
+          "y": 85,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        }
+      ]
+    },
+    {
+      "id": "ad-dold-mk9906n",
+      "name": "MK9906N on-delay timer · Dold (MK9906N-82-61)",
+      "category": "AD relays: timers",
+      "mount": "rail",
+      "prefix": "K",
+      "w": 23.0,
+      "h": 89.9,
+      "fill": "#e4e6e3",
+      "radius": 1,
+      "showName": false,
+      "terminals": [
+        {
+          "id": "t-a1p",
+          "name": "A1+",
+          "x": 2.88,
+          "y": 5,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-15",
+          "name": "15",
+          "x": 8.62,
+          "y": 5,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-2521",
+          "name": "25/21",
+          "x": 14.38,
+          "y": 5,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-2622",
+          "name": "26/22",
+          "x": 2.88,
+          "y": 75,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-2824",
+          "name": "28/24",
+          "x": 8.62,
+          "y": 75,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-x1",
+          "name": "X1",
+          "x": 14.38,
+          "y": 75,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-x2",
+          "name": "X2",
+          "x": 20.12,
+          "y": 75,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-16",
+          "name": "16",
+          "x": 2.88,
+          "y": 85,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-18",
+          "name": "18",
+          "x": 8.62,
+          "y": 85,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-a2",
+          "name": "A2",
+          "x": 14.38,
+          "y": 85,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        }
+      ]
+    },
+    {
+      "id": "ad-klemsan-z1t",
+      "name": "Z1T timer · Klemsan (Z1T-M2, Z1T-M4, Z1T-M5, Z1T-ND100S, Z1T-NDX, Z1T-NDF, Z1T-FDF)",
+      "category": "AD relays: timers",
+      "mount": "rail",
+      "prefix": "K",
+      "w": 18.0,
+      "h": 97.7,
+      "fill": "#ef7d22",
+      "radius": 1,
+      "showName": false,
+      "terminals": [
+        {
+          "id": "t-16",
+          "name": "16",
+          "x": 3.0,
+          "y": 4.5,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-15",
+          "name": "15",
+          "x": 9.0,
+          "y": 4.5,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-18",
+          "name": "18",
+          "x": 15.0,
+          "y": 4.5,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-a2",
+          "name": "A2",
+          "x": 3.0,
+          "y": 93,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-a1",
+          "name": "A1",
+          "x": 15.0,
+          "y": 93,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        }
+      ]
+    },
+    {
+      "id": "ad-klemsan-z1k",
+      "name": "Z1K timer with B1 trigger · Klemsan (Z1K-M10, Z1K-M10A, Z1K-M2A)",
+      "category": "AD relays: timers",
+      "mount": "rail",
+      "prefix": "K",
+      "w": 18.0,
+      "h": 97.7,
+      "fill": "#ef7d22",
+      "radius": 1,
+      "showName": false,
+      "terminals": [
+        {
+          "id": "t-16",
+          "name": "16",
+          "x": 3.0,
+          "y": 4.5,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-15",
+          "name": "15",
+          "x": 9.0,
+          "y": 4.5,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-18",
+          "name": "18",
+          "x": 15.0,
+          "y": 4.5,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-a2",
+          "name": "A2",
+          "x": 3.0,
+          "y": 93,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-b1",
+          "name": "B1",
+          "x": 9.0,
+          "y": 93,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-a1",
+          "name": "A1",
+          "x": 15.0,
+          "y": 93,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        }
+      ]
+    },
+    {
+      "id": "ad-klemsan-z1a",
+      "name": "Z1A on-delay timer · Klemsan (Z1A-ND30S, Z1A-ND100S)",
+      "category": "AD relays: timers",
+      "mount": "rail",
+      "prefix": "K",
+      "w": 18.0,
+      "h": 97.7,
+      "fill": "#ef7d22",
+      "radius": 1,
+      "showName": false,
+      "terminals": [
+        {
+          "id": "t-16",
+          "name": "16",
+          "x": 3.0,
+          "y": 4.5,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-15",
+          "name": "15",
+          "x": 9.0,
+          "y": 4.5,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-18",
+          "name": "18",
+          "x": 15.0,
+          "y": 4.5,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-a1",
+          "name": "A1",
+          "x": 3.0,
+          "y": 93,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-a2",
+          "name": "A2",
+          "x": 9.0,
+          "y": 93,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-a3",
+          "name": "A3",
+          "x": 15.0,
+          "y": 93,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        }
+      ]
+    },
+    {
+      "id": "ad-klemsan-z1t-lr2",
+      "name": "Z1T-LR.2 left-right timer, 2 changeover · Klemsan",
+      "category": "AD relays: timers",
+      "mount": "rail",
+      "prefix": "K",
+      "w": 18.0,
+      "h": 97.7,
+      "fill": "#ef7d22",
+      "radius": 1,
+      "showName": false,
+      "terminals": [
+        {
+          "id": "t-16",
+          "name": "16",
+          "x": 3.0,
+          "y": 4.5,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-15",
+          "name": "15",
+          "x": 9.0,
+          "y": 4.5,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-18",
+          "name": "18",
+          "x": 15.0,
+          "y": 4.5,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-26",
+          "name": "26",
+          "x": 3.0,
+          "y": 16,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-25",
+          "name": "25",
+          "x": 9.0,
+          "y": 16,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-28",
+          "name": "28",
+          "x": 15.0,
+          "y": 16,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-a2",
+          "name": "A2",
+          "x": 3.0,
+          "y": 93,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-a1",
+          "name": "A1",
+          "x": 15.0,
+          "y": 93,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        }
+      ]
+    },
+    {
+      "id": "ad-klemsan-z1t-sd",
+      "name": "Z1T-SD star-delta timer · Klemsan (Z1T-SD, Z1T-SD-500)",
+      "category": "AD relays: timers",
+      "mount": "rail",
+      "prefix": "K",
+      "w": 18.0,
+      "h": 97.7,
+      "fill": "#ef7d22",
+      "radius": 1,
+      "showName": false,
+      "terminals": [
+        {
+          "id": "t-17",
+          "name": "17",
+          "x": 4.5,
+          "y": 4.5,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-18",
+          "name": "18",
+          "x": 13.5,
+          "y": 4.5,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-28",
+          "name": "28",
+          "x": 13.5,
+          "y": 16,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-a2",
+          "name": "A2",
+          "x": 3.0,
+          "y": 93,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-a1",
+          "name": "A1",
+          "x": 15.0,
+          "y": 93,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        }
+      ]
+    },
+    {
+      "id": "ad-skt-781",
+      "name": "781-1C-SKT socket · AutomationDirect (for 781 SPDT relays)",
+      "category": "AD relays: sockets",
+      "mount": "rail",
+      "prefix": "K",
+      "w": 17.0,
+      "h": 67.6,
+      "fill": "#d8d5cb",
+      "radius": 1,
+      "showName": false,
+      "terminals": [
+        {
+          "id": "t-14",
+          "name": "14",
+          "x": 8.5,
+          "y": 5,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-12",
+          "name": "12",
+          "x": 8.5,
+          "y": 12.5,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-a2",
+          "name": "A2",
+          "x": 4.25,
+          "y": 52,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-a1",
+          "name": "A1",
+          "x": 12.75,
+          "y": 52,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-11",
+          "name": "11",
+          "x": 8.5,
+          "y": 61.5,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        }
+      ]
+    },
+    {
+      "id": "ad-skt-782",
+      "name": "782-2C-SKT socket · AutomationDirect (for 782 and AD-70S2 DPDT relays)",
+      "category": "AD relays: sockets",
+      "mount": "rail",
+      "prefix": "K",
+      "w": 24.4,
+      "h": 79.2,
+      "fill": "#d8d5cb",
+      "radius": 1,
+      "showName": false,
+      "terminals": [
+        {
+          "id": "t-44",
+          "name": "44",
+          "x": 6.1,
+          "y": 5,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-14",
+          "name": "14",
+          "x": 18.3,
+          "y": 5,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-42",
+          "name": "42",
+          "x": 6.1,
+          "y": 13,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-12",
+          "name": "12",
+          "x": 18.3,
+          "y": 13,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-a2",
+          "name": "A2",
+          "x": 6.1,
+          "y": 65,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-a1",
+          "name": "A1",
+          "x": 18.3,
+          "y": 65,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-41",
+          "name": "41",
+          "x": 6.1,
+          "y": 74,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-11",
+          "name": "11",
+          "x": 18.3,
+          "y": 74,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        }
+      ]
+    },
+    {
+      "id": "ad-skt-782-4c",
+      "name": "782-4C-SKT socket · AutomationDirect (for H782 4PDT relays)",
+      "category": "AD relays: sockets",
+      "mount": "rail",
+      "prefix": "K",
+      "w": 26.9,
+      "h": 79.0,
+      "fill": "#d8d5cb",
+      "radius": 1,
+      "showName": false,
+      "terminals": [
+        {
+          "id": "t-44",
+          "name": "44",
+          "x": 3.36,
+          "y": 5,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-34",
+          "name": "34",
+          "x": 10.09,
+          "y": 5,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-24",
+          "name": "24",
+          "x": 16.81,
+          "y": 5,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-14",
+          "name": "14",
+          "x": 23.54,
+          "y": 5,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-42",
+          "name": "42",
+          "x": 3.36,
+          "y": 12,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-32",
+          "name": "32",
+          "x": 10.09,
+          "y": 12,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-22",
+          "name": "22",
+          "x": 16.81,
+          "y": 12,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-12",
+          "name": "12",
+          "x": 23.54,
+          "y": 12,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-41",
+          "name": "41",
+          "x": 3.36,
+          "y": 19,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-31",
+          "name": "31",
+          "x": 10.09,
+          "y": 19,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-21",
+          "name": "21",
+          "x": 16.81,
+          "y": 19,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-11",
+          "name": "11",
+          "x": 23.54,
+          "y": 19,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-a2",
+          "name": "A2",
+          "x": 6.72,
+          "y": 73,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-a1",
+          "name": "A1",
+          "x": 20.17,
+          "y": 73,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        }
+      ]
+    },
+    {
+      "id": "ad-skt-783",
+      "name": "783-3C-SKT socket · AutomationDirect (for 783 3PDT relays)",
+      "category": "AD relays: sockets",
+      "mount": "rail",
+      "prefix": "K",
+      "w": 39.9,
+      "h": 79.0,
+      "fill": "#d8d5cb",
+      "radius": 1,
+      "showName": false,
+      "terminals": [
+        {
+          "id": "t-44",
+          "name": "44",
+          "x": 6.65,
+          "y": 5,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-24",
+          "name": "24",
+          "x": 19.95,
+          "y": 5,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-14",
+          "name": "14",
+          "x": 33.25,
+          "y": 5,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-42",
+          "name": "42",
+          "x": 6.65,
+          "y": 13,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-22",
+          "name": "22",
+          "x": 19.95,
+          "y": 13,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-12",
+          "name": "12",
+          "x": 33.25,
+          "y": 13,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-a2",
+          "name": "A2",
+          "x": 6.65,
+          "y": 65,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-a1",
+          "name": "A1",
+          "x": 33.25,
+          "y": 65,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-41",
+          "name": "41",
+          "x": 6.65,
+          "y": 74,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-21",
+          "name": "21",
+          "x": 19.95,
+          "y": 74,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-11",
+          "name": "11",
+          "x": 33.25,
+          "y": 74,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        }
+      ]
+    },
+    {
+      "id": "ad-skt-784",
+      "name": "784-4C-SKT-1 socket · AutomationDirect (for 784 4PDT relays)",
+      "category": "AD relays: sockets",
+      "mount": "rail",
+      "prefix": "K",
+      "w": 49.8,
+      "h": 79.2,
+      "fill": "#d8d5cb",
+      "radius": 1,
+      "showName": false,
+      "terminals": [
+        {
+          "id": "t-44",
+          "name": "44",
+          "x": 6.22,
+          "y": 5,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-34",
+          "name": "34",
+          "x": 18.67,
+          "y": 5,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-24",
+          "name": "24",
+          "x": 31.12,
+          "y": 5,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-14",
+          "name": "14",
+          "x": 43.57,
+          "y": 5,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-42",
+          "name": "42",
+          "x": 6.22,
+          "y": 13,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-32",
+          "name": "32",
+          "x": 18.67,
+          "y": 13,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-22",
+          "name": "22",
+          "x": 31.12,
+          "y": 13,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-12",
+          "name": "12",
+          "x": 43.57,
+          "y": 13,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-a2",
+          "name": "A2",
+          "x": 6.22,
+          "y": 65,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-a1",
+          "name": "A1",
+          "x": 43.57,
+          "y": 65,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-41",
+          "name": "41",
+          "x": 6.22,
+          "y": 74,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-31",
+          "name": "31",
+          "x": 18.67,
+          "y": 74,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-21",
+          "name": "21",
+          "x": 31.12,
+          "y": 74,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-11",
+          "name": "11",
+          "x": 43.57,
+          "y": 74,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        }
+      ]
+    },
+    {
+      "id": "ad-skt-750-2c",
+      "name": "750-2C-SKT 8-pin socket · AutomationDirect (for 750-2C and H750-2C relays)",
+      "category": "AD relays: sockets",
+      "mount": "rail",
+      "prefix": "K",
+      "w": 36.1,
+      "h": 72.4,
+      "fill": "#d8d5cb",
+      "radius": 1,
+      "showName": false,
+      "terminals": [
+        {
+          "id": "t-5",
+          "name": "5",
+          "x": 6.02,
+          "y": 5,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-1",
+          "name": "1",
+          "x": 18.05,
+          "y": 5,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-4",
+          "name": "4",
+          "x": 30.08,
+          "y": 5,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-6",
+          "name": "6",
+          "x": 6.02,
+          "y": 13,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-8",
+          "name": "8",
+          "x": 18.05,
+          "y": 13,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-3",
+          "name": "3",
+          "x": 30.08,
+          "y": 13,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-7",
+          "name": "7",
+          "x": 5.0,
+          "y": 67,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-2",
+          "name": "2",
+          "x": 31.1,
+          "y": 67,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        }
+      ]
+    },
+    {
+      "id": "ad-skt-750-3c",
+      "name": "750-3C-SKT 11-pin socket · AutomationDirect (for 750-3C, H750-3C and 755 relays)",
+      "category": "AD relays: sockets",
+      "mount": "rail",
+      "prefix": "K",
+      "w": 36.8,
+      "h": 76.7,
+      "fill": "#d8d5cb",
+      "radius": 1,
+      "showName": false,
+      "terminals": [
+        {
+          "id": "t-4",
+          "name": "4",
+          "x": 4.6,
+          "y": 5,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-3",
+          "name": "3",
+          "x": 13.8,
+          "y": 5,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-7",
+          "name": "7",
+          "x": 23.0,
+          "y": 5,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-8",
+          "name": "8",
+          "x": 32.2,
+          "y": 5,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-1",
+          "name": "1",
+          "x": 6.13,
+          "y": 13,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-6",
+          "name": "6",
+          "x": 18.4,
+          "y": 13,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-11",
+          "name": "11",
+          "x": 30.67,
+          "y": 13,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-5",
+          "name": "5",
+          "x": 6.13,
+          "y": 21,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-9",
+          "name": "9",
+          "x": 30.67,
+          "y": 21,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-2",
+          "name": "2",
+          "x": 5.0,
+          "y": 71.5,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-10",
+          "name": "10",
+          "x": 31.8,
+          "y": 71.5,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        }
+      ]
+    },
+    {
+      "id": "ad-macromatic-70169-d",
+      "name": "70169-D 8-pin socket · Macromatic (for ProSense PMRU-2C-500A and PMRU-2C-600A phase monitors)",
+      "category": "AD relays: sockets",
+      "mount": "rail",
+      "prefix": "K",
+      "w": 40.0,
+      "h": 53.1,
+      "fill": "#d8d5cb",
+      "radius": 1,
+      "showName": false,
+      "terminals": [
+        {
+          "id": "t-1",
+          "name": "1",
+          "x": 5.0,
+          "y": 5,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-2",
+          "name": "2",
+          "x": 15.0,
+          "y": 5,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-3",
+          "name": "3",
+          "x": 25.0,
+          "y": 5,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-4",
+          "name": "4",
+          "x": 35.0,
+          "y": 5,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-8",
+          "name": "8",
+          "x": 5.0,
+          "y": 48,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-7",
+          "name": "7",
+          "x": 15.0,
+          "y": 48,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-6",
+          "name": "6",
+          "x": 25.0,
+          "y": 48,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-5",
+          "name": "5",
+          "x": 35.0,
+          "y": 48,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        }
+      ]
+    },
+    {
+      "id": "ad-macromatic-70170-d",
+      "name": "70170-D 11-pin socket · Macromatic (for ProSense 11-pin relays)",
+      "category": "AD relays: sockets",
+      "mount": "rail",
+      "prefix": "K",
+      "w": 51.1,
+      "h": 58.4,
+      "fill": "#d8d5cb",
+      "radius": 1,
+      "showName": false,
+      "terminals": [
+        {
+          "id": "t-1",
+          "name": "1",
+          "x": 4.26,
+          "y": 5,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-2",
+          "name": "2",
+          "x": 12.78,
+          "y": 5,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-3",
+          "name": "3",
+          "x": 21.29,
+          "y": 5,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-4",
+          "name": "4",
+          "x": 29.81,
+          "y": 5,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-5",
+          "name": "5",
+          "x": 38.33,
+          "y": 5,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-6",
+          "name": "6",
+          "x": 46.84,
+          "y": 5,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-11",
+          "name": "11",
+          "x": 5.11,
+          "y": 53,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-10",
+          "name": "10",
+          "x": 15.33,
+          "y": 53,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-9",
+          "name": "9",
+          "x": 25.55,
+          "y": 53,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-8",
+          "name": "8",
+          "x": 35.77,
+          "y": 53,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-7",
+          "name": "7",
+          "x": 45.99,
+          "y": 53,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        }
+      ]
+    },
+    {
+      "id": "ad-fuji-tp48x",
+      "name": "TP48X 8-pin socket · Fuji (for MS4SA and MS4SC timers)",
+      "category": "AD relays: sockets",
+      "mount": "rail",
+      "prefix": "K",
+      "w": 40.0,
+      "h": 70.0,
+      "fill": "#3a3c40",
+      "radius": 1,
+      "showName": false,
+      "terminals": [
+        {
+          "id": "t-6",
+          "name": "6",
+          "x": 5.0,
+          "y": 5,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-5",
+          "name": "5",
+          "x": 15.0,
+          "y": 5,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-4",
+          "name": "4",
+          "x": 25.0,
+          "y": 5,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-3",
+          "name": "3",
+          "x": 35.0,
+          "y": 5,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-7",
+          "name": "7",
+          "x": 5.0,
+          "y": 65,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-8",
+          "name": "8",
+          "x": 15.0,
+          "y": 65,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-1",
+          "name": "1",
+          "x": 25.0,
+          "y": 65,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-2",
+          "name": "2",
+          "x": 35.0,
+          "y": 65,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        }
+      ]
+    },
+    {
+      "id": "ad-fuji-tp411x",
+      "name": "TP411X 11-pin socket · Fuji (for MS4SM timers)",
+      "category": "AD relays: sockets",
+      "mount": "rail",
+      "prefix": "K",
+      "w": 40.0,
+      "h": 70.0,
+      "fill": "#3a3c40",
+      "radius": 1,
+      "showName": false,
+      "terminals": [
+        {
+          "id": "t-8",
+          "name": "8",
+          "x": 5.0,
+          "y": 5,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-7",
+          "name": "7",
+          "x": 15.0,
+          "y": 5,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-6",
+          "name": "6",
+          "x": 25.0,
+          "y": 5,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-5",
+          "name": "5",
+          "x": 35.0,
+          "y": 5,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-9",
+          "name": "9",
+          "x": 6.67,
+          "y": 57,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-10",
+          "name": "10",
+          "x": 20.0,
+          "y": 57,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-11",
+          "name": "11",
+          "x": 33.33,
+          "y": 57,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-1",
+          "name": "1",
+          "x": 5.0,
+          "y": 65,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-2",
+          "name": "2",
+          "x": 15.0,
+          "y": 65,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-3",
+          "name": "3",
+          "x": 25.0,
+          "y": 65,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-4",
+          "name": "4",
+          "x": 35.0,
+          "y": 65,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        }
+      ]
+    },
+    {
+      "id": "ad-fuji-tp88x2",
+      "name": "TP88X2 socket · Fuji (for ST7P timers)",
+      "category": "AD relays: sockets",
+      "mount": "rail",
+      "prefix": "K",
+      "w": 32.4,
+      "h": 69.0,
+      "fill": "#3a3c40",
+      "radius": 1,
+      "showName": false,
+      "terminals": [
+        {
+          "id": "t-4",
+          "name": "4",
+          "x": 8.1,
+          "y": 5,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-1",
+          "name": "1",
+          "x": 24.3,
+          "y": 5,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-8",
+          "name": "8",
+          "x": 8.1,
+          "y": 12.5,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-5",
+          "name": "5",
+          "x": 24.3,
+          "y": 12.5,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-12",
+          "name": "12",
+          "x": 8.1,
+          "y": 56.5,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-9",
+          "name": "9",
+          "x": 24.3,
+          "y": 56.5,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-14",
+          "name": "14",
+          "x": 8.1,
+          "y": 64,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "t-13",
+          "name": "13",
+          "x": 24.3,
+          "y": 64,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        }
+      ]
+    }
+  ]
+}

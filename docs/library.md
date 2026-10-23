@@ -62,6 +62,21 @@ To offer a new library in the list, put its file in `libraries/` and add an entr
 | `description` | Optional. A sentence shown under the name. |
 | `types` | Optional. How many object types it has, shown in the list. |
 
+### Libraries that come with DIN Stack
+
+| Library | What's in it |
+| --- | --- |
+| **AutomationDirect DIN-rail relays** ([`automationdirect-din-relays.json`](../libraries/automationdirect-din-relays.json)) | DIN-rail relays, timers, monitoring relays and relay sockets sold by AutomationDirect: 59 object types covering 206 part numbers (Murrelektronik, Klemsan, Dold, Gefran, Macromatic, Fuji and AutomationDirect's own sockets). |
+
+About the AutomationDirect library:
+
+- **One type per housing.** Models that differ only in coil voltage, timing range or rating share a type. Each type's name lists the part numbers it covers, so searching the library for a part number such as `52000` or `GRSH` finds it.
+- **Sizes** come from AutomationDirect's dimension drawings. **Terminal names** are the ones printed on the device. **Terminal positions** are approximate, placed from the drawings and product photos. Check them against your hardware before relying on the layout.
+- **Plug-in relays** go on the rail through a socket, so the library has the socket, not the relay. Socket terminals use the IEC numbers (A1, A2, 11, 12, 14…), except the octal and Fuji timer sockets, which use pin numbers.
+- **Dold force guided modules** label each contact terminal with both of its possible numbers, such as `11/13`, because the same base takes relays with different contact arrangements.
+- **Gefran GRSH** types are grouped by housing width and control option. The fan supply wiring of the 90–120 A models isn't included.
+- Gefran heatsinks (HS-…, DIS-90G-KIT) are left out, as they have no terminals.
+
 ## Creating an object type
 
 | To… | Do this |

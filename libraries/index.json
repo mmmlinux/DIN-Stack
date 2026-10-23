@@ -1,4 +1,11 @@
 {
   "type": "dinstack-catalog",
-  "libraries": []
+  "libraries": [
+    {
+      "file": "automationdirect-din-relays.json",
+      "name": "AutomationDirect DIN-rail relays",
+      "description": "Relays, timers, monitoring relays and relay sockets for 35 mm DIN rail sold by AutomationDirect: Murrelektronik, Klemsan, Dold, Gefran, Macromatic, Fuji and AutomationDirect sockets.",
+      "types": 59
+    }
+  ]
 }

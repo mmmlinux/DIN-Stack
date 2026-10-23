@@ -1,5 +1,20 @@
 # Release notes
 
+## 1.1.3 — 2026-10-22
+
+- Added `TODO.md`, a list of open items. Most are the AutomationDirect library types whose terminal layout still needs checking against real hardware.
+
+## 1.1.2 — 2026-10-22
+
+Numbered 1.0.35 while developed on its own branch, renumbered to follow 1.1.1 (the to-do list above was 1.0.36).
+
+- **AutomationDirect relay library:** a ready-made library, *AutomationDirect DIN-rail relays*, with the DIN-rail relays, timers, monitoring relays and relay sockets that AutomationDirect sells. Add it from **+ Add a library…** at the bottom of the library drop-down.
+  - 59 object types covering 206 part numbers, in seven *AD relays* categories: interface, solid state & optocoupler, force guided, intrinsically safe, monitoring, timers and sockets.
+  - Brands: Murrelektronik, Klemsan, Dold, Gefran, Macromatic, Fuji Electric and AutomationDirect's own sockets.
+  - Sizes come from AutomationDirect's drawings, and terminals carry the names printed on the devices. Terminal positions are approximate.
+  - Search the library by part number (for example `52000`, `RK7814` or `GRSH`) to find the type that covers it.
+- The library guide has a new *Libraries that come with DIN Stack* section explaining how it's organised.
+
 ## 1.1.1 — 2026-10-22
 
 Version number set by hand as a new minor release. It brings together the changes made since 1.0.34, which were numbered 1.0.35 and 1.0.36 during development and never released under those numbers.
