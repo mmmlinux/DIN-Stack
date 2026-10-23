@@ -1,5 +1,25 @@
 # Release notes
 
+## 1.2.2 — 2026-10-23
+
+- **UT accessories:** the *Phoenix Contact UT terminal blocks* library now has 64 types, adding the accessories that take up rail space:
+  - partition plates for UT, TWIN, QUATTRO, UTTB and three-level blocks, and the UTTB spacer plate;
+  - end clamps: CLIPFIX 35-5, CLIPFIX 35, E/UK and E/NS 35 N.
+- Plug-in bridges aren't separate types: draw them as bus bars through the blocks' bridge slots. If you added the library before, use **Update** in **+ Add a library…** to get the new types.
+
+## 1.2.1 — 2026-10-22
+
+The first change after the 1.1.3 commit, so the middle number goes up. Developed as 1.1.4 and 1.1.5 (the UT accessories above); those numbers were never released and are skipped.
+
+- **Phoenix Contact UT library:** a new ready-made library, *Phoenix Contact UT terminal blocks*, in **+ Add a library…**. It has 54 types:
+  - feed-through blocks from UT 1,5 to UT 35, in grey and blue;
+  - ground (PE) blocks;
+  - TWIN (3-connection) and QUATTRO (4-connection) blocks;
+  - double-level UTTB and three-level blocks, including PE/L/N;
+  - fuse (HESI) and disconnect (HEDI, MT, MTD) blocks;
+  - end covers.
+- Sizes come from Phoenix Contact's catalog, and each type's name includes its order number. Feed-through and ground blocks have two bridge slots in the middle, like the built-in terminal blocks, and can be swapped with them without losing wires.
+
 ## 1.1.3 — 2026-10-22
 
 - Added `TODO.md`, a list of open items. Most are the AutomationDirect library types whose terminal layout still needs checking against real hardware.

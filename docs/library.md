@@ -67,6 +67,7 @@ To offer a new library in the list, put its file in `libraries/` and add an entr
 | Library | What's in it |
 | --- | --- |
 | **AutomationDirect DIN-rail relays** ([`automationdirect-din-relays.json`](../libraries/automationdirect-din-relays.json)) | DIN-rail relays, timers, monitoring relays and relay sockets sold by AutomationDirect: 59 object types covering 206 part numbers (Murrelektronik, Klemsan, Dold, Gefran, Macromatic, Fuji and AutomationDirect's own sockets). |
+| **Phoenix Contact UT terminal blocks** ([`phoenix-contact-ut.json`](../libraries/phoenix-contact-ut.json)) | 64 types: UT screw terminal blocks (feed-through UT 1,5 to UT 35 in grey and blue, ground (PE), TWIN and QUATTRO, double-level UTTB, three-level, fuse (HESI), and disconnect (HEDI, MT, MTD) blocks) and the accessories that take up rail space: end covers, partition and spacer plates, and end clamps. Each type's name includes its order number. |
 
 About the AutomationDirect library:
 
@@ -76,6 +77,18 @@ About the AutomationDirect library:
 - **Dold force guided modules** label each contact terminal with both of its possible numbers, such as `11/13`, because the same base takes relays with different contact arrangements.
 - **Gefran GRSH** types are grouped by housing width and control option. The fan supply wiring of the 90–120 A models isn't included.
 - Gefran heatsinks (HS-…, DIS-90G-KIT) are left out, as they have no terminals.
+
+About the Phoenix Contact UT library:
+
+- **Sizes** (width along the rail and length across it) come from Phoenix Contact's CLIPLINE complete catalog. UT 1,5 comes from distributor and CAD data. Screw and bridge positions are approximate.
+- **Feed-through and ground blocks** work like the built-in terminal blocks. Their terminals are linked, and two bus bar slots in the middle take the FBS plug-in bridges. They use the same internal terminal ids as the built-in blocks, so a part can be switched between a built-in block and a UT block (with **Type** in its panel) without losing its wires.
+- **Multi-level blocks:** each level is a separate circuit. The lowest level's screws are at the ends, and the upper levels' are further in. On the PE/L/N blocks the terminals are named after their level.
+- **Fuse and disconnect blocks** (HESI, HEDI, MT, MTD) don't link their two sides, since they're only connected while the fuse is in or the disconnect is closed. Each side has its own bridge slot.
+- **End covers** (D-UT…) are 2.2 mm wide parts with no terminals. Put one at the open end of a strip.
+- **Partition plates** (ATP-UT…, TP-UK) separate groups of blocks, for example where a plug-in bridge is cut short or two voltages meet. The **DP-UTTB spacer plate** levels out the offset between UTTB blocks. Plates are a little longer than the blocks they go between.
+- **End clamps** hold a strip in place at each end: CLIPFIX 35-5 (5.15 mm, the one Phoenix lists for UT 2,5), CLIPFIX 35, E/UK and E/NS 35 N (9.5 mm).
+- **Plug-in bridges** (FBS…) and reducing bridges (RB…) aren't object types: draw them with **Bus bar** through the blocks' B1 or B2 slots. Markers, test plugs and warning signs don't take rail space and aren't included.
+- Colours other than grey, blue and green-yellow (orange, red, black) and the LED variants of the fuse blocks aren't included. Duplicate the nearest type and change its colour.
 
 ## Creating an object type
 

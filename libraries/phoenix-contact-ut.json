@@ -1,0 +1,3021 @@
+{
+  "type": "dinstack-library",
+  "app": "1.2.2",
+  "name": "Phoenix Contact UT terminal blocks",
+  "templates": [
+    {
+      "id": "pxc-ut-1-5",
+      "name": "UT 1,5 feed-through, 1.5 mm², grey (1452265)",
+      "library": "Phoenix Contact UT terminal blocks",
+      "category": "Feed-through",
+      "mount": "rail",
+      "prefix": "TB",
+      "w": 4.15,
+      "h": 48.0,
+      "fill": "#c3c8ce",
+      "radius": 0.5,
+      "showName": false,
+      "terminals": [
+        {
+          "id": "a",
+          "name": "1",
+          "x": 2.08,
+          "y": 6,
+          "side": "auto",
+          "link": "1",
+          "kind": "wire"
+        },
+        {
+          "id": "b",
+          "name": "2",
+          "x": 2.08,
+          "y": 42.0,
+          "side": "auto",
+          "link": "1",
+          "kind": "wire"
+        },
+        {
+          "id": "s1",
+          "name": "B1",
+          "x": 2.08,
+          "y": 21.0,
+          "side": "auto",
+          "link": "1",
+          "kind": "bus"
+        },
+        {
+          "id": "s2",
+          "name": "B2",
+          "x": 2.08,
+          "y": 27.0,
+          "side": "auto",
+          "link": "1",
+          "kind": "bus"
+        }
+      ]
+    },
+    {
+      "id": "pxc-ut-2-5",
+      "name": "UT 2,5 feed-through, 2.5 mm², grey (3044076)",
+      "library": "Phoenix Contact UT terminal blocks",
+      "category": "Feed-through",
+      "mount": "rail",
+      "prefix": "TB",
+      "w": 5.2,
+      "h": 47.7,
+      "fill": "#c3c8ce",
+      "radius": 0.5,
+      "showName": false,
+      "terminals": [
+        {
+          "id": "a",
+          "name": "1",
+          "x": 2.6,
+          "y": 6,
+          "side": "auto",
+          "link": "1",
+          "kind": "wire"
+        },
+        {
+          "id": "b",
+          "name": "2",
+          "x": 2.6,
+          "y": 41.7,
+          "side": "auto",
+          "link": "1",
+          "kind": "wire"
+        },
+        {
+          "id": "s1",
+          "name": "B1",
+          "x": 2.6,
+          "y": 20.85,
+          "side": "auto",
+          "link": "1",
+          "kind": "bus"
+        },
+        {
+          "id": "s2",
+          "name": "B2",
+          "x": 2.6,
+          "y": 26.85,
+          "side": "auto",
+          "link": "1",
+          "kind": "bus"
+        }
+      ]
+    },
+    {
+      "id": "pxc-ut-2-5-bu",
+      "name": "UT 2,5 BU feed-through, 2.5 mm², blue (3044089)",
+      "library": "Phoenix Contact UT terminal blocks",
+      "category": "Feed-through",
+      "mount": "rail",
+      "prefix": "TB",
+      "w": 5.2,
+      "h": 47.7,
+      "fill": "#7fb2e0",
+      "radius": 0.5,
+      "showName": false,
+      "terminals": [
+        {
+          "id": "a",
+          "name": "1",
+          "x": 2.6,
+          "y": 6,
+          "side": "auto",
+          "link": "1",
+          "kind": "wire"
+        },
+        {
+          "id": "b",
+          "name": "2",
+          "x": 2.6,
+          "y": 41.7,
+          "side": "auto",
+          "link": "1",
+          "kind": "wire"
+        },
+        {
+          "id": "s1",
+          "name": "B1",
+          "x": 2.6,
+          "y": 20.85,
+          "side": "auto",
+          "link": "1",
+          "kind": "bus"
+        },
+        {
+          "id": "s2",
+          "name": "B2",
+          "x": 2.6,
+          "y": 26.85,
+          "side": "auto",
+          "link": "1",
+          "kind": "bus"
+        }
+      ]
+    },
+    {
+      "id": "pxc-ut-2-5-pe",
+      "name": "UT 2,5-PE ground, 2.5 mm² (3044092)",
+      "library": "Phoenix Contact UT terminal blocks",
+      "category": "Ground (PE)",
+      "mount": "rail",
+      "prefix": "TB",
+      "w": 5.2,
+      "h": 47.7,
+      "fill": "#b5d86a",
+      "radius": 0.5,
+      "showName": false,
+      "terminals": [
+        {
+          "id": "a",
+          "name": "1",
+          "x": 2.6,
+          "y": 6,
+          "side": "auto",
+          "link": "1",
+          "kind": "wire"
+        },
+        {
+          "id": "b",
+          "name": "2",
+          "x": 2.6,
+          "y": 41.7,
+          "side": "auto",
+          "link": "1",
+          "kind": "wire"
+        },
+        {
+          "id": "s1",
+          "name": "B1",
+          "x": 2.6,
+          "y": 20.85,
+          "side": "auto",
+          "link": "1",
+          "kind": "bus"
+        },
+        {
+          "id": "s2",
+          "name": "B2",
+          "x": 2.6,
+          "y": 26.85,
+          "side": "auto",
+          "link": "1",
+          "kind": "bus"
+        }
+      ]
+    },
+    {
+      "id": "pxc-ut-4",
+      "name": "UT 4 feed-through, 4 mm², grey (3044102)",
+      "library": "Phoenix Contact UT terminal blocks",
+      "category": "Feed-through",
+      "mount": "rail",
+      "prefix": "TB",
+      "w": 6.2,
+      "h": 47.7,
+      "fill": "#c3c8ce",
+      "radius": 0.5,
+      "showName": false,
+      "terminals": [
+        {
+          "id": "a",
+          "name": "1",
+          "x": 3.1,
+          "y": 6,
+          "side": "auto",
+          "link": "1",
+          "kind": "wire"
+        },
+        {
+          "id": "b",
+          "name": "2",
+          "x": 3.1,
+          "y": 41.7,
+          "side": "auto",
+          "link": "1",
+          "kind": "wire"
+        },
+        {
+          "id": "s1",
+          "name": "B1",
+          "x": 3.1,
+          "y": 20.85,
+          "side": "auto",
+          "link": "1",
+          "kind": "bus"
+        },
+        {
+          "id": "s2",
+          "name": "B2",
+          "x": 3.1,
+          "y": 26.85,
+          "side": "auto",
+          "link": "1",
+          "kind": "bus"
+        }
+      ]
+    },
+    {
+      "id": "pxc-ut-4-bu",
+      "name": "UT 4 BU feed-through, 4 mm², blue (3044115)",
+      "library": "Phoenix Contact UT terminal blocks",
+      "category": "Feed-through",
+      "mount": "rail",
+      "prefix": "TB",
+      "w": 6.2,
+      "h": 47.7,
+      "fill": "#7fb2e0",
+      "radius": 0.5,
+      "showName": false,
+      "terminals": [
+        {
+          "id": "a",
+          "name": "1",
+          "x": 3.1,
+          "y": 6,
+          "side": "auto",
+          "link": "1",
+          "kind": "wire"
+        },
+        {
+          "id": "b",
+          "name": "2",
+          "x": 3.1,
+          "y": 41.7,
+          "side": "auto",
+          "link": "1",
+          "kind": "wire"
+        },
+        {
+          "id": "s1",
+          "name": "B1",
+          "x": 3.1,
+          "y": 20.85,
+          "side": "auto",
+          "link": "1",
+          "kind": "bus"
+        },
+        {
+          "id": "s2",
+          "name": "B2",
+          "x": 3.1,
+          "y": 26.85,
+          "side": "auto",
+          "link": "1",
+          "kind": "bus"
+        }
+      ]
+    },
+    {
+      "id": "pxc-ut-4-pe",
+      "name": "UT 4-PE ground, 4 mm² (3044128)",
+      "library": "Phoenix Contact UT terminal blocks",
+      "category": "Ground (PE)",
+      "mount": "rail",
+      "prefix": "TB",
+      "w": 6.2,
+      "h": 47.7,
+      "fill": "#b5d86a",
+      "radius": 0.5,
+      "showName": false,
+      "terminals": [
+        {
+          "id": "a",
+          "name": "1",
+          "x": 3.1,
+          "y": 6,
+          "side": "auto",
+          "link": "1",
+          "kind": "wire"
+        },
+        {
+          "id": "b",
+          "name": "2",
+          "x": 3.1,
+          "y": 41.7,
+          "side": "auto",
+          "link": "1",
+          "kind": "wire"
+        },
+        {
+          "id": "s1",
+          "name": "B1",
+          "x": 3.1,
+          "y": 20.85,
+          "side": "auto",
+          "link": "1",
+          "kind": "bus"
+        },
+        {
+          "id": "s2",
+          "name": "B2",
+          "x": 3.1,
+          "y": 26.85,
+          "side": "auto",
+          "link": "1",
+          "kind": "bus"
+        }
+      ]
+    },
+    {
+      "id": "pxc-ut-6",
+      "name": "UT 6 feed-through, 6 mm², grey (3044131)",
+      "library": "Phoenix Contact UT terminal blocks",
+      "category": "Feed-through",
+      "mount": "rail",
+      "prefix": "TB",
+      "w": 8.2,
+      "h": 47.7,
+      "fill": "#c3c8ce",
+      "radius": 0.5,
+      "showName": false,
+      "terminals": [
+        {
+          "id": "a",
+          "name": "1",
+          "x": 4.1,
+          "y": 6,
+          "side": "auto",
+          "link": "1",
+          "kind": "wire"
+        },
+        {
+          "id": "b",
+          "name": "2",
+          "x": 4.1,
+          "y": 41.7,
+          "side": "auto",
+          "link": "1",
+          "kind": "wire"
+        },
+        {
+          "id": "s1",
+          "name": "B1",
+          "x": 4.1,
+          "y": 20.85,
+          "side": "auto",
+          "link": "1",
+          "kind": "bus"
+        },
+        {
+          "id": "s2",
+          "name": "B2",
+          "x": 4.1,
+          "y": 26.85,
+          "side": "auto",
+          "link": "1",
+          "kind": "bus"
+        }
+      ]
+    },
+    {
+      "id": "pxc-ut-6-bu",
+      "name": "UT 6 BU feed-through, 6 mm², blue (3044144)",
+      "library": "Phoenix Contact UT terminal blocks",
+      "category": "Feed-through",
+      "mount": "rail",
+      "prefix": "TB",
+      "w": 8.2,
+      "h": 47.7,
+      "fill": "#7fb2e0",
+      "radius": 0.5,
+      "showName": false,
+      "terminals": [
+        {
+          "id": "a",
+          "name": "1",
+          "x": 4.1,
+          "y": 6,
+          "side": "auto",
+          "link": "1",
+          "kind": "wire"
+        },
+        {
+          "id": "b",
+          "name": "2",
+          "x": 4.1,
+          "y": 41.7,
+          "side": "auto",
+          "link": "1",
+          "kind": "wire"
+        },
+        {
+          "id": "s1",
+          "name": "B1",
+          "x": 4.1,
+          "y": 20.85,
+          "side": "auto",
+          "link": "1",
+          "kind": "bus"
+        },
+        {
+          "id": "s2",
+          "name": "B2",
+          "x": 4.1,
+          "y": 26.85,
+          "side": "auto",
+          "link": "1",
+          "kind": "bus"
+        }
+      ]
+    },
+    {
+      "id": "pxc-ut-6-pe",
+      "name": "UT 6-PE ground, 6 mm² (3044157)",
+      "library": "Phoenix Contact UT terminal blocks",
+      "category": "Ground (PE)",
+      "mount": "rail",
+      "prefix": "TB",
+      "w": 8.2,
+      "h": 47.7,
+      "fill": "#b5d86a",
+      "radius": 0.5,
+      "showName": false,
+      "terminals": [
+        {
+          "id": "a",
+          "name": "1",
+          "x": 4.1,
+          "y": 6,
+          "side": "auto",
+          "link": "1",
+          "kind": "wire"
+        },
+        {
+          "id": "b",
+          "name": "2",
+          "x": 4.1,
+          "y": 41.7,
+          "side": "auto",
+          "link": "1",
+          "kind": "wire"
+        },
+        {
+          "id": "s1",
+          "name": "B1",
+          "x": 4.1,
+          "y": 20.85,
+          "side": "auto",
+          "link": "1",
+          "kind": "bus"
+        },
+        {
+          "id": "s2",
+          "name": "B2",
+          "x": 4.1,
+          "y": 26.85,
+          "side": "auto",
+          "link": "1",
+          "kind": "bus"
+        }
+      ]
+    },
+    {
+      "id": "pxc-ut-10",
+      "name": "UT 10 feed-through, 10 mm², grey (3044160)",
+      "library": "Phoenix Contact UT terminal blocks",
+      "category": "Feed-through",
+      "mount": "rail",
+      "prefix": "TB",
+      "w": 10.2,
+      "h": 47.7,
+      "fill": "#c3c8ce",
+      "radius": 0.5,
+      "showName": false,
+      "terminals": [
+        {
+          "id": "a",
+          "name": "1",
+          "x": 5.1,
+          "y": 6,
+          "side": "auto",
+          "link": "1",
+          "kind": "wire"
+        },
+        {
+          "id": "b",
+          "name": "2",
+          "x": 5.1,
+          "y": 41.7,
+          "side": "auto",
+          "link": "1",
+          "kind": "wire"
+        },
+        {
+          "id": "s1",
+          "name": "B1",
+          "x": 5.1,
+          "y": 20.85,
+          "side": "auto",
+          "link": "1",
+          "kind": "bus"
+        },
+        {
+          "id": "s2",
+          "name": "B2",
+          "x": 5.1,
+          "y": 26.85,
+          "side": "auto",
+          "link": "1",
+          "kind": "bus"
+        }
+      ]
+    },
+    {
+      "id": "pxc-ut-10-bu",
+      "name": "UT 10 BU feed-through, 10 mm², blue (3044188)",
+      "library": "Phoenix Contact UT terminal blocks",
+      "category": "Feed-through",
+      "mount": "rail",
+      "prefix": "TB",
+      "w": 10.2,
+      "h": 47.7,
+      "fill": "#7fb2e0",
+      "radius": 0.5,
+      "showName": false,
+      "terminals": [
+        {
+          "id": "a",
+          "name": "1",
+          "x": 5.1,
+          "y": 6,
+          "side": "auto",
+          "link": "1",
+          "kind": "wire"
+        },
+        {
+          "id": "b",
+          "name": "2",
+          "x": 5.1,
+          "y": 41.7,
+          "side": "auto",
+          "link": "1",
+          "kind": "wire"
+        },
+        {
+          "id": "s1",
+          "name": "B1",
+          "x": 5.1,
+          "y": 20.85,
+          "side": "auto",
+          "link": "1",
+          "kind": "bus"
+        },
+        {
+          "id": "s2",
+          "name": "B2",
+          "x": 5.1,
+          "y": 26.85,
+          "side": "auto",
+          "link": "1",
+          "kind": "bus"
+        }
+      ]
+    },
+    {
+      "id": "pxc-ut-10-pe",
+      "name": "UT 10-PE ground, 10 mm² (3044173)",
+      "library": "Phoenix Contact UT terminal blocks",
+      "category": "Ground (PE)",
+      "mount": "rail",
+      "prefix": "TB",
+      "w": 10.2,
+      "h": 47.7,
+      "fill": "#b5d86a",
+      "radius": 0.5,
+      "showName": false,
+      "terminals": [
+        {
+          "id": "a",
+          "name": "1",
+          "x": 5.1,
+          "y": 6,
+          "side": "auto",
+          "link": "1",
+          "kind": "wire"
+        },
+        {
+          "id": "b",
+          "name": "2",
+          "x": 5.1,
+          "y": 41.7,
+          "side": "auto",
+          "link": "1",
+          "kind": "wire"
+        },
+        {
+          "id": "s1",
+          "name": "B1",
+          "x": 5.1,
+          "y": 20.85,
+          "side": "auto",
+          "link": "1",
+          "kind": "bus"
+        },
+        {
+          "id": "s2",
+          "name": "B2",
+          "x": 5.1,
+          "y": 26.85,
+          "side": "auto",
+          "link": "1",
+          "kind": "bus"
+        }
+      ]
+    },
+    {
+      "id": "pxc-ut-16",
+      "name": "UT 16 feed-through, 16 mm², grey (3044199)",
+      "library": "Phoenix Contact UT terminal blocks",
+      "category": "Feed-through",
+      "mount": "rail",
+      "prefix": "TB",
+      "w": 12.2,
+      "h": 55.5,
+      "fill": "#c3c8ce",
+      "radius": 0.5,
+      "showName": false,
+      "terminals": [
+        {
+          "id": "a",
+          "name": "1",
+          "x": 6.1,
+          "y": 6,
+          "side": "auto",
+          "link": "1",
+          "kind": "wire"
+        },
+        {
+          "id": "b",
+          "name": "2",
+          "x": 6.1,
+          "y": 49.5,
+          "side": "auto",
+          "link": "1",
+          "kind": "wire"
+        },
+        {
+          "id": "s1",
+          "name": "B1",
+          "x": 6.1,
+          "y": 24.75,
+          "side": "auto",
+          "link": "1",
+          "kind": "bus"
+        },
+        {
+          "id": "s2",
+          "name": "B2",
+          "x": 6.1,
+          "y": 30.75,
+          "side": "auto",
+          "link": "1",
+          "kind": "bus"
+        }
+      ]
+    },
+    {
+      "id": "pxc-ut-16-bu",
+      "name": "UT 16 BU feed-through, 16 mm², blue (3044209)",
+      "library": "Phoenix Contact UT terminal blocks",
+      "category": "Feed-through",
+      "mount": "rail",
+      "prefix": "TB",
+      "w": 12.2,
+      "h": 55.5,
+      "fill": "#7fb2e0",
+      "radius": 0.5,
+      "showName": false,
+      "terminals": [
+        {
+          "id": "a",
+          "name": "1",
+          "x": 6.1,
+          "y": 6,
+          "side": "auto",
+          "link": "1",
+          "kind": "wire"
+        },
+        {
+          "id": "b",
+          "name": "2",
+          "x": 6.1,
+          "y": 49.5,
+          "side": "auto",
+          "link": "1",
+          "kind": "wire"
+        },
+        {
+          "id": "s1",
+          "name": "B1",
+          "x": 6.1,
+          "y": 24.75,
+          "side": "auto",
+          "link": "1",
+          "kind": "bus"
+        },
+        {
+          "id": "s2",
+          "name": "B2",
+          "x": 6.1,
+          "y": 30.75,
+          "side": "auto",
+          "link": "1",
+          "kind": "bus"
+        }
+      ]
+    },
+    {
+      "id": "pxc-ut-16-pe",
+      "name": "UT 16-PE ground, 16 mm² (3044212)",
+      "library": "Phoenix Contact UT terminal blocks",
+      "category": "Ground (PE)",
+      "mount": "rail",
+      "prefix": "TB",
+      "w": 12.2,
+      "h": 55.5,
+      "fill": "#b5d86a",
+      "radius": 0.5,
+      "showName": false,
+      "terminals": [
+        {
+          "id": "a",
+          "name": "1",
+          "x": 6.1,
+          "y": 6,
+          "side": "auto",
+          "link": "1",
+          "kind": "wire"
+        },
+        {
+          "id": "b",
+          "name": "2",
+          "x": 6.1,
+          "y": 49.5,
+          "side": "auto",
+          "link": "1",
+          "kind": "wire"
+        },
+        {
+          "id": "s1",
+          "name": "B1",
+          "x": 6.1,
+          "y": 24.75,
+          "side": "auto",
+          "link": "1",
+          "kind": "bus"
+        },
+        {
+          "id": "s2",
+          "name": "B2",
+          "x": 6.1,
+          "y": 30.75,
+          "side": "auto",
+          "link": "1",
+          "kind": "bus"
+        }
+      ]
+    },
+    {
+      "id": "pxc-ut-35",
+      "name": "UT 35 feed-through, 35 mm², grey (3044225)",
+      "library": "Phoenix Contact UT terminal blocks",
+      "category": "Feed-through",
+      "mount": "rail",
+      "prefix": "TB",
+      "w": 16.0,
+      "h": 60.2,
+      "fill": "#c3c8ce",
+      "radius": 0.5,
+      "showName": false,
+      "terminals": [
+        {
+          "id": "a",
+          "name": "1",
+          "x": 8.0,
+          "y": 6,
+          "side": "auto",
+          "link": "1",
+          "kind": "wire"
+        },
+        {
+          "id": "b",
+          "name": "2",
+          "x": 8.0,
+          "y": 54.2,
+          "side": "auto",
+          "link": "1",
+          "kind": "wire"
+        },
+        {
+          "id": "s1",
+          "name": "B1",
+          "x": 8.0,
+          "y": 27.1,
+          "side": "auto",
+          "link": "1",
+          "kind": "bus"
+        },
+        {
+          "id": "s2",
+          "name": "B2",
+          "x": 8.0,
+          "y": 33.1,
+          "side": "auto",
+          "link": "1",
+          "kind": "bus"
+        }
+      ]
+    },
+    {
+      "id": "pxc-ut-35-bu",
+      "name": "UT 35 BU feed-through, 35 mm², blue (3044238)",
+      "library": "Phoenix Contact UT terminal blocks",
+      "category": "Feed-through",
+      "mount": "rail",
+      "prefix": "TB",
+      "w": 16.0,
+      "h": 60.2,
+      "fill": "#7fb2e0",
+      "radius": 0.5,
+      "showName": false,
+      "terminals": [
+        {
+          "id": "a",
+          "name": "1",
+          "x": 8.0,
+          "y": 6,
+          "side": "auto",
+          "link": "1",
+          "kind": "wire"
+        },
+        {
+          "id": "b",
+          "name": "2",
+          "x": 8.0,
+          "y": 54.2,
+          "side": "auto",
+          "link": "1",
+          "kind": "wire"
+        },
+        {
+          "id": "s1",
+          "name": "B1",
+          "x": 8.0,
+          "y": 27.1,
+          "side": "auto",
+          "link": "1",
+          "kind": "bus"
+        },
+        {
+          "id": "s2",
+          "name": "B2",
+          "x": 8.0,
+          "y": 33.1,
+          "side": "auto",
+          "link": "1",
+          "kind": "bus"
+        }
+      ]
+    },
+    {
+      "id": "pxc-ut-35-pe",
+      "name": "UT 35-PE ground, 35 mm² (3044241)",
+      "library": "Phoenix Contact UT terminal blocks",
+      "category": "Ground (PE)",
+      "mount": "rail",
+      "prefix": "TB",
+      "w": 16.0,
+      "h": 60.2,
+      "fill": "#b5d86a",
+      "radius": 0.5,
+      "showName": false,
+      "terminals": [
+        {
+          "id": "a",
+          "name": "1",
+          "x": 8.0,
+          "y": 6,
+          "side": "auto",
+          "link": "1",
+          "kind": "wire"
+        },
+        {
+          "id": "b",
+          "name": "2",
+          "x": 8.0,
+          "y": 54.2,
+          "side": "auto",
+          "link": "1",
+          "kind": "wire"
+        },
+        {
+          "id": "s1",
+          "name": "B1",
+          "x": 8.0,
+          "y": 27.1,
+          "side": "auto",
+          "link": "1",
+          "kind": "bus"
+        },
+        {
+          "id": "s2",
+          "name": "B2",
+          "x": 8.0,
+          "y": 33.1,
+          "side": "auto",
+          "link": "1",
+          "kind": "bus"
+        }
+      ]
+    },
+    {
+      "id": "pxc-ut-2-5-twin",
+      "name": "UT 2,5-TWIN, 3 connections, 2.5 mm², grey (3044513)",
+      "library": "Phoenix Contact UT terminal blocks",
+      "category": "Multi-conductor",
+      "mount": "rail",
+      "prefix": "TB",
+      "w": 5.2,
+      "h": 57.8,
+      "fill": "#c3c8ce",
+      "radius": 0.5,
+      "showName": false,
+      "terminals": [
+        {
+          "id": "a",
+          "name": "1",
+          "x": 2.6,
+          "y": 6,
+          "side": "auto",
+          "link": "1",
+          "kind": "wire"
+        },
+        {
+          "id": "b",
+          "name": "2",
+          "x": 2.6,
+          "y": 42.8,
+          "side": "auto",
+          "link": "1",
+          "kind": "wire"
+        },
+        {
+          "id": "c",
+          "name": "3",
+          "x": 2.6,
+          "y": 51.8,
+          "side": "auto",
+          "link": "1",
+          "kind": "wire"
+        },
+        {
+          "id": "s1",
+          "name": "B1",
+          "x": 2.6,
+          "y": 22.9,
+          "side": "auto",
+          "link": "1",
+          "kind": "bus"
+        },
+        {
+          "id": "s2",
+          "name": "B2",
+          "x": 2.6,
+          "y": 28.9,
+          "side": "auto",
+          "link": "1",
+          "kind": "bus"
+        }
+      ]
+    },
+    {
+      "id": "pxc-ut-2-5-twin-bu",
+      "name": "UT 2,5-TWIN BU, 3 connections, 2.5 mm², blue (3044526)",
+      "library": "Phoenix Contact UT terminal blocks",
+      "category": "Multi-conductor",
+      "mount": "rail",
+      "prefix": "TB",
+      "w": 5.2,
+      "h": 57.8,
+      "fill": "#7fb2e0",
+      "radius": 0.5,
+      "showName": false,
+      "terminals": [
+        {
+          "id": "a",
+          "name": "1",
+          "x": 2.6,
+          "y": 6,
+          "side": "auto",
+          "link": "1",
+          "kind": "wire"
+        },
+        {
+          "id": "b",
+          "name": "2",
+          "x": 2.6,
+          "y": 42.8,
+          "side": "auto",
+          "link": "1",
+          "kind": "wire"
+        },
+        {
+          "id": "c",
+          "name": "3",
+          "x": 2.6,
+          "y": 51.8,
+          "side": "auto",
+          "link": "1",
+          "kind": "wire"
+        },
+        {
+          "id": "s1",
+          "name": "B1",
+          "x": 2.6,
+          "y": 22.9,
+          "side": "auto",
+          "link": "1",
+          "kind": "bus"
+        },
+        {
+          "id": "s2",
+          "name": "B2",
+          "x": 2.6,
+          "y": 28.9,
+          "side": "auto",
+          "link": "1",
+          "kind": "bus"
+        }
+      ]
+    },
+    {
+      "id": "pxc-ut-2-5-twin-pe",
+      "name": "UT 2,5-TWIN-PE ground, 3 connections, 2.5 mm² (3044539)",
+      "library": "Phoenix Contact UT terminal blocks",
+      "category": "Ground (PE)",
+      "mount": "rail",
+      "prefix": "TB",
+      "w": 5.2,
+      "h": 57.8,
+      "fill": "#b5d86a",
+      "radius": 0.5,
+      "showName": false,
+      "terminals": [
+        {
+          "id": "a",
+          "name": "1",
+          "x": 2.6,
+          "y": 6,
+          "side": "auto",
+          "link": "1",
+          "kind": "wire"
+        },
+        {
+          "id": "b",
+          "name": "2",
+          "x": 2.6,
+          "y": 42.8,
+          "side": "auto",
+          "link": "1",
+          "kind": "wire"
+        },
+        {
+          "id": "c",
+          "name": "3",
+          "x": 2.6,
+          "y": 51.8,
+          "side": "auto",
+          "link": "1",
+          "kind": "wire"
+        },
+        {
+          "id": "s1",
+          "name": "B1",
+          "x": 2.6,
+          "y": 22.9,
+          "side": "auto",
+          "link": "1",
+          "kind": "bus"
+        },
+        {
+          "id": "s2",
+          "name": "B2",
+          "x": 2.6,
+          "y": 28.9,
+          "side": "auto",
+          "link": "1",
+          "kind": "bus"
+        }
+      ]
+    },
+    {
+      "id": "pxc-ut-2-5-quattro",
+      "name": "UT 2,5-QUATTRO, 4 connections, 2.5 mm², grey (3044542)",
+      "library": "Phoenix Contact UT terminal blocks",
+      "category": "Multi-conductor",
+      "mount": "rail",
+      "prefix": "TB",
+      "w": 5.2,
+      "h": 65.4,
+      "fill": "#c3c8ce",
+      "radius": 0.5,
+      "showName": false,
+      "terminals": [
+        {
+          "id": "a",
+          "name": "1",
+          "x": 2.6,
+          "y": 6,
+          "side": "auto",
+          "link": "1",
+          "kind": "wire"
+        },
+        {
+          "id": "c",
+          "name": "3",
+          "x": 2.6,
+          "y": 15,
+          "side": "auto",
+          "link": "1",
+          "kind": "wire"
+        },
+        {
+          "id": "d",
+          "name": "4",
+          "x": 2.6,
+          "y": 50.4,
+          "side": "auto",
+          "link": "1",
+          "kind": "wire"
+        },
+        {
+          "id": "b",
+          "name": "2",
+          "x": 2.6,
+          "y": 59.4,
+          "side": "auto",
+          "link": "1",
+          "kind": "wire"
+        },
+        {
+          "id": "s1",
+          "name": "B1",
+          "x": 2.6,
+          "y": 29.7,
+          "side": "auto",
+          "link": "1",
+          "kind": "bus"
+        },
+        {
+          "id": "s2",
+          "name": "B2",
+          "x": 2.6,
+          "y": 35.7,
+          "side": "auto",
+          "link": "1",
+          "kind": "bus"
+        }
+      ]
+    },
+    {
+      "id": "pxc-ut-2-5-quattro-bu",
+      "name": "UT 2,5-QUATTRO BU, 4 connections, 2.5 mm², blue (3044555)",
+      "library": "Phoenix Contact UT terminal blocks",
+      "category": "Multi-conductor",
+      "mount": "rail",
+      "prefix": "TB",
+      "w": 5.2,
+      "h": 65.4,
+      "fill": "#7fb2e0",
+      "radius": 0.5,
+      "showName": false,
+      "terminals": [
+        {
+          "id": "a",
+          "name": "1",
+          "x": 2.6,
+          "y": 6,
+          "side": "auto",
+          "link": "1",
+          "kind": "wire"
+        },
+        {
+          "id": "c",
+          "name": "3",
+          "x": 2.6,
+          "y": 15,
+          "side": "auto",
+          "link": "1",
+          "kind": "wire"
+        },
+        {
+          "id": "d",
+          "name": "4",
+          "x": 2.6,
+          "y": 50.4,
+          "side": "auto",
+          "link": "1",
+          "kind": "wire"
+        },
+        {
+          "id": "b",
+          "name": "2",
+          "x": 2.6,
+          "y": 59.4,
+          "side": "auto",
+          "link": "1",
+          "kind": "wire"
+        },
+        {
+          "id": "s1",
+          "name": "B1",
+          "x": 2.6,
+          "y": 29.7,
+          "side": "auto",
+          "link": "1",
+          "kind": "bus"
+        },
+        {
+          "id": "s2",
+          "name": "B2",
+          "x": 2.6,
+          "y": 35.7,
+          "side": "auto",
+          "link": "1",
+          "kind": "bus"
+        }
+      ]
+    },
+    {
+      "id": "pxc-ut-2-5-quattro-pe",
+      "name": "UT 2,5-QUATTRO-PE ground, 4 connections, 2.5 mm² (3044568)",
+      "library": "Phoenix Contact UT terminal blocks",
+      "category": "Ground (PE)",
+      "mount": "rail",
+      "prefix": "TB",
+      "w": 5.2,
+      "h": 65.4,
+      "fill": "#b5d86a",
+      "radius": 0.5,
+      "showName": false,
+      "terminals": [
+        {
+          "id": "a",
+          "name": "1",
+          "x": 2.6,
+          "y": 6,
+          "side": "auto",
+          "link": "1",
+          "kind": "wire"
+        },
+        {
+          "id": "c",
+          "name": "3",
+          "x": 2.6,
+          "y": 15,
+          "side": "auto",
+          "link": "1",
+          "kind": "wire"
+        },
+        {
+          "id": "d",
+          "name": "4",
+          "x": 2.6,
+          "y": 50.4,
+          "side": "auto",
+          "link": "1",
+          "kind": "wire"
+        },
+        {
+          "id": "b",
+          "name": "2",
+          "x": 2.6,
+          "y": 59.4,
+          "side": "auto",
+          "link": "1",
+          "kind": "wire"
+        },
+        {
+          "id": "s1",
+          "name": "B1",
+          "x": 2.6,
+          "y": 29.7,
+          "side": "auto",
+          "link": "1",
+          "kind": "bus"
+        },
+        {
+          "id": "s2",
+          "name": "B2",
+          "x": 2.6,
+          "y": 35.7,
+          "side": "auto",
+          "link": "1",
+          "kind": "bus"
+        }
+      ]
+    },
+    {
+      "id": "pxc-ut-4-twin",
+      "name": "UT 4-TWIN, 3 connections, 4 mm², grey (3044364)",
+      "library": "Phoenix Contact UT terminal blocks",
+      "category": "Multi-conductor",
+      "mount": "rail",
+      "prefix": "TB",
+      "w": 6.2,
+      "h": 57.8,
+      "fill": "#c3c8ce",
+      "radius": 0.5,
+      "showName": false,
+      "terminals": [
+        {
+          "id": "a",
+          "name": "1",
+          "x": 3.1,
+          "y": 6,
+          "side": "auto",
+          "link": "1",
+          "kind": "wire"
+        },
+        {
+          "id": "b",
+          "name": "2",
+          "x": 3.1,
+          "y": 42.8,
+          "side": "auto",
+          "link": "1",
+          "kind": "wire"
+        },
+        {
+          "id": "c",
+          "name": "3",
+          "x": 3.1,
+          "y": 51.8,
+          "side": "auto",
+          "link": "1",
+          "kind": "wire"
+        },
+        {
+          "id": "s1",
+          "name": "B1",
+          "x": 3.1,
+          "y": 22.9,
+          "side": "auto",
+          "link": "1",
+          "kind": "bus"
+        },
+        {
+          "id": "s2",
+          "name": "B2",
+          "x": 3.1,
+          "y": 28.9,
+          "side": "auto",
+          "link": "1",
+          "kind": "bus"
+        }
+      ]
+    },
+    {
+      "id": "pxc-ut-4-twin-bu",
+      "name": "UT 4-TWIN BU, 3 connections, 4 mm², blue (3044500)",
+      "library": "Phoenix Contact UT terminal blocks",
+      "category": "Multi-conductor",
+      "mount": "rail",
+      "prefix": "TB",
+      "w": 6.2,
+      "h": 57.8,
+      "fill": "#7fb2e0",
+      "radius": 0.5,
+      "showName": false,
+      "terminals": [
+        {
+          "id": "a",
+          "name": "1",
+          "x": 3.1,
+          "y": 6,
+          "side": "auto",
+          "link": "1",
+          "kind": "wire"
+        },
+        {
+          "id": "b",
+          "name": "2",
+          "x": 3.1,
+          "y": 42.8,
+          "side": "auto",
+          "link": "1",
+          "kind": "wire"
+        },
+        {
+          "id": "c",
+          "name": "3",
+          "x": 3.1,
+          "y": 51.8,
+          "side": "auto",
+          "link": "1",
+          "kind": "wire"
+        },
+        {
+          "id": "s1",
+          "name": "B1",
+          "x": 3.1,
+          "y": 22.9,
+          "side": "auto",
+          "link": "1",
+          "kind": "bus"
+        },
+        {
+          "id": "s2",
+          "name": "B2",
+          "x": 3.1,
+          "y": 28.9,
+          "side": "auto",
+          "link": "1",
+          "kind": "bus"
+        }
+      ]
+    },
+    {
+      "id": "pxc-ut-4-twin-pe",
+      "name": "UT 4-TWIN-PE ground, 3 connections, 4 mm² (3044380)",
+      "library": "Phoenix Contact UT terminal blocks",
+      "category": "Ground (PE)",
+      "mount": "rail",
+      "prefix": "TB",
+      "w": 6.2,
+      "h": 57.8,
+      "fill": "#b5d86a",
+      "radius": 0.5,
+      "showName": false,
+      "terminals": [
+        {
+          "id": "a",
+          "name": "1",
+          "x": 3.1,
+          "y": 6,
+          "side": "auto",
+          "link": "1",
+          "kind": "wire"
+        },
+        {
+          "id": "b",
+          "name": "2",
+          "x": 3.1,
+          "y": 42.8,
+          "side": "auto",
+          "link": "1",
+          "kind": "wire"
+        },
+        {
+          "id": "c",
+          "name": "3",
+          "x": 3.1,
+          "y": 51.8,
+          "side": "auto",
+          "link": "1",
+          "kind": "wire"
+        },
+        {
+          "id": "s1",
+          "name": "B1",
+          "x": 3.1,
+          "y": 22.9,
+          "side": "auto",
+          "link": "1",
+          "kind": "bus"
+        },
+        {
+          "id": "s2",
+          "name": "B2",
+          "x": 3.1,
+          "y": 28.9,
+          "side": "auto",
+          "link": "1",
+          "kind": "bus"
+        }
+      ]
+    },
+    {
+      "id": "pxc-ut-4-quattro",
+      "name": "UT 4-QUATTRO, 4 connections, 4 mm², grey (3044571)",
+      "library": "Phoenix Contact UT terminal blocks",
+      "category": "Multi-conductor",
+      "mount": "rail",
+      "prefix": "TB",
+      "w": 6.2,
+      "h": 65.4,
+      "fill": "#c3c8ce",
+      "radius": 0.5,
+      "showName": false,
+      "terminals": [
+        {
+          "id": "a",
+          "name": "1",
+          "x": 3.1,
+          "y": 6,
+          "side": "auto",
+          "link": "1",
+          "kind": "wire"
+        },
+        {
+          "id": "c",
+          "name": "3",
+          "x": 3.1,
+          "y": 15,
+          "side": "auto",
+          "link": "1",
+          "kind": "wire"
+        },
+        {
+          "id": "d",
+          "name": "4",
+          "x": 3.1,
+          "y": 50.4,
+          "side": "auto",
+          "link": "1",
+          "kind": "wire"
+        },
+        {
+          "id": "b",
+          "name": "2",
+          "x": 3.1,
+          "y": 59.4,
+          "side": "auto",
+          "link": "1",
+          "kind": "wire"
+        },
+        {
+          "id": "s1",
+          "name": "B1",
+          "x": 3.1,
+          "y": 29.7,
+          "side": "auto",
+          "link": "1",
+          "kind": "bus"
+        },
+        {
+          "id": "s2",
+          "name": "B2",
+          "x": 3.1,
+          "y": 35.7,
+          "side": "auto",
+          "link": "1",
+          "kind": "bus"
+        }
+      ]
+    },
+    {
+      "id": "pxc-ut-4-quattro-bu",
+      "name": "UT 4-QUATTRO BU, 4 connections, 4 mm², blue (3044584)",
+      "library": "Phoenix Contact UT terminal blocks",
+      "category": "Multi-conductor",
+      "mount": "rail",
+      "prefix": "TB",
+      "w": 6.2,
+      "h": 65.4,
+      "fill": "#7fb2e0",
+      "radius": 0.5,
+      "showName": false,
+      "terminals": [
+        {
+          "id": "a",
+          "name": "1",
+          "x": 3.1,
+          "y": 6,
+          "side": "auto",
+          "link": "1",
+          "kind": "wire"
+        },
+        {
+          "id": "c",
+          "name": "3",
+          "x": 3.1,
+          "y": 15,
+          "side": "auto",
+          "link": "1",
+          "kind": "wire"
+        },
+        {
+          "id": "d",
+          "name": "4",
+          "x": 3.1,
+          "y": 50.4,
+          "side": "auto",
+          "link": "1",
+          "kind": "wire"
+        },
+        {
+          "id": "b",
+          "name": "2",
+          "x": 3.1,
+          "y": 59.4,
+          "side": "auto",
+          "link": "1",
+          "kind": "wire"
+        },
+        {
+          "id": "s1",
+          "name": "B1",
+          "x": 3.1,
+          "y": 29.7,
+          "side": "auto",
+          "link": "1",
+          "kind": "bus"
+        },
+        {
+          "id": "s2",
+          "name": "B2",
+          "x": 3.1,
+          "y": 35.7,
+          "side": "auto",
+          "link": "1",
+          "kind": "bus"
+        }
+      ]
+    },
+    {
+      "id": "pxc-ut-4-quattro-pe",
+      "name": "UT 4-QUATTRO-PE ground, 4 connections, 4 mm² (3044597)",
+      "library": "Phoenix Contact UT terminal blocks",
+      "category": "Ground (PE)",
+      "mount": "rail",
+      "prefix": "TB",
+      "w": 6.2,
+      "h": 65.4,
+      "fill": "#b5d86a",
+      "radius": 0.5,
+      "showName": false,
+      "terminals": [
+        {
+          "id": "a",
+          "name": "1",
+          "x": 3.1,
+          "y": 6,
+          "side": "auto",
+          "link": "1",
+          "kind": "wire"
+        },
+        {
+          "id": "c",
+          "name": "3",
+          "x": 3.1,
+          "y": 15,
+          "side": "auto",
+          "link": "1",
+          "kind": "wire"
+        },
+        {
+          "id": "d",
+          "name": "4",
+          "x": 3.1,
+          "y": 50.4,
+          "side": "auto",
+          "link": "1",
+          "kind": "wire"
+        },
+        {
+          "id": "b",
+          "name": "2",
+          "x": 3.1,
+          "y": 59.4,
+          "side": "auto",
+          "link": "1",
+          "kind": "wire"
+        },
+        {
+          "id": "s1",
+          "name": "B1",
+          "x": 3.1,
+          "y": 29.7,
+          "side": "auto",
+          "link": "1",
+          "kind": "bus"
+        },
+        {
+          "id": "s2",
+          "name": "B2",
+          "x": 3.1,
+          "y": 35.7,
+          "side": "auto",
+          "link": "1",
+          "kind": "bus"
+        }
+      ]
+    },
+    {
+      "id": "pxc-uttb-2-5",
+      "name": "UTTB 2,5 double-level, 2.5 mm², grey (3044636)",
+      "library": "Phoenix Contact UT terminal blocks",
+      "category": "Multi-level",
+      "mount": "rail",
+      "prefix": "TB",
+      "w": 5.2,
+      "h": 69.9,
+      "fill": "#c3c8ce",
+      "radius": 0.5,
+      "showName": false,
+      "terminals": [
+        {
+          "id": "a",
+          "name": "1",
+          "x": 2.6,
+          "y": 6,
+          "side": "auto",
+          "link": "1",
+          "kind": "wire"
+        },
+        {
+          "id": "b",
+          "name": "2",
+          "x": 2.6,
+          "y": 63.9,
+          "side": "auto",
+          "link": "1",
+          "kind": "wire"
+        },
+        {
+          "id": "c",
+          "name": "3",
+          "x": 2.6,
+          "y": 17,
+          "side": "auto",
+          "link": "2",
+          "kind": "wire"
+        },
+        {
+          "id": "d",
+          "name": "4",
+          "x": 2.6,
+          "y": 52.9,
+          "side": "auto",
+          "link": "2",
+          "kind": "wire"
+        },
+        {
+          "id": "s1",
+          "name": "B1",
+          "x": 2.6,
+          "y": 31.95,
+          "side": "auto",
+          "link": "1",
+          "kind": "bus"
+        },
+        {
+          "id": "s2",
+          "name": "B2",
+          "x": 2.6,
+          "y": 37.95,
+          "side": "auto",
+          "link": "2",
+          "kind": "bus"
+        }
+      ]
+    },
+    {
+      "id": "pxc-uttb-2-5-bu",
+      "name": "UTTB 2,5 BU double-level, 2.5 mm², blue (3044649)",
+      "library": "Phoenix Contact UT terminal blocks",
+      "category": "Multi-level",
+      "mount": "rail",
+      "prefix": "TB",
+      "w": 5.2,
+      "h": 69.9,
+      "fill": "#7fb2e0",
+      "radius": 0.5,
+      "showName": false,
+      "terminals": [
+        {
+          "id": "a",
+          "name": "1",
+          "x": 2.6,
+          "y": 6,
+          "side": "auto",
+          "link": "1",
+          "kind": "wire"
+        },
+        {
+          "id": "b",
+          "name": "2",
+          "x": 2.6,
+          "y": 63.9,
+          "side": "auto",
+          "link": "1",
+          "kind": "wire"
+        },
+        {
+          "id": "c",
+          "name": "3",
+          "x": 2.6,
+          "y": 17,
+          "side": "auto",
+          "link": "2",
+          "kind": "wire"
+        },
+        {
+          "id": "d",
+          "name": "4",
+          "x": 2.6,
+          "y": 52.9,
+          "side": "auto",
+          "link": "2",
+          "kind": "wire"
+        },
+        {
+          "id": "s1",
+          "name": "B1",
+          "x": 2.6,
+          "y": 31.95,
+          "side": "auto",
+          "link": "1",
+          "kind": "bus"
+        },
+        {
+          "id": "s2",
+          "name": "B2",
+          "x": 2.6,
+          "y": 37.95,
+          "side": "auto",
+          "link": "2",
+          "kind": "bus"
+        }
+      ]
+    },
+    {
+      "id": "pxc-uttb-2-5-pe",
+      "name": "UTTB 2,5-PE double-level ground, 2.5 mm² (3044665)",
+      "library": "Phoenix Contact UT terminal blocks",
+      "category": "Ground (PE)",
+      "mount": "rail",
+      "prefix": "TB",
+      "w": 5.2,
+      "h": 69.9,
+      "fill": "#b5d86a",
+      "radius": 0.5,
+      "showName": false,
+      "terminals": [
+        {
+          "id": "a",
+          "name": "1",
+          "x": 2.6,
+          "y": 6,
+          "side": "auto",
+          "link": "1",
+          "kind": "wire"
+        },
+        {
+          "id": "b",
+          "name": "2",
+          "x": 2.6,
+          "y": 63.9,
+          "side": "auto",
+          "link": "1",
+          "kind": "wire"
+        },
+        {
+          "id": "c",
+          "name": "3",
+          "x": 2.6,
+          "y": 17,
+          "side": "auto",
+          "link": "2",
+          "kind": "wire"
+        },
+        {
+          "id": "d",
+          "name": "4",
+          "x": 2.6,
+          "y": 52.9,
+          "side": "auto",
+          "link": "2",
+          "kind": "wire"
+        },
+        {
+          "id": "s1",
+          "name": "B1",
+          "x": 2.6,
+          "y": 31.95,
+          "side": "auto",
+          "link": "1",
+          "kind": "bus"
+        },
+        {
+          "id": "s2",
+          "name": "B2",
+          "x": 2.6,
+          "y": 37.95,
+          "side": "auto",
+          "link": "2",
+          "kind": "bus"
+        }
+      ]
+    },
+    {
+      "id": "pxc-uttb-4",
+      "name": "UTTB 4 double-level, 4 mm², grey (3044814)",
+      "library": "Phoenix Contact UT terminal blocks",
+      "category": "Multi-level",
+      "mount": "rail",
+      "prefix": "TB",
+      "w": 6.2,
+      "h": 69.9,
+      "fill": "#c3c8ce",
+      "radius": 0.5,
+      "showName": false,
+      "terminals": [
+        {
+          "id": "a",
+          "name": "1",
+          "x": 3.1,
+          "y": 6,
+          "side": "auto",
+          "link": "1",
+          "kind": "wire"
+        },
+        {
+          "id": "b",
+          "name": "2",
+          "x": 3.1,
+          "y": 63.9,
+          "side": "auto",
+          "link": "1",
+          "kind": "wire"
+        },
+        {
+          "id": "c",
+          "name": "3",
+          "x": 3.1,
+          "y": 17,
+          "side": "auto",
+          "link": "2",
+          "kind": "wire"
+        },
+        {
+          "id": "d",
+          "name": "4",
+          "x": 3.1,
+          "y": 52.9,
+          "side": "auto",
+          "link": "2",
+          "kind": "wire"
+        },
+        {
+          "id": "s1",
+          "name": "B1",
+          "x": 3.1,
+          "y": 31.95,
+          "side": "auto",
+          "link": "1",
+          "kind": "bus"
+        },
+        {
+          "id": "s2",
+          "name": "B2",
+          "x": 3.1,
+          "y": 37.95,
+          "side": "auto",
+          "link": "2",
+          "kind": "bus"
+        }
+      ]
+    },
+    {
+      "id": "pxc-uttb-4-bu",
+      "name": "UTTB 4 BU double-level, 4 mm², blue (3044791)",
+      "library": "Phoenix Contact UT terminal blocks",
+      "category": "Multi-level",
+      "mount": "rail",
+      "prefix": "TB",
+      "w": 6.2,
+      "h": 69.9,
+      "fill": "#7fb2e0",
+      "radius": 0.5,
+      "showName": false,
+      "terminals": [
+        {
+          "id": "a",
+          "name": "1",
+          "x": 3.1,
+          "y": 6,
+          "side": "auto",
+          "link": "1",
+          "kind": "wire"
+        },
+        {
+          "id": "b",
+          "name": "2",
+          "x": 3.1,
+          "y": 63.9,
+          "side": "auto",
+          "link": "1",
+          "kind": "wire"
+        },
+        {
+          "id": "c",
+          "name": "3",
+          "x": 3.1,
+          "y": 17,
+          "side": "auto",
+          "link": "2",
+          "kind": "wire"
+        },
+        {
+          "id": "d",
+          "name": "4",
+          "x": 3.1,
+          "y": 52.9,
+          "side": "auto",
+          "link": "2",
+          "kind": "wire"
+        },
+        {
+          "id": "s1",
+          "name": "B1",
+          "x": 3.1,
+          "y": 31.95,
+          "side": "auto",
+          "link": "1",
+          "kind": "bus"
+        },
+        {
+          "id": "s2",
+          "name": "B2",
+          "x": 3.1,
+          "y": 37.95,
+          "side": "auto",
+          "link": "2",
+          "kind": "bus"
+        }
+      ]
+    },
+    {
+      "id": "pxc-uttb-4-pe",
+      "name": "UTTB 4-PE double-level ground, 4 mm² (3044759)",
+      "library": "Phoenix Contact UT terminal blocks",
+      "category": "Ground (PE)",
+      "mount": "rail",
+      "prefix": "TB",
+      "w": 6.2,
+      "h": 69.9,
+      "fill": "#b5d86a",
+      "radius": 0.5,
+      "showName": false,
+      "terminals": [
+        {
+          "id": "a",
+          "name": "1",
+          "x": 3.1,
+          "y": 6,
+          "side": "auto",
+          "link": "1",
+          "kind": "wire"
+        },
+        {
+          "id": "b",
+          "name": "2",
+          "x": 3.1,
+          "y": 63.9,
+          "side": "auto",
+          "link": "1",
+          "kind": "wire"
+        },
+        {
+          "id": "c",
+          "name": "3",
+          "x": 3.1,
+          "y": 17,
+          "side": "auto",
+          "link": "2",
+          "kind": "wire"
+        },
+        {
+          "id": "d",
+          "name": "4",
+          "x": 3.1,
+          "y": 52.9,
+          "side": "auto",
+          "link": "2",
+          "kind": "wire"
+        },
+        {
+          "id": "s1",
+          "name": "B1",
+          "x": 3.1,
+          "y": 31.95,
+          "side": "auto",
+          "link": "1",
+          "kind": "bus"
+        },
+        {
+          "id": "s2",
+          "name": "B2",
+          "x": 3.1,
+          "y": 37.95,
+          "side": "auto",
+          "link": "2",
+          "kind": "bus"
+        }
+      ]
+    },
+    {
+      "id": "pxc-ut-2-5-3l",
+      "name": "UT 2,5-3L three-level, 2.5 mm² (3214259)",
+      "library": "Phoenix Contact UT terminal blocks",
+      "category": "Multi-level",
+      "mount": "rail",
+      "prefix": "TB",
+      "w": 5.2,
+      "h": 90.0,
+      "fill": "#c3c8ce",
+      "radius": 0.5,
+      "showName": false,
+      "terminals": [
+        {
+          "id": "l1a",
+          "name": "1",
+          "x": 2.6,
+          "y": 6,
+          "side": "auto",
+          "link": "1",
+          "kind": "wire"
+        },
+        {
+          "id": "l1b",
+          "name": "2",
+          "x": 2.6,
+          "y": 84.0,
+          "side": "auto",
+          "link": "1",
+          "kind": "wire"
+        },
+        {
+          "id": "l2a",
+          "name": "3",
+          "x": 2.6,
+          "y": 17,
+          "side": "auto",
+          "link": "2",
+          "kind": "wire"
+        },
+        {
+          "id": "l2b",
+          "name": "4",
+          "x": 2.6,
+          "y": 73.0,
+          "side": "auto",
+          "link": "2",
+          "kind": "wire"
+        },
+        {
+          "id": "l3a",
+          "name": "5",
+          "x": 2.6,
+          "y": 28,
+          "side": "auto",
+          "link": "3",
+          "kind": "wire"
+        },
+        {
+          "id": "l3b",
+          "name": "6",
+          "x": 2.6,
+          "y": 62.0,
+          "side": "auto",
+          "link": "3",
+          "kind": "wire"
+        }
+      ]
+    },
+    {
+      "id": "pxc-ut-2-5-pe-l-n",
+      "name": "UT 2,5-PE/L/N three-level installation block, 2.5 mm² (3214291)",
+      "library": "Phoenix Contact UT terminal blocks",
+      "category": "Multi-level",
+      "mount": "rail",
+      "prefix": "TB",
+      "w": 5.2,
+      "h": 90.0,
+      "fill": "#c3c8ce",
+      "radius": 0.5,
+      "showName": false,
+      "terminals": [
+        {
+          "id": "l1a",
+          "name": "PE",
+          "x": 2.6,
+          "y": 6,
+          "side": "auto",
+          "link": "1",
+          "kind": "wire"
+        },
+        {
+          "id": "l1b",
+          "name": "PE",
+          "x": 2.6,
+          "y": 84.0,
+          "side": "auto",
+          "link": "1",
+          "kind": "wire"
+        },
+        {
+          "id": "l2a",
+          "name": "L",
+          "x": 2.6,
+          "y": 17,
+          "side": "auto",
+          "link": "2",
+          "kind": "wire"
+        },
+        {
+          "id": "l2b",
+          "name": "L",
+          "x": 2.6,
+          "y": 73.0,
+          "side": "auto",
+          "link": "2",
+          "kind": "wire"
+        },
+        {
+          "id": "l3a",
+          "name": "N",
+          "x": 2.6,
+          "y": 28,
+          "side": "auto",
+          "link": "3",
+          "kind": "wire"
+        },
+        {
+          "id": "l3b",
+          "name": "N",
+          "x": 2.6,
+          "y": 62.0,
+          "side": "auto",
+          "link": "3",
+          "kind": "wire"
+        }
+      ]
+    },
+    {
+      "id": "pxc-ut-2-5-pe-l-l",
+      "name": "UT 2,5-PE/L/L three-level installation block, 2.5 mm² (3214301)",
+      "library": "Phoenix Contact UT terminal blocks",
+      "category": "Multi-level",
+      "mount": "rail",
+      "prefix": "TB",
+      "w": 5.2,
+      "h": 90.0,
+      "fill": "#c3c8ce",
+      "radius": 0.5,
+      "showName": false,
+      "terminals": [
+        {
+          "id": "l1a",
+          "name": "PE",
+          "x": 2.6,
+          "y": 6,
+          "side": "auto",
+          "link": "1",
+          "kind": "wire"
+        },
+        {
+          "id": "l1b",
+          "name": "PE",
+          "x": 2.6,
+          "y": 84.0,
+          "side": "auto",
+          "link": "1",
+          "kind": "wire"
+        },
+        {
+          "id": "l2a",
+          "name": "L",
+          "x": 2.6,
+          "y": 17,
+          "side": "auto",
+          "link": "2",
+          "kind": "wire"
+        },
+        {
+          "id": "l2b",
+          "name": "L",
+          "x": 2.6,
+          "y": 73.0,
+          "side": "auto",
+          "link": "2",
+          "kind": "wire"
+        },
+        {
+          "id": "l3a",
+          "name": "L",
+          "x": 2.6,
+          "y": 28,
+          "side": "auto",
+          "link": "3",
+          "kind": "wire"
+        },
+        {
+          "id": "l3b",
+          "name": "L",
+          "x": 2.6,
+          "y": 62.0,
+          "side": "auto",
+          "link": "3",
+          "kind": "wire"
+        }
+      ]
+    },
+    {
+      "id": "pxc-ut-2-5-3pe",
+      "name": "UT 2,5-3PE three-level ground, 2.5 mm² (3214275)",
+      "library": "Phoenix Contact UT terminal blocks",
+      "category": "Ground (PE)",
+      "mount": "rail",
+      "prefix": "TB",
+      "w": 5.2,
+      "h": 90.0,
+      "fill": "#b5d86a",
+      "radius": 0.5,
+      "showName": false,
+      "terminals": [
+        {
+          "id": "l1a",
+          "name": "PE",
+          "x": 2.6,
+          "y": 6,
+          "side": "auto",
+          "link": "1",
+          "kind": "wire"
+        },
+        {
+          "id": "l1b",
+          "name": "PE",
+          "x": 2.6,
+          "y": 84.0,
+          "side": "auto",
+          "link": "1",
+          "kind": "wire"
+        },
+        {
+          "id": "l2a",
+          "name": "PE",
+          "x": 2.6,
+          "y": 17,
+          "side": "auto",
+          "link": "2",
+          "kind": "wire"
+        },
+        {
+          "id": "l2b",
+          "name": "PE",
+          "x": 2.6,
+          "y": 73.0,
+          "side": "auto",
+          "link": "2",
+          "kind": "wire"
+        },
+        {
+          "id": "l3a",
+          "name": "PE",
+          "x": 2.6,
+          "y": 28,
+          "side": "auto",
+          "link": "3",
+          "kind": "wire"
+        },
+        {
+          "id": "l3b",
+          "name": "PE",
+          "x": 2.6,
+          "y": 62.0,
+          "side": "auto",
+          "link": "3",
+          "kind": "wire"
+        }
+      ]
+    },
+    {
+      "id": "pxc-ut-4-hesi",
+      "name": "UT 4-HESI fuse block, 5 × 20 mm fuses (3046032)",
+      "library": "Phoenix Contact UT terminal blocks",
+      "category": "Fuse & disconnect",
+      "mount": "rail",
+      "prefix": "F",
+      "w": 6.2,
+      "h": 57.8,
+      "fill": "#4b5058",
+      "radius": 0.5,
+      "showName": false,
+      "terminals": [
+        {
+          "id": "a",
+          "name": "1",
+          "x": 3.1,
+          "y": 6,
+          "side": "auto",
+          "link": "1",
+          "kind": "wire"
+        },
+        {
+          "id": "b",
+          "name": "2",
+          "x": 3.1,
+          "y": 51.8,
+          "side": "auto",
+          "link": "2",
+          "kind": "wire"
+        },
+        {
+          "id": "s1",
+          "name": "B1",
+          "x": 3.1,
+          "y": 25.9,
+          "side": "auto",
+          "link": "1",
+          "kind": "bus"
+        },
+        {
+          "id": "s2",
+          "name": "B2",
+          "x": 3.1,
+          "y": 31.9,
+          "side": "auto",
+          "link": "2",
+          "kind": "bus"
+        }
+      ]
+    },
+    {
+      "id": "pxc-ut-6-hesi",
+      "name": "UT 6-HESI fuse block, 6.3 × 32 mm fuses (3046401)",
+      "library": "Phoenix Contact UT terminal blocks",
+      "category": "Fuse & disconnect",
+      "mount": "rail",
+      "prefix": "F",
+      "w": 8.2,
+      "h": 57.8,
+      "fill": "#4b5058",
+      "radius": 0.5,
+      "showName": false,
+      "terminals": [
+        {
+          "id": "a",
+          "name": "1",
+          "x": 4.1,
+          "y": 6,
+          "side": "auto",
+          "link": "1",
+          "kind": "wire"
+        },
+        {
+          "id": "b",
+          "name": "2",
+          "x": 4.1,
+          "y": 51.8,
+          "side": "auto",
+          "link": "2",
+          "kind": "wire"
+        },
+        {
+          "id": "s1",
+          "name": "B1",
+          "x": 4.1,
+          "y": 25.9,
+          "side": "auto",
+          "link": "1",
+          "kind": "bus"
+        },
+        {
+          "id": "s2",
+          "name": "B2",
+          "x": 4.1,
+          "y": 31.9,
+          "side": "auto",
+          "link": "2",
+          "kind": "bus"
+        }
+      ]
+    },
+    {
+      "id": "pxc-ut-4-hedi",
+      "name": "UT 4-HEDI lever disconnect, 4 mm² (3046249)",
+      "library": "Phoenix Contact UT terminal blocks",
+      "category": "Fuse & disconnect",
+      "mount": "rail",
+      "prefix": "TB",
+      "w": 6.2,
+      "h": 57.8,
+      "fill": "#c3c8ce",
+      "radius": 0.5,
+      "showName": false,
+      "terminals": [
+        {
+          "id": "a",
+          "name": "1",
+          "x": 3.1,
+          "y": 6,
+          "side": "auto",
+          "link": "1",
+          "kind": "wire"
+        },
+        {
+          "id": "b",
+          "name": "2",
+          "x": 3.1,
+          "y": 51.8,
+          "side": "auto",
+          "link": "2",
+          "kind": "wire"
+        },
+        {
+          "id": "s1",
+          "name": "B1",
+          "x": 3.1,
+          "y": 25.9,
+          "side": "auto",
+          "link": "1",
+          "kind": "bus"
+        },
+        {
+          "id": "s2",
+          "name": "B2",
+          "x": 3.1,
+          "y": 31.9,
+          "side": "auto",
+          "link": "2",
+          "kind": "bus"
+        }
+      ]
+    },
+    {
+      "id": "pxc-ut-2-5-mt",
+      "name": "UT 2,5-MT knife disconnect, 2.5 mm² (3046362)",
+      "library": "Phoenix Contact UT terminal blocks",
+      "category": "Fuse & disconnect",
+      "mount": "rail",
+      "prefix": "TB",
+      "w": 5.2,
+      "h": 57.8,
+      "fill": "#c3c8ce",
+      "radius": 0.5,
+      "showName": false,
+      "terminals": [
+        {
+          "id": "a",
+          "name": "1",
+          "x": 2.6,
+          "y": 6,
+          "side": "auto",
+          "link": "1",
+          "kind": "wire"
+        },
+        {
+          "id": "b",
+          "name": "2",
+          "x": 2.6,
+          "y": 51.8,
+          "side": "auto",
+          "link": "2",
+          "kind": "wire"
+        },
+        {
+          "id": "s1",
+          "name": "B1",
+          "x": 2.6,
+          "y": 25.9,
+          "side": "auto",
+          "link": "1",
+          "kind": "bus"
+        },
+        {
+          "id": "s2",
+          "name": "B2",
+          "x": 2.6,
+          "y": 31.9,
+          "side": "auto",
+          "link": "2",
+          "kind": "bus"
+        }
+      ]
+    },
+    {
+      "id": "pxc-ut-4-mt",
+      "name": "UT 4-MT knife disconnect, 4 mm² (3046139)",
+      "library": "Phoenix Contact UT terminal blocks",
+      "category": "Fuse & disconnect",
+      "mount": "rail",
+      "prefix": "TB",
+      "w": 6.2,
+      "h": 57.8,
+      "fill": "#c3c8ce",
+      "radius": 0.5,
+      "showName": false,
+      "terminals": [
+        {
+          "id": "a",
+          "name": "1",
+          "x": 3.1,
+          "y": 6,
+          "side": "auto",
+          "link": "1",
+          "kind": "wire"
+        },
+        {
+          "id": "b",
+          "name": "2",
+          "x": 3.1,
+          "y": 51.8,
+          "side": "auto",
+          "link": "2",
+          "kind": "wire"
+        },
+        {
+          "id": "s1",
+          "name": "B1",
+          "x": 3.1,
+          "y": 25.9,
+          "side": "auto",
+          "link": "1",
+          "kind": "bus"
+        },
+        {
+          "id": "s2",
+          "name": "B2",
+          "x": 3.1,
+          "y": 31.9,
+          "side": "auto",
+          "link": "2",
+          "kind": "bus"
+        }
+      ]
+    },
+    {
+      "id": "pxc-ut-2-5-mtd",
+      "name": "UT 2,5-MTD disconnect, 2.5 mm² (3064085)",
+      "library": "Phoenix Contact UT terminal blocks",
+      "category": "Fuse & disconnect",
+      "mount": "rail",
+      "prefix": "TB",
+      "w": 5.2,
+      "h": 57.8,
+      "fill": "#c3c8ce",
+      "radius": 0.5,
+      "showName": false,
+      "terminals": [
+        {
+          "id": "a",
+          "name": "1",
+          "x": 2.6,
+          "y": 6,
+          "side": "auto",
+          "link": "1",
+          "kind": "wire"
+        },
+        {
+          "id": "b",
+          "name": "2",
+          "x": 2.6,
+          "y": 51.8,
+          "side": "auto",
+          "link": "2",
+          "kind": "wire"
+        },
+        {
+          "id": "s1",
+          "name": "B1",
+          "x": 2.6,
+          "y": 25.9,
+          "side": "auto",
+          "link": "1",
+          "kind": "bus"
+        },
+        {
+          "id": "s2",
+          "name": "B2",
+          "x": 2.6,
+          "y": 31.9,
+          "side": "auto",
+          "link": "2",
+          "kind": "bus"
+        }
+      ]
+    },
+    {
+      "id": "pxc-ut-4-mtd",
+      "name": "UT 4-MTD disconnect, 4 mm² (3046184)",
+      "library": "Phoenix Contact UT terminal blocks",
+      "category": "Fuse & disconnect",
+      "mount": "rail",
+      "prefix": "TB",
+      "w": 6.2,
+      "h": 57.8,
+      "fill": "#c3c8ce",
+      "radius": 0.5,
+      "showName": false,
+      "terminals": [
+        {
+          "id": "a",
+          "name": "1",
+          "x": 3.1,
+          "y": 6,
+          "side": "auto",
+          "link": "1",
+          "kind": "wire"
+        },
+        {
+          "id": "b",
+          "name": "2",
+          "x": 3.1,
+          "y": 51.8,
+          "side": "auto",
+          "link": "2",
+          "kind": "wire"
+        },
+        {
+          "id": "s1",
+          "name": "B1",
+          "x": 3.1,
+          "y": 25.9,
+          "side": "auto",
+          "link": "1",
+          "kind": "bus"
+        },
+        {
+          "id": "s2",
+          "name": "B2",
+          "x": 3.1,
+          "y": 31.9,
+          "side": "auto",
+          "link": "2",
+          "kind": "bus"
+        }
+      ]
+    },
+    {
+      "id": "pxc-d-ut-2-5-10",
+      "name": "D-UT 2,5/10 end cover, for UT 2,5 to UT 10 (3047028)",
+      "library": "Phoenix Contact UT terminal blocks",
+      "category": "End covers",
+      "mount": "rail",
+      "prefix": "",
+      "w": 2.2,
+      "h": 47.7,
+      "fill": "#d7dadd",
+      "radius": 0.5,
+      "showName": false,
+      "terminals": []
+    },
+    {
+      "id": "pxc-d-ut-16",
+      "name": "D-UT 16 end cover, for UT 16 (3047206)",
+      "library": "Phoenix Contact UT terminal blocks",
+      "category": "End covers",
+      "mount": "rail",
+      "prefix": "",
+      "w": 2.2,
+      "h": 55.5,
+      "fill": "#d7dadd",
+      "radius": 0.5,
+      "showName": false,
+      "terminals": []
+    },
+    {
+      "id": "pxc-d-ut-2-5-4-twin",
+      "name": "D-UT 2,5/4-TWIN end cover, for TWIN, MT and MTD blocks (3047141)",
+      "library": "Phoenix Contact UT terminal blocks",
+      "category": "End covers",
+      "mount": "rail",
+      "prefix": "",
+      "w": 2.2,
+      "h": 57.8,
+      "fill": "#d7dadd",
+      "radius": 0.5,
+      "showName": false,
+      "terminals": []
+    },
+    {
+      "id": "pxc-d-ut-2-5-4-quattro",
+      "name": "D-UT 2,5/4-QUATTRO end cover, for QUATTRO blocks (3047170)",
+      "library": "Phoenix Contact UT terminal blocks",
+      "category": "End covers",
+      "mount": "rail",
+      "prefix": "",
+      "w": 2.2,
+      "h": 65.4,
+      "fill": "#d7dadd",
+      "radius": 0.5,
+      "showName": false,
+      "terminals": []
+    },
+    {
+      "id": "pxc-d-uttb-2-5-4",
+      "name": "D-UTTB 2,5/4 end cover, for UTTB blocks (3047293)",
+      "library": "Phoenix Contact UT terminal blocks",
+      "category": "End covers",
+      "mount": "rail",
+      "prefix": "",
+      "w": 2.2,
+      "h": 69.9,
+      "fill": "#d7dadd",
+      "radius": 0.5,
+      "showName": false,
+      "terminals": []
+    },
+    {
+      "id": "pxc-d-ut-2-5-3l",
+      "name": "D-UT 2,5-3L end cover, for three-level blocks (3214314)",
+      "library": "Phoenix Contact UT terminal blocks",
+      "category": "End covers",
+      "mount": "rail",
+      "prefix": "",
+      "w": 2.2,
+      "h": 90.0,
+      "fill": "#d7dadd",
+      "radius": 0.5,
+      "showName": false,
+      "terminals": []
+    },
+    {
+      "id": "pxc-atp-ut",
+      "name": "ATP-UT partition plate, for UT 2,5 to UT 10 (3047167)",
+      "library": "Phoenix Contact UT terminal blocks",
+      "category": "Partition & spacer plates",
+      "mount": "rail",
+      "prefix": "",
+      "w": 2.0,
+      "h": 50.0,
+      "fill": "#d7dadd",
+      "radius": 0.5,
+      "showName": false,
+      "terminals": []
+    },
+    {
+      "id": "pxc-atp-ut-twin",
+      "name": "ATP-UT-TWIN partition plate, for TWIN, MT and MTD blocks (3047183)",
+      "library": "Phoenix Contact UT terminal blocks",
+      "category": "Partition & spacer plates",
+      "mount": "rail",
+      "prefix": "",
+      "w": 2.2,
+      "h": 62.1,
+      "fill": "#d7dadd",
+      "radius": 0.5,
+      "showName": false,
+      "terminals": []
+    },
+    {
+      "id": "pxc-atp-ut-quattro",
+      "name": "ATP-UT-QUATTRO partition plate, for QUATTRO blocks (3047196)",
+      "library": "Phoenix Contact UT terminal blocks",
+      "category": "Partition & spacer plates",
+      "mount": "rail",
+      "prefix": "",
+      "w": 2.2,
+      "h": 69.7,
+      "fill": "#d7dadd",
+      "radius": 0.5,
+      "showName": false,
+      "terminals": []
+    },
+    {
+      "id": "pxc-atp-uttb-2-5-4",
+      "name": "ATP-UTTB 2,5/4 partition plate, for UTTB blocks (3047316)",
+      "library": "Phoenix Contact UT terminal blocks",
+      "category": "Partition & spacer plates",
+      "mount": "rail",
+      "prefix": "",
+      "w": 2.2,
+      "h": 74.3,
+      "fill": "#d7dadd",
+      "radius": 0.5,
+      "showName": false,
+      "terminals": []
+    },
+    {
+      "id": "pxc-tp-uk",
+      "name": "TP-UK partition plate, for three-level blocks (3003046)",
+      "library": "Phoenix Contact UT terminal blocks",
+      "category": "Partition & spacer plates",
+      "mount": "rail",
+      "prefix": "",
+      "w": 2.0,
+      "h": 99.0,
+      "fill": "#d7dadd",
+      "radius": 0.5,
+      "showName": false,
+      "terminals": []
+    },
+    {
+      "id": "pxc-dp-uttb-2-5-4",
+      "name": "DP-UTTB 2,5/4 spacer plate, levels out UTTB offsets (3047303)",
+      "library": "Phoenix Contact UT terminal blocks",
+      "category": "Partition & spacer plates",
+      "mount": "rail",
+      "prefix": "",
+      "w": 2.6,
+      "h": 69.9,
+      "fill": "#d7dadd",
+      "radius": 0.5,
+      "showName": false,
+      "terminals": []
+    },
+    {
+      "id": "pxc-clipfix-35-5",
+      "name": "CLIPFIX 35-5 end clamp, 5.15 mm, snap-on (3022276)",
+      "library": "Phoenix Contact UT terminal blocks",
+      "category": "End clamps",
+      "mount": "rail",
+      "prefix": "",
+      "w": 5.15,
+      "h": 48.5,
+      "fill": "#8d939a",
+      "radius": 0.5,
+      "showName": false,
+      "terminals": []
+    },
+    {
+      "id": "pxc-clipfix-35",
+      "name": "CLIPFIX 35 end clamp, 9.5 mm, snap-on (3022218)",
+      "library": "Phoenix Contact UT terminal blocks",
+      "category": "End clamps",
+      "mount": "rail",
+      "prefix": "",
+      "w": 9.5,
+      "h": 55.6,
+      "fill": "#8d939a",
+      "radius": 0.5,
+      "showName": false,
+      "terminals": []
+    },
+    {
+      "id": "pxc-e-uk",
+      "name": "E/UK end clamp, 9.5 mm, screw (1201442)",
+      "library": "Phoenix Contact UT terminal blocks",
+      "category": "End clamps",
+      "mount": "rail",
+      "prefix": "",
+      "w": 9.5,
+      "h": 50.5,
+      "fill": "#8d939a",
+      "radius": 0.5,
+      "showName": false,
+      "terminals": []
+    },
+    {
+      "id": "pxc-e-ns-35-n",
+      "name": "E/NS 35 N end clamp, 9.5 mm, screw (0800886)",
+      "library": "Phoenix Contact UT terminal blocks",
+      "category": "End clamps",
+      "mount": "rail",
+      "prefix": "",
+      "w": 9.5,
+      "h": 48.6,
+      "fill": "#8d939a",
+      "radius": 0.5,
+      "showName": false,
+      "terminals": []
+    }
+  ]
+}

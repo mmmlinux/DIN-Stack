@@ -1,5 +1,16 @@
 # To do
 
+## Phoenix Contact UT library (`libraries/phoenix-contact-ut.json`)
+
+- [ ] **Screw and bridge-slot positions** are approximate: screws 6 mm in from each end, bridge slots 3 mm either side of the middle. Phoenix's dimension drawings weren't available, because its website blocks automated access. Check them against a real block or Phoenix's drawings.
+- [ ] **UT 1,5** dimensions (4.15 × 48 mm) come from distributor and CAD data, not the catalog. Its blue and PE versions aren't included.
+- [ ] **Multi-level blocks:** check which level is which on the UTTB-PE (assumed: the lower level is PE) and on the three-level PE/L/N and PE/L/L blocks (assumed: PE lowest, then L, with N or the second L on top).
+- [ ] **TWIN blocks:** the single connection is at the top and the two at the bottom. Real blocks may be mirrored.
+- [ ] **Not included:** orange, red and black colour variants, HESI LED variants, MT/MTD test-socket (P/P) variants, UT 4-QUATTRO HV, UTTB-PV and other special blocks, and accessories that don't take rail space (markers, test plugs, warning signs, pick-off blocks). Plug-in bridges are drawn as bus bars.
+- [ ] **Accessories for UT 1,5:** its end cover and partition plate weren't found, so none are included. ATP-UT is listed for UT 2,5 to UT 10 only.
+- [ ] **Accessory sizes** come from Phoenix datasheets, which label length and height inconsistently; the longer dimension is used as the length across the rail. The DP-UTTB spacer plate is 2.6 mm in its datasheet but 2.5 mm in the catalog (2.6 used).
+- [ ] **Source data** is a 2010 catalog extract. Check that order numbers are still current.
+
 ## AutomationDirect relay library (`libraries/automationdirect-din-relays.json`)
 
 ### Check terminal layouts against real hardware
