@@ -1,5 +1,13 @@
 # To do
 
+## Amphenol 26482 Series 2 library (`libraries/amphenol-26482-series-2.json`)
+
+- [ ] **Contact positions** were measured from the insert drawings in an Amphenol catalog hosted by RS (ACSE206-05-14). Amphenol's own site blocks automated downloads. Check a few against MIL-STD-1669 or a real connector.
+- [ ] **Letters inferred where the catalog is unclear:** the centre contact of 24-61 has no letter in the drawing and is named `RR` (the next double letter after PP). The centre contacts of 20-41 and 22-32 are printed as capitals that duplicate outer contacts, so they're taken as lowercase `t` and `j`.
+- [ ] **The catalog's own chart disagrees with its drawings** on the contact sizes of 18-8, 20-24, 22-19 and 22-21. The drawings' labels were used, and they match Glenair's MIL-STD-1669 chart.
+- [ ] **Wire colour guess:** contacts named N or L (and lowercase n) make new wires take the AC neutral or line colour, as if they were mains terminals.
+- [ ] **Not included:** plugs (MS3476, MS3475), the outside shapes of the jam-nut and cable-connecting receptacles, alternate insert positions W/X/Y/Z, and MIL-STD-1669 arrangements that Amphenol's catalog doesn't list (8-2, 8-3, 8-4, 10-98, 14-22, 16-14, 16-99, 18-85, 20-27, 20-90, 22-34, 24-27).
+
 ## Phoenix Contact UT library (`libraries/phoenix-contact-ut.json`)
 
 - [ ] **Screw and bridge-slot positions** are approximate: screws 6 mm in from each end, bridge slots 3 mm either side of the middle. Phoenix's dimension drawings weren't available, because its website blocks automated access. Check them against a real block or Phoenix's drawings.

@@ -1,5 +1,10 @@
 # Release notes
 
+## 1.3.1 — 2026-10-23
+
+- **Amphenol 26482 Series 2 library:** a new ready-made library, *Amphenol 26482 Series 2 connectors*, in **+ Add a library…**. It has 68 circular panel receptacles: all 34 MIL-DTL-26482 Series 2 insert arrangements, from shell size 8 to 24, each with pins and with sockets.
+- Contacts carry the catalog's letters and are laid out as seen from the wire side. Pin inserts are mirrored, and the master key is at the top. Search for an arrangement such as `14-19` to find it.
+
 ## 1.2.2 — 2026-10-23
 
 - **UT accessories:** the *Phoenix Contact UT terminal blocks* library now has 64 types, adding the accessories that take up rail space:

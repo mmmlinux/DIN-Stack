@@ -68,6 +68,7 @@ To offer a new library in the list, put its file in `libraries/` and add an entr
 | --- | --- |
 | **AutomationDirect DIN-rail relays** ([`automationdirect-din-relays.json`](../libraries/automationdirect-din-relays.json)) | DIN-rail relays, timers, monitoring relays and relay sockets sold by AutomationDirect: 59 object types covering 206 part numbers (Murrelektronik, Klemsan, Dold, Gefran, Macromatic, Fuji and AutomationDirect's own sockets). |
 | **Phoenix Contact UT terminal blocks** ([`phoenix-contact-ut.json`](../libraries/phoenix-contact-ut.json)) | 64 types: UT screw terminal blocks (feed-through UT 1,5 to UT 35 in grey and blue, ground (PE), TWIN and QUATTRO, double-level UTTB, three-level, fuse (HESI), and disconnect (HEDI, MT, MTD) blocks) and the accessories that take up rail space: end covers, partition and spacer plates, and end clamps. Each type's name includes its order number. |
+| **Amphenol 26482 Series 2 connectors** ([`amphenol-26482-series-2.json`](../libraries/amphenol-26482-series-2.json)) | 68 MIL-DTL-26482 Series 2 circular receptacles: all 34 insert arrangements from shell size 8 to 24, each with pins (P) and with sockets (S). |
 
 About the AutomationDirect library:
 
@@ -89,6 +90,14 @@ About the Phoenix Contact UT library:
 - **End clamps** hold a strip in place at each end: CLIPFIX 35-5 (5.15 mm, the one Phoenix lists for UT 2,5), CLIPFIX 35, E/UK and E/NS 35 N (9.5 mm).
 - **Plug-in bridges** (FBS…) and reducing bridges (RB…) aren't object types: draw them with **Bus bar** through the blocks' B1 or B2 slots. Markers, test plugs and warning signs don't take rail space and aren't included.
 - Colours other than grey, blue and green-yellow (orange, red, black) and the LED variants of the fuse blocks aren't included. Duplicate the nearest type and change its colour.
+
+About the Amphenol 26482 Series 2 library:
+
+- **One type per insert arrangement and contact gender.** The type name starts with the arrangement and gender as it appears at the end of the part number, such as `14-19P` in MS3470L14-19P, so searching for `14-19` finds both versions. The same insert fits the wall-mount (MS3470), cable-connecting (MS3471) and jam-nut (MS3474) receptacles.
+- **Contacts are shown from the wire side**, the way you see them when wiring the back of a panel. Socket inserts look as they do in the catalog's insert drawings; pin inserts are mirrored left to right. The master key is at the top.
+- **Contact positions** were measured from the insert drawings in Amphenol's catalog and scaled to the shell, so they're close but not exact. Contact letters are the catalog's. The contact sizes (#20, #16, #12) are in each type's name.
+- **The outline** is the square flange of the MS3470 wall-mount receptacle. Jam-nut and cable-connecting receptacles are a different shape on the outside, but their inserts are the same.
+- Plugs (MS3476, MS3475), protective caps, backshells and the alternate insert positions (W, X, Y, Z) aren't included.
 
 ## Creating an object type
 

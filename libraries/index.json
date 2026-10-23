@@ -12,6 +12,12 @@
       "name": "Phoenix Contact UT terminal blocks",
       "description": "UT screw terminal blocks from 1.5 to 35 mm²: feed-through, ground, TWIN and QUATTRO, double- and three-level, fuse and disconnect blocks, with their end covers, partition and spacer plates, and end clamps.",
       "types": 64
+    },
+    {
+      "file": "amphenol-26482-series-2.json",
+      "name": "Amphenol 26482 Series 2 connectors",
+      "description": "MIL-DTL-26482 Series 2 circular receptacles (MS3470, MS3471, MS3474): all 34 insert arrangements, shell sizes 8 to 24, in pin and socket versions, with contacts placed as seen from the wire side.",
+      "types": 68
     }
   ]
 }
