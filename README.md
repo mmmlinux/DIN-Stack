@@ -9,6 +9,7 @@ It isn't tied to any manufacturer. Every object is a simple rectangle with termi
 ## Features
 
 - **Real-size parts.** Every object type has a width and height in mm. Parts snap flush against each other and centre on DIN rails (35 mm or 15 mm).
+- **Separate libraries.** Each imported library file is kept as its own library, picked from a drop-down above the library list, alongside *Built-in* and *My types*. *+ Add a library…* in the same drop-down lists the ready-made libraries in `libraries/` to add with one click. Export saves the library shown.
 - **Your own object types.** Set the size, then click where each terminal goes, add a whole row, or add a grid (e.g. 2 × 16) numbered by rows, by columns, around like an IC, or with row letters. Box-select terminals to move, align, space or link them as a group. Changing a type updates every part that uses it. Types can be rail-mounted or loose. Loose types, such as the included enclosure connectors, can go anywhere without snapping to rails. See the [library guide](docs/library.md) for details.
 - **Wiring for documentation.** Drag from one terminal to another (or click one, then the other). Wires get a number, colour, size and notes. They show as destination labels at each terminal, and can also be drawn as straight or curved lines.
 - **Striped wires.** Give a wire a tracer stripe, such as red with a white stripe, shown on the drawing and listed as "Red/White".
@@ -51,6 +52,7 @@ It's plain HTML, CSS and JavaScript with no build step and no dependencies.
 | `sw.js` | Service worker: installable app and offline use |
 | `icons/` | App icons (SVG sources and PNGs) |
 | `docs/library.md` | Guide to building and sharing object libraries |
+| `libraries/index.json` | The list of ready-made libraries offered by *+ Add a library…* |
 
 ## License
 

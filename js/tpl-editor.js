@@ -44,6 +44,7 @@ const TplEditor = (() => {
 
   function fillForm() {
     $("teName").value = ed.tpl.name;
+    $("teLibrary").value = ed.tpl.library || "";
     $("teCategory").value = ed.tpl.category || "";
     $("teMount").value = isLoose(ed.tpl) ? "free" : "rail";
     $("teW").value = ed.tpl.w;
@@ -59,6 +60,7 @@ const TplEditor = (() => {
     $("tplModalTitle").textContent = opts.isNew ? "New object type" : "Edit object type";
     fillForm();
     $("categoryList").innerHTML = (opts.categories || []).map((c) => `<option value="${esc(c)}">`).join("");
+    $("libraryList").innerHTML = (opts.libraries || []).map((c) => `<option value="${esc(c)}">`).join("");
     $("tplModal").hidden = false;
     renderAll();
     setTimeout(() => $("teName").focus(), 0);
@@ -366,6 +368,7 @@ const TplEditor = (() => {
       if (v >= 0) { before(); ed.tpl[key] = v; renderPreview(); updateWarn(); }
     });
     $("teName").addEventListener("input", () => { before(); ed.tpl.name = $("teName").value; });
+    $("teLibrary").addEventListener("input", () => { before(); ed.tpl.library = $("teLibrary").value; });
     $("teCategory").addEventListener("input", () => { before(); ed.tpl.category = $("teCategory").value; });
     $("teMount").addEventListener("change", () => {
       remember();
@@ -533,6 +536,7 @@ const TplEditor = (() => {
       t.name = t.name.trim();
       if (!t.name) { $("teWarn").textContent = "Give the object type a name."; $("teName").focus(); return; }
       if (!(t.w > 0 && t.h > 0)) { $("teWarn").textContent = "Width and height must be greater than zero."; return; }
+      t.library = (t.library || "").trim() || DEFAULT_LIBRARY;
       t.category = (t.category || "").trim() || "Custom";
       const done = ed.opts.onSave;
       const copy = JSON.parse(JSON.stringify(t));

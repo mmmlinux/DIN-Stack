@@ -64,10 +64,11 @@
           <button id="btnLeftCollapse" class="icon" title="Hide the library for more drawing space">«</button>
         </span>
       </div>
+      <select id="libPick" class="lib-pick" title="Which library to show. Each imported library file is kept separate."></select>
       <input id="libSearch" class="search" type="search" placeholder="Search…">
       <div id="library" class="library"></div>
       <div class="lib-foot">
-        <button id="btnLibExport" class="small" title="Download your object types and wire profiles to reuse in other diagrams">Export library</button>
+        <button id="btnLibExport" class="small" title="Download the library shown, with your wire profiles, to reuse in other diagrams">Export library</button>
         <button id="btnLibImport" class="small" title="Add object types from a library or diagram file">Import library</button>
       </div>
       <div class="version"><span id="versionLabel"></span> · <a href="https://github.com/mmmlinux/DIN-Stack" target="_blank" rel="noopener" title="Source code, issues and release notes on GitHub">GitHub</a></div>
@@ -115,6 +116,8 @@
       <div class="modal-body tpl-editor">
         <div class="tpl-form">
           <label>Name <input id="teName" type="text"></label>
+          <label title="The library this type belongs to. Type a new name to start a new library.">Library <input id="teLibrary" type="text" list="libraryList"></label>
+          <datalist id="libraryList"></datalist>
           <label>Category <input id="teCategory" type="text" list="categoryList"></label>
           <label title="Loose parts, like connectors on the enclosure wall, can be placed anywhere and don't snap onto DIN rails">Mounting
             <select id="teMount">
@@ -239,6 +242,7 @@
         <h3>Placing things</h3>
         <ul>
           <li>Click an object in the library (or drag it onto the canvas) to add it.</li>
+          <li>The drop-down above the search box picks which library is shown: <i>Built-in</i>, <i>My types</i>, each imported library, or <i>All libraries</i>. New types go into the library shown; change a type's <b>Library</b> in the designer to move it. <b>+ Add a library…</b> at the bottom of the drop-down lists ready-made libraries to add.</li>
           <li>Click a library category's name to fold it away, or ⊟ to fold them all. Searching still shows every match. <b>«</b> next to <i>+ New type</i> hides the library panel for more drawing space; <b>»</b> brings it back. Rails, notes, bus bars and cables are added from <b>Add</b> in the toolbar.</li>
           <li>Drag parts to move them. They snap flush against neighbours and centre on DIN rails. Hold <b>Alt</b> while dragging to place freely.</li>
           <li>Hold <b>Ctrl</b> (<b>Cmd</b> on a Mac) while dragging to push the parts touching it on that side along with it (and the ones touching those), e.g. to open a gap in a terminal strip. Anything past a gap stays put, and the move is kept straight. The whole moving group snaps against the parts it moves towards or away from, so it can close up flush with the next part. Add <b>Alt</b> to move freely.</li>
@@ -295,6 +299,21 @@
         </table>
         <p class="muted">Your work is saved automatically in this browser. Use <b>Save</b> to keep a file you can open elsewhere.</p>
       </div>
+    </div>
+  </div>
+
+  <!-- Ready-made libraries -->
+  <div class="modal-back" id="libChooser" hidden>
+    <div class="modal narrow">
+      <div class="modal-head">
+        <h2>Add a library</h2>
+        <button class="icon" data-close="libChooser" title="Close">✕</button>
+      </div>
+      <div class="modal-body">
+        <p class="muted" style="margin-top:0">Ready-made libraries that come with DIN Stack. Each one is added to this diagram as its own library, and you can switch between them with the drop-down above the library list. To add a library file of your own, use <b>Import library</b>.</p>
+        <div id="libChooserList"></div>
+      </div>
+      <div class="modal-foot"><button data-close="libChooser">Close</button></div>
     </div>
   </div>
 

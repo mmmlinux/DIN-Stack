@@ -136,6 +136,12 @@ label.inline { display: inline-flex; align-items: center; gap: 6px; color: var(-
 }
 .panel-head:first-child { margin-top: 2px; }
 .search { width: 100%; margin-bottom: 6px; }
+.lib-pick { width: 100%; margin-bottom: 6px; }
+.lib-offer { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-top: 1px solid var(--border); }
+.lib-offer .meta { flex: 1; min-width: 0; }
+.lib-offer .name { font-weight: 600; }
+.lib-offer .desc { margin: 2px 0; }
+.lib-offer .size { font-size: 11px; color: var(--muted); }
 .library { flex: 1; overflow-y: auto; margin: 0 -4px; }
 .lib-cat {
   display: flex; align-items: center; gap: 4px; width: calc(100% - 8px); margin: 8px 4px 2px; padding: 2px 2px;

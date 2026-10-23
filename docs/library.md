@@ -25,6 +25,43 @@ The library is stored **inside each diagram**:
 - **Open** loads the library that was saved with that file.
 - To move object types between diagrams, use **Export library** and **Import library** at the bottom of the sidebar (see [Saving and sharing a library](#saving-and-sharing-a-library)).
 
+### Several libraries
+
+A diagram can hold several libraries, and the sidebar shows one at a time. Pick which one with the drop-down above the search box:
+
+- **Built-in** holds the types that come with DIN Stack.
+- **My types** holds types you made before libraries existed, and any type with no library set.
+- **Each imported library file becomes its own library**, named after the file (see [Saving and sharing a library](#saving-and-sharing-a-library)).
+- **All libraries** shows every type at once. Use it to search across all of them.
+
+The search box searches the library shown. New types go into the library shown (or *My types* when *All libraries* is picked). To move a type to another library, or start a new one, change its **Library** in the designer.
+
+Which library is shown is remembered in your browser and isn't saved with the diagram.
+
+### Adding a ready-made library
+
+Pick **+ Add a library…** at the bottom of the drop-down to see the libraries that come with DIN Stack. Click **Add** next to one to load it into the diagram as its own library. A library that's already in the diagram shows **Update** instead, which loads it again to pick up any changes.
+
+The list is read from `libraries/index.json`, so it needs the online version, or an installed copy that has been online. A copy opened straight from `index.html` can't read it; download the library file and use **Import library** instead.
+
+To offer a new library in the list, put its file in `libraries/` and add an entry to `libraries/index.json`:
+
+```json
+{
+  "type": "dinstack-catalog",
+  "libraries": [
+    { "file": "my-parts.json", "name": "My parts", "description": "What's in it, in a sentence.", "types": 12 }
+  ]
+}
+```
+
+| Field | Meaning |
+| --- | --- |
+| `file` | The library file's name inside `libraries/`. |
+| `name` | The library's name, shown in the list and used for its types unless the file sets its own. |
+| `description` | Optional. A sentence shown under the name. |
+| `types` | Optional. How many object types it has, shown in the list. |
+
 ## Creating an object type
 
 | To… | Do this |
@@ -41,6 +78,7 @@ The designer has the type's settings on the left and a full-size preview on the 
 | Setting | What it does |
 | --- | --- |
 | **Name** | Shown in the library, the part's panel and the parts list. |
+| **Library** | Which library the type belongs to. Pick an existing one or type a new name to start a new library. |
 | **Category** | Groups the library list, for example *Terminal blocks*, *Power*, *Control*. Type a new name to start a new group. |
 | **Mounting** | *DIN rail* parts snap onto rails and move with a rail when it's dragged. *Loose* parts, such as connectors on the enclosure wall, a panel or a cable, can be placed anywhere: they don't snap onto rails or move with them, though they still line up with neighbouring parts. Loose types show "loose" in the library. |
 | **Width / Height (mm)** | The part's outline as seen from the front, unrotated, at real size. |
@@ -216,8 +254,8 @@ If your relay's datasheet uses numbers like 13/14, 23/24 for its contacts, renam
 
 | Action | Result |
 | --- | --- |
-| **Export library** | Downloads `dinstack-library.json` with every object type in the current diagram, plus your wire profiles. |
-| **Import library** | Merges a library file into the current diagram. |
+| **Export library** | Downloads the library shown, plus your wire profiles, as a file named after the library (for example `my-types.json`). With *All libraries* picked, it downloads `dinstack-library.json` with every type in the diagram. |
+| **Import library** | Merges a library file into the current diagram as its own library, and shows it. |
 
 How importing merges:
 
@@ -225,6 +263,7 @@ How importing merges:
 - **New id:** the type is added.
 - **Your other types are kept.**
 - **Wire profiles** merge the same way, by id, and wires using an updated profile change to match.
+- **Library name:** each imported type keeps the library it was exported from. Types without one go into a library named after the file: its `name` field if it has one, otherwise the file name (`automationdirect-din-relays.json` becomes *automationdirect din relays*). Built-in types stay in *Built-in*.
 
 To keep a standard library for all your work, build it in one diagram, export it, and import it into each new diagram. Alternatively, keep a "template" diagram file and start new work from it with *Open* then *Save*.
 
@@ -237,11 +276,13 @@ A library file is plain JSON, so you can also generate or edit one with a script
 ```json
 {
   "type": "dinstack-library",
-  "app": "1.0.19",
+  "app": "1.1.1",
+  "name": "My types",
   "templates": [
     {
       "id": "u7k2m9q",
       "name": "Relay module, 4-channel",
+      "library": "My types",
       "category": "Control",
       "mount": "rail",
       "prefix": "K",
@@ -263,12 +304,15 @@ A library file is plain JSON, so you can also generate or edit one with a script
 }
 ```
 
+The top-level `name` is optional: it names the library that types without their own `library` go into when the file is imported.
+
 ### Object type fields
 
 | Field | Required | Meaning |
 | --- | --- | --- |
 | `id` | yes | Unique, stable identifier. Importing matches on it, and parts reference it. Don't change it once parts use the type. |
 | `name` | yes | Display name. |
+| `library` | no | The library the type belongs to. If it's missing, importing uses the file's `name`, or the file name. |
 | `category` | no | Library group. Defaults to *Custom*. |
 | `mount` | no | `free` for a loose part that doesn't go on a DIN rail. Anything else, or leaving it out, means a rail-mounted part. |
 | `prefix` | no | Tag prefix for new parts. |

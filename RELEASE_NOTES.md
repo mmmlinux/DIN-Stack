@@ -1,5 +1,22 @@
 # Release notes
 
+## 1.1.1 — 2026-10-22
+
+Version number set by hand as a new minor release. It brings together the changes made since 1.0.34, which were numbered 1.0.35 and 1.0.36 during development and never released under those numbers.
+
+- **Separate libraries:** object types are now kept in named libraries instead of one long list. A drop-down above the search box picks which one is shown:
+  - *Built-in* has the types that come with DIN Stack.
+  - *My types* has the types you've made.
+  - Each imported library file becomes its own library, named after the file, and is shown straight after importing.
+  - *All libraries* shows everything at once, for searching across all of them.
+- New types go into the library being shown. The type designer has a new **Library** field, so you can move a type to another library or start a new one.
+- **Add a library:** pick **+ Add a library…** at the bottom of the library drop-down to see the ready-made libraries that come with DIN Stack, and add one with a click. Each is loaded as its own library and shown straight away. One already in the diagram offers **Update**, to load it again.
+  - The list comes from `libraries/index.json`. It needs the online version or an installed copy; when DIN Stack is opened straight from `index.html`, the chooser explains how to import a library file by hand instead.
+  - No ready-made libraries are listed yet. They'll appear as library files are added to `libraries/`.
+- **Export library** now saves just the library shown, in a file named after it. Pick *All libraries* to export everything as before.
+- Library files can carry a `name`, used as the library's name when imported.
+- Diagrams and library files from earlier versions open as before. Their built-in types go into *Built-in* and the rest into *My types* (or, when importing, a library named after the file).
+
 ## 1.0.34 — 2026-10-22
 
 Version number set by hand: kept in the 1.0 series rather than moving to 1.1.1.

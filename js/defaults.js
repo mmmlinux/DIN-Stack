@@ -278,10 +278,17 @@ function addTemplatePacks(d) {
 // Loose parts (enclosure connectors and the like) aren't mounted on a DIN rail.
 const isLoose = (tpl) => !!tpl && tpl.mount === "free";
 
+// Every object type belongs to a named library, and the sidebar shows one library at a time.
+// Built-in types go in "Built-in"; types made before libraries existed go in "My types".
+const BUILTIN_LIBRARY = "Built-in";
+const DEFAULT_LIBRARY = "My types";
+const isBuiltinId = (id) => DEFAULT_TEMPLATES.some((x) => x.id === id);
+
 // Bring a stored object type up to date (diagrams saved by older versions).
 function upgradeTemplate(tpl) {
   applyDefaultLinks(tpl);
   applyDefaultSlots(tpl);
+  tpl.library = String(tpl.library || "").trim() || (isBuiltinId(tpl.id) ? BUILTIN_LIBRARY : DEFAULT_LIBRARY);
 }
 
 DEFAULT_TEMPLATES.forEach(upgradeTemplate);

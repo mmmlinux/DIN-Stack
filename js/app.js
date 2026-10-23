@@ -289,13 +289,42 @@
     try { localStorage.setItem(UI_KEY, JSON.stringify(ui)); } catch (e) { /* storage unavailable */ }
   }
 
+  // The library shown in the sidebar (also remembered per browser). ALL_LIBS shows every one;
+  // it can't clash with a library, as those always have a name.
+  const ALL_LIBS = "";
+  function libraries() {
+    return [...new Set(doc.templates.map((t) => t.library))];
+  }
+  function currentLib() {
+    const libs = libraries();
+    if (ui.lib === ALL_LIBS || libs.includes(ui.lib)) return ui.lib;
+    return libs[0] || DEFAULT_LIBRARY;
+  }
+  function setLib(name) {
+    ui.lib = name;
+    saveUi();
+    renderLibrary();
+  }
+  // Object types in the library shown.
+  function shownTemplates() {
+    const lib = currentLib();
+    return lib === ALL_LIBS ? doc.templates : doc.templates.filter((t) => t.library === lib);
+  }
+
   function renderLibrary() {
+    const lib = currentLib();
+    const libs = libraries();
+    const count = (l) => doc.templates.filter((t) => t.library === l).length;
+    $("libPick").innerHTML = (libs.length ? "" : `<option value="" selected disabled>No libraries</option>`) + libs.map((l) => `<option value="${esc(l)}"${l === lib ? " selected" : ""}>${esc(l)} (${count(l)})</option>`).join("")
+      + (libs.length > 1 ? `<option value="${ALL_LIBS}"${lib === ALL_LIBS ? " selected" : ""}>All libraries (${doc.templates.length})</option>` : "")
+      + `<option data-add value="">+ Add a library…</option>`;
     const q = $("libSearch").value.trim().toLowerCase();
+    const shown = shownTemplates();
     const cats = [];
-    for (const t of doc.templates) if (!cats.includes(t.category)) cats.push(t.category);
+    for (const t of shown) if (!cats.includes(t.category)) cats.push(t.category);
     let s = "";
     for (const c of cats) {
-      const list = doc.templates.filter((t) => t.category === c && (!q || t.name.toLowerCase().includes(q) || c.toLowerCase().includes(q)));
+      const list = shown.filter((t) => t.category === c && (!q || t.name.toLowerCase().includes(q) || c.toLowerCase().includes(q)));
       if (!list.length) continue;
       const closed = !q && ui.folded.includes(c); // searching shows every match
       s += `<button class="lib-cat${closed ? " closed" : ""}" data-cat="${esc(c)}" aria-expanded="${!closed}" title="${closed ? "Show" : "Hide"} ${esc(c)}"><span class="chev">▾</span>${esc(c)}<span class="count">${list.length}</span></button>`;
@@ -312,7 +341,7 @@
         </div>`;
       }
     }
-    $("library").innerHTML = s || `<div class="muted" style="padding:8px">No matching object types.</div>`;
+    $("library").innerHTML = s || `<div class="muted" style="padding:8px">${shown.length ? "No matching object types." : "This library is empty."}</div>`;
     const allFolded = cats.length && cats.every((c) => ui.folded.includes(c));
     $("btnLibFold").textContent = allFolded ? "⊞" : "⊟";
     $("btnLibFold").title = allFolded ? "Expand all categories" : "Collapse all categories";
@@ -330,8 +359,8 @@
     $("app").classList.toggle("left-collapsed", hidden);
   }
 
-  function categories() {
-    return [...new Set(doc.templates.map((t) => t.category))];
+  function categories(list = doc.templates) {
+    return [...new Set(list.map((t) => t.category))];
   }
 
   function lostConnections(tpl) {
@@ -344,22 +373,25 @@
     TplEditor.open(tpl, {
       isNew,
       categories: categories(),
+      libraries: libraries(),
       lostCheck: isNew ? null : lostConnections,
       onSave(t) {
         checkpoint();
         const i = doc.templates.findIndex((x) => x.id === t.id);
         if (i >= 0) doc.templates[i] = t; else doc.templates.push(t);
         cleanConnections();
-        renderLibrary();
+        // Follow the type into its library, so it doesn't vanish from view.
+        if (currentLib() !== ALL_LIBS && currentLib() !== t.library) setLib(t.library); else renderLibrary();
         refresh();
-        toast(isNew ? `Added “${t.name}” to the library` : `Updated “${t.name}”`);
+        toast(isNew ? `Added “${t.name}” to ${t.library}` : `Updated “${t.name}”`);
       },
     });
   }
 
   function newTemplate() {
+    const lib = currentLib();
     editTemplate({
-      id: uid("u"), name: "", category: "Custom", prefix: "A", w: 40, h: 60,
+      id: uid("u"), name: "", library: lib === ALL_LIBS ? DEFAULT_LIBRARY : lib, category: "Custom", prefix: "A", w: 40, h: 60,
       fill: "#dfe6ee", radius: 1, showName: true, terminals: [],
     }, true);
   }
@@ -1517,8 +1549,8 @@
   // ---------- keyboard ----------
   document.addEventListener("keydown", (e) => {
     if (!ctx.hidden) { if (e.key === "Escape" || e.key === "Tab") hideCtx(); return; } // the menu has the keyboard
-    if (!$("tplModal").hidden || !$("helpModal").hidden || !$("profModal").hidden) {
-      if (e.key === "Escape") { $("helpModal").hidden = true; $("profModal").hidden = true; }
+    if (!$("tplModal").hidden || !$("helpModal").hidden || !$("profModal").hidden || !$("libChooser").hidden) {
+      if (e.key === "Escape") { $("helpModal").hidden = true; $("profModal").hidden = true; $("libChooser").hidden = true; }
       return;
     }
     const inField = /INPUT|TEXTAREA|SELECT/.test(e.target.tagName) || e.target.isContentEditable;
@@ -2398,32 +2430,96 @@
     const f = e.target.files[0];
     e.target.value = "";
     if (!f) return;
-    readJSONFile(f, (d) => {
-      const list = d && Array.isArray(d.templates) ? d.templates : null;
-      if (!list) { alert("No object types found in that file."); return; }
-      checkpoint();
-      let added = 0, updated = 0;
-      for (const t of list) {
-        if (!t || !t.id || !(t.w > 0) || !(t.h > 0)) continue;
-        t.terminals = t.terminals || [];
-        upgradeTemplate(t);
-        const i = doc.templates.findIndex((x) => x.id === t.id);
-        if (i >= 0) { doc.templates[i] = t; updated++; } else { doc.templates.push(t); added++; }
-      }
-      let profiles = 0;
-      for (const p of Array.isArray(d.wireProfiles) ? d.wireProfiles : []) {
-        if (!p || !p.id || !p.name) continue;
-        const i = doc.wireProfiles.findIndex((x) => x.id === p.id);
-        if (i >= 0) doc.wireProfiles[i] = p; else doc.wireProfiles.push(p);
-        for (const c of doc.connections) if (c.profile === p.id) applyProfile(c, p);
-        profiles++;
-      }
-      cleanConnections();
-      renderLibrary();
-      refresh();
-      toast(`Imported ${added} new and ${updated} updated object type${added + updated === 1 ? "" : "s"}${profiles ? ` and ${profiles} wire profile${profiles === 1 ? "" : "s"}` : ""}`);
-    });
+    readJSONFile(f, (d) => importLibrary(d, f.name));
   });
+
+  // Merge a library file into the diagram. Types without a library of their own join one named
+  // after the file: its "name", the name given by the caller, or the file name.
+  function importLibrary(d, fileName, name) {
+    const list = d && Array.isArray(d.templates) ? d.templates : null;
+    if (!list) { alert("No object types found in that file."); return; }
+    checkpoint();
+    const fileLib = (typeof d.name === "string" && d.name.trim()) || name || fileName.replace(/\.json$/i, "").replace(/[-_]+/g, " ").trim() || "Imported";
+    const libs = new Set();
+    let added = 0, updated = 0;
+    for (const t of list) {
+      if (!t || !t.id || !(t.w > 0) || !(t.h > 0)) continue;
+      t.terminals = t.terminals || [];
+      if (!String(t.library || "").trim() && !isBuiltinId(t.id)) t.library = fileLib;
+      upgradeTemplate(t);
+      libs.add(t.library);
+      const i = doc.templates.findIndex((x) => x.id === t.id);
+      if (i >= 0) { doc.templates[i] = t; updated++; } else { doc.templates.push(t); added++; }
+    }
+    let profiles = 0;
+    for (const p of Array.isArray(d.wireProfiles) ? d.wireProfiles : []) {
+      if (!p || !p.id || !p.name) continue;
+      const i = doc.wireProfiles.findIndex((x) => x.id === p.id);
+      if (i >= 0) doc.wireProfiles[i] = p; else doc.wireProfiles.push(p);
+      for (const c of doc.connections) if (c.profile === p.id) applyProfile(c, p);
+      profiles++;
+    }
+    cleanConnections();
+    // Show what was imported: its library, or all libraries if the file held several.
+    const names = [...libs];
+    if (names.length) setLib(names.length > 1 ? ALL_LIBS : names[0]); else renderLibrary();
+    refresh();
+    const into = names.length === 1 ? ` into “${names[0]}”` : names.length > 1 ? ` into ${names.length} libraries` : "";
+    toast(`Imported ${added} new and ${updated} updated object type${added + updated === 1 ? "" : "s"}${into}${profiles ? ` and ${profiles} wire profile${profiles === 1 ? "" : "s"}` : ""}`);
+  }
+
+  // ---------- ready-made libraries ----------
+  // libraries/index.json lists the library files that ship with DIN Stack. They're fetched, so the
+  // chooser needs the app served over http(s); opening index.html as a file can't read them.
+  const CATALOG = "libraries/index.json";
+
+  function libChooserMsg(html) {
+    $("libChooserList").innerHTML = `<p class="muted">${html}</p>`;
+  }
+
+  async function openLibChooser() {
+    $("libChooser").hidden = false;
+    libChooserMsg("Loading…");
+    let cat;
+    try {
+      const res = await fetch(CATALOG, { cache: "no-cache" });
+      if (!res.ok) throw new Error(res.status);
+      cat = await res.json();
+    } catch (e) {
+      libChooserMsg(`The list of libraries couldn't be loaded. It needs the online version (or an installed copy that has been online); a copy opened straight from <code>index.html</code> can't read it. You can still download a file from the <a href="https://github.com/mmmlinux/DIN-Stack/tree/main/libraries" target="_blank" rel="noopener">libraries folder</a> and use <b>Import library</b>.`);
+      return;
+    }
+    const list = (Array.isArray(cat && cat.libraries) ? cat.libraries : []).filter((l) => l && l.file && l.name);
+    if (!list.length) { libChooserMsg("No ready-made libraries are available yet."); return; }
+    const have = new Set(libraries());
+    $("libChooserList").innerHTML = list.map((l, i) => `
+      <div class="lib-offer">
+        <div class="meta">
+          <div class="name">${esc(l.name)}</div>
+          ${l.description ? `<div class="desc">${esc(l.description)}</div>` : ""}
+          ${l.types ? `<div class="size">${l.types} object types${have.has(l.name) ? " · in this diagram" : ""}</div>` : ""}
+        </div>
+        <button class="small${have.has(l.name) ? "" : " primary"}" data-offer="${i}" title="${have.has(l.name) ? "Load it again to pick up any changes" : "Add it to this diagram as its own library"}">${have.has(l.name) ? "Update" : "Add"}</button>
+      </div>`).join("");
+    $("libChooserList").onclick = async (e) => {
+      const b = e.target.closest("[data-offer]");
+      if (!b) return;
+      const l = list[+b.dataset.offer];
+      b.disabled = true;
+      b.textContent = "Loading…";
+      try {
+        const res = await fetch("libraries/" + encodeURIComponent(l.file), { cache: "no-cache" });
+        if (!res.ok) throw new Error("HTTP " + res.status);
+        const d = await res.json();
+        $("libChooser").hidden = true;
+        importLibrary(d, l.file, l.name);
+      } catch (err) {
+        b.disabled = false;
+        b.textContent = "Retry";
+        alert(`“${l.name}” couldn't be loaded: ${err.message}`);
+      }
+    };
+  }
 
   function exportSVGString(pxPerMm) {
     const inner = renderDiagram(doc, { interactive: false });
@@ -2541,12 +2637,13 @@
   $("btnHelp").addEventListener("click", () => { $("helpModal").hidden = false; });
   document.querySelectorAll("[data-close]").forEach((b) => b.addEventListener("click", () => { $(b.dataset.close).hidden = true; }));
   $("helpModal").addEventListener("click", (e) => { if (e.target.id === "helpModal") $("helpModal").hidden = true; });
+  $("libChooser").addEventListener("click", (e) => { if (e.target.id === "libChooser") $("libChooser").hidden = true; });
   $("btnAddRail").addEventListener("click", () => addRail());
   $("btnAddText").addEventListener("click", () => addText());
   $("btnAddBus").addEventListener("click", () => startBus(null));
   $("btnAddCable").addEventListener("click", () => startCable(null));
   $("btnLibFold").addEventListener("click", () => {
-    const cats = categories();
+    const cats = categories(shownTemplates());
     ui.folded = cats.every((c) => ui.folded.includes(c)) ? [] : cats;
     saveUi();
     renderLibrary();
@@ -2556,7 +2653,16 @@
   setLeftHidden(!!ui.leftHidden);
   $("btnNewTpl").addEventListener("click", newTemplate);
   $("btnLibExport").addEventListener("click", () => {
-    download("dinstack-library.json", JSON.stringify({ type: "dinstack-library", app: APP_VERSION, templates: doc.templates, wireProfiles: doc.wireProfiles }, null, 2), "application/json");
+    // Exports the library shown, or every library when "All libraries" is picked.
+    const lib = currentLib();
+    const all = lib === ALL_LIBS;
+    const file = { type: "dinstack-library", app: APP_VERSION, ...(all ? {} : { name: lib }), templates: shownTemplates(), wireProfiles: doc.wireProfiles };
+    download(all ? "dinstack-library.json" : slug(lib) + ".json", JSON.stringify(file, null, 2), "application/json");
+  });
+  $("libPick").addEventListener("change", (e) => {
+    if (!e.target.selectedOptions[0].hasAttribute("data-add")) { setLib(e.target.value); return; }
+    renderLibrary(); // puts the drop-down back on the library shown
+    openLibChooser();
   });
   $("btnLibImport").addEventListener("click", () => $("libFileInput").click());
   $("libSearch").addEventListener("input", renderLibrary);
