@@ -20,6 +20,7 @@ const FILES = [
   "icons/icon-512.png",
   "icons/icon-maskable-512.png",
   "icons/apple-touch-icon.png",
+  "examples/mechatronics.json",
 ];
 
 self.addEventListener("install", (e) => {

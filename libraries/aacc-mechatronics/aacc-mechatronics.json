@@ -1,0 +1,1617 @@
+{
+  "type": "dinstack-library",
+  "app": "1.5.2",
+  "version": "1.0.1",
+  "name": "AACC Mechatronics",
+  "templates": [
+    {
+      "id": "aacc-te-zk2-5",
+      "name": "ZK2.5 PI-spring feed-through, 2.5 mm², grey · TE Entrelec (1SNK705010R0000)",
+      "library": "AACC Mechatronics",
+      "category": "TE terminal blocks",
+      "mount": "rail",
+      "prefix": "TB",
+      "w": 5.2,
+      "h": 50.9,
+      "fill": "#c3c8ce",
+      "radius": 0.5,
+      "showName": false,
+      "terminals": [
+        {
+          "id": "a",
+          "name": "1",
+          "x": 2.6,
+          "y": 5,
+          "side": "auto",
+          "link": "1",
+          "kind": "wire"
+        },
+        {
+          "id": "b",
+          "name": "2",
+          "x": 2.6,
+          "y": 45.9,
+          "side": "auto",
+          "link": "1",
+          "kind": "wire"
+        },
+        {
+          "id": "s1",
+          "name": "B1",
+          "x": 2.6,
+          "y": 22.45,
+          "side": "auto",
+          "link": "1",
+          "kind": "bus"
+        },
+        {
+          "id": "s2",
+          "name": "B2",
+          "x": 2.6,
+          "y": 28.45,
+          "side": "auto",
+          "link": "1",
+          "kind": "bus"
+        }
+      ]
+    },
+    {
+      "id": "aacc-te-zk2-5-4p",
+      "name": "ZK2.5-4P PI-spring feed-through, 4 connections, 2.5 mm², grey · TE Entrelec (1SNK705012R0000)",
+      "library": "AACC Mechatronics",
+      "category": "TE terminal blocks",
+      "mount": "rail",
+      "prefix": "TB",
+      "w": 5.2,
+      "h": 80.2,
+      "fill": "#c3c8ce",
+      "radius": 0.5,
+      "showName": false,
+      "terminals": [
+        {
+          "id": "a",
+          "name": "1",
+          "x": 2.6,
+          "y": 5,
+          "side": "auto",
+          "link": "1",
+          "kind": "wire"
+        },
+        {
+          "id": "c",
+          "name": "3",
+          "x": 2.6,
+          "y": 13,
+          "side": "auto",
+          "link": "1",
+          "kind": "wire"
+        },
+        {
+          "id": "d",
+          "name": "4",
+          "x": 2.6,
+          "y": 67.2,
+          "side": "auto",
+          "link": "1",
+          "kind": "wire"
+        },
+        {
+          "id": "b",
+          "name": "2",
+          "x": 2.6,
+          "y": 75.2,
+          "side": "auto",
+          "link": "1",
+          "kind": "wire"
+        },
+        {
+          "id": "s1",
+          "name": "B1",
+          "x": 2.6,
+          "y": 37.1,
+          "side": "auto",
+          "link": "1",
+          "kind": "bus"
+        },
+        {
+          "id": "s2",
+          "name": "B2",
+          "x": 2.6,
+          "y": 43.1,
+          "side": "auto",
+          "link": "1",
+          "kind": "bus"
+        }
+      ]
+    },
+    {
+      "id": "aacc-te-ek2-5",
+      "name": "EK2.5 end section, for ZK2.5 · TE Entrelec (1SNK705910R0000)",
+      "library": "AACC Mechatronics",
+      "category": "TE terminal blocks",
+      "mount": "rail",
+      "prefix": "",
+      "w": 2,
+      "h": 52.2,
+      "fill": "#5f6368",
+      "radius": 0.5,
+      "showName": false,
+      "terminals": []
+    },
+    {
+      "id": "aacc-te-ek2-5-4p",
+      "name": "EK2.5-4P end section, for ZK2.5-4P · TE Entrelec (1SNK705912R0000)",
+      "library": "AACC Mechatronics",
+      "category": "TE terminal blocks",
+      "mount": "rail",
+      "prefix": "",
+      "w": 2,
+      "h": 82.8,
+      "fill": "#5f6368",
+      "radius": 0.5,
+      "showName": false,
+      "terminals": []
+    },
+    {
+      "id": "aacc-tb-2503",
+      "name": "TB-2503 barrier terminal strip, 3 positions, 25 A 600 V, panel mount",
+      "library": "AACC Mechatronics",
+      "category": "Barrier strips",
+      "mount": "free",
+      "prefix": "TB",
+      "w": 50.5,
+      "h": 28,
+      "fill": "#2b2d30",
+      "radius": 1,
+      "showName": false,
+      "terminals": [
+        {
+          "id": "t1",
+          "name": "1",
+          "x": 15.25,
+          "y": 6,
+          "side": "top",
+          "link": "1",
+          "kind": "wire"
+        },
+        {
+          "id": "b1",
+          "name": "1",
+          "x": 15.25,
+          "y": 22,
+          "side": "bottom",
+          "link": "1",
+          "kind": "wire"
+        },
+        {
+          "id": "t2",
+          "name": "2",
+          "x": 25.25,
+          "y": 6,
+          "side": "top",
+          "link": "2",
+          "kind": "wire"
+        },
+        {
+          "id": "b2",
+          "name": "2",
+          "x": 25.25,
+          "y": 22,
+          "side": "bottom",
+          "link": "2",
+          "kind": "wire"
+        },
+        {
+          "id": "t3",
+          "name": "3",
+          "x": 35.25,
+          "y": 6,
+          "side": "top",
+          "link": "3",
+          "kind": "wire"
+        },
+        {
+          "id": "b3",
+          "name": "3",
+          "x": 35.25,
+          "y": 22,
+          "side": "bottom",
+          "link": "3",
+          "kind": "wire"
+        }
+      ]
+    },
+    {
+      "id": "aacc-ab-1763-l16awa",
+      "name": "MicroLogix 1100 L16AWA: 120/240 V AC power, 10 × 120 V AC inputs, 2 analog inputs, 6 relay outputs · Allen-Bradley",
+      "library": "AACC Mechatronics",
+      "category": "PLCs",
+      "mount": "rail",
+      "prefix": "PLC",
+      "w": 110,
+      "h": 90,
+      "fill": "#3c3f44",
+      "radius": 1.5,
+      "showName": true,
+      "terminals": [
+        {
+          "id": "i_accom0",
+          "name": "AC COM0",
+          "x": 21.2,
+          "y": 4,
+          "side": "top",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "i_i0",
+          "name": "I/0",
+          "x": 26.8,
+          "y": 9.5,
+          "side": "top",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "i_i1",
+          "name": "I/1",
+          "x": 32.4,
+          "y": 4,
+          "side": "top",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "i_i2",
+          "name": "I/2",
+          "x": 38.0,
+          "y": 9.5,
+          "side": "top",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "i_i3",
+          "name": "I/3",
+          "x": 43.6,
+          "y": 4,
+          "side": "top",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "i_accom1",
+          "name": "AC COM1",
+          "x": 49.2,
+          "y": 9.5,
+          "side": "top",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "i_i4",
+          "name": "I/4",
+          "x": 54.8,
+          "y": 4,
+          "side": "top",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "i_i5",
+          "name": "I/5",
+          "x": 60.4,
+          "y": 9.5,
+          "side": "top",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "i_i6",
+          "name": "I/6",
+          "x": 66.0,
+          "y": 4,
+          "side": "top",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "i_i7",
+          "name": "I/7",
+          "x": 71.6,
+          "y": 9.5,
+          "side": "top",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "i_i8",
+          "name": "I/8",
+          "x": 77.2,
+          "y": 4,
+          "side": "top",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "i_i9",
+          "name": "I/9",
+          "x": 82.8,
+          "y": 9.5,
+          "side": "top",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "i_iacom",
+          "name": "IA COM",
+          "x": 88.4,
+          "y": 4,
+          "side": "top",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "i_iv1",
+          "name": "IV1(+)",
+          "x": 94.0,
+          "y": 9.5,
+          "side": "top",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "i_iv2",
+          "name": "IV2(+)",
+          "x": 99.6,
+          "y": 4,
+          "side": "top",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "o_l1",
+          "name": "L1",
+          "x": 10.0,
+          "y": 86,
+          "side": "bottom",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "o_l2n",
+          "name": "L2/N",
+          "x": 15.6,
+          "y": 80.5,
+          "side": "bottom",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "o_vacvdc0",
+          "name": "VAC/VDC0",
+          "x": 26.8,
+          "y": 80.5,
+          "side": "bottom",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "o_o0",
+          "name": "O/0",
+          "x": 32.4,
+          "y": 86,
+          "side": "bottom",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "o_vacvdc1",
+          "name": "VAC/VDC1",
+          "x": 38.0,
+          "y": 80.5,
+          "side": "bottom",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "o_o1",
+          "name": "O/1",
+          "x": 43.6,
+          "y": 86,
+          "side": "bottom",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "o_vacvdc2",
+          "name": "VAC/VDC2",
+          "x": 49.2,
+          "y": 80.5,
+          "side": "bottom",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "o_o2",
+          "name": "O/2",
+          "x": 54.8,
+          "y": 86,
+          "side": "bottom",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "o_vacvdc3",
+          "name": "VAC/VDC3",
+          "x": 60.4,
+          "y": 80.5,
+          "side": "bottom",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "o_o3",
+          "name": "O/3",
+          "x": 66.0,
+          "y": 86,
+          "side": "bottom",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "o_vacvdc4",
+          "name": "VAC/VDC4",
+          "x": 71.6,
+          "y": 80.5,
+          "side": "bottom",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "o_o4",
+          "name": "O/4",
+          "x": 77.2,
+          "y": 86,
+          "side": "bottom",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "o_vacvdc5",
+          "name": "VAC/VDC5",
+          "x": 82.8,
+          "y": 80.5,
+          "side": "bottom",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "o_o5",
+          "name": "O/5",
+          "x": 88.4,
+          "y": 86,
+          "side": "bottom",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "ch0",
+          "name": "CH0 RS-232",
+          "x": 8,
+          "y": 52,
+          "side": "left",
+          "link": "",
+          "kind": "port"
+        },
+        {
+          "id": "ch1",
+          "name": "CH1 Ethernet",
+          "x": 8,
+          "y": 64,
+          "side": "left",
+          "link": "",
+          "kind": "port"
+        }
+      ]
+    },
+    {
+      "id": "aacc-ab-1763-l16bwa",
+      "name": "MicroLogix 1100 L16BWA: 120/240 V AC power, 10 × 24 V DC inputs, 2 analog inputs, 6 relay outputs, 24 V DC sensor supply · Allen-Bradley",
+      "library": "AACC Mechatronics",
+      "category": "PLCs",
+      "mount": "rail",
+      "prefix": "PLC",
+      "w": 110,
+      "h": 90,
+      "fill": "#3c3f44",
+      "radius": 1.5,
+      "showName": true,
+      "terminals": [
+        {
+          "id": "i_24voutp",
+          "name": "24V OUT+",
+          "x": 10.0,
+          "y": 4,
+          "side": "top",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "i_24voutn",
+          "name": "24V OUT-",
+          "x": 15.6,
+          "y": 9.5,
+          "side": "top",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "i_dccom0",
+          "name": "DC COM0",
+          "x": 21.2,
+          "y": 4,
+          "side": "top",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "i_i0",
+          "name": "I/0",
+          "x": 26.8,
+          "y": 9.5,
+          "side": "top",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "i_i1",
+          "name": "I/1",
+          "x": 32.4,
+          "y": 4,
+          "side": "top",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "i_i2",
+          "name": "I/2",
+          "x": 38.0,
+          "y": 9.5,
+          "side": "top",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "i_i3",
+          "name": "I/3",
+          "x": 43.6,
+          "y": 4,
+          "side": "top",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "i_dccom1",
+          "name": "DC COM1",
+          "x": 49.2,
+          "y": 9.5,
+          "side": "top",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "i_i4",
+          "name": "I/4",
+          "x": 54.8,
+          "y": 4,
+          "side": "top",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "i_i5",
+          "name": "I/5",
+          "x": 60.4,
+          "y": 9.5,
+          "side": "top",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "i_i6",
+          "name": "I/6",
+          "x": 66.0,
+          "y": 4,
+          "side": "top",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "i_i7",
+          "name": "I/7",
+          "x": 71.6,
+          "y": 9.5,
+          "side": "top",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "i_i8",
+          "name": "I/8",
+          "x": 77.2,
+          "y": 4,
+          "side": "top",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "i_i9",
+          "name": "I/9",
+          "x": 82.8,
+          "y": 9.5,
+          "side": "top",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "i_iacom",
+          "name": "IA COM",
+          "x": 88.4,
+          "y": 4,
+          "side": "top",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "i_iv1",
+          "name": "IV1(+)",
+          "x": 94.0,
+          "y": 9.5,
+          "side": "top",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "i_iv2",
+          "name": "IV2(+)",
+          "x": 99.6,
+          "y": 4,
+          "side": "top",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "o_l1",
+          "name": "L1",
+          "x": 10.0,
+          "y": 86,
+          "side": "bottom",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "o_l2n",
+          "name": "L2/N",
+          "x": 15.6,
+          "y": 80.5,
+          "side": "bottom",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "o_vacvdc0",
+          "name": "VAC/VDC0",
+          "x": 26.8,
+          "y": 80.5,
+          "side": "bottom",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "o_o0",
+          "name": "O/0",
+          "x": 32.4,
+          "y": 86,
+          "side": "bottom",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "o_vacvdc1",
+          "name": "VAC/VDC1",
+          "x": 38.0,
+          "y": 80.5,
+          "side": "bottom",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "o_o1",
+          "name": "O/1",
+          "x": 43.6,
+          "y": 86,
+          "side": "bottom",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "o_vacvdc2",
+          "name": "VAC/VDC2",
+          "x": 49.2,
+          "y": 80.5,
+          "side": "bottom",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "o_o2",
+          "name": "O/2",
+          "x": 54.8,
+          "y": 86,
+          "side": "bottom",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "o_vacvdc3",
+          "name": "VAC/VDC3",
+          "x": 60.4,
+          "y": 80.5,
+          "side": "bottom",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "o_o3",
+          "name": "O/3",
+          "x": 66.0,
+          "y": 86,
+          "side": "bottom",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "o_vacvdc4",
+          "name": "VAC/VDC4",
+          "x": 71.6,
+          "y": 80.5,
+          "side": "bottom",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "o_o4",
+          "name": "O/4",
+          "x": 77.2,
+          "y": 86,
+          "side": "bottom",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "o_vacvdc5",
+          "name": "VAC/VDC5",
+          "x": 82.8,
+          "y": 80.5,
+          "side": "bottom",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "o_o5",
+          "name": "O/5",
+          "x": 88.4,
+          "y": 86,
+          "side": "bottom",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "ch0",
+          "name": "CH0 RS-232",
+          "x": 8,
+          "y": 52,
+          "side": "left",
+          "link": "",
+          "kind": "port"
+        },
+        {
+          "id": "ch1",
+          "name": "CH1 Ethernet",
+          "x": 8,
+          "y": 64,
+          "side": "left",
+          "link": "",
+          "kind": "port"
+        }
+      ]
+    },
+    {
+      "id": "aacc-ab-1763-l16bbb",
+      "name": "MicroLogix 1100 L16BBB: 24 V DC power, 10 × 24 V DC inputs, 2 analog inputs, 2 relay + 4 FET outputs · Allen-Bradley",
+      "library": "AACC Mechatronics",
+      "category": "PLCs",
+      "mount": "rail",
+      "prefix": "PLC",
+      "w": 110,
+      "h": 90,
+      "fill": "#3c3f44",
+      "radius": 1.5,
+      "showName": true,
+      "terminals": [
+        {
+          "id": "i_dccom0",
+          "name": "DC COM0",
+          "x": 21.2,
+          "y": 4,
+          "side": "top",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "i_i0",
+          "name": "I/0",
+          "x": 26.8,
+          "y": 9.5,
+          "side": "top",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "i_i1",
+          "name": "I/1",
+          "x": 32.4,
+          "y": 4,
+          "side": "top",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "i_i2",
+          "name": "I/2",
+          "x": 38.0,
+          "y": 9.5,
+          "side": "top",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "i_i3",
+          "name": "I/3",
+          "x": 43.6,
+          "y": 4,
+          "side": "top",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "i_dccom1",
+          "name": "DC COM1",
+          "x": 49.2,
+          "y": 9.5,
+          "side": "top",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "i_i4",
+          "name": "I/4",
+          "x": 54.8,
+          "y": 4,
+          "side": "top",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "i_i5",
+          "name": "I/5",
+          "x": 60.4,
+          "y": 9.5,
+          "side": "top",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "i_i6",
+          "name": "I/6",
+          "x": 66.0,
+          "y": 4,
+          "side": "top",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "i_i7",
+          "name": "I/7",
+          "x": 71.6,
+          "y": 9.5,
+          "side": "top",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "i_i8",
+          "name": "I/8",
+          "x": 77.2,
+          "y": 4,
+          "side": "top",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "i_i9",
+          "name": "I/9",
+          "x": 82.8,
+          "y": 9.5,
+          "side": "top",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "i_iacom",
+          "name": "IA COM",
+          "x": 88.4,
+          "y": 4,
+          "side": "top",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "i_iv1",
+          "name": "IV1(+)",
+          "x": 94.0,
+          "y": 9.5,
+          "side": "top",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "i_iv2",
+          "name": "IV2(+)",
+          "x": 99.6,
+          "y": 4,
+          "side": "top",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "o_dcinp",
+          "name": "DC IN+",
+          "x": 10.0,
+          "y": 86,
+          "side": "bottom",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "o_dcinn",
+          "name": "DC IN-",
+          "x": 15.6,
+          "y": 80.5,
+          "side": "bottom",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "o_vacvdc0",
+          "name": "VAC/VDC0",
+          "x": 26.8,
+          "y": 80.5,
+          "side": "bottom",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "o_o0",
+          "name": "O/0",
+          "x": 32.4,
+          "y": 86,
+          "side": "bottom",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "o_vacvdc1",
+          "name": "VAC/VDC1",
+          "x": 38.0,
+          "y": 80.5,
+          "side": "bottom",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "o_o1",
+          "name": "O/1",
+          "x": 43.6,
+          "y": 86,
+          "side": "bottom",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "o_dc24vp",
+          "name": "DC24V+",
+          "x": 60.4,
+          "y": 80.5,
+          "side": "bottom",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "o_o2",
+          "name": "O/2",
+          "x": 66.0,
+          "y": 86,
+          "side": "bottom",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "o_o3",
+          "name": "O/3",
+          "x": 71.6,
+          "y": 80.5,
+          "side": "bottom",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "o_o4",
+          "name": "O/4",
+          "x": 77.2,
+          "y": 86,
+          "side": "bottom",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "o_o5",
+          "name": "O/5",
+          "x": 82.8,
+          "y": 80.5,
+          "side": "bottom",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "o_dc24vn",
+          "name": "DC24V-",
+          "x": 88.4,
+          "y": 86,
+          "side": "bottom",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "ch0",
+          "name": "CH0 RS-232",
+          "x": 8,
+          "y": 52,
+          "side": "left",
+          "link": "",
+          "kind": "port"
+        },
+        {
+          "id": "ch1",
+          "name": "CH1 Ethernet",
+          "x": 8,
+          "y": 64,
+          "side": "left",
+          "link": "",
+          "kind": "port"
+        }
+      ]
+    },
+    {
+      "id": "aacc-ab-1763-l16dwd",
+      "name": "MicroLogix 1100 L16DWD: 12/24 V DC power, 10 × 12/24 V DC inputs, 2 analog inputs, 6 relay outputs · Allen-Bradley",
+      "library": "AACC Mechatronics",
+      "category": "PLCs",
+      "mount": "rail",
+      "prefix": "PLC",
+      "w": 110,
+      "h": 90,
+      "fill": "#3c3f44",
+      "radius": 1.5,
+      "showName": true,
+      "terminals": [
+        {
+          "id": "i_dccom0",
+          "name": "DC COM0",
+          "x": 21.2,
+          "y": 4,
+          "side": "top",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "i_i0",
+          "name": "I/0",
+          "x": 26.8,
+          "y": 9.5,
+          "side": "top",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "i_i1",
+          "name": "I/1",
+          "x": 32.4,
+          "y": 4,
+          "side": "top",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "i_i2",
+          "name": "I/2",
+          "x": 38.0,
+          "y": 9.5,
+          "side": "top",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "i_i3",
+          "name": "I/3",
+          "x": 43.6,
+          "y": 4,
+          "side": "top",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "i_dccom1",
+          "name": "DC COM1",
+          "x": 49.2,
+          "y": 9.5,
+          "side": "top",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "i_i4",
+          "name": "I/4",
+          "x": 54.8,
+          "y": 4,
+          "side": "top",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "i_i5",
+          "name": "I/5",
+          "x": 60.4,
+          "y": 9.5,
+          "side": "top",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "i_i6",
+          "name": "I/6",
+          "x": 66.0,
+          "y": 4,
+          "side": "top",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "i_i7",
+          "name": "I/7",
+          "x": 71.6,
+          "y": 9.5,
+          "side": "top",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "i_i8",
+          "name": "I/8",
+          "x": 77.2,
+          "y": 4,
+          "side": "top",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "i_i9",
+          "name": "I/9",
+          "x": 82.8,
+          "y": 9.5,
+          "side": "top",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "i_iacom",
+          "name": "IA COM",
+          "x": 88.4,
+          "y": 4,
+          "side": "top",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "i_iv1",
+          "name": "IV1(+)",
+          "x": 94.0,
+          "y": 9.5,
+          "side": "top",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "i_iv2",
+          "name": "IV2(+)",
+          "x": 99.6,
+          "y": 4,
+          "side": "top",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "o_1224vp",
+          "name": "12/24V+",
+          "x": 10.0,
+          "y": 86,
+          "side": "bottom",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "o_1224vn",
+          "name": "12/24V-",
+          "x": 15.6,
+          "y": 80.5,
+          "side": "bottom",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "o_vacvdc0",
+          "name": "VAC/VDC0",
+          "x": 26.8,
+          "y": 80.5,
+          "side": "bottom",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "o_o0",
+          "name": "O/0",
+          "x": 32.4,
+          "y": 86,
+          "side": "bottom",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "o_vacvdc1",
+          "name": "VAC/VDC1",
+          "x": 38.0,
+          "y": 80.5,
+          "side": "bottom",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "o_o1",
+          "name": "O/1",
+          "x": 43.6,
+          "y": 86,
+          "side": "bottom",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "o_vacvdc2",
+          "name": "VAC/VDC2",
+          "x": 49.2,
+          "y": 80.5,
+          "side": "bottom",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "o_o2",
+          "name": "O/2",
+          "x": 54.8,
+          "y": 86,
+          "side": "bottom",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "o_vacvdc3",
+          "name": "VAC/VDC3",
+          "x": 60.4,
+          "y": 80.5,
+          "side": "bottom",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "o_o3",
+          "name": "O/3",
+          "x": 66.0,
+          "y": 86,
+          "side": "bottom",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "o_vacvdc4",
+          "name": "VAC/VDC4",
+          "x": 71.6,
+          "y": 80.5,
+          "side": "bottom",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "o_o4",
+          "name": "O/4",
+          "x": 77.2,
+          "y": 86,
+          "side": "bottom",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "o_vacvdc5",
+          "name": "VAC/VDC5",
+          "x": 82.8,
+          "y": 80.5,
+          "side": "bottom",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "o_o5",
+          "name": "O/5",
+          "x": 88.4,
+          "y": 86,
+          "side": "bottom",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "ch0",
+          "name": "CH0 RS-232",
+          "x": 8,
+          "y": 52,
+          "side": "left",
+          "link": "",
+          "kind": "port"
+        },
+        {
+          "id": "ch1",
+          "name": "CH1 Ethernet",
+          "x": 8,
+          "y": 64,
+          "side": "left",
+          "link": "",
+          "kind": "port"
+        }
+      ]
+    },
+    {
+      "id": "aacc-siemens-csm1277",
+      "name": "SIMATIC NET CSM 1277 compact switch, 4 × RJ45, 24 V DC · Siemens (6GK7277-1AA10-0AA0)",
+      "library": "AACC Mechatronics",
+      "category": "Network",
+      "mount": "rail",
+      "prefix": "A",
+      "w": 45,
+      "h": 100,
+      "fill": "#4a4f55",
+      "radius": 1,
+      "showName": true,
+      "terminals": [
+        {
+          "id": "lp",
+          "name": "L+",
+          "x": 13,
+          "y": 4,
+          "side": "top",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "m",
+          "name": "M",
+          "x": 22.5,
+          "y": 4,
+          "side": "top",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "pe",
+          "name": "PE",
+          "x": 32,
+          "y": 4,
+          "side": "top",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "p1",
+          "name": "P1",
+          "x": 7.5,
+          "y": 94,
+          "side": "bottom",
+          "link": "",
+          "kind": "port"
+        },
+        {
+          "id": "p2",
+          "name": "P2",
+          "x": 17.5,
+          "y": 94,
+          "side": "bottom",
+          "link": "",
+          "kind": "port"
+        },
+        {
+          "id": "p3",
+          "name": "P3",
+          "x": 27.5,
+          "y": 94,
+          "side": "bottom",
+          "link": "",
+          "kind": "port"
+        },
+        {
+          "id": "p4",
+          "name": "P4",
+          "x": 37.5,
+          "y": 94,
+          "side": "bottom",
+          "link": "",
+          "kind": "port"
+        }
+      ]
+    },
+    {
+      "id": "aacc-siemens-pm1207",
+      "name": "SIMATIC PM1207 power supply, 120/230 V AC in, 24 V DC 2.5 A out · Siemens (6EP1332-1SH71)",
+      "library": "AACC Mechatronics",
+      "category": "Power supplies",
+      "mount": "rail",
+      "prefix": "PS",
+      "w": 70,
+      "h": 100,
+      "fill": "#4a4f55",
+      "radius": 1,
+      "showName": true,
+      "terminals": [
+        {
+          "id": "l",
+          "name": "L",
+          "x": 8,
+          "y": 4,
+          "side": "top",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "n",
+          "name": "N",
+          "x": 14,
+          "y": 4,
+          "side": "top",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "pe",
+          "name": "PE",
+          "x": 20,
+          "y": 4,
+          "side": "top",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "vp1",
+          "name": "L+",
+          "x": 8,
+          "y": 96,
+          "side": "bottom",
+          "link": "L+",
+          "kind": "wire"
+        },
+        {
+          "id": "vp2",
+          "name": "L+",
+          "x": 14,
+          "y": 96,
+          "side": "bottom",
+          "link": "L+",
+          "kind": "wire"
+        },
+        {
+          "id": "vn1",
+          "name": "M",
+          "x": 20,
+          "y": 96,
+          "side": "bottom",
+          "link": "M",
+          "kind": "wire"
+        },
+        {
+          "id": "vn2",
+          "name": "M",
+          "x": 26,
+          "y": 96,
+          "side": "bottom",
+          "link": "M",
+          "kind": "wire"
+        }
+      ]
+    },
+    {
+      "id": "aacc-rhino-psp05-020s",
+      "name": "RHINO PSP05-020S power supply, 5 V DC 4 A 20 W, screw terminals · AutomationDirect",
+      "library": "AACC Mechatronics",
+      "category": "Power supplies",
+      "mount": "rail",
+      "prefix": "PS",
+      "w": 27,
+      "h": 75,
+      "fill": "#8a9097",
+      "radius": 1,
+      "showName": false,
+      "terminals": [
+        {
+          "id": "vp",
+          "name": "+V",
+          "x": 13.2,
+          "y": 4.4,
+          "side": "top",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "vn",
+          "name": "-V",
+          "x": 19.6,
+          "y": 4.4,
+          "side": "top",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "pe",
+          "name": "PE",
+          "x": 9.1,
+          "y": 70,
+          "side": "bottom",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "n",
+          "name": "N",
+          "x": 16,
+          "y": 70,
+          "side": "bottom",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "l",
+          "name": "L",
+          "x": 22.8,
+          "y": 70,
+          "side": "bottom",
+          "link": "",
+          "kind": "wire"
+        }
+      ]
+    }
+  ]
+}

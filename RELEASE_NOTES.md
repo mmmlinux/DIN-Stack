@@ -1,6 +1,18 @@
 # Release notes
 
-Changes to the ready-made libraries are listed separately, in the [library release notes](libraries/RELEASE_NOTES.md).
+Changes to the ready-made libraries are listed separately: each library's folder in [`libraries/`](libraries/README.md) has its own release notes.
+
+## 1.5.3 — 2026-10-24
+
+- **Mechatronics example:** add `#mechatronics` to DIN Stack's address to open the Mechatronics example, built with the AACC Mechatronics library. That link is a workspace of its own: it starts with the example, keeps its own saved diagram apart from the main one, and **File → Load the example** there loads the Mechatronics example. The plain address works as before. Like the library manager, it needs the online version or an installed copy that has been online.
+
+## 1.5.2 — 2026-10-24
+
+- **New library: AACC Mechatronics** (version 1.0.1), in the library manager (**+** beside the library drop-down). It has TE (Entrelec) ZK2.5 and ZK2.5-4P PI-spring terminal blocks and their end sections, a TB-2503 barrier strip, the Allen-Bradley MicroLogix 1100 PLC in all four 1763-L16 versions, the Siemens SIMATIC NET CSM 1277 switch and PM1207 power supply, and the RHINO PSP05-020S 5 V supply. The README and library guide describe it; the details are in its [release notes](libraries/aacc-mechatronics/RELEASE_NOTES.md).
+
+## 1.5.1 — 2026-10-24
+
+- **Tidier libraries folder:** each ready-made library now has a folder of its own in `libraries/`, with its own release notes beside it. A folder can hold a collection: both AutomationDirect libraries are in `libraries/automationdirect/`. [`libraries/README.md`](libraries/README.md) lists them all. Nothing changes in the app: the library manager finds them as before, and *What's new* opens the library's own notes.
 
 ## 1.4.31 — 2026-10-23
 
@@ -15,7 +27,7 @@ Changes to the ready-made libraries are listed separately, in the [library relea
 
 ## 1.4.29 — 2026-10-23
 
-- **ASUS computer** added to the *Misc networking* library (version 1.0.2): a free-standing computer with six serial ports, two LAN ports, six USB ports, HDMI, DisplayPort and a two-terminal power connector. Click **Refresh** next to the library in the library manager to get it. The README and library guide describe it; the details are in the [library release notes](libraries/RELEASE_NOTES.md).
+- **ASUS computer** added to the *Misc networking* library (version 1.0.2): a free-standing computer with six serial ports, two LAN ports, six USB ports, HDMI, DisplayPort and a two-terminal power connector. Click **Refresh** next to the library in the library manager to get it. The README and library guide describe it; the details are in the [library release notes](libraries/misc-networking/RELEASE_NOTES.md).
 
 ## 1.4.28 — 2026-10-23
 
@@ -57,7 +69,7 @@ Changes to the ready-made libraries are listed separately, in the [library relea
 - **Two new ready-made libraries** in the library manager (**+** beside the library drop-down):
   - *AutomationDirect pushbuttons & pilot lights*: GCX 22 mm, Fuji Command 30 mm and Eaton HT800 30 mm pushbuttons, selector switches, E-stops and pilot lights.
   - *Misc networking*: a Tripp Lite industrial 5-port switch and PoE++ injector for DIN rail, and the StarTech IH2006 HDMI KVM-over-IP extender.
-- The README and library guide describe both. Their contents are in the [library release notes](libraries/RELEASE_NOTES.md).
+- The README and library guide describe both. Their contents are in the [library release notes](libraries/README.md).
 
 ## 1.4.21 — 2026-10-23
 
@@ -161,7 +173,7 @@ Changes to the ready-made libraries are listed separately, in the [library relea
 
 ## 1.4.5 — 2026-10-23
 
-- **Library versions:** each ready-made library now has its own version number and its own history, in the new [library release notes](libraries/RELEASE_NOTES.md). Library fixes are recorded there from now on, not here.
+- **Library versions:** each ready-made library now has its own version number and its own history, in the new [library release notes](libraries/README.md). Library fixes are recorded there from now on, not here.
 - **+ Add a library…** shows each library's version with a *What's new* link. A diagram remembers which version of a library it loaded. When a newer version is available, or the library was added before it had a version number, its **Update** button is highlighted and the list says which version the diagram has.
 - The first library update under this scheme is *AutomationDirect DIN-rail relays* 1.0.1, which corrects the MIRO 12.4 relay's terminal layout. Use **Update** to get it.
 

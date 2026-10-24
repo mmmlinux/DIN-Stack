@@ -1,0 +1,3730 @@
+{
+  "schema": 1,
+  "meta": {
+    "title": "Mechatronics Example",
+    "author": "",
+    "revision": "A",
+    "date": "2026-10-24",
+    "notes": ""
+  },
+  "settings": {
+    "grid": 1,
+    "labelSize": 2,
+    "tagSize": 3,
+    "lines": "curved",
+    "cables": "full",
+    "labelCable": false,
+    "wireLabels": true,
+    "labelName": "dest",
+    "labelWire": false,
+    "showDest": true,
+    "showTermNames": true,
+    "snapEdges": true,
+    "direction": "rtl",
+    "termSep": "-",
+    "wireStd": "us"
+  },
+  "templates": [
+    {
+      "id": "tb2",
+      "name": "Terminal block, 2-wire",
+      "category": "Terminal blocks",
+      "prefix": "TB",
+      "w": 5.2,
+      "h": 45,
+      "fill": "#c3c8ce",
+      "radius": 0.5,
+      "showName": false,
+      "terminals": [
+        {
+          "id": "a",
+          "name": "1",
+          "x": 2.6,
+          "y": 5,
+          "side": "auto",
+          "link": "1",
+          "kind": "wire"
+        },
+        {
+          "id": "b",
+          "name": "2",
+          "x": 2.6,
+          "y": 40,
+          "side": "auto",
+          "link": "1",
+          "kind": "wire"
+        },
+        {
+          "id": "s1",
+          "name": "B1",
+          "x": 2.6,
+          "y": 19.5,
+          "side": "auto",
+          "link": "1",
+          "kind": "bus"
+        },
+        {
+          "id": "s2",
+          "name": "B2",
+          "x": 2.6,
+          "y": 25.5,
+          "side": "auto",
+          "link": "1",
+          "kind": "bus"
+        }
+      ],
+      "library": "Built-in"
+    },
+    {
+      "id": "tb2blue",
+      "name": "Terminal block, 2-wire (blue)",
+      "category": "Terminal blocks",
+      "prefix": "TB",
+      "w": 5.2,
+      "h": 45,
+      "fill": "#7fb2e0",
+      "radius": 0.5,
+      "showName": false,
+      "terminals": [
+        {
+          "id": "a",
+          "name": "1",
+          "x": 2.6,
+          "y": 5,
+          "side": "auto",
+          "link": "1",
+          "kind": "wire"
+        },
+        {
+          "id": "b",
+          "name": "2",
+          "x": 2.6,
+          "y": 40,
+          "side": "auto",
+          "link": "1",
+          "kind": "wire"
+        },
+        {
+          "id": "s1",
+          "name": "B1",
+          "x": 2.6,
+          "y": 19.5,
+          "side": "auto",
+          "link": "1",
+          "kind": "bus"
+        },
+        {
+          "id": "s2",
+          "name": "B2",
+          "x": 2.6,
+          "y": 25.5,
+          "side": "auto",
+          "link": "1",
+          "kind": "bus"
+        }
+      ],
+      "library": "Built-in"
+    },
+    {
+      "id": "tbpe",
+      "name": "Ground terminal block (PE)",
+      "category": "Terminal blocks",
+      "prefix": "TB",
+      "w": 5.2,
+      "h": 45,
+      "fill": "#b5d86a",
+      "radius": 0.5,
+      "showName": false,
+      "terminals": [
+        {
+          "id": "a",
+          "name": "1",
+          "x": 2.6,
+          "y": 5,
+          "side": "auto",
+          "link": "1",
+          "kind": "wire"
+        },
+        {
+          "id": "b",
+          "name": "2",
+          "x": 2.6,
+          "y": 40,
+          "side": "auto",
+          "link": "1",
+          "kind": "wire"
+        },
+        {
+          "id": "s1",
+          "name": "B1",
+          "x": 2.6,
+          "y": 19.5,
+          "side": "auto",
+          "link": "1",
+          "kind": "bus"
+        },
+        {
+          "id": "s2",
+          "name": "B2",
+          "x": 2.6,
+          "y": 25.5,
+          "side": "auto",
+          "link": "1",
+          "kind": "bus"
+        }
+      ],
+      "library": "Built-in"
+    },
+    {
+      "id": "tb4",
+      "name": "Terminal block, 4-wire",
+      "category": "Terminal blocks",
+      "prefix": "TB",
+      "w": 5.2,
+      "h": 60,
+      "fill": "#c3c8ce",
+      "radius": 0.5,
+      "showName": false,
+      "terminals": [
+        {
+          "id": "a",
+          "name": "1",
+          "x": 2.6,
+          "y": 4.5,
+          "side": "auto",
+          "link": "1",
+          "kind": "wire"
+        },
+        {
+          "id": "b",
+          "name": "2",
+          "x": 2.6,
+          "y": 11.5,
+          "side": "auto",
+          "link": "1",
+          "kind": "wire"
+        },
+        {
+          "id": "c",
+          "name": "3",
+          "x": 2.6,
+          "y": 48.5,
+          "side": "auto",
+          "link": "1",
+          "kind": "wire"
+        },
+        {
+          "id": "d",
+          "name": "4",
+          "x": 2.6,
+          "y": 55.5,
+          "side": "auto",
+          "link": "1",
+          "kind": "wire"
+        },
+        {
+          "id": "s1",
+          "name": "B1",
+          "x": 2.6,
+          "y": 27,
+          "side": "auto",
+          "link": "1",
+          "kind": "bus"
+        },
+        {
+          "id": "s2",
+          "name": "B2",
+          "x": 2.6,
+          "y": 33,
+          "side": "auto",
+          "link": "1",
+          "kind": "bus"
+        }
+      ],
+      "library": "Built-in"
+    },
+    {
+      "id": "tbfuse",
+      "name": "Fuse terminal block",
+      "category": "Terminal blocks",
+      "prefix": "F",
+      "w": 8.2,
+      "h": 72,
+      "fill": "#4b5058",
+      "radius": 0.6,
+      "showName": false,
+      "terminals": [
+        {
+          "id": "a",
+          "name": "1",
+          "x": 4.1,
+          "y": 5,
+          "side": "auto",
+          "link": "1"
+        },
+        {
+          "id": "b",
+          "name": "2",
+          "x": 4.1,
+          "y": 67,
+          "side": "auto",
+          "link": "1"
+        }
+      ],
+      "library": "Built-in"
+    },
+    {
+      "id": "endstop",
+      "name": "End stop",
+      "category": "Terminal blocks",
+      "prefix": "",
+      "w": 9.5,
+      "h": 50,
+      "fill": "#3f444b",
+      "radius": 0.8,
+      "showName": false,
+      "terminals": [],
+      "library": "Built-in"
+    },
+    {
+      "id": "psu",
+      "name": "Power supply",
+      "category": "Power",
+      "prefix": "PS",
+      "w": 52,
+      "h": 90,
+      "fill": "#e6e8eb",
+      "radius": 2,
+      "showName": true,
+      "terminals": [
+        {
+          "id": "v1",
+          "name": "+V",
+          "x": 8,
+          "y": 6,
+          "side": "auto",
+          "link": "+V"
+        },
+        {
+          "id": "v2",
+          "name": "+V",
+          "x": 17,
+          "y": 6,
+          "side": "auto",
+          "link": "+V"
+        },
+        {
+          "id": "g1",
+          "name": "-V",
+          "x": 26,
+          "y": 6,
+          "side": "auto",
+          "link": "-V"
+        },
+        {
+          "id": "g2",
+          "name": "-V",
+          "x": 35,
+          "y": 6,
+          "side": "auto",
+          "link": "-V"
+        },
+        {
+          "id": "l",
+          "name": "L",
+          "x": 8,
+          "y": 84,
+          "side": "auto",
+          "link": ""
+        },
+        {
+          "id": "n",
+          "name": "N",
+          "x": 17,
+          "y": 84,
+          "side": "auto",
+          "link": ""
+        },
+        {
+          "id": "pe",
+          "name": "PE",
+          "x": 26,
+          "y": 84,
+          "side": "auto",
+          "link": ""
+        }
+      ],
+      "library": "Built-in"
+    },
+    {
+      "id": "ups",
+      "name": "DC UPS / battery backup",
+      "category": "Power",
+      "prefix": "UPS",
+      "w": 52,
+      "h": 90,
+      "fill": "#e6e8eb",
+      "radius": 2,
+      "showName": true,
+      "terminals": [
+        {
+          "id": "op",
+          "name": "+OUT",
+          "x": 8,
+          "y": 6,
+          "side": "auto"
+        },
+        {
+          "id": "on",
+          "name": "-OUT",
+          "x": 17,
+          "y": 6,
+          "side": "auto"
+        },
+        {
+          "id": "alm",
+          "name": "ALM",
+          "x": 30,
+          "y": 6,
+          "side": "auto"
+        },
+        {
+          "id": "com",
+          "name": "COM",
+          "x": 39,
+          "y": 6,
+          "side": "auto"
+        },
+        {
+          "id": "ip",
+          "name": "+IN",
+          "x": 8,
+          "y": 84,
+          "side": "auto"
+        },
+        {
+          "id": "in",
+          "name": "-IN",
+          "x": 17,
+          "y": 84,
+          "side": "auto"
+        },
+        {
+          "id": "bp",
+          "name": "+BAT",
+          "x": 30,
+          "y": 84,
+          "side": "auto"
+        },
+        {
+          "id": "bn",
+          "name": "-BAT",
+          "x": 39,
+          "y": 84,
+          "side": "auto"
+        }
+      ],
+      "library": "Built-in"
+    },
+    {
+      "id": "battery",
+      "name": "Battery",
+      "category": "Power",
+      "prefix": "GB",
+      "w": 150,
+      "h": 65,
+      "fill": "#3a3f46",
+      "radius": 3,
+      "showName": true,
+      "terminals": [
+        {
+          "id": "p",
+          "name": "+",
+          "x": 20,
+          "y": 8,
+          "side": "top"
+        },
+        {
+          "id": "n",
+          "name": "-",
+          "x": 130,
+          "y": 8,
+          "side": "top"
+        }
+      ],
+      "library": "Built-in"
+    },
+    {
+      "id": "cb1",
+      "name": "Circuit breaker, 1-pole",
+      "category": "Protection",
+      "prefix": "F",
+      "w": 18,
+      "h": 85,
+      "fill": "#f4f4f4",
+      "radius": 1.5,
+      "showName": false,
+      "terminals": [
+        {
+          "id": "a",
+          "name": "1",
+          "x": 9,
+          "y": 6,
+          "side": "auto",
+          "link": "1"
+        },
+        {
+          "id": "b",
+          "name": "2",
+          "x": 9,
+          "y": 79,
+          "side": "auto",
+          "link": "1"
+        }
+      ],
+      "library": "Built-in"
+    },
+    {
+      "id": "cb2",
+      "name": "Circuit breaker, 2-pole",
+      "category": "Protection",
+      "prefix": "F",
+      "w": 36,
+      "h": 85,
+      "fill": "#f4f4f4",
+      "radius": 1.5,
+      "showName": false,
+      "terminals": [
+        {
+          "id": "a",
+          "name": "1",
+          "x": 9,
+          "y": 6,
+          "side": "auto",
+          "link": "1"
+        },
+        {
+          "id": "c",
+          "name": "3",
+          "x": 27,
+          "y": 6,
+          "side": "auto",
+          "link": "2"
+        },
+        {
+          "id": "b",
+          "name": "2",
+          "x": 9,
+          "y": 79,
+          "side": "auto",
+          "link": "1"
+        },
+        {
+          "id": "d",
+          "name": "4",
+          "x": 27,
+          "y": 79,
+          "side": "auto",
+          "link": "2"
+        }
+      ],
+      "library": "Built-in"
+    },
+    {
+      "id": "relay",
+      "name": "Relay module",
+      "category": "Control",
+      "prefix": "K",
+      "w": 16,
+      "h": 90,
+      "fill": "#e9e3c9",
+      "radius": 1.5,
+      "showName": false,
+      "terminals": [
+        {
+          "id": "a1",
+          "name": "A1",
+          "x": 4.5,
+          "y": 6,
+          "side": "auto"
+        },
+        {
+          "id": "a2",
+          "name": "A2",
+          "x": 11.5,
+          "y": 6,
+          "side": "auto"
+        },
+        {
+          "id": "c",
+          "name": "11",
+          "x": 3,
+          "y": 84,
+          "side": "auto"
+        },
+        {
+          "id": "nc",
+          "name": "12",
+          "x": 8,
+          "y": 84,
+          "side": "auto"
+        },
+        {
+          "id": "no",
+          "name": "14",
+          "x": 13,
+          "y": 84,
+          "side": "auto"
+        }
+      ],
+      "library": "Built-in"
+    },
+    {
+      "id": "conn2",
+      "name": "Panel connector, 2-pin",
+      "category": "Enclosure connectors",
+      "prefix": "X",
+      "mount": "free",
+      "w": 12,
+      "h": 16,
+      "fill": "#5b6168",
+      "radius": 1.5,
+      "showName": false,
+      "terminals": [
+        {
+          "id": "1",
+          "name": "1",
+          "x": 3.5,
+          "y": 3.5,
+          "side": "top"
+        },
+        {
+          "id": "2",
+          "name": "2",
+          "x": 8.5,
+          "y": 3.5,
+          "side": "top"
+        }
+      ],
+      "library": "Built-in"
+    },
+    {
+      "id": "conn4",
+      "name": "Panel connector, 4-pin",
+      "category": "Enclosure connectors",
+      "prefix": "X",
+      "mount": "free",
+      "w": 22,
+      "h": 16,
+      "fill": "#5b6168",
+      "radius": 1.5,
+      "showName": false,
+      "terminals": [
+        {
+          "id": "1",
+          "name": "1",
+          "x": 3.5,
+          "y": 3.5,
+          "side": "top"
+        },
+        {
+          "id": "2",
+          "name": "2",
+          "x": 8.5,
+          "y": 3.5,
+          "side": "top"
+        },
+        {
+          "id": "3",
+          "name": "3",
+          "x": 13.5,
+          "y": 3.5,
+          "side": "top"
+        },
+        {
+          "id": "4",
+          "name": "4",
+          "x": 18.5,
+          "y": 3.5,
+          "side": "top"
+        }
+      ],
+      "library": "Built-in"
+    },
+    {
+      "id": "conn8",
+      "name": "Panel connector, 8-pin",
+      "category": "Enclosure connectors",
+      "prefix": "X",
+      "mount": "free",
+      "w": 42,
+      "h": 16,
+      "fill": "#5b6168",
+      "radius": 1.5,
+      "showName": false,
+      "terminals": [
+        {
+          "id": "1",
+          "name": "1",
+          "x": 3.5,
+          "y": 3.5,
+          "side": "top"
+        },
+        {
+          "id": "2",
+          "name": "2",
+          "x": 8.5,
+          "y": 3.5,
+          "side": "top"
+        },
+        {
+          "id": "3",
+          "name": "3",
+          "x": 13.5,
+          "y": 3.5,
+          "side": "top"
+        },
+        {
+          "id": "4",
+          "name": "4",
+          "x": 18.5,
+          "y": 3.5,
+          "side": "top"
+        },
+        {
+          "id": "5",
+          "name": "5",
+          "x": 23.5,
+          "y": 3.5,
+          "side": "top"
+        },
+        {
+          "id": "6",
+          "name": "6",
+          "x": 28.5,
+          "y": 3.5,
+          "side": "top"
+        },
+        {
+          "id": "7",
+          "name": "7",
+          "x": 33.5,
+          "y": 3.5,
+          "side": "top"
+        },
+        {
+          "id": "8",
+          "name": "8",
+          "x": 38.5,
+          "y": 3.5,
+          "side": "top"
+        }
+      ],
+      "library": "Built-in"
+    },
+    {
+      "id": "connm12",
+      "name": "Circular connector, M12 4-pin",
+      "category": "Enclosure connectors",
+      "prefix": "X",
+      "mount": "free",
+      "w": 16,
+      "h": 16,
+      "fill": "#9aa3ad",
+      "radius": 8,
+      "showName": false,
+      "terminals": [
+        {
+          "id": "1",
+          "name": "1",
+          "x": 4.5,
+          "y": 4.5,
+          "side": "top"
+        },
+        {
+          "id": "2",
+          "name": "2",
+          "x": 11.5,
+          "y": 4.5,
+          "side": "top"
+        },
+        {
+          "id": "3",
+          "name": "3",
+          "x": 11.5,
+          "y": 11.5,
+          "side": "bottom"
+        },
+        {
+          "id": "4",
+          "name": "4",
+          "x": 4.5,
+          "y": 11.5,
+          "side": "bottom"
+        }
+      ],
+      "library": "Built-in"
+    },
+    {
+      "id": "plug3",
+      "name": "Mains plug (L, N, PE)",
+      "category": "Enclosure connectors",
+      "prefix": "X",
+      "mount": "free",
+      "w": 22,
+      "h": 14,
+      "fill": "#2b2f35",
+      "radius": 4,
+      "showName": false,
+      "terminals": [
+        {
+          "id": "l",
+          "name": "L",
+          "x": 5,
+          "y": 3.5,
+          "side": "top"
+        },
+        {
+          "id": "n",
+          "name": "N",
+          "x": 11,
+          "y": 3.5,
+          "side": "top"
+        },
+        {
+          "id": "pe",
+          "name": "PE",
+          "x": 17,
+          "y": 3.5,
+          "side": "top"
+        }
+      ],
+      "library": "Built-in"
+    },
+    {
+      "id": "ethsw5",
+      "name": "Ethernet switch, 5-port",
+      "category": "Network",
+      "prefix": "SW",
+      "w": 52,
+      "h": 90,
+      "fill": "#3c4148",
+      "radius": 2,
+      "showName": true,
+      "terminals": [
+        {
+          "id": "vp",
+          "name": "+V",
+          "x": 8,
+          "y": 6,
+          "side": "auto"
+        },
+        {
+          "id": "vn",
+          "name": "0V",
+          "x": 16,
+          "y": 6,
+          "side": "auto"
+        },
+        {
+          "id": "fe",
+          "name": "FE",
+          "x": 24,
+          "y": 6,
+          "side": "auto"
+        },
+        {
+          "id": "p1",
+          "name": "P1",
+          "x": 7,
+          "y": 80,
+          "side": "bottom",
+          "kind": "port"
+        },
+        {
+          "id": "p2",
+          "name": "P2",
+          "x": 16.5,
+          "y": 80,
+          "side": "bottom",
+          "kind": "port"
+        },
+        {
+          "id": "p3",
+          "name": "P3",
+          "x": 26,
+          "y": 80,
+          "side": "bottom",
+          "kind": "port"
+        },
+        {
+          "id": "p4",
+          "name": "P4",
+          "x": 35.5,
+          "y": 80,
+          "side": "bottom",
+          "kind": "port"
+        },
+        {
+          "id": "p5",
+          "name": "P5",
+          "x": 45,
+          "y": 80,
+          "side": "bottom",
+          "kind": "port"
+        }
+      ],
+      "library": "Built-in"
+    },
+    {
+      "id": "ethsw8",
+      "name": "Ethernet switch, 8-port",
+      "category": "Network",
+      "prefix": "SW",
+      "w": 84,
+      "h": 90,
+      "fill": "#3c4148",
+      "radius": 2,
+      "showName": true,
+      "terminals": [
+        {
+          "id": "vp",
+          "name": "+V",
+          "x": 8,
+          "y": 6,
+          "side": "auto"
+        },
+        {
+          "id": "vn",
+          "name": "0V",
+          "x": 16,
+          "y": 6,
+          "side": "auto"
+        },
+        {
+          "id": "fe",
+          "name": "FE",
+          "x": 24,
+          "y": 6,
+          "side": "auto"
+        },
+        {
+          "id": "p1",
+          "name": "P1",
+          "x": 7,
+          "y": 80,
+          "side": "bottom",
+          "kind": "port"
+        },
+        {
+          "id": "p2",
+          "name": "P2",
+          "x": 17,
+          "y": 80,
+          "side": "bottom",
+          "kind": "port"
+        },
+        {
+          "id": "p3",
+          "name": "P3",
+          "x": 27,
+          "y": 80,
+          "side": "bottom",
+          "kind": "port"
+        },
+        {
+          "id": "p4",
+          "name": "P4",
+          "x": 37,
+          "y": 80,
+          "side": "bottom",
+          "kind": "port"
+        },
+        {
+          "id": "p5",
+          "name": "P5",
+          "x": 47,
+          "y": 80,
+          "side": "bottom",
+          "kind": "port"
+        },
+        {
+          "id": "p6",
+          "name": "P6",
+          "x": 57,
+          "y": 80,
+          "side": "bottom",
+          "kind": "port"
+        },
+        {
+          "id": "p7",
+          "name": "P7",
+          "x": 67,
+          "y": 80,
+          "side": "bottom",
+          "kind": "port"
+        },
+        {
+          "id": "p8",
+          "name": "P8",
+          "x": 77,
+          "y": 80,
+          "side": "bottom",
+          "kind": "port"
+        }
+      ],
+      "library": "Built-in"
+    },
+    {
+      "id": "rj45ft",
+      "name": "RJ45 panel feed-through",
+      "category": "Network",
+      "prefix": "X",
+      "mount": "free",
+      "w": 18,
+      "h": 28,
+      "fill": "#5b6168",
+      "radius": 1.5,
+      "showName": false,
+      "terminals": [
+        {
+          "id": "in",
+          "name": "IN",
+          "x": 9,
+          "y": 7,
+          "side": "top",
+          "kind": "port"
+        },
+        {
+          "id": "out",
+          "name": "OUT",
+          "x": 9,
+          "y": 21,
+          "side": "bottom",
+          "kind": "port"
+        }
+      ],
+      "library": "Built-in"
+    },
+    {
+      "id": "connm23",
+      "name": "Motor connector, M23 panel socket",
+      "category": "Enclosure connectors",
+      "prefix": "X",
+      "mount": "free",
+      "w": 28,
+      "h": 30,
+      "fill": "#9aa3ad",
+      "radius": 3,
+      "showName": false,
+      "terminals": [
+        {
+          "id": "u",
+          "name": "U",
+          "x": 5,
+          "y": 4,
+          "side": "top"
+        },
+        {
+          "id": "v",
+          "name": "V",
+          "x": 11,
+          "y": 4,
+          "side": "top"
+        },
+        {
+          "id": "w",
+          "name": "W",
+          "x": 17,
+          "y": 4,
+          "side": "top"
+        },
+        {
+          "id": "pe",
+          "name": "PE",
+          "x": 23,
+          "y": 4,
+          "side": "top"
+        },
+        {
+          "id": "plug",
+          "name": "PLUG",
+          "x": 14,
+          "y": 22,
+          "side": "bottom",
+          "kind": "port"
+        }
+      ],
+      "library": "Built-in"
+    },
+    {
+      "id": "motor3",
+      "name": "Motor, 3-phase (with connector)",
+      "category": "Field devices",
+      "prefix": "M",
+      "mount": "free",
+      "w": 40,
+      "h": 40,
+      "fill": "#4a6b8a",
+      "radius": 20,
+      "showName": false,
+      "terminals": [
+        {
+          "id": "x1",
+          "name": "X1",
+          "x": 20,
+          "y": 7,
+          "side": "top",
+          "kind": "port"
+        }
+      ],
+      "library": "Built-in"
+    },
+    {
+      "id": "mod8",
+      "name": "Generic module, 4+4",
+      "category": "Generic",
+      "prefix": "A",
+      "w": 36,
+      "h": 90,
+      "fill": "#dfe6ee",
+      "radius": 1.5,
+      "showName": true,
+      "terminals": [
+        {
+          "id": "1",
+          "name": "1",
+          "x": 6,
+          "y": 6,
+          "side": "auto"
+        },
+        {
+          "id": "2",
+          "name": "2",
+          "x": 14,
+          "y": 6,
+          "side": "auto"
+        },
+        {
+          "id": "3",
+          "name": "3",
+          "x": 22,
+          "y": 6,
+          "side": "auto"
+        },
+        {
+          "id": "4",
+          "name": "4",
+          "x": 30,
+          "y": 6,
+          "side": "auto"
+        },
+        {
+          "id": "5",
+          "name": "5",
+          "x": 6,
+          "y": 84,
+          "side": "auto"
+        },
+        {
+          "id": "6",
+          "name": "6",
+          "x": 14,
+          "y": 84,
+          "side": "auto"
+        },
+        {
+          "id": "7",
+          "name": "7",
+          "x": 22,
+          "y": 84,
+          "side": "auto"
+        },
+        {
+          "id": "8",
+          "name": "8",
+          "x": 30,
+          "y": 84,
+          "side": "auto"
+        }
+      ],
+      "library": "Built-in"
+    },
+    {
+      "id": "box4",
+      "name": "Generic box, side terminals",
+      "category": "Generic",
+      "prefix": "A",
+      "w": 60,
+      "h": 40,
+      "fill": "#eef0f3",
+      "radius": 2,
+      "showName": true,
+      "terminals": [
+        {
+          "id": "1",
+          "name": "1",
+          "x": 4,
+          "y": 12,
+          "side": "auto"
+        },
+        {
+          "id": "2",
+          "name": "2",
+          "x": 4,
+          "y": 28,
+          "side": "auto"
+        },
+        {
+          "id": "3",
+          "name": "3",
+          "x": 56,
+          "y": 12,
+          "side": "auto"
+        },
+        {
+          "id": "4",
+          "name": "4",
+          "x": 56,
+          "y": 28,
+          "side": "auto"
+        }
+      ],
+      "library": "Built-in"
+    },
+    {
+      "id": "aacc-te-zk2-5",
+      "name": "ZK2.5 PI-spring feed-through, 2.5 mm², grey · TE Entrelec (1SNK705010R0000)",
+      "library": "AACC Mechatronics",
+      "category": "TE terminal blocks",
+      "mount": "rail",
+      "prefix": "TB",
+      "w": 5.2,
+      "h": 50.9,
+      "fill": "#c3c8ce",
+      "radius": 0.5,
+      "showName": false,
+      "terminals": [
+        {
+          "id": "a",
+          "name": "1",
+          "x": 2.6,
+          "y": 5,
+          "side": "auto",
+          "link": "1",
+          "kind": "wire"
+        },
+        {
+          "id": "b",
+          "name": "2",
+          "x": 2.6,
+          "y": 45.9,
+          "side": "auto",
+          "link": "1",
+          "kind": "wire"
+        },
+        {
+          "id": "s1",
+          "name": "B1",
+          "x": 2.6,
+          "y": 22.45,
+          "side": "auto",
+          "link": "1",
+          "kind": "bus"
+        },
+        {
+          "id": "s2",
+          "name": "B2",
+          "x": 2.6,
+          "y": 28.45,
+          "side": "auto",
+          "link": "1",
+          "kind": "bus"
+        }
+      ]
+    },
+    {
+      "id": "aacc-te-zk2-5-4p",
+      "name": "ZK2.5-4P PI-spring feed-through, 4 connections, 2.5 mm², grey · TE Entrelec (1SNK705012R0000)",
+      "library": "AACC Mechatronics",
+      "category": "TE terminal blocks",
+      "mount": "rail",
+      "prefix": "TB",
+      "w": 5.2,
+      "h": 80.2,
+      "fill": "#c3c8ce",
+      "radius": 0.5,
+      "showName": false,
+      "terminals": [
+        {
+          "id": "a",
+          "name": "1",
+          "x": 2.6,
+          "y": 5,
+          "side": "auto",
+          "link": "1",
+          "kind": "wire"
+        },
+        {
+          "id": "c",
+          "name": "3",
+          "x": 2.6,
+          "y": 13,
+          "side": "auto",
+          "link": "1",
+          "kind": "wire"
+        },
+        {
+          "id": "d",
+          "name": "4",
+          "x": 2.6,
+          "y": 67.2,
+          "side": "auto",
+          "link": "1",
+          "kind": "wire"
+        },
+        {
+          "id": "b",
+          "name": "2",
+          "x": 2.6,
+          "y": 75.2,
+          "side": "auto",
+          "link": "1",
+          "kind": "wire"
+        },
+        {
+          "id": "s1",
+          "name": "B1",
+          "x": 2.6,
+          "y": 37.1,
+          "side": "auto",
+          "link": "1",
+          "kind": "bus"
+        },
+        {
+          "id": "s2",
+          "name": "B2",
+          "x": 2.6,
+          "y": 43.1,
+          "side": "auto",
+          "link": "1",
+          "kind": "bus"
+        }
+      ]
+    },
+    {
+      "id": "aacc-te-ek2-5",
+      "name": "EK2.5 end section, for ZK2.5 · TE Entrelec (1SNK705910R0000)",
+      "library": "AACC Mechatronics",
+      "category": "TE terminal blocks",
+      "mount": "rail",
+      "prefix": "",
+      "w": 2,
+      "h": 52.2,
+      "fill": "#5f6368",
+      "radius": 0.5,
+      "showName": false,
+      "terminals": []
+    },
+    {
+      "id": "aacc-te-ek2-5-4p",
+      "name": "EK2.5-4P end section, for ZK2.5-4P · TE Entrelec (1SNK705912R0000)",
+      "library": "AACC Mechatronics",
+      "category": "TE terminal blocks",
+      "mount": "rail",
+      "prefix": "",
+      "w": 2,
+      "h": 82.8,
+      "fill": "#5f6368",
+      "radius": 0.5,
+      "showName": false,
+      "terminals": []
+    },
+    {
+      "id": "aacc-tb-2503",
+      "name": "TB-2503 barrier terminal strip, 3 positions, 25 A 600 V, panel mount",
+      "library": "AACC Mechatronics",
+      "category": "Barrier strips",
+      "mount": "free",
+      "prefix": "TB",
+      "w": 50.5,
+      "h": 28,
+      "fill": "#2b2d30",
+      "radius": 1,
+      "showName": false,
+      "terminals": [
+        {
+          "id": "t1",
+          "name": "1",
+          "x": 15.25,
+          "y": 6,
+          "side": "top",
+          "link": "1",
+          "kind": "wire"
+        },
+        {
+          "id": "b1",
+          "name": "1",
+          "x": 15.25,
+          "y": 22,
+          "side": "bottom",
+          "link": "1",
+          "kind": "wire"
+        },
+        {
+          "id": "t2",
+          "name": "2",
+          "x": 25.25,
+          "y": 6,
+          "side": "top",
+          "link": "2",
+          "kind": "wire"
+        },
+        {
+          "id": "b2",
+          "name": "2",
+          "x": 25.25,
+          "y": 22,
+          "side": "bottom",
+          "link": "2",
+          "kind": "wire"
+        },
+        {
+          "id": "t3",
+          "name": "3",
+          "x": 35.25,
+          "y": 6,
+          "side": "top",
+          "link": "3",
+          "kind": "wire"
+        },
+        {
+          "id": "b3",
+          "name": "3",
+          "x": 35.25,
+          "y": 22,
+          "side": "bottom",
+          "link": "3",
+          "kind": "wire"
+        }
+      ]
+    },
+    {
+      "id": "aacc-ab-1763-l16awa",
+      "name": "MicroLogix 1100 L16AWA: 120/240 V AC power, 10 × 120 V AC inputs, 2 analog inputs, 6 relay outputs · Allen-Bradley",
+      "library": "AACC Mechatronics",
+      "category": "PLCs",
+      "mount": "rail",
+      "prefix": "PLC",
+      "w": 110,
+      "h": 90,
+      "fill": "#3c3f44",
+      "radius": 1.5,
+      "showName": true,
+      "terminals": [
+        {
+          "id": "i_accom0",
+          "name": "AC COM0",
+          "x": 21.2,
+          "y": 4,
+          "side": "top",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "i_i0",
+          "name": "I/0",
+          "x": 26.8,
+          "y": 9.5,
+          "side": "top",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "i_i1",
+          "name": "I/1",
+          "x": 32.4,
+          "y": 4,
+          "side": "top",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "i_i2",
+          "name": "I/2",
+          "x": 38,
+          "y": 9.5,
+          "side": "top",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "i_i3",
+          "name": "I/3",
+          "x": 43.6,
+          "y": 4,
+          "side": "top",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "i_accom1",
+          "name": "AC COM1",
+          "x": 49.2,
+          "y": 9.5,
+          "side": "top",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "i_i4",
+          "name": "I/4",
+          "x": 54.8,
+          "y": 4,
+          "side": "top",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "i_i5",
+          "name": "I/5",
+          "x": 60.4,
+          "y": 9.5,
+          "side": "top",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "i_i6",
+          "name": "I/6",
+          "x": 66,
+          "y": 4,
+          "side": "top",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "i_i7",
+          "name": "I/7",
+          "x": 71.6,
+          "y": 9.5,
+          "side": "top",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "i_i8",
+          "name": "I/8",
+          "x": 77.2,
+          "y": 4,
+          "side": "top",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "i_i9",
+          "name": "I/9",
+          "x": 82.8,
+          "y": 9.5,
+          "side": "top",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "i_iacom",
+          "name": "IA COM",
+          "x": 88.4,
+          "y": 4,
+          "side": "top",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "i_iv1",
+          "name": "IV1(+)",
+          "x": 94,
+          "y": 9.5,
+          "side": "top",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "i_iv2",
+          "name": "IV2(+)",
+          "x": 99.6,
+          "y": 4,
+          "side": "top",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "o_l1",
+          "name": "L1",
+          "x": 10,
+          "y": 86,
+          "side": "bottom",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "o_l2n",
+          "name": "L2/N",
+          "x": 15.6,
+          "y": 80.5,
+          "side": "bottom",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "o_vacvdc0",
+          "name": "VAC/VDC0",
+          "x": 26.8,
+          "y": 80.5,
+          "side": "bottom",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "o_o0",
+          "name": "O/0",
+          "x": 32.4,
+          "y": 86,
+          "side": "bottom",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "o_vacvdc1",
+          "name": "VAC/VDC1",
+          "x": 38,
+          "y": 80.5,
+          "side": "bottom",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "o_o1",
+          "name": "O/1",
+          "x": 43.6,
+          "y": 86,
+          "side": "bottom",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "o_vacvdc2",
+          "name": "VAC/VDC2",
+          "x": 49.2,
+          "y": 80.5,
+          "side": "bottom",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "o_o2",
+          "name": "O/2",
+          "x": 54.8,
+          "y": 86,
+          "side": "bottom",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "o_vacvdc3",
+          "name": "VAC/VDC3",
+          "x": 60.4,
+          "y": 80.5,
+          "side": "bottom",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "o_o3",
+          "name": "O/3",
+          "x": 66,
+          "y": 86,
+          "side": "bottom",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "o_vacvdc4",
+          "name": "VAC/VDC4",
+          "x": 71.6,
+          "y": 80.5,
+          "side": "bottom",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "o_o4",
+          "name": "O/4",
+          "x": 77.2,
+          "y": 86,
+          "side": "bottom",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "o_vacvdc5",
+          "name": "VAC/VDC5",
+          "x": 82.8,
+          "y": 80.5,
+          "side": "bottom",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "o_o5",
+          "name": "O/5",
+          "x": 88.4,
+          "y": 86,
+          "side": "bottom",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "ch0",
+          "name": "CH0 RS-232",
+          "x": 8,
+          "y": 52,
+          "side": "left",
+          "link": "",
+          "kind": "port"
+        },
+        {
+          "id": "ch1",
+          "name": "CH1 Ethernet",
+          "x": 8,
+          "y": 64,
+          "side": "left",
+          "link": "",
+          "kind": "port"
+        }
+      ]
+    },
+    {
+      "id": "aacc-ab-1763-l16bwa",
+      "name": "MicroLogix 1100 L16BWA: 120/240 V AC power, 10 × 24 V DC inputs, 2 analog inputs, 6 relay outputs, 24 V DC sensor supply · Allen-Bradley",
+      "library": "AACC Mechatronics",
+      "category": "PLCs",
+      "mount": "rail",
+      "prefix": "PLC",
+      "w": 110,
+      "h": 90,
+      "fill": "#3c3f44",
+      "radius": 1.5,
+      "showName": true,
+      "terminals": [
+        {
+          "id": "i_24voutp",
+          "name": "24V OUT+",
+          "x": 10,
+          "y": 4,
+          "side": "top",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "i_24voutn",
+          "name": "24V OUT-",
+          "x": 15.6,
+          "y": 9.5,
+          "side": "top",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "i_dccom0",
+          "name": "DC COM0",
+          "x": 21.2,
+          "y": 4,
+          "side": "top",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "i_i0",
+          "name": "I/0",
+          "x": 26.8,
+          "y": 9.5,
+          "side": "top",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "i_i1",
+          "name": "I/1",
+          "x": 32.4,
+          "y": 4,
+          "side": "top",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "i_i2",
+          "name": "I/2",
+          "x": 38,
+          "y": 9.5,
+          "side": "top",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "i_i3",
+          "name": "I/3",
+          "x": 43.6,
+          "y": 4,
+          "side": "top",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "i_dccom1",
+          "name": "DC COM1",
+          "x": 49.2,
+          "y": 9.5,
+          "side": "top",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "i_i4",
+          "name": "I/4",
+          "x": 54.8,
+          "y": 4,
+          "side": "top",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "i_i5",
+          "name": "I/5",
+          "x": 60.4,
+          "y": 9.5,
+          "side": "top",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "i_i6",
+          "name": "I/6",
+          "x": 66,
+          "y": 4,
+          "side": "top",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "i_i7",
+          "name": "I/7",
+          "x": 71.6,
+          "y": 9.5,
+          "side": "top",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "i_i8",
+          "name": "I/8",
+          "x": 77.2,
+          "y": 4,
+          "side": "top",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "i_i9",
+          "name": "I/9",
+          "x": 82.8,
+          "y": 9.5,
+          "side": "top",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "i_iacom",
+          "name": "IA COM",
+          "x": 88.4,
+          "y": 4,
+          "side": "top",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "i_iv1",
+          "name": "IV1(+)",
+          "x": 94,
+          "y": 9.5,
+          "side": "top",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "i_iv2",
+          "name": "IV2(+)",
+          "x": 99.6,
+          "y": 4,
+          "side": "top",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "o_l1",
+          "name": "L1",
+          "x": 10,
+          "y": 86,
+          "side": "bottom",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "o_l2n",
+          "name": "L2/N",
+          "x": 15.6,
+          "y": 80.5,
+          "side": "bottom",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "o_vacvdc0",
+          "name": "VAC/VDC0",
+          "x": 26.8,
+          "y": 80.5,
+          "side": "bottom",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "o_o0",
+          "name": "O/0",
+          "x": 32.4,
+          "y": 86,
+          "side": "bottom",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "o_vacvdc1",
+          "name": "VAC/VDC1",
+          "x": 38,
+          "y": 80.5,
+          "side": "bottom",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "o_o1",
+          "name": "O/1",
+          "x": 43.6,
+          "y": 86,
+          "side": "bottom",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "o_vacvdc2",
+          "name": "VAC/VDC2",
+          "x": 49.2,
+          "y": 80.5,
+          "side": "bottom",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "o_o2",
+          "name": "O/2",
+          "x": 54.8,
+          "y": 86,
+          "side": "bottom",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "o_vacvdc3",
+          "name": "VAC/VDC3",
+          "x": 60.4,
+          "y": 80.5,
+          "side": "bottom",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "o_o3",
+          "name": "O/3",
+          "x": 66,
+          "y": 86,
+          "side": "bottom",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "o_vacvdc4",
+          "name": "VAC/VDC4",
+          "x": 71.6,
+          "y": 80.5,
+          "side": "bottom",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "o_o4",
+          "name": "O/4",
+          "x": 77.2,
+          "y": 86,
+          "side": "bottom",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "o_vacvdc5",
+          "name": "VAC/VDC5",
+          "x": 82.8,
+          "y": 80.5,
+          "side": "bottom",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "o_o5",
+          "name": "O/5",
+          "x": 88.4,
+          "y": 86,
+          "side": "bottom",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "ch0",
+          "name": "CH0 RS-232",
+          "x": 8,
+          "y": 52,
+          "side": "left",
+          "link": "",
+          "kind": "port"
+        },
+        {
+          "id": "ch1",
+          "name": "CH1 Ethernet",
+          "x": 8,
+          "y": 64,
+          "side": "left",
+          "link": "",
+          "kind": "port"
+        }
+      ]
+    },
+    {
+      "id": "aacc-ab-1763-l16bbb",
+      "name": "MicroLogix 1100 L16BBB: 24 V DC power, 10 × 24 V DC inputs, 2 analog inputs, 2 relay + 4 FET outputs · Allen-Bradley",
+      "library": "AACC Mechatronics",
+      "category": "PLCs",
+      "mount": "rail",
+      "prefix": "PLC",
+      "w": 110,
+      "h": 90,
+      "fill": "#3c3f44",
+      "radius": 1.5,
+      "showName": true,
+      "terminals": [
+        {
+          "id": "i_dccom0",
+          "name": "DC COM0",
+          "x": 21.2,
+          "y": 4,
+          "side": "top",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "i_i0",
+          "name": "I/0",
+          "x": 26.8,
+          "y": 9.5,
+          "side": "top",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "i_i1",
+          "name": "I/1",
+          "x": 32.4,
+          "y": 4,
+          "side": "top",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "i_i2",
+          "name": "I/2",
+          "x": 38,
+          "y": 9.5,
+          "side": "top",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "i_i3",
+          "name": "I/3",
+          "x": 43.6,
+          "y": 4,
+          "side": "top",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "i_dccom1",
+          "name": "DC COM1",
+          "x": 49.2,
+          "y": 9.5,
+          "side": "top",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "i_i4",
+          "name": "I/4",
+          "x": 54.8,
+          "y": 4,
+          "side": "top",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "i_i5",
+          "name": "I/5",
+          "x": 60.4,
+          "y": 9.5,
+          "side": "top",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "i_i6",
+          "name": "I/6",
+          "x": 66,
+          "y": 4,
+          "side": "top",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "i_i7",
+          "name": "I/7",
+          "x": 71.6,
+          "y": 9.5,
+          "side": "top",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "i_i8",
+          "name": "I/8",
+          "x": 77.2,
+          "y": 4,
+          "side": "top",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "i_i9",
+          "name": "I/9",
+          "x": 82.8,
+          "y": 9.5,
+          "side": "top",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "i_iacom",
+          "name": "IA COM",
+          "x": 88.4,
+          "y": 4,
+          "side": "top",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "i_iv1",
+          "name": "IV1(+)",
+          "x": 94,
+          "y": 9.5,
+          "side": "top",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "i_iv2",
+          "name": "IV2(+)",
+          "x": 99.6,
+          "y": 4,
+          "side": "top",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "o_dcinp",
+          "name": "DC IN+",
+          "x": 10,
+          "y": 86,
+          "side": "bottom",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "o_dcinn",
+          "name": "DC IN-",
+          "x": 15.6,
+          "y": 80.5,
+          "side": "bottom",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "o_vacvdc0",
+          "name": "VAC/VDC0",
+          "x": 26.8,
+          "y": 80.5,
+          "side": "bottom",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "o_o0",
+          "name": "O/0",
+          "x": 32.4,
+          "y": 86,
+          "side": "bottom",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "o_vacvdc1",
+          "name": "VAC/VDC1",
+          "x": 38,
+          "y": 80.5,
+          "side": "bottom",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "o_o1",
+          "name": "O/1",
+          "x": 43.6,
+          "y": 86,
+          "side": "bottom",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "o_dc24vp",
+          "name": "DC24V+",
+          "x": 60.4,
+          "y": 80.5,
+          "side": "bottom",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "o_o2",
+          "name": "O/2",
+          "x": 66,
+          "y": 86,
+          "side": "bottom",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "o_o3",
+          "name": "O/3",
+          "x": 71.6,
+          "y": 80.5,
+          "side": "bottom",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "o_o4",
+          "name": "O/4",
+          "x": 77.2,
+          "y": 86,
+          "side": "bottom",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "o_o5",
+          "name": "O/5",
+          "x": 82.8,
+          "y": 80.5,
+          "side": "bottom",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "o_dc24vn",
+          "name": "DC24V-",
+          "x": 88.4,
+          "y": 86,
+          "side": "bottom",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "ch0",
+          "name": "CH0 RS-232",
+          "x": 8,
+          "y": 52,
+          "side": "left",
+          "link": "",
+          "kind": "port"
+        },
+        {
+          "id": "ch1",
+          "name": "CH1 Ethernet",
+          "x": 8,
+          "y": 64,
+          "side": "left",
+          "link": "",
+          "kind": "port"
+        }
+      ]
+    },
+    {
+      "id": "aacc-ab-1763-l16dwd",
+      "name": "MicroLogix 1100 L16DWD: 12/24 V DC power, 10 × 12/24 V DC inputs, 2 analog inputs, 6 relay outputs · Allen-Bradley",
+      "library": "AACC Mechatronics",
+      "category": "PLCs",
+      "mount": "rail",
+      "prefix": "PLC",
+      "w": 110,
+      "h": 90,
+      "fill": "#3c3f44",
+      "radius": 1.5,
+      "showName": true,
+      "terminals": [
+        {
+          "id": "i_dccom0",
+          "name": "DC COM0",
+          "x": 21.2,
+          "y": 4,
+          "side": "top",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "i_i0",
+          "name": "I/0",
+          "x": 26.8,
+          "y": 9.5,
+          "side": "top",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "i_i1",
+          "name": "I/1",
+          "x": 32.4,
+          "y": 4,
+          "side": "top",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "i_i2",
+          "name": "I/2",
+          "x": 38,
+          "y": 9.5,
+          "side": "top",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "i_i3",
+          "name": "I/3",
+          "x": 43.6,
+          "y": 4,
+          "side": "top",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "i_dccom1",
+          "name": "DC COM1",
+          "x": 49.2,
+          "y": 9.5,
+          "side": "top",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "i_i4",
+          "name": "I/4",
+          "x": 54.8,
+          "y": 4,
+          "side": "top",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "i_i5",
+          "name": "I/5",
+          "x": 60.4,
+          "y": 9.5,
+          "side": "top",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "i_i6",
+          "name": "I/6",
+          "x": 66,
+          "y": 4,
+          "side": "top",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "i_i7",
+          "name": "I/7",
+          "x": 71.6,
+          "y": 9.5,
+          "side": "top",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "i_i8",
+          "name": "I/8",
+          "x": 77.2,
+          "y": 4,
+          "side": "top",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "i_i9",
+          "name": "I/9",
+          "x": 82.8,
+          "y": 9.5,
+          "side": "top",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "i_iacom",
+          "name": "IA COM",
+          "x": 88.4,
+          "y": 4,
+          "side": "top",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "i_iv1",
+          "name": "IV1(+)",
+          "x": 94,
+          "y": 9.5,
+          "side": "top",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "i_iv2",
+          "name": "IV2(+)",
+          "x": 99.6,
+          "y": 4,
+          "side": "top",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "o_1224vp",
+          "name": "12/24V+",
+          "x": 10,
+          "y": 86,
+          "side": "bottom",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "o_1224vn",
+          "name": "12/24V-",
+          "x": 15.6,
+          "y": 80.5,
+          "side": "bottom",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "o_vacvdc0",
+          "name": "VAC/VDC0",
+          "x": 26.8,
+          "y": 80.5,
+          "side": "bottom",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "o_o0",
+          "name": "O/0",
+          "x": 32.4,
+          "y": 86,
+          "side": "bottom",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "o_vacvdc1",
+          "name": "VAC/VDC1",
+          "x": 38,
+          "y": 80.5,
+          "side": "bottom",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "o_o1",
+          "name": "O/1",
+          "x": 43.6,
+          "y": 86,
+          "side": "bottom",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "o_vacvdc2",
+          "name": "VAC/VDC2",
+          "x": 49.2,
+          "y": 80.5,
+          "side": "bottom",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "o_o2",
+          "name": "O/2",
+          "x": 54.8,
+          "y": 86,
+          "side": "bottom",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "o_vacvdc3",
+          "name": "VAC/VDC3",
+          "x": 60.4,
+          "y": 80.5,
+          "side": "bottom",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "o_o3",
+          "name": "O/3",
+          "x": 66,
+          "y": 86,
+          "side": "bottom",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "o_vacvdc4",
+          "name": "VAC/VDC4",
+          "x": 71.6,
+          "y": 80.5,
+          "side": "bottom",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "o_o4",
+          "name": "O/4",
+          "x": 77.2,
+          "y": 86,
+          "side": "bottom",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "o_vacvdc5",
+          "name": "VAC/VDC5",
+          "x": 82.8,
+          "y": 80.5,
+          "side": "bottom",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "o_o5",
+          "name": "O/5",
+          "x": 88.4,
+          "y": 86,
+          "side": "bottom",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "ch0",
+          "name": "CH0 RS-232",
+          "x": 8,
+          "y": 52,
+          "side": "left",
+          "link": "",
+          "kind": "port"
+        },
+        {
+          "id": "ch1",
+          "name": "CH1 Ethernet",
+          "x": 8,
+          "y": 64,
+          "side": "left",
+          "link": "",
+          "kind": "port"
+        }
+      ]
+    },
+    {
+      "id": "aacc-siemens-csm1277",
+      "name": "SIMATIC NET CSM 1277 compact switch, 4 × RJ45, 24 V DC · Siemens (6GK7277-1AA10-0AA0)",
+      "library": "AACC Mechatronics",
+      "category": "Network",
+      "mount": "rail",
+      "prefix": "A",
+      "w": 45,
+      "h": 100,
+      "fill": "#4a4f55",
+      "radius": 1,
+      "showName": true,
+      "terminals": [
+        {
+          "id": "lp",
+          "name": "L+",
+          "x": 13,
+          "y": 4,
+          "side": "top",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "m",
+          "name": "M",
+          "x": 22.5,
+          "y": 4,
+          "side": "top",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "pe",
+          "name": "PE",
+          "x": 32,
+          "y": 4,
+          "side": "top",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "p1",
+          "name": "P1",
+          "x": 7.5,
+          "y": 94,
+          "side": "bottom",
+          "link": "",
+          "kind": "port"
+        },
+        {
+          "id": "p2",
+          "name": "P2",
+          "x": 17.5,
+          "y": 94,
+          "side": "bottom",
+          "link": "",
+          "kind": "port"
+        },
+        {
+          "id": "p3",
+          "name": "P3",
+          "x": 27.5,
+          "y": 94,
+          "side": "bottom",
+          "link": "",
+          "kind": "port"
+        },
+        {
+          "id": "p4",
+          "name": "P4",
+          "x": 37.5,
+          "y": 94,
+          "side": "bottom",
+          "link": "",
+          "kind": "port"
+        }
+      ]
+    },
+    {
+      "id": "aacc-siemens-pm1207",
+      "name": "SIMATIC PM1207 power supply, 120/230 V AC in, 24 V DC 2.5 A out · Siemens (6EP1332-1SH71)",
+      "library": "AACC Mechatronics",
+      "category": "Power supplies",
+      "mount": "rail",
+      "prefix": "PS",
+      "w": 70,
+      "h": 100,
+      "fill": "#4a4f55",
+      "radius": 1,
+      "showName": true,
+      "terminals": [
+        {
+          "id": "l",
+          "name": "L",
+          "x": 8,
+          "y": 4,
+          "side": "top",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "n",
+          "name": "N",
+          "x": 14,
+          "y": 4,
+          "side": "top",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "pe",
+          "name": "PE",
+          "x": 20,
+          "y": 4,
+          "side": "top",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "vp1",
+          "name": "L+",
+          "x": 8,
+          "y": 96,
+          "side": "bottom",
+          "link": "L+",
+          "kind": "wire"
+        },
+        {
+          "id": "vp2",
+          "name": "L+",
+          "x": 14,
+          "y": 96,
+          "side": "bottom",
+          "link": "L+",
+          "kind": "wire"
+        },
+        {
+          "id": "vn1",
+          "name": "M",
+          "x": 20,
+          "y": 96,
+          "side": "bottom",
+          "link": "M",
+          "kind": "wire"
+        },
+        {
+          "id": "vn2",
+          "name": "M",
+          "x": 26,
+          "y": 96,
+          "side": "bottom",
+          "link": "M",
+          "kind": "wire"
+        }
+      ]
+    },
+    {
+      "id": "aacc-rhino-psp05-020s",
+      "name": "RHINO PSP05-020S power supply, 5 V DC 4 A 20 W, screw terminals · AutomationDirect",
+      "library": "AACC Mechatronics",
+      "category": "Power supplies",
+      "mount": "rail",
+      "prefix": "PS",
+      "w": 27,
+      "h": 75,
+      "fill": "#8a9097",
+      "radius": 1,
+      "showName": false,
+      "terminals": [
+        {
+          "id": "vp",
+          "name": "+V",
+          "x": 13.2,
+          "y": 4.4,
+          "side": "top",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "vn",
+          "name": "-V",
+          "x": 19.6,
+          "y": 4.4,
+          "side": "top",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "pe",
+          "name": "PE",
+          "x": 9.1,
+          "y": 70,
+          "side": "bottom",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "n",
+          "name": "N",
+          "x": 16,
+          "y": 70,
+          "side": "bottom",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "l",
+          "name": "L",
+          "x": 22.8,
+          "y": 70,
+          "side": "bottom",
+          "link": "",
+          "kind": "wire"
+        }
+      ]
+    }
+  ],
+  "items": [
+    {
+      "id": "i6wxv506",
+      "kind": "rail",
+      "x": 0,
+      "y": -80,
+      "length": 225,
+      "height": 35
+    },
+    {
+      "id": "r1",
+      "kind": "rail",
+      "x": 0,
+      "y": 40,
+      "length": 300,
+      "height": 35
+    },
+    {
+      "id": "iimhc6pc",
+      "kind": "part",
+      "tpl": "aacc-ab-1763-l16dwd",
+      "tag": "PLC1",
+      "desc": "",
+      "x": 30,
+      "y": 12.5,
+      "rot": 0
+    },
+    {
+      "id": "i5lr1eo9",
+      "kind": "part",
+      "tpl": "aacc-siemens-csm1277",
+      "tag": "A1",
+      "desc": "",
+      "x": 140,
+      "y": 7.5,
+      "rot": 0
+    },
+    {
+      "id": "iinuk1my",
+      "kind": "part",
+      "tpl": "aacc-siemens-pm1207",
+      "tag": "PS1",
+      "desc": "",
+      "x": 212,
+      "y": 7.5,
+      "rot": 0
+    },
+    {
+      "id": "ivsjulqg",
+      "kind": "part",
+      "tpl": "aacc-rhino-psp05-020s",
+      "tag": "PS2",
+      "desc": "",
+      "x": 185,
+      "y": 20,
+      "rot": 180
+    },
+    {
+      "id": "ioe0f2hp",
+      "kind": "rail",
+      "x": 0,
+      "y": 150,
+      "length": 300,
+      "height": 35
+    },
+    {
+      "id": "i90bi55u",
+      "kind": "part",
+      "tpl": "aacc-tb-2503",
+      "tag": "TB1",
+      "desc": "",
+      "x": 238,
+      "y": -76,
+      "rot": 0
+    },
+    {
+      "id": "iwbpepri",
+      "kind": "part",
+      "tpl": "aacc-te-zk2-5",
+      "tag": "TB2",
+      "desc": "",
+      "x": 212,
+      "y": 142.05,
+      "rot": 0
+    },
+    {
+      "id": "i5op72vc",
+      "kind": "part",
+      "tpl": "aacc-te-zk2-5",
+      "tag": "TB3",
+      "desc": "",
+      "x": 206.8,
+      "y": 142.05,
+      "rot": 0
+    },
+    {
+      "id": "irh2le8q",
+      "kind": "part",
+      "tpl": "aacc-te-zk2-5",
+      "tag": "TB4",
+      "desc": "",
+      "x": 201.6,
+      "y": 142.05,
+      "rot": 0
+    },
+    {
+      "id": "ish48pdu",
+      "kind": "part",
+      "tpl": "aacc-te-zk2-5",
+      "tag": "TB5",
+      "desc": "",
+      "x": 196.4,
+      "y": 142.05,
+      "rot": 0
+    },
+    {
+      "id": "iu27yzrn",
+      "kind": "part",
+      "tpl": "aacc-te-zk2-5",
+      "tag": "TB6",
+      "desc": "",
+      "x": 191.2,
+      "y": 142.05,
+      "rot": 0
+    },
+    {
+      "id": "ivc5w2pp",
+      "kind": "part",
+      "tpl": "aacc-te-zk2-5",
+      "tag": "TB7",
+      "desc": "",
+      "x": 186,
+      "y": 142.05,
+      "rot": 0
+    },
+    {
+      "id": "idx3iyj8",
+      "kind": "part",
+      "tpl": "aacc-te-zk2-5",
+      "tag": "TB8",
+      "desc": "",
+      "x": 180.8,
+      "y": 142.05,
+      "rot": 0
+    },
+    {
+      "id": "ihws4dky",
+      "kind": "part",
+      "tpl": "aacc-te-zk2-5",
+      "tag": "TB9",
+      "desc": "",
+      "x": 175.6,
+      "y": 142.05,
+      "rot": 0
+    },
+    {
+      "id": "i6p61xgm",
+      "kind": "part",
+      "tpl": "aacc-te-zk2-5",
+      "tag": "TB10",
+      "desc": "",
+      "x": 175,
+      "y": -87.95,
+      "rot": 0
+    },
+    {
+      "id": "i17cigzv",
+      "kind": "part",
+      "tpl": "aacc-te-zk2-5",
+      "tag": "TB11",
+      "desc": "",
+      "x": 169.8,
+      "y": -87.95,
+      "rot": 0
+    },
+    {
+      "id": "iri4qkt2",
+      "kind": "part",
+      "tpl": "aacc-te-zk2-5",
+      "tag": "TB12",
+      "desc": "",
+      "x": 164.6,
+      "y": -87.95,
+      "rot": 0
+    },
+    {
+      "id": "io7ajqdg",
+      "kind": "part",
+      "tpl": "aacc-te-zk2-5",
+      "tag": "TB13",
+      "desc": "",
+      "x": 159.4,
+      "y": -87.95,
+      "rot": 0
+    },
+    {
+      "id": "iamng7bu",
+      "kind": "part",
+      "tpl": "aacc-te-zk2-5",
+      "tag": "TB14",
+      "desc": "",
+      "x": 154.2,
+      "y": -87.95,
+      "rot": 0
+    },
+    {
+      "id": "iklir3qc",
+      "kind": "part",
+      "tpl": "aacc-te-zk2-5",
+      "tag": "TB15",
+      "desc": "",
+      "x": 149,
+      "y": -87.95,
+      "rot": 0
+    }
+  ],
+  "connections": [
+    {
+      "id": "ct4dfhdx",
+      "a": {
+        "item": "iinuk1my",
+        "term": "l"
+      },
+      "b": {
+        "item": "i90bi55u",
+        "term": "b1"
+      },
+      "wire": "W1",
+      "notes": "",
+      "profile": "wp_l",
+      "color": "#1f1f1f",
+      "stripe": "",
+      "gauge": "16 AWG",
+      "conductor": "Stranded"
+    },
+    {
+      "id": "cfqudu3b",
+      "a": {
+        "item": "i90bi55u",
+        "term": "b2"
+      },
+      "b": {
+        "item": "iinuk1my",
+        "term": "n"
+      },
+      "wire": "W2",
+      "notes": "",
+      "profile": "wp_n",
+      "color": "#f2f2f2",
+      "stripe": "",
+      "gauge": "16 AWG",
+      "conductor": "Stranded"
+    },
+    {
+      "id": "cee4f7s7",
+      "a": {
+        "item": "iinuk1my",
+        "term": "pe"
+      },
+      "b": {
+        "item": "i90bi55u",
+        "term": "b3"
+      },
+      "wire": "W3",
+      "notes": "",
+      "profile": "wp_pe",
+      "color": "#2e9b3c",
+      "stripe": "",
+      "gauge": "16 AWG",
+      "conductor": "Stranded"
+    },
+    {
+      "id": "cm53khy6",
+      "a": {
+        "item": "ivsjulqg",
+        "term": "l"
+      },
+      "b": {
+        "item": "i90bi55u",
+        "term": "b1"
+      },
+      "wire": "W4",
+      "notes": "",
+      "profile": "wp_l",
+      "color": "#1f1f1f",
+      "stripe": "",
+      "gauge": "16 AWG",
+      "conductor": "Stranded",
+      "follow": true
+    },
+    {
+      "id": "cdbwu0lm",
+      "a": {
+        "item": "i90bi55u",
+        "term": "b2"
+      },
+      "b": {
+        "item": "ivsjulqg",
+        "term": "n"
+      },
+      "wire": "W5",
+      "notes": "",
+      "profile": "wp_n",
+      "color": "#f2f2f2",
+      "stripe": "",
+      "gauge": "16 AWG",
+      "conductor": "Stranded",
+      "follow": true
+    },
+    {
+      "id": "cpwjjga5",
+      "a": {
+        "item": "i90bi55u",
+        "term": "b3"
+      },
+      "b": {
+        "item": "ivsjulqg",
+        "term": "pe"
+      },
+      "wire": "W6",
+      "notes": "",
+      "profile": "wp_pe",
+      "color": "#2e9b3c",
+      "stripe": "",
+      "gauge": "16 AWG",
+      "conductor": "Stranded",
+      "follow": true
+    },
+    {
+      "id": "c1qydwdy",
+      "a": {
+        "item": "iinuk1my",
+        "term": "vp1"
+      },
+      "b": {
+        "item": "i5op72vc",
+        "term": "a"
+      },
+      "wire": "W7",
+      "notes": "",
+      "profile": "wp_24v",
+      "color": "#d32f2f",
+      "stripe": "",
+      "gauge": "16 AWG",
+      "conductor": "Stranded"
+    },
+    {
+      "id": "c6leg1qr",
+      "a": {
+        "item": "iinuk1my",
+        "term": "vn1"
+      },
+      "b": {
+        "item": "iwbpepri",
+        "term": "a"
+      },
+      "wire": "W8",
+      "notes": "",
+      "profile": "wp_0v",
+      "color": "#1f63c6",
+      "stripe": "",
+      "gauge": "16 AWG",
+      "conductor": "Stranded"
+    },
+    {
+      "id": "cm30xn0d",
+      "a": {
+        "item": "ish48pdu",
+        "term": "a"
+      },
+      "b": {
+        "item": "ivsjulqg",
+        "term": "vp"
+      },
+      "wire": "W9",
+      "notes": "",
+      "profile": "wp_24v",
+      "color": "#d32f2f",
+      "stripe": "",
+      "gauge": "16 AWG",
+      "conductor": "Stranded"
+    },
+    {
+      "id": "crej5kjd",
+      "a": {
+        "item": "ivsjulqg",
+        "term": "vn"
+      },
+      "b": {
+        "item": "irh2le8q",
+        "term": "a"
+      },
+      "wire": "W10",
+      "notes": "",
+      "profile": "wp_0v",
+      "color": "#1f63c6",
+      "stripe": "",
+      "gauge": "16 AWG",
+      "conductor": "Stranded"
+    },
+    {
+      "id": "c0iqttao",
+      "a": {
+        "item": "i5op72vc",
+        "term": "b"
+      },
+      "b": {
+        "item": "ish48pdu",
+        "term": "b"
+      },
+      "wire": "W13",
+      "notes": "",
+      "profile": "wp_24v",
+      "color": "#d32f2f",
+      "stripe": "",
+      "gauge": "16 AWG",
+      "conductor": "Stranded",
+      "follow": true
+    },
+    {
+      "id": "cabbbfko",
+      "a": {
+        "item": "ish48pdu",
+        "term": "b"
+      },
+      "b": {
+        "item": "ivc5w2pp",
+        "term": "b"
+      },
+      "wire": "W14",
+      "notes": "",
+      "profile": "wp_24v",
+      "color": "#d32f2f",
+      "stripe": "",
+      "gauge": "16 AWG",
+      "conductor": "Stranded",
+      "follow": true
+    },
+    {
+      "id": "cci08chg",
+      "a": {
+        "item": "iwbpepri",
+        "term": "b"
+      },
+      "b": {
+        "item": "irh2le8q",
+        "term": "b"
+      },
+      "wire": "W15",
+      "notes": "",
+      "profile": "wp_0v",
+      "color": "#1f63c6",
+      "stripe": "",
+      "gauge": "16 AWG",
+      "conductor": "Stranded",
+      "follow": true
+    },
+    {
+      "id": "ceuk5g5b",
+      "a": {
+        "item": "irh2le8q",
+        "term": "b"
+      },
+      "b": {
+        "item": "iu27yzrn",
+        "term": "b"
+      },
+      "wire": "W16",
+      "notes": "",
+      "profile": "wp_0v",
+      "color": "#1f63c6",
+      "stripe": "",
+      "gauge": "16 AWG",
+      "conductor": "Stranded",
+      "follow": true
+    },
+    {
+      "id": "cv2919na",
+      "a": {
+        "item": "iimhc6pc",
+        "term": "o_1224vn"
+      },
+      "b": {
+        "item": "idx3iyj8",
+        "term": "a"
+      },
+      "wire": "W17",
+      "notes": "",
+      "profile": "wp_0v",
+      "color": "#1f63c6",
+      "stripe": "",
+      "gauge": "16 AWG",
+      "conductor": "Stranded"
+    },
+    {
+      "id": "csehpwa6",
+      "a": {
+        "item": "ihws4dky",
+        "term": "a"
+      },
+      "b": {
+        "item": "iimhc6pc",
+        "term": "o_1224vp"
+      },
+      "wire": "W18",
+      "notes": "",
+      "profile": "wp_24v",
+      "color": "#d32f2f",
+      "stripe": "",
+      "gauge": "16 AWG",
+      "conductor": "Stranded"
+    },
+    {
+      "id": "cegsqrmy",
+      "a": {
+        "item": "ivc5w2pp",
+        "term": "b"
+      },
+      "b": {
+        "item": "ihws4dky",
+        "term": "b"
+      },
+      "wire": "W19",
+      "notes": "",
+      "profile": "wp_24v",
+      "color": "#d32f2f",
+      "stripe": "",
+      "gauge": "16 AWG",
+      "conductor": "Stranded",
+      "follow": true
+    },
+    {
+      "id": "c3r0j3ma",
+      "a": {
+        "item": "idx3iyj8",
+        "term": "b"
+      },
+      "b": {
+        "item": "iu27yzrn",
+        "term": "b"
+      },
+      "wire": "W20",
+      "notes": "",
+      "profile": "wp_0v",
+      "color": "#1f63c6",
+      "stripe": "",
+      "gauge": "16 AWG",
+      "conductor": "Stranded",
+      "follow": true
+    },
+    {
+      "id": "cr5ww1ad",
+      "a": {
+        "item": "i90bi55u",
+        "term": "t1"
+      },
+      "b": {
+        "item": "k7908hkp",
+        "term": "1"
+      },
+      "wire": "W21",
+      "notes": "",
+      "profile": "wp_l",
+      "color": "#1f1f1f",
+      "stripe": "",
+      "gauge": "16 AWG",
+      "conductor": "Stranded",
+      "follow": true
+    },
+    {
+      "id": "c817x37c",
+      "a": {
+        "item": "i90bi55u",
+        "term": "t2"
+      },
+      "b": {
+        "item": "k7908hkp",
+        "term": "2"
+      },
+      "wire": "W22",
+      "notes": "",
+      "profile": "wp_n",
+      "color": "#f2f2f2",
+      "stripe": "",
+      "gauge": "16 AWG",
+      "conductor": "Stranded",
+      "follow": true
+    },
+    {
+      "id": "cko9g49p",
+      "a": {
+        "item": "i90bi55u",
+        "term": "t3"
+      },
+      "b": {
+        "item": "k7908hkp",
+        "term": "3"
+      },
+      "wire": "W23",
+      "notes": "",
+      "profile": "wp_pe",
+      "color": "#2e9b3c",
+      "stripe": "",
+      "gauge": "16 AWG",
+      "conductor": "Stranded",
+      "follow": true
+    },
+    {
+      "id": "cwwr6sym",
+      "a": {
+        "item": "iu27yzrn",
+        "term": "a"
+      },
+      "b": {
+        "item": "i6p61xgm",
+        "term": "b"
+      },
+      "wire": "W24",
+      "notes": "",
+      "profile": "wp_0v",
+      "color": "#1f63c6",
+      "stripe": "",
+      "gauge": "16 AWG",
+      "conductor": "Stranded",
+      "follow": true
+    },
+    {
+      "id": "cikm3fka",
+      "a": {
+        "item": "ivc5w2pp",
+        "term": "a"
+      },
+      "b": {
+        "item": "i17cigzv",
+        "term": "b"
+      },
+      "wire": "W25",
+      "notes": "",
+      "profile": "wp_24v",
+      "color": "#d32f2f",
+      "stripe": "",
+      "gauge": "16 AWG",
+      "conductor": "Stranded",
+      "follow": true
+    },
+    {
+      "id": "chw37a1v",
+      "a": {
+        "item": "i6p61xgm",
+        "term": "a"
+      },
+      "b": {
+        "item": "iri4qkt2",
+        "term": "a"
+      },
+      "wire": "W26",
+      "notes": "",
+      "profile": "wp_0v",
+      "color": "#1f63c6",
+      "stripe": "",
+      "gauge": "16 AWG",
+      "conductor": "Stranded",
+      "follow": true
+    },
+    {
+      "id": "cgrg6hqv",
+      "a": {
+        "item": "i17cigzv",
+        "term": "a"
+      },
+      "b": {
+        "item": "io7ajqdg",
+        "term": "a"
+      },
+      "wire": "W27",
+      "notes": "",
+      "profile": "wp_24v",
+      "color": "#d32f2f",
+      "stripe": "",
+      "gauge": "16 AWG",
+      "conductor": "Stranded",
+      "follow": true
+    },
+    {
+      "id": "cz67jn9w",
+      "a": {
+        "item": "io7ajqdg",
+        "term": "a"
+      },
+      "b": {
+        "item": "iklir3qc",
+        "term": "a"
+      },
+      "wire": "W28",
+      "notes": "",
+      "profile": "wp_24v",
+      "color": "#d32f2f",
+      "stripe": "",
+      "gauge": "16 AWG",
+      "conductor": "Stranded",
+      "follow": true
+    },
+    {
+      "id": "cbt5wj9a",
+      "a": {
+        "item": "iri4qkt2",
+        "term": "a"
+      },
+      "b": {
+        "item": "iamng7bu",
+        "term": "a"
+      },
+      "wire": "W29",
+      "notes": "",
+      "profile": "wp_0v",
+      "color": "#1f63c6",
+      "stripe": "",
+      "gauge": "16 AWG",
+      "conductor": "Stranded",
+      "follow": true
+    },
+    {
+      "id": "cb3mpygd",
+      "a": {
+        "item": "iri4qkt2",
+        "term": "b"
+      },
+      "b": {
+        "item": "i5lr1eo9",
+        "term": "m"
+      },
+      "wire": "W30",
+      "notes": "",
+      "profile": "wp_0v",
+      "color": "#1f63c6",
+      "stripe": "",
+      "gauge": "16 AWG",
+      "conductor": "Stranded",
+      "follow": true
+    },
+    {
+      "id": "c9jvp4f4",
+      "a": {
+        "item": "io7ajqdg",
+        "term": "b"
+      },
+      "b": {
+        "item": "i5lr1eo9",
+        "term": "lp"
+      },
+      "wire": "W31",
+      "notes": "",
+      "profile": "wp_24v",
+      "color": "#d32f2f",
+      "stripe": "",
+      "gauge": "16 AWG",
+      "conductor": "Stranded",
+      "follow": true
+    }
+  ],
+  "buses": [],
+  "wireProfiles": [
+    {
+      "id": "wp_24v",
+      "name": "+24 V DC",
+      "color": "#d32f2f",
+      "gauge": "16 AWG",
+      "conductor": "Stranded",
+      "sizeWas": {
+        "from": "1.5 mm²",
+        "to": "16 AWG"
+      }
+    },
+    {
+      "id": "wp_0v",
+      "name": "0 V DC",
+      "color": "#1f63c6",
+      "gauge": "16 AWG",
+      "conductor": "Stranded",
+      "sizeWas": {
+        "from": "1.5 mm²",
+        "to": "16 AWG"
+      }
+    },
+    {
+      "id": "wp_pe",
+      "name": "Ground (PE)",
+      "color": "#2e9b3c",
+      "gauge": "16 AWG",
+      "conductor": "Stranded",
+      "sizeWas": {
+        "from": "1.5 mm²",
+        "to": "16 AWG"
+      }
+    },
+    {
+      "id": "wp_l",
+      "name": "AC hot (line)",
+      "color": "#1f1f1f",
+      "gauge": "16 AWG",
+      "conductor": "Stranded",
+      "sizeWas": {
+        "from": "1.5 mm²",
+        "to": "16 AWG"
+      }
+    },
+    {
+      "id": "wp_n",
+      "name": "AC neutral",
+      "color": "#f2f2f2",
+      "gauge": "16 AWG",
+      "conductor": "Stranded",
+      "sizeWas": {
+        "from": "1.5 mm²",
+        "to": "16 AWG"
+      }
+    },
+    {
+      "id": "wp_sig",
+      "name": "Control signal",
+      "color": "#7b3fb0",
+      "gauge": "18 AWG",
+      "conductor": "Stranded",
+      "sizeWas": {
+        "from": "0.75 mm²",
+        "to": "18 AWG"
+      }
+    }
+  ],
+  "cableProfiles": [
+    {
+      "id": "cp_cat6",
+      "name": "Ethernet, Cat6",
+      "color": "#1f63c6",
+      "desc": "Cat6 U/UTP 4×2×AWG24",
+      "shield": false,
+      "twisted": true,
+      "notes": ""
+    },
+    {
+      "id": "cp_ie",
+      "name": "Industrial Ethernet, shielded",
+      "color": "#2e9b3c",
+      "desc": "Cat6A S/FTP 4×2×AWG26",
+      "shield": true,
+      "twisted": true,
+      "notes": ""
+    },
+    {
+      "id": "cp_motor",
+      "name": "Motor cable, shielded",
+      "color": "#ef7d00",
+      "desc": "4G1.5 + 2×0.75",
+      "shield": true,
+      "twisted": false,
+      "notes": ""
+    },
+    {
+      "id": "cp_ctrl",
+      "name": "Control cable",
+      "color": "#8a8f96",
+      "desc": "7G0.75 LiYY",
+      "shield": false,
+      "twisted": false,
+      "notes": ""
+    },
+    {
+      "id": "cp_mains",
+      "name": "Mains cable",
+      "color": "#1f1f1f",
+      "desc": "3G1.5 H07RN-F",
+      "shield": false,
+      "twisted": false,
+      "notes": ""
+    }
+  ],
+  "packs": [
+    "connectors",
+    "plugs",
+    "network"
+  ],
+  "cables": [
+    {
+      "id": "k7908hkp",
+      "label": "C1",
+      "desc": "",
+      "to": "",
+      "color": "#3a3f45",
+      "notes": "",
+      "open": true,
+      "wires": [
+        "cr5ww1ad",
+        "c817x37c",
+        "cko9g49p"
+      ],
+      "pa": null,
+      "pb": null,
+      "portA": null,
+      "portB": null
+    },
+    {
+      "id": "kos0xe50",
+      "label": "C2",
+      "desc": "",
+      "to": "",
+      "color": "#3a3f45",
+      "notes": "",
+      "open": true,
+      "wires": [],
+      "pa": null,
+      "pb": null,
+      "portA": {
+        "item": "iimhc6pc",
+        "term": "ch1"
+      },
+      "portB": {
+        "item": "i5lr1eo9",
+        "term": "p1"
+      }
+    }
+  ],
+  "circuitLabels": {},
+  "libVersions": {
+    "AACC Mechatronics": "1.0.1"
+  }
+}

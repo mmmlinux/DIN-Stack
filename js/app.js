@@ -3,7 +3,11 @@
 (() => {
   const $ = (id) => document.getElementById(id);
   const SVGNS = "http://www.w3.org/2000/svg";
-  const LS_KEY = "dinstack.project.v1";
+  // A link ending in one of these names (e.g. #mechatronics) opens a workspace of its own: its
+  // diagram is saved apart from the main one, starts as that example, and "Load the example" loads it.
+  const EXAMPLES = { mechatronics: "examples/mechatronics.json" };
+  const workspace = (() => { const h = location.hash.slice(1).toLowerCase(); return Object.hasOwn(EXAMPLES, h) ? h : ""; })();
+  const LS_KEY = "dinstack.project.v1" + (workspace ? "." + workspace : "");
   const PX_PER_MM = 96 / 25.4; // 100% zoom = real size on a 96 dpi screen
 
   const svg = $("canvas");
@@ -3293,8 +3297,9 @@
   // libraries/index.json lists the library files that ship with DIN Stack. They're fetched, so the
   // chooser needs the app served over http(s); opening index.html as a file can't read them.
   const CATALOG = "libraries/index.json";
-  // Each library has its own version number and history, apart from the app's.
-  const LIB_NOTES = "https://github.com/mmmlinux/DIN-Stack/blob/main/libraries/RELEASE_NOTES.md";
+  // Each library has its own version number and history, apart from the app's. Libraries live in
+  // folders under libraries/ (one folder can hold a collection), each with its own RELEASE_NOTES.md.
+  const LIB_DIR = "https://github.com/mmmlinux/DIN-Stack/blob/main/libraries/";
 
   // Compare MAJOR.COMMIT.CHANGE version strings: negative if a is older than b.
   function compareVersions(a, b) {
@@ -3306,10 +3311,15 @@
     return 0;
   }
 
-  // The heading anchor GitHub gives a library's section of the library release notes.
-  function libNotesLink(name) {
-    return LIB_NOTES + "#" + name.toLowerCase().replace(/[^\w\s-]/g, "").trim().replace(/\s/g, "-");
+  // A library's release notes sit beside its file. The anchor is the heading GitHub gives its section
+  // in a folder that holds several libraries; with one library there's no such heading and it's ignored.
+  function libNotesLink(l) {
+    const dir = l.file.includes("/") ? l.file.slice(0, l.file.lastIndexOf("/") + 1) : "";
+    return LIB_DIR + dir + "RELEASE_NOTES.md#" + l.name.toLowerCase().replace(/[^\w\s-]/g, "").trim().replace(/\s/g, "-");
   }
+
+  // A catalog file path, encoded a segment at a time so its folder's slash survives.
+  const libPath = (file) => "libraries/" + file.split("/").map(encodeURIComponent).join("/");
 
   function libChooserMsg(html) {
     $("libChooserList").innerHTML = `<p class="muted">${html}</p>`;
@@ -3322,7 +3332,7 @@
   const libDescOpen = new Set();
 
   async function fetchLibrary(l) {
-    const res = await fetch("libraries/" + encodeURIComponent(l.file), { cache: "no-cache" });
+    const res = await fetch(libPath(l.file), { cache: "no-cache" });
     if (!res.ok) throw new Error("HTTP " + res.status);
     return res.json();
   }
@@ -3357,7 +3367,7 @@
             ? `<button class="lib-name-toggle${open ? "" : " closed"}" data-desc="${i}" aria-expanded="${open}" title="${open ? "Hide" : "Show"} what's in it">${ic("chev-d", "sm")}<span class="name">${esc(l.name)}</span></button>
           <div class="desc"${open ? "" : " hidden"}>${esc(l.description)}</div>`
             : `<div class="name">${esc(l.name)}</div>`}
-          <div class="size">${facts}${l.version ? ` · <a href="${esc(libNotesLink(l.name))}" target="_blank" rel="noopener" title="What changed in each version of this library">What's new</a>` : ""}</div>
+          <div class="size">${facts}${l.version ? ` · <a href="${esc(libNotesLink(l))}" target="_blank" rel="noopener" title="What changed in each version of this library">What's new</a>` : ""}</div>
           <div class="status">${status}</div>
         </div>
         <div class="actions">${buttons}</div>
@@ -3520,10 +3530,24 @@
     requestAnimationFrame(fit);
   }
 
-  function loadExample() {
+  // The workspace's example is fetched, so like the library list it needs the app served over http(s).
+  async function fetchExample() {
+    const res = await fetch(EXAMPLES[workspace], { cache: "no-cache" });
+    if (!res.ok) throw new Error("HTTP " + res.status);
+    const d = await res.json();
+    if (!d || !Array.isArray(d.items) || !Array.isArray(d.templates)) throw new Error("not a DIN Stack diagram");
+    return d;
+  }
+
+  async function loadExample() {
     if (!confirm("Replace the current diagram with the example? (You can undo this.)")) return;
+    let ex;
+    if (workspace) {
+      try { ex = await fetchExample(); }
+      catch (err) { alert("The example couldn't be loaded: " + err.message); return; }
+    }
     checkpoint();
-    { const std = doc.settings.wireStd; doc = normalize(exampleProject()); setWireStd(std); }
+    { const std = doc.settings.wireStd; doc = normalize(ex || exampleProject()); setWireStd(std); }
     sel.clear();
     hiddenWires = null;
     afterLoad();
@@ -3795,4 +3819,18 @@
   refresh();
   requestAnimationFrame(fit);
   if (firstVisit) openWelcome();
+  // A new workspace starts as its example, fetched once nothing is saved for it yet.
+  if (workspace && (() => { try { return !localStorage.getItem(LS_KEY); } catch (e) { return true; } })()) {
+    fetchExample().then((d) => {
+      doc = normalize(d);
+      sel.clear();
+      afterLoad();
+      requestAnimationFrame(fit);
+    }).catch((err) => toast("The " + workspace + " example couldn't be loaded: " + err.message));
+  }
+  // Switching to or from a workspace link loads that workspace's diagram.
+  window.addEventListener("hashchange", () => {
+    const h = location.hash.slice(1).toLowerCase();
+    if ((Object.hasOwn(EXAMPLES, h) ? h : "") !== workspace) location.reload();
+  });
 })();

@@ -49,24 +49,24 @@ Click **+** beside the library drop-down (or **⋯ → Manage included libraries
 
 The window stays open, so you can load, refresh and unload several in a row. **Undo** reverses each of them. Descriptions are folded away to keep the list short; click the arrow or a library's name to show what's in it.
 
-Each ready-made library has its own version number, separate from DIN Stack's, and its own history in [`libraries/RELEASE_NOTES.md`](../libraries/RELEASE_NOTES.md) (*What's new* in the list). The diagram remembers which version of each library it last loaded. When a newer one is available, or the library was added before it had a version number, the list says *Update available* and highlights **Refresh**.
+Each ready-made library has its own version number, separate from DIN Stack's, and its own history in the `RELEASE_NOTES.md` in its folder under [`libraries/`](../libraries/README.md) (*What's new* in the list). The diagram remembers which version of each library it last loaded. When a newer one is available, or the library was added before it had a version number, the list says *Update available* and highlights **Refresh**.
 
 The list is read from `libraries/index.json`, so it needs the online version, or an installed copy that has been online. A copy opened straight from `index.html` can't read it; download the library file and use **Import a library file…** (in the same window, or the **⋯** menu) instead.
 
-To offer a new library in the list, put its file in `libraries/` and add an entry to `libraries/index.json`:
+To offer a new library in the list, give it a folder in `libraries/` with the library file and a `RELEASE_NOTES.md`, and add an entry to `libraries/index.json`. Related libraries can share a folder (as the AutomationDirect ones do in `libraries/automationdirect/`); their release notes then have a `##` section per library, headed with its name, so *What's new* can link straight to it.
 
 ```json
 {
   "type": "dinstack-catalog",
   "libraries": [
-    { "file": "my-parts.json", "version": "1.0.0", "name": "My parts", "description": "What's in it, in a sentence.", "types": 12 }
+    { "file": "my-parts/my-parts.json", "version": "1.0.0", "name": "My parts", "description": "What's in it, in a sentence.", "types": 12 }
   ]
 }
 ```
 
 | Field | Meaning |
 | --- | --- |
-| `file` | The library file's name inside `libraries/`. |
+| `file` | The library file's path inside `libraries/`, including its folder. |
 | `version` | Optional. The library's version, the same as the `version` in its file. It's shown in the list, and a diagram holding an older version is offered the update. |
 | `name` | The library's name, shown in the list and used for its types unless the file sets its own. |
 | `description` | Optional. A sentence shown under the name. |
@@ -76,11 +76,12 @@ To offer a new library in the list, put its file in `libraries/` and add an entr
 
 | Library | What's in it |
 | --- | --- |
-| **AutomationDirect DIN-rail relays** ([`automationdirect-din-relays.json`](../libraries/automationdirect-din-relays.json)) | DIN-rail relays, timers, monitoring relays and relay sockets sold by AutomationDirect: 59 object types covering 206 part numbers (Murrelektronik, Klemsan, Dold, Gefran, Macromatic, Fuji and AutomationDirect's own sockets). |
-| **Phoenix Contact UT terminal blocks** ([`phoenix-contact-ut.json`](../libraries/phoenix-contact-ut.json)) | 64 types: UT screw terminal blocks (feed-through UT 1,5 to UT 35 in grey and blue, ground (PE), TWIN and QUATTRO, double-level UTTB, three-level, fuse (HESI), and disconnect (HEDI, MT, MTD) blocks) and the accessories that take up rail space: end covers, partition and spacer plates, and end clamps. Each type's name includes its order number. |
-| **Amphenol 26482 Series 2 connectors** ([`amphenol-26482-series-2.json`](../libraries/amphenol-26482-series-2.json)) | 68 MIL-DTL-26482 Series 2 circular receptacles: all 34 insert arrangements from shell size 8 to 24, each with pins (P) and with sockets (S). |
-| **AutomationDirect pushbuttons & pilot lights** ([`automationdirect-pushbuttons.json`](../libraries/automationdirect-pushbuttons.json)) | 52 types: 22 mm GCX pushbuttons, selector switches, E-stops and pilot lights (plastic and metal), Fuji Command 30 mm and Eaton HT800 30 mm devices, and Schmersal N (22 mm) and E (30 mm) series devices, their EF contact and light blocks, and NK-T/RK-T joysticks. One type per series and contact arrangement, drawn from the wiring side. |
-| **Misc networking** ([`misc-networking.json`](../libraries/misc-networking.json)) | 5 types: Tripp Lite (Eaton) NGI-U05E 5-port industrial switch and NPOEI-60W-1G PoE++ injector for DIN rail, the StarTech IH2006 HDMI KVM-over-IP transmitter and receiver, and an ASUS computer with six serial ports. |
+| **AutomationDirect DIN-rail relays** ([`automationdirect-din-relays.json`](../libraries/automationdirect/automationdirect-din-relays.json)) | DIN-rail relays, timers, monitoring relays and relay sockets sold by AutomationDirect: 59 object types covering 206 part numbers (Murrelektronik, Klemsan, Dold, Gefran, Macromatic, Fuji and AutomationDirect's own sockets). |
+| **Phoenix Contact UT terminal blocks** ([`phoenix-contact-ut.json`](../libraries/phoenix-contact-ut/phoenix-contact-ut.json)) | 64 types: UT screw terminal blocks (feed-through UT 1,5 to UT 35 in grey and blue, ground (PE), TWIN and QUATTRO, double-level UTTB, three-level, fuse (HESI), and disconnect (HEDI, MT, MTD) blocks) and the accessories that take up rail space: end covers, partition and spacer plates, and end clamps. Each type's name includes its order number. |
+| **Amphenol 26482 Series 2 connectors** ([`amphenol-26482-series-2.json`](../libraries/amphenol-26482-series-2/amphenol-26482-series-2.json)) | 68 MIL-DTL-26482 Series 2 circular receptacles: all 34 insert arrangements from shell size 8 to 24, each with pins (P) and with sockets (S). |
+| **AutomationDirect pushbuttons & pilot lights** ([`automationdirect-pushbuttons.json`](../libraries/automationdirect/automationdirect-pushbuttons.json)) | 52 types: 22 mm GCX pushbuttons, selector switches, E-stops and pilot lights (plastic and metal), Fuji Command 30 mm and Eaton HT800 30 mm devices, and Schmersal N (22 mm) and E (30 mm) series devices, their EF contact and light blocks, and NK-T/RK-T joysticks. One type per series and contact arrangement, drawn from the wiring side. |
+| **Misc networking** ([`misc-networking.json`](../libraries/misc-networking/misc-networking.json)) | 5 types: Tripp Lite (Eaton) NGI-U05E 5-port industrial switch and NPOEI-60W-1G PoE++ injector for DIN rail, the StarTech IH2006 HDMI KVM-over-IP transmitter and receiver, and an ASUS computer with six serial ports. |
+| **AACC Mechatronics** ([`aacc-mechatronics.json`](../libraries/aacc-mechatronics/aacc-mechatronics.json)) | 12 types for the AACC Mechatronics panel: TE (Entrelec) ZK2.5 and ZK2.5-4P PI-spring terminal blocks with their EK2.5 end sections, a TB-2503 barrier strip, the Allen-Bradley MicroLogix 1100 PLC (1763-L16AWA, L16BWA, L16BBB and L16DWD), the Siemens SIMATIC NET CSM 1277 switch and PM1207 power supply, and the RHINO PSP05-020S 5 V supply. |
 
 About the AutomationDirect library:
 
@@ -132,6 +133,15 @@ About the Misc networking library:
 - **NGI-U05E** and **NPOEI-60W-1G** are DIN-rail parts, drawn from the front with the power terminals along the top. RJ45 sockets are cable ports. The names of the switch's three power pins (V+, V−, FG) and the order of the injector's six (PWR+, PWR−, ALM, ALM, RPS−, RPS+) weren't in the documents found, so check them against the label on the unit.
 - **IH2006** transmitter and receiver are *Loose* (they mount with brackets), drawn from above with the front panel along the top edge and the rear along the bottom. The RS-232 terminal block (GND, RxD, TxD) takes wires; the HDMI, USB, audio, LAN and 5 V DC sockets are cable ports. The receiver's two USB ports are an assumption; the guide just says "USB HID ports".
 - **ASUS computer** is *Loose* (it doesn't go on a DIN rail), 7.25 in tall by 5.25 in wide (184 × 133 mm), drawn with one connector side along the left edge and the other along the right. The left side has the two-terminal power connector (V+, V−, which take wires), LAN 1–2, COM1–2, USB 1–4, HDMI and DisplayPort; the right side has COM3–6 and USB 5–6. The connectors are cable ports. Their order along each side and the power pin polarity are assumptions, so check them against the unit.
+
+About the AACC Mechatronics library:
+
+- **TE (Entrelec) ZK2.5 and ZK2.5-4P** blocks are 5.2 mm wide and 50.9 and 80.2 mm long. They work like the built-in terminal blocks, with the same internal terminal ids, two linked bridge slots in the middle (B1, B2), and terminals 1 and 2 at the ends (3 and 4 further in on the 4-connection block). The EK2.5 (52.2 mm) and EK2.5-4P (82.8 mm) end sections are 2 mm wide with no terminals. Lengths come from TE's and distributors' data; the clamp and bridge positions are approximate.
+- **TB-2503** is a generic barrier strip (50.5 × 28 mm, 10 mm pitch), *Loose*, drawn with its three positions side by side. Each position has a screw on both sides, named the same (1, 2, 3) and linked.
+- **MicroLogix 1100**: one type per version, 110 × 90 mm, with the input terminal block along the top and the output block along the bottom. Terminal names and order come from the terminal block layouts in Rockwell's user manual (1763-UM001); positions marked *NOT USED* are left out. Each block is drawn as a staggered double row, and the screw spacing is approximate. The RS-232 (CH0) and Ethernet (CH1) ports are cable ports on the left; their positions are approximate.
+- **CSM 1277** (45 × 100 mm) has its 3-pole 24 V DC terminal along the top and ports P1–P4 along the bottom. The terminals are named L+, M and PE here so new wires get DC colours; check the names printed on the unit.
+- **PM1207** (70 × 100 mm) has its input (L, N, PE) along the top and two L+ and two M output terminals along the bottom, as listed in Siemens' datasheet. Which edge each block is on, and the order of the outputs, are assumptions.
+- **RHINO PSP05-020S** is drawn from AutomationDirect's dimension drawing (27 × 75 mm front): output (+V, −V) at the top and input (PE, N, L) at the bottom. The parts list said PSP05-0205, which isn't a part number; PSP05-020S is the 5 V model in the range.
 
 ## Creating an object type
 
