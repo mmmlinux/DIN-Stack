@@ -2923,7 +2923,7 @@
       "tpl": "aacc-te-zk2-5",
       "tag": "TB6",
       "desc": "",
-      "x": 191.2,
+      "x": 180.8,
       "y": 142.05,
       "rot": 0
     },
@@ -2933,7 +2933,7 @@
       "tpl": "aacc-te-zk2-5",
       "tag": "TB7",
       "desc": "",
-      "x": 186,
+      "x": 175.6,
       "y": 142.05,
       "rot": 0
     },
@@ -2943,7 +2943,7 @@
       "tpl": "aacc-te-zk2-5",
       "tag": "TB8",
       "desc": "",
-      "x": 180.8,
+      "x": 170.4,
       "y": 142.05,
       "rot": 0
     },
@@ -2953,7 +2953,7 @@
       "tpl": "aacc-te-zk2-5",
       "tag": "TB9",
       "desc": "",
-      "x": 175.6,
+      "x": 165.2,
       "y": 142.05,
       "rot": 0
     },
@@ -3015,6 +3015,26 @@
       "desc": "",
       "x": 149,
       "y": -87.95,
+      "rot": 0
+    },
+    {
+      "id": "i1owjzjr",
+      "kind": "part",
+      "tpl": "aacc-te-zk2-5",
+      "tag": "TB6",
+      "desc": "",
+      "x": 191.2,
+      "y": 142.05,
+      "rot": 0
+    },
+    {
+      "id": "iwvbynk8",
+      "kind": "part",
+      "tpl": "aacc-te-zk2-5",
+      "tag": "TB7",
+      "desc": "",
+      "x": 186,
+      "y": 142.05,
       "rot": 0
     }
   ],
@@ -3178,11 +3198,12 @@
       },
       "wire": "W9",
       "notes": "",
-      "profile": "wp_24v",
-      "color": "#d32f2f",
+      "profile": "wp0pt6g8u",
+      "color": "#f0c000",
       "stripe": "",
-      "gauge": "16 AWG",
-      "conductor": "Stranded"
+      "gauge": "18 AWG",
+      "conductor": "Stranded",
+      "follow": false
     },
     {
       "id": "crej5kjd",
@@ -3201,44 +3222,6 @@
       "stripe": "",
       "gauge": "16 AWG",
       "conductor": "Stranded"
-    },
-    {
-      "id": "c0iqttao",
-      "a": {
-        "item": "i5op72vc",
-        "term": "b"
-      },
-      "b": {
-        "item": "ish48pdu",
-        "term": "b"
-      },
-      "wire": "W13",
-      "notes": "",
-      "profile": "wp_24v",
-      "color": "#d32f2f",
-      "stripe": "",
-      "gauge": "16 AWG",
-      "conductor": "Stranded",
-      "follow": true
-    },
-    {
-      "id": "cabbbfko",
-      "a": {
-        "item": "ish48pdu",
-        "term": "b"
-      },
-      "b": {
-        "item": "ivc5w2pp",
-        "term": "b"
-      },
-      "wire": "W14",
-      "notes": "",
-      "profile": "wp_24v",
-      "color": "#d32f2f",
-      "stripe": "",
-      "gauge": "16 AWG",
-      "conductor": "Stranded",
-      "follow": true
     },
     {
       "id": "cci08chg",
@@ -3426,7 +3409,8 @@
       "stripe": "",
       "gauge": "16 AWG",
       "conductor": "Stranded",
-      "follow": true
+      "follow": true,
+      "draw": "break"
     },
     {
       "id": "cikm3fka",
@@ -3445,83 +3429,8 @@
       "stripe": "",
       "gauge": "16 AWG",
       "conductor": "Stranded",
-      "follow": true
-    },
-    {
-      "id": "chw37a1v",
-      "a": {
-        "item": "i6p61xgm",
-        "term": "a"
-      },
-      "b": {
-        "item": "iri4qkt2",
-        "term": "a"
-      },
-      "wire": "W26",
-      "notes": "",
-      "profile": "wp_0v",
-      "color": "#1f63c6",
-      "stripe": "",
-      "gauge": "16 AWG",
-      "conductor": "Stranded",
-      "follow": true
-    },
-    {
-      "id": "cgrg6hqv",
-      "a": {
-        "item": "i17cigzv",
-        "term": "a"
-      },
-      "b": {
-        "item": "io7ajqdg",
-        "term": "a"
-      },
-      "wire": "W27",
-      "notes": "",
-      "profile": "wp_24v",
-      "color": "#d32f2f",
-      "stripe": "",
-      "gauge": "16 AWG",
-      "conductor": "Stranded",
-      "follow": true
-    },
-    {
-      "id": "cz67jn9w",
-      "a": {
-        "item": "io7ajqdg",
-        "term": "a"
-      },
-      "b": {
-        "item": "iklir3qc",
-        "term": "a"
-      },
-      "wire": "W28",
-      "notes": "",
-      "profile": "wp_24v",
-      "color": "#d32f2f",
-      "stripe": "",
-      "gauge": "16 AWG",
-      "conductor": "Stranded",
-      "follow": true
-    },
-    {
-      "id": "cbt5wj9a",
-      "a": {
-        "item": "iri4qkt2",
-        "term": "a"
-      },
-      "b": {
-        "item": "iamng7bu",
-        "term": "a"
-      },
-      "wire": "W29",
-      "notes": "",
-      "profile": "wp_0v",
-      "color": "#1f63c6",
-      "stripe": "",
-      "gauge": "16 AWG",
-      "conductor": "Stranded",
-      "follow": true
+      "follow": true,
+      "draw": "break"
     },
     {
       "id": "cb3mpygd",
@@ -3560,9 +3469,109 @@
       "gauge": "16 AWG",
       "conductor": "Stranded",
       "follow": true
+    },
+    {
+      "id": "ctrb742n",
+      "a": {
+        "item": "i5op72vc",
+        "term": "b"
+      },
+      "b": {
+        "item": "ivc5w2pp",
+        "term": "b"
+      },
+      "wire": "W32",
+      "notes": "",
+      "profile": "wp_24v",
+      "color": "#d32f2f",
+      "stripe": "",
+      "gauge": "16 AWG",
+      "conductor": "Stranded",
+      "follow": true
+    },
+    {
+      "id": "cjufztzg",
+      "a": {
+        "item": "ish48pdu",
+        "term": "b"
+      },
+      "b": {
+        "item": "iwvbynk8",
+        "term": "b"
+      },
+      "wire": "W33",
+      "notes": "",
+      "profile": "wp0pt6g8u",
+      "color": "#f0c000",
+      "stripe": "",
+      "gauge": "18 AWG",
+      "conductor": "Stranded",
+      "follow": false
+    },
+    {
+      "id": "c4gx8e4u",
+      "a": {
+        "item": "i1owjzjr",
+        "term": "b"
+      },
+      "b": {
+        "item": "irh2le8q",
+        "term": "b"
+      },
+      "wire": "W34",
+      "notes": "",
+      "profile": "wp_0v",
+      "color": "#1f63c6",
+      "stripe": "",
+      "gauge": "16 AWG",
+      "conductor": "Stranded",
+      "follow": true
     }
   ],
-  "buses": [],
+  "buses": [
+    {
+      "id": "bnf5hcvl",
+      "label": "BB1",
+      "terms": [
+        {
+          "item": "i6p61xgm",
+          "term": "s1"
+        },
+        {
+          "item": "iri4qkt2",
+          "term": "s1"
+        },
+        {
+          "item": "iamng7bu",
+          "term": "s1"
+        }
+      ],
+      "color": "#1f63c6",
+      "notes": "",
+      "follow": true
+    },
+    {
+      "id": "bp4s15sp",
+      "label": "BB2",
+      "terms": [
+        {
+          "item": "i17cigzv",
+          "term": "s2"
+        },
+        {
+          "item": "io7ajqdg",
+          "term": "s2"
+        },
+        {
+          "item": "iklir3qc",
+          "term": "s2"
+        }
+      ],
+      "color": "#d32f2f",
+      "notes": "",
+      "follow": true
+    }
+  ],
   "wireProfiles": [
     {
       "id": "wp_24v",
@@ -3629,6 +3638,13 @@
         "from": "0.75 mm²",
         "to": "18 AWG"
       }
+    },
+    {
+      "id": "wp0pt6g8u",
+      "name": "+5 V DC",
+      "color": "#f0c000",
+      "gauge": "18 AWG",
+      "conductor": "Stranded"
     }
   ],
   "cableProfiles": [
@@ -3705,9 +3721,9 @@
     {
       "id": "kos0xe50",
       "label": "C2",
-      "desc": "",
+      "desc": "Cat6A S/FTP 4×2×AWG26",
       "to": "",
-      "color": "#3a3f45",
+      "color": "#2e9b3c",
       "notes": "",
       "open": true,
       "wires": [],
@@ -3720,7 +3736,10 @@
       "portB": {
         "item": "i5lr1eo9",
         "term": "p1"
-      }
+      },
+      "profile": "cp_ie",
+      "shield": true,
+      "twisted": true
     }
   ],
   "circuitLabels": {},

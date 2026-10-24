@@ -2,6 +2,10 @@
 
 Changes to the ready-made libraries are listed separately: each library's folder in [`libraries/`](libraries/README.md) has its own release notes.
 
+## 1.6.1 — 2026-10-24
+
+- **Updated Mechatronics example:** the `#mechatronics` example has been replaced with a newer version. It adds terminal blocks TB6 and TB7, two buses and a new wire type, and reworks some of the wiring. If you've already opened the example, your saved copy is kept; use **File → Load the example** on the `#mechatronics` link to get the new one.
+
 ## 1.5.3 — 2026-10-24
 
 - **Mechatronics example:** add `#mechatronics` to DIN Stack's address to open the Mechatronics example, built with the AACC Mechatronics library. That link is a workspace of its own: it starts with the example, keeps its own saved diagram apart from the main one, and **File → Load the example** there loads the Mechatronics example. The plain address works as before. Like the library manager, it needs the online version or an installed copy that has been online.
