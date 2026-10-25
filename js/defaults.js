@@ -96,13 +96,23 @@ const DEFAULT_PROFILES = [
 ];
 
 // Starter cable profiles: named cable types (sheath colour, type, shield, twisted pairs) that cables can follow.
-// The wires inside a cable keep their own wire profiles.
+// A profile can list the cores it contains, in order ({ mark, color, stripe, gauge, conductor }): a cable
+// following it gives its cores those looks, core 1 first. With no cores listed, its wires keep their own looks.
+const WHITE = "#f2f2f2";
+const BLACK = "#1f1f1f";
+const T568B = (gauge) => [["#ef7d00", true], ["#ef7d00"], ["#2e9b3c", true], ["#1f63c6"], ["#1f63c6", true], ["#2e9b3c"], ["#7a4a25", true], ["#7a4a25"]]
+  .map(([c, striped], i) => ({ mark: String(i + 1), color: striped ? WHITE : c, stripe: striped ? c : "", gauge, conductor: "" }));
+// Cores as [mark, colour, size]: numbered black cores, with green/yellow (unmarked) for earth.
+const coreList = (list) => list.map(([mark, color, gauge]) => ({ mark, color, stripe: "", gauge, conductor: "Stranded" }));
 const DEFAULT_CABLE_PROFILES = [
-  { id: "cp_cat6", name: "Ethernet, Cat6", color: "#1f63c6", desc: "Cat6 U/UTP 4×2×AWG24", shield: false, twisted: true, notes: "" },
-  { id: "cp_ie", name: "Industrial Ethernet, shielded", color: "#2e9b3c", desc: "Cat6A S/FTP 4×2×AWG26", shield: true, twisted: true, notes: "" },
-  { id: "cp_motor", name: "Motor cable, shielded", color: "#ef7d00", desc: "4G1.5 + 2×0.75", shield: true, twisted: false, notes: "" },
-  { id: "cp_ctrl", name: "Control cable", color: "#8a8f96", desc: "7G0.75 LiYY", shield: false, twisted: false, notes: "" },
-  { id: "cp_mains", name: "Mains cable", color: "#1f1f1f", desc: "3G1.5 H07RN-F", shield: false, twisted: false, notes: "" },
+  { id: "cp_cat6", name: "Ethernet, Cat6", color: "#1f63c6", desc: "Cat6 U/UTP 4×2×AWG24", shield: false, twisted: true, notes: "Cores in T568B order", cores: T568B("24 AWG") },
+  { id: "cp_ie", name: "Industrial Ethernet, shielded", color: "#2e9b3c", desc: "Cat6A S/FTP 4×2×AWG26", shield: true, twisted: true, notes: "Cores in T568B order", cores: T568B("26 AWG") },
+  { id: "cp_motor", name: "Motor cable, shielded", color: "#ef7d00", desc: "4G1.5 + 2×0.75", shield: true, twisted: false, notes: "Brake / thermistor pair: cores 5 and 6",
+    cores: coreList([["U", BLACK, "1.5 mm²"], ["V", BLACK, "1.5 mm²"], ["W", BLACK, "1.5 mm²"], ["", "gy", "1.5 mm²"], ["5", BLACK, "0.75 mm²"], ["6", BLACK, "0.75 mm²"]]) },
+  { id: "cp_ctrl", name: "Control cable", color: "#8a8f96", desc: "7G0.75 LiYY", shield: false, twisted: false, notes: "Numbered black cores",
+    cores: coreList([1, 2, 3, 4, 5, 6].map((i) => [String(i), BLACK, "0.75 mm²"]).concat([["", "gy", "0.75 mm²"]])) },
+  { id: "cp_mains", name: "Mains cable", color: "#1f1f1f", desc: "3G1.5 H07RN-F", shield: false, twisted: false, notes: "",
+    cores: [["#7a4a25"], ["#1f63c6"], ["gy"]].map(([color]) => ({ mark: "", color, stripe: "", gauge: "1.5 mm²", conductor: "Stranded" })) },
 ];
 
 // Copy a cable profile's properties onto a cable and remember which profile it follows.

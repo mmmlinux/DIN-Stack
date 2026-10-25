@@ -332,15 +332,24 @@
     const m = $("modeBar");
     if (!busEdit) { m.hidden = true; return; }
     const n = busEdit.terms.length, cable = busEdit.kind === "cable";
-    const what = busEdit.land ? `Other end of ${cableById(busEdit.id)?.label || "the cable"}`
-      : cable ? (busEdit.id ? `Adding to ${cableById(busEdit.id)?.label || "the cable"}` : "New cable")
+    const name = cableById(busEdit.id)?.label || "the cable";
+    const what = busEdit.land ? `Other end of ${name}`
+      : busEdit.plug ? `Plugging in end ${busEdit.end} of ${name}`
+      : busEdit.fan ? (busEdit.adding ? `Adding cores to ${name}` : `Fanning out end ${busEdit.end} of ${name}`)
+      : cable ? (busEdit.id ? `Adding to ${name}` : "New cable")
       : busEdit.id ? `Editing bus bar ${busById(busEdit.id)?.label || ""}` : "New bus bar";
     const tip = busEdit.land ? landingTip()
+      : busEdit.plug ? "Click the cable connector it plugs into"
       : n ? `${n} picked`
+      : busEdit.fan ? "Click the terminals its cores land on, in order, or drag along a row"
       : cable ? "Click the terminals its cores go to, in order, and any cable connector it plugs into" : "Click terminals or bus bar slots, or drag along a row";
-    m.innerHTML = `<b>${esc(what)}</b><span class="muted">${esc(tip)}</span>
+    // While picking terminals for a cable's cores, which core of its profile comes next.
+    const pcb = cable && !busEdit.land && !busEdit.plug && cableById(busEdit.id);
+    const defs = pcb ? profileCores(pcb) : [], next = defs[(pcb ? pcb.wires.length : 0) + busEdit.terms.filter((k) => !isPortEnd(termKeyParts(k))).length];
+    const coreTip = defs.length ? (next ? ` · Next: core ${defs.indexOf(next) + 1} (${coreText(next)})` : ` · All ${plural(defs.length, "core")} of its profile picked`) : "";
+    m.innerHTML = `<b>${esc(what)}</b><span class="muted">${esc(tip + coreTip)}</span>
       ${!cable && n > 2 ? `<button class="small" data-act="busAlt0" title="Keep the 1st, 3rd, 5th… along the row">Keep 1st, 3rd…</button><button class="small" data-act="busAlt1" title="Keep the 2nd, 4th, 6th… along the row">Keep 2nd, 4th…</button>` : ""}
-      <button class="small primary" data-act="busDone"${busReady() ? "" : " disabled"} title="Enter">${ic("check", "sm")} Done</button>
+      ${busEdit.plug ? "" : `<button class="small primary" data-act="busDone"${busReady() ? "" : " disabled"} title="Enter">${ic("check", "sm")} Done</button>`}
       <button class="small" data-act="busCancel" title="Esc">Cancel</button>`;
     m.hidden = false;
   }
@@ -648,7 +657,7 @@
     checkpoint();
     for (const cb of doc.cables) cb.wires = cb.wires.filter((id) => !ids.includes(id));
     let cb = into && cableById(into);
-    if (cb) cb.wires.push(...ids);
+    if (cb) { cb.wires.push(...ids); applyCableCores(cb, new Set(ids)); }
     else {
       cb = { id: uid("k"), label: nextCable(), desc: "", color: "#3a3f45", notes: "", wires: ids, pa: null, pb: null };
       doc.cables.push(cb);
@@ -663,6 +672,7 @@
     if (!cb) return;
     checkpoint();
     cb.wires = cb.wires.filter((id) => id !== connId);
+    if (connById(connId)) leaveCable(connById(connId));
     if (cb.open) doc.connections = doc.connections.filter((c) => c.id !== connId); // a core can't outlive its cable
     doc.cables = doc.cables.filter((x) => x.wires.length);
     refresh();
@@ -670,6 +680,7 @@
 
   function unbundle(cb) {
     checkpoint();
+    cb.wires.map(connById).filter(Boolean).forEach(leaveCable);
     doc.cables = doc.cables.filter((x) => x !== cb);
     sel = new Set(cb.wires);
     refresh();
@@ -684,6 +695,41 @@
     sel.clear();
     refresh();
   }
+
+  // ---------- the cores a cable profile lists ----------
+  // A cable profile can list its cores in order (p.cores: { mark, color, stripe, gauge, conductor }). A
+  // cable following it gives its cores those looks, core 1 first: c.fromCable marks a core that has one,
+  // and c.mark is its marking (e.g. 1, 2… on numbered cores). A core changed by hand (c.ownLook) keeps
+  // its own look when the profile is edited, until the profile is picked for the cable again.
+  const profileCores = (cb) => cableProfileById(cb.profile)?.cores || [];
+
+  // A cable's cores in core order: by core number when they're numbered on the cable, else as bundled.
+  function coreOrder(cb) {
+    return cb.open ? freeCores(cb).map((k) => k.c) : cb.wires.map(connById).filter(Boolean);
+  }
+
+  // Give a cable's cores the looks its profile lists: "all" of them (the profile was just picked), those in
+  // a Set of wire ids (new cores), or by default all but those changed by hand (the profile was edited).
+  function applyCableCores(cb, which) {
+    const defs = profileCores(cb);
+    coreOrder(cb).forEach((c, i) => {
+      const k = defs[i];
+      if (!k || !(which === "all" || (which instanceof Set ? which.has(c.id) : !c.ownLook))) return;
+      Object.assign(c, { profile: "", color: k.color, stripe: k.stripe || "", gauge: k.gauge || "", conductor: k.conductor || "", follow: false, fromCable: true });
+      delete c.ownLook;
+      if (k.mark) c.mark = k.mark; else delete c.mark;
+    });
+  }
+
+  // A wire leaving its cable keeps its look but not its core marking.
+  function leaveCable(c) {
+    delete c.fromCable;
+    delete c.ownLook;
+    delete c.mark;
+  }
+
+  // A core in a few words: "1 White/Orange 24 AWG".
+  const coreText = (k) => [k.mark, wireLookName(k.color, k.stripe), k.gauge].filter(Boolean).join(" ");
 
   // ---------- cable connectors ----------
   // A cable connector (a "port" terminal, e.g. an RJ45 socket) takes a cable's plug, not single wires.
@@ -709,6 +755,25 @@
     refresh();
   }
 
+  // Dragging between a connector and a terminal: a new cable plugged into the connector, with one core
+  // landing on the terminal. More cores can be added to it afterwards.
+  function plugAndFan(port, term) {
+    const t = tplOf(itemById(term.item))?.terminals.find((x) => x.id === term.term);
+    if (t && isSlot(t)) { toast("Bus bar slots take bus bars, not cable cores"); return; }
+    const used = cableAtPort(port);
+    if (used) { toast(`${refOf(port)} already has cable ${used.label || ""}`.trim()); sel = new Set([used.id]); refresh(); return; }
+    checkpoint();
+    const cb = { id: uid("k"), label: nextCable(), desc: "", to: "", color: "#3a3f45", notes: "", open: true, wires: [], pa: null, pb: null, portA: null, portB: { ...port } };
+    const c = { id: uid("c"), a: { ...term }, b: { item: cb.id, term: "1" }, wire: nextWire(), notes: "" };
+    initWire(c);
+    doc.connections.push(c);
+    cb.wires.push(c.id);
+    doc.cables.push(cb);
+    sel = new Set([cb.id]);
+    setHint("");
+    refresh();
+  }
+
   // Take a cable's plug out of a connector. A cable left with no cores and no plug goes.
   function unplug(cb, e) {
     checkpoint();
@@ -716,6 +781,115 @@
     if (!cb.wires.length && !cb.portA) { doc.cables = doc.cables.filter((x) => x !== cb); sel.delete(cb.id); }
     cleanConnections();
     refresh();
+  }
+
+  // ---------- a cable's two ends ----------
+  // Every cable has two ends, A and B, and each one is plugged into a cable connector ("plug"), fans out
+  // into cores that land on terminals ("fan"), or is free, running off the drawing ("free"). Any two go
+  // together. How that's stored: a bundle of wires (not cb.open) fans out at both ends. Otherwise the cores
+  // land on terminals at end A only, and their other ends are on the cable itself ({ item: cb.id, term:
+  // core number }); a cable with no cores is plugged in at end A (portA), and end B is portB or free.
+
+  // Which end of a bundle each of its wires' ends is at, worked out by position as the drawing does:
+  // { [wire id]: "a" or "b", the wire end that's at cable end A }.
+  function bundleSides(cb) {
+    const conns = new Map(doc.connections.map((c) => [c.id, c]));
+    const pos = (e) => ({ ...(termPoint(e) || { x: 0, y: 0 }), e });
+    const g = cableGeometry(cb, conns, pos);
+    const out = {};
+    for (const k of g ? g.cores : []) out[k.c.id] = k.ea.e === k.c.a ? "a" : "b";
+    return out;
+  }
+
+  // A cable's ends: [end A, end B], each { kind: "plug" | "fan" | "free", port, terms }.
+  function cableEndInfo(cb) {
+    const ws = cb.wires.map(connById).filter(Boolean);
+    if (!cb.open) {
+      const s = bundleSides(cb);
+      return [{ kind: "fan", terms: ws.map((c) => (s[c.id] === "b" ? c.b : c.a)) }, { kind: "fan", terms: ws.map((c) => (s[c.id] === "b" ? c.a : c.b)) }];
+    }
+    const a = ws.length ? { kind: "fan", terms: ws.map((c) => (c.a.item === cb.id ? c.b : c.a)) } : { kind: "plug", port: cb.portA };
+    return [a, cb.portB ? { kind: "plug", port: cb.portB } : { kind: "free" }];
+  }
+
+  // What each end can change to: [action, menu label, tooltip].
+  function endActions(cb, end) {
+    const [me, other] = end === "A" ? cableEndInfo(cb) : cableEndInfo(cb).reverse();
+    const out = [];
+    if (me.kind === "fan" && cb.open) out.push(["fan", "Add cores…", "Pick more terminals for the cable's cores to land on"]);
+    out.push(["plug", me.kind === "plug" ? "Plug into another connector…" : "Plug into a connector…",
+      me.kind === "fan" ? (cb.open ? "Plug this end into a cable connector instead. Its cores go, as a cable plugged in at both ends doesn't draw its cores"
+        : "Plug this end into a cable connector instead. The wires lose their terminals at this end and become the cable's cores")
+        : "Pick the cable connector this end plugs into"]);
+    if (me.kind !== "fan") out.push(["fan", "Fan out to terminals…", "Pick the terminals the cable's cores land on at this end"]);
+    if (me.kind === "plug") out.push(["free", "Unplug", other.kind === "free" ? "Unplug the cable. With nothing on the drawing at either end, it goes" : "Unplug this end and leave it free, running off the drawing"]);
+    else if (me.kind === "fan" && !cb.open) out.push(["free", "Leave free", "Take the wires off their terminals at this end, so the cable runs off the drawing. The wires become the cable's cores"]);
+    return out;
+  }
+
+  function runEndAction(cb, end, act) {
+    if (act === "plug") {
+      pending = null;
+      busEdit = { kind: "cable", id: cb.id, terms: [], end, plug: true };
+      setHint("");
+      refresh();
+    } else if (act === "fan") {
+      if (cb.open && cb.wires.length && end === "B") { startLanding(cb.id); return; }
+      pending = null;
+      busEdit = { kind: "cable", id: cb.id, terms: [], end, fan: true, adding: cb.open && cb.wires.length > 0 };
+      setHint("");
+      refresh();
+    } else if (act === "free") {
+      const port = end === "A" ? (cb.open && !cb.wires.length ? cb.portA : null) : cb.portB;
+      if (port) unplug(cb, port); else setCableEnd(cb, end, null);
+    }
+  }
+
+  // Plug one end of a cable into a connector, or with port null leave it free. A bundle's wires lose their
+  // terminals at that end and become cores of the cable. Plugging in the end a cable's cores land on removes
+  // the cores, since a cable plugged in at both ends (or plugged in at one and free at the other) doesn't
+  // draw them. Returns true when done, false if the connector can't take it, null if the user said no.
+  function setCableEnd(cb, end, port) {
+    if (port) {
+      const used = cableAtPort(port);
+      if (used && used !== cb) { toast(`${refOf(port)} already has cable ${used.label || ""}`.trim()); return false; }
+      const [a, b] = cableEndInfo(cb);
+      const otherPort = (end === "A" ? b : a).port;
+      if (otherPort && sameEnd(otherPort, port)) { toast(`The other end of ${cb.label || "the cable"} is already plugged into ${refOf(port)}`); return false; }
+    }
+    const ws = cb.wires.map(connById).filter(Boolean);
+    const name = cb.label || "the cable";
+    if (!cb.open) {
+      const ask = `${port ? `Plugging this end of ${name} into ${refOf(port)}` : `Leaving this end of ${name} free`} takes its ${plural(ws.length, "wire")} off their terminals at this end. They become the cable's cores, so they no longer carry their circuits through to this end, and deleting the cable deletes them. Go ahead? (You can undo this.)`;
+      if (!confirm(ask)) return null;
+      checkpoint();
+      const s = bundleSides(cb), cut = end === "A" ? "a" : "b";
+      ws.forEach((c, i) => { c[(s[c.id] || "a") === cut ? "a" : "b"] = { item: cb.id, term: String(i + 1) }; });
+      cb.open = true;
+      // The fan-out point that's left is end A's now; the other end's position is worked out again.
+      cb.pa = end === "A" ? cb.pb : cb.pa;
+      cb.pb = null;
+      cb.portA = null;
+      cb.portB = port ? { ...port } : null;
+      cb.to = "";
+    } else if (end === "A" && ws.length) {
+      if (!port) return null; // a cable needs something on the drawing
+      if (!confirm(`Plugging this end of ${name} into ${refOf(port)} removes its ${plural(ws.length, "core")}: a cable plugged into a connector at this end doesn't draw its cores. Go ahead? (You can undo this.)`)) return null;
+      checkpoint();
+      doc.connections = doc.connections.filter((c) => !cb.wires.includes(c.id));
+      cb.wires = [];
+      cb.portA = { ...port };
+      cb.pa = null; cb.pb = null;
+    } else {
+      checkpoint();
+      if (end === "A") cb.portA = { ...port };
+      else { cb.portB = port ? { ...port } : null; cb.pb = null; }
+    }
+    if (cb.portB) delete cb.to;
+    cleanConnections();
+    sel = new Set([cb.id]);
+    refresh();
+    return true;
   }
 
   function nextBus() {
@@ -735,8 +909,7 @@
     refresh();
   }
 
-  // Pick the terminals a one-ended cable's cores land on and the connectors it plugs into (a new cable, or
-  // more for an existing one).
+  // Pick the terminals a new cable's cores land on and any connectors it plugs into.
   function startCable(id, first) {
     pending = null;
     busEdit = { kind: "cable", id: id || null, terms: first ? [first] : [] };
@@ -771,12 +944,14 @@
     return `Core ${n + 1} of ${cores.length} (${k.c.wire || "wire"}, from ${refOf(k.near)}): click the terminal it goes to`;
   }
 
-  // A cable whose cores land on terminals at one end and whose other end is free (not plugged in).
-  const canLand = (cb) => !!cb && cb.open && !cb.portA && !cb.portB && cb.wires.length > 0;
+  // A cable whose cores land on terminals at one end only: its other end (free, or plugged into a
+  // connector, which it's then unplugged from) can fan out to terminals too.
+  const canLand = (cb) => !!cb && cb.open && !cb.portA && cb.wires.length > 0;
 
   // Enough terminals picked to finish: a terminal for every core when landing a cable's other end.
   function busReady() {
     const n = busEdit.terms.length;
+    if (busEdit.plug) return false; // done as soon as a connector is clicked
     if (busEdit.land) return n === freeCores(cableById(busEdit.id) || { wires: [] }).length;
     return n >= (busEdit.kind === "cable" ? 1 : 2);
   }
@@ -793,6 +968,7 @@
     cores.forEach((k, i) => { k.c.a = { ...k.near }; k.c.b = { ...picked[i] }; });
     cb.open = false;
     delete cb.to;
+    cb.portB = null; // unplugged, if it was plugged in
     cb.pb = null; // was where the free end lay; now the fan-out point at the new end works itself out
     busEdit = null;
     sel = new Set([cb.id]);
@@ -802,9 +978,13 @@
 
   function finishCable() {
     if (busEdit.land) { finishLanding(); return; }
+    if (busEdit.plug) { cancelBus(); return; } // nothing to finish until a connector is clicked
+    if (busEdit.fan && !busEdit.terms.length) { toast("Pick at least one terminal for the cable's cores"); return; }
     let cb = busEdit.id && cableById(busEdit.id);
     const picked = busEdit.terms.map(termKeyParts);
-    const plugs = [...(cb ? [cb.portA, cb.portB].filter(Boolean) : []), ...picked.filter(isPortEnd)];
+    // Fanning out an end that was plugged in (busEdit.fan) unplugs it.
+    const fanned = busEdit.fan ? (busEdit.end === "A" ? cb?.portA : cb?.portB) : null;
+    const plugs = [...(cb ? [cb.portA, cb.portB].filter((e) => e && e !== fanned) : []), ...picked.filter(isPortEnd)];
     const terms = picked.filter((e) => !isPortEnd(e));
     const cores = (cb ? cb.wires.length : 0) + terms.length;
     if (!cores && !plugs.length) { toast("Pick at least one terminal or cable connector for the cable"); return; }
@@ -817,13 +997,20 @@
     }
     // Cores land at end A, so a plug goes at end B; with no cores, the plugs are ends A and B.
     if (cores) { cb.portA = null; cb.portB = plugs[0] || null; } else { cb.portA = plugs[0]; cb.portB = plugs[1] || null; }
+    if (busEdit.fan) {
+      if (fanned || busEdit.end === "B") { cb.pa = null; cb.pb = null; } // the cable's shape has changed
+      if (cb.portB) delete cb.to; // only a free end says where it goes
+    }
     let core = Math.max(0, ...cb.wires.map(connById).filter(Boolean).map((c) => parseInt((c.a.item === cb.id ? c.a : c.b).term, 10) || 0));
+    const made = new Set();
     for (const e of terms) {
       const c = { id: uid("c"), a: { ...e }, b: { item: cb.id, term: String(++core) }, wire: nextWire(), notes: "" };
       initWire(c);
       doc.connections.push(c);
       cb.wires.push(c.id);
+      made.add(c.id);
     }
+    applyCableCores(cb, made);
     busEdit = null;
     sel = new Set([cb.id]);
     setHint("");
@@ -860,12 +1047,28 @@
   }
 
   function toggleBusTerm(key, onlyAdd) {
+    if (!busEdit) return; // e.g. still sweeping after a connector was clicked to plug a cable in
     const p = termKeyParts(key), t = tplOf(itemById(p.item))?.terminals.find((x) => x.id === p.term) || {};
+    if (busEdit.plug) {
+      if (onlyAdd) return; // sweeping doesn't plug anything in
+      if (!isPort(t)) { toast("Click a cable connector (a socket) for this end of the cable to plug into"); return; }
+      const cb = cableById(busEdit.id);
+      const end = busEdit.end;
+      if (!cb) { cancelBus(); return; }
+      busEdit = null;
+      const done = setCableEnd(cb, end, p);
+      if (done === false) busEdit = { kind: "cable", id: cb.id, terms: [], end, plug: true }; // that connector's taken: pick another
+      if (!done) refresh();
+      return;
+    }
     if (busEdit.land) {
       if (isSlot(t)) return;
       if (isPort(t)) { toast(`${refOf(p)} is a cable connector. To plug the cable in instead, use Plug into a connector…`); return; }
       const n = freeCores(cableById(busEdit.id) || { wires: [] }).length;
       if (!busEdit.terms.includes(key) && busEdit.terms.length >= n) { toast(`Every core has a terminal. Click a picked one to take it off, or press Enter`); return; }
+    } else if (busEdit.fan) {
+      if (isSlot(t)) return;
+      if (isPort(t)) { toast(`${refOf(p)} is a cable connector. To plug this end into it instead, use Plug into a connector…`); return; }
     } else if (busEdit.kind === "cable") {
       if (isSlot(t)) return; // slots take bus bars, not cores
       const other = isPort(t) && !busEdit.terms.includes(key) && cableAtPort(p);
@@ -1172,9 +1375,12 @@
     doc.settings.wireStd = to;
     if (from === to) return;
     for (const p of doc.wireProfiles) convertWire(p, profileRole(p), from, to);
+    // A cable's cores are the colours they're made in, so only their sizes change.
+    for (const p of doc.cableProfiles) for (const k of p.cores || []) k.gauge = convertGauge(k.gauge, to);
     for (const c of doc.connections) {
       const p = profileById(c.profile);
       if (p) applyProfile(c, p);
+      else if (c.fromCable) c.gauge = convertGauge(c.gauge, to);
       else convertWire(c, guessRole(c.a, c.b), from, to);
     }
     lastWire.gauge = convertGauge(lastWire.gauge, to);
@@ -1242,6 +1448,8 @@
   // wires and bus bars match it.
   function handEdited(x) {
     x.follow = false;
+    // A cable core changed by hand keeps its look when the cable's profile is edited.
+    if (x.a && cableOf(x.id)) { delete x.fromCable; x.ownLook = true; }
     matchFollowers(x);
   }
 
@@ -1319,9 +1527,11 @@
     setHint("");
     if (a.item === b.item && a.term === b.term) return;
     if (isPortEnd(a) || isPortEnd(b)) {
-      // Between two connectors this is a cable; a connector never takes a single wire.
+      // A connector never takes a single wire: between two connectors this is a cable, and between a
+      // connector and a terminal it's a cable plugged in at one end with a core landing on the terminal.
       if (isPortEnd(a) && isPortEnd(b)) plugCable(a, b);
-      else toast(`${refOf(isPortEnd(a) ? a : b)} is a cable connector: it takes a cable's plug, not a single wire. Right-click it to plug in a cable.`);
+      else if (isPortEnd(a)) plugAndFan(a, b);
+      else plugAndFan(b, a);
       return;
     }
     const same = (e1, e2) => e1.item === e2.item && e1.term === e2.term;
@@ -1417,6 +1627,13 @@
     }
 
     if (busEdit) {
+      // Plugging a cable end in: a click on a connector does it, after the pointer events are over, as it
+      // may ask first and a dialog mid-click can lose the pointer's release.
+      if (busEdit.plug && termEl) {
+        const key = termEl.dataset.term;
+        setTimeout(() => toggleBusTerm(key), 0);
+        return;
+      }
       // Picking terminals for a bus bar: click toggles, dragging sweeps more in. Anything else pans.
       if (termEl) {
         toggleBusTerm(termEl.dataset.term);
@@ -1749,7 +1966,7 @@
     if (!doc.cableProfiles.length) return [];
     return ["-", { heading: "Cable profile" }, ...doc.cableProfiles.map((p) => ({
       label: p.name, checked: cb.profile === p.id,
-      run: () => { checkpoint(); applyCableProfile(cb, p); refresh(); },
+      run: () => { checkpoint(); applyCableProfile(cb, p); applyCableCores(cb, "all"); refresh(); },
     }))];
   }
 
@@ -1863,29 +2080,18 @@
     }
     if (cbs.length) {
       const cb = cbs[0];
-      if (cb.open) {
-        return [
-          { heading: `Cable ${cb.label || ""}`.trim() },
-          cb.portA ? null : { label: "Add cores…", run: () => startCable(cb.id) },
-          canLand(cb) ? { label: "Land the other end…", run: () => startLanding(cb.id) } : null,
-          !cb.portB ? { label: "Plug into a connector…", run: () => startCable(cb.id) } : null,
-          cb.wires.length ? { label: "Select its cores", run: () => { sel = new Set(cb.wires); refresh(); } } : null,
-          { label: "Reset layout", disabled: !(cb.pa || cb.pb), run: () => { checkpoint(); cb.pa = null; cb.pb = null; refresh(); } },
-          ...drawEntries(breakable(cb) ? [cb] : [], "cable"),
-          ...cableProfileEntries(cb),
-          "-",
-          { label: "Delete cable", hint: "Del", danger: true, run: () => deleteCableAndWires(cb) },
-        ];
-      }
+      const ends = cableEndInfo(cb);
       return [
         { heading: `Cable ${cb.label || ""}`.trim() },
-        { label: "Select its wires", run: () => { sel = new Set(cb.wires); refresh(); } },
-        { label: "Reset fan-out points", disabled: !(cb.pa || cb.pb), run: () => { checkpoint(); cb.pa = null; cb.pb = null; refresh(); } },
-        ...drawEntries([cb], "cable"),
+        cb.wires.length ? { label: cb.open ? "Select its cores" : "Select its wires", run: () => { sel = new Set(cb.wires); refresh(); } } : null,
+        { label: cb.open ? "Reset layout" : "Reset fan-out points", disabled: !(cb.pa || cb.pb), run: () => { checkpoint(); cb.pa = null; cb.pb = null; refresh(); } },
+        ...["A", "B"].flatMap((end, i) => ["-", { heading: `End ${end} · ${endText(ends[i], cb)}` },
+          ...endActions(cb, end).map(([act, label]) => ({ label, run: () => runEndAction(cb, end, act) }))]),
+        ...drawEntries(breakable(cb) ? [cb] : [], "cable"),
         ...cableProfileEntries(cb),
         "-",
-        { label: "Unbundle (keep wires)", hint: "Del", run: () => unbundle(cb) },
-        { label: "Delete cable and wires", danger: true, run: () => deleteCableAndWires(cb) },
+        cb.open ? null : { label: "Unbundle (keep wires)", hint: "Del", run: () => unbundle(cb) },
+        { label: cb.open ? "Delete cable" : "Delete cable and wires", hint: cb.open ? "Del" : undefined, danger: true, run: () => deleteCableAndWires(cb) },
       ];
     }
     if (bars.length) {
@@ -2074,9 +2280,16 @@
     const refs = busEdit.terms.map((k) => refOf(termKeyParts(k)));
     const cable = busEdit.kind === "cable";
     const cb = cable && busEdit.id && cableById(busEdit.id);
-    const title = cable ? (cb ? "Add cores to " + (cb.label || "cable") : "New cable") : busEdit.id ? "Edit bus bar " + (busById(busEdit.id)?.label || "") : "New bus bar";
-    const sub = cable
-      ? "Click the terminals the cable's cores go to, in core order, or drag along a row. The other end of the cable isn't drawn: say where it goes once it's made."
+    const name = (cb && cb.label) || "cable";
+    if (busEdit.plug) {
+      return head("Cable", esc(`Plug in end ${busEdit.end} of ${name}`), "Click the cable connector (socket) this end plugs into.") + `<div class="picked">
+        <div class="btn-row"><button data-act="busCancel">Cancel (Esc)</button></div></div>`;
+    }
+    const title = cable ? (busEdit.fan && !busEdit.adding ? `Fan out end ${busEdit.end} of ${name}` : cb ? "Add cores to " + name : "New cable") : busEdit.id ? "Edit bus bar " + (busById(busEdit.id)?.label || "") : "New bus bar";
+    const sub = busEdit.fan
+      ? "Click the terminals the cable's cores land on at this end, in core order, or drag along a row."
+      : cable
+      ? "Click the terminals the cable's cores go to, in core order, or drag along a row, and any cable connector it plugs into. Its other end can be plugged in, fanned out or left free once it's made."
       : "Click terminals or bus bar slots (the small squares in the middle of terminal blocks) to add or remove them, or drag along a row to sweep them in.";
     const min = cable ? 1 : 2;
     return head(cable ? "Cable" : "Bus bar", esc(title), sub) + `<div class="picked">
@@ -2227,8 +2440,8 @@
     const cb = cableOf(c.id);
     const acts = actBtn("swap", "swap", "Swap From and To") + actBtn("selCircuit", "wire", "Select the whole circuit") + sepEl + actBtn("delete", "trash", "Delete wire (Del)");
     const cable = cb
-      ? `<p style="margin:0 0 8px"><a class="link" data-conn-link="${esc(cb.id)}">${esc(cb.label || "Cable")}${cb.desc ? " · " + esc(cb.desc) : ""}</a></p>
-         ${cb.open ? '<p class="hint-text">This wire is a core of a cable whose other end isn’t drawn. To draw it, select the cable and use <i>Land the other end…</i></p>' : '<div class="btn-row"><button class="small" data-act="cableRemove">Take out of cable</button></div>'}`
+      ? `<p style="margin:0 0 8px"><a class="link" data-conn-link="${esc(cb.id)}">${esc(cb.label || "Cable")}${cb.desc ? " · " + esc(cb.desc) : ""}</a>${c.mark ? ` · core marked ${esc(c.mark)}` : ""}</p>
+         ${cb.open ? '<p class="hint-text">This wire is a core of a cable whose other end isn’t fanned out. To draw it end to end, select the cable and use <i>Fan out to terminals…</i> on its other end.</p>' : '<div class="btn-row"><button class="small" data-act="cableRemove">Take out of cable</button></div>'}`
       : `<p class="hint-text">Not in a cable. To bundle several wires together, Shift-click them and use <i>Bundle into a cable</i>.</p>
          <div class="btn-row"><button class="small" data-act="cableNew" title="Draw this wire as a cable">${ic("cable", "sm")} Bundle into a cable</button></div>`;
     return head("Wire", esc(c.wire || "Wire"), `${esc(refOf(c.a))} ↔ ${esc(refOf(c.b))}`, acts) + body(
@@ -2295,11 +2508,15 @@
   // A cable's two ends, for headings and lists: the connector it's plugged into, the parts its cores land
   // on, or where its free end goes.
   function cableEnds(cb) {
-    const ws = cb.wires.map(connById).filter(Boolean);
-    const parts = (es) => [...new Set(es.map((e) => refOf(e).split(doc.settings.termSep)[0]))].join(", ");
-    if (!cb.open) return [parts(ws.map((c) => c.a)), parts(ws.map((c) => c.b))];
-    const a = cb.portA ? refOf(cb.portA) : parts(ws.map((c) => (c.a.item === cb.id ? c.b : c.a)));
-    return [a, cb.portB ? refOf(cb.portB) : cb.to || "not drawn"];
+    return cableEndInfo(cb).map((e) => endText(e, cb));
+  }
+
+  // One end of a cable (from cableEndInfo) in a few words: the connector it's plugged into, the parts its
+  // cores land on, or where its free end goes (given the cable).
+  function endText(e, cb) {
+    if (e.kind === "plug") return refOf(e.port);
+    if (e.kind === "fan") return [...new Set(e.terms.map((t) => refOf(t).split(doc.settings.termSep)[0]))].join(", ");
+    return (cb && cb.to) || "not drawn";
   }
 
   const cableProfileById = (id) => (id ? doc.cableProfiles.find((p) => p.id === id) : null);
@@ -2312,26 +2529,26 @@
   function cableProps(cb) {
     const ws = cb.wires.map(connById).filter(Boolean);
     const near = (c) => (c.a.item === cb.id ? c.b : c.a);
-    const [endA, endB] = cableEnds(cb);
+    const ends = cableEndInfo(cb);
+    const [endA, endB] = ends.map((e) => endText(e, cb));
+    const defs = profileCores(cb);
     const prof = cableProfileById(cb.profile);
-    const canPlug = !cb.portB; // a cable with cores, or plugged in at one end, can take a plug at its other end
-    const rows = ws.map((c) => `<tr><td>${colorChip(c.color, c.stripe)}<a data-conn-link="${esc(c.id)}">${esc(c.wire || "—")}</a></td><td>${cb.open ? `${esc(refOf(c.a.item === cb.id ? c.a : c.b))} → ${esc(refOf(near(c)))}` : `${esc(refOf(c.a))} ↔ ${esc(refOf(c.b))}`}</td><td class="x"><button class="icon-btn" data-core="${esc(c.id)}" title="${cb.open ? "Remove this core" : "Take this wire out of the cable"}">${ic("x", "sm")}</button></td></tr>`).join("");
+    const rows = ws.map((c) => `<tr><td>${colorChip(c.color, c.stripe)}<a data-conn-link="${esc(c.id)}">${esc(c.wire || "—")}</a>${c.mark ? ` <span class="muted">${esc(c.mark)}</span>` : ""}</td><td>${cb.open ? `${esc(refOf(c.a.item === cb.id ? c.a : c.b))} → ${esc(refOf(near(c)))}` : `${esc(refOf(c.a))} ↔ ${esc(refOf(c.b))}`}</td><td class="x"><button class="icon-btn" data-core="${esc(c.id)}" title="${cb.open ? "Remove this core" : "Take this wire out of the cable"}">${ic("x", "sm")}</button></td></tr>`).join("");
     const reset = `<button class="small" data-act="cableReset" title="Put the ${cb.open ? "fan-out and end points" : "fan-out points"} back where they're worked out automatically"${cb.pa || cb.pb ? "" : " disabled"}>${cb.open ? "Reset layout" : "Reset fan-out points"}</button>`;
-    const both = !cb.open || (cb.portA && cb.portB); // two drawn ends, rather than one end and where it goes
-    const sub = (ws.length ? plural(ws.length, "core") + " · " : "") + `${esc(endA)} ${cb.open && !cb.portB && !cb.to ? "· other end not drawn" : (both ? "↔ " : "→ ") + esc(endB)}`;
-    const acts = (cb.open && !cb.portA ? actBtn("cableCores", "plus", "Add cores…") : "") + (canLand(cb) ? actBtn("cableLand", "wire", "Land the other end…") : "") + (ws.length ? actBtn("cableSelect", "wire", cb.open ? "Select its cores" : "Select its wires") : "")
+    const both = ends[1].kind !== "free"; // two drawn ends, rather than one end and where it goes
+    const sub = (ws.length ? plural(ws.length, "core") + " · " : "") + `${esc(endA)} ${!both && !cb.to ? "· other end not drawn" : (both ? "↔ " : "→ ") + esc(endB)}`;
+    const acts = (ws.length ? actBtn("cableSelect", "wire", cb.open ? "Select its cores" : "Select its wires") : "")
       + sepEl + actBtn("cableDelete", "trash", cb.open ? "Delete cable" : "Delete cable and wires");
-    const plugRow = (end, e) => `<tr><td>End ${end}</td><td>${esc(refOf(e))}</td><td class="x"><button class="icon-btn" data-unplug="${end}" title="Unplug the cable from this connector">${ic("x", "sm")}</button></td></tr>`;
-    const plugs = cb.open ? section("cable.plugs", "Connectors", `
-        ${cb.portA || cb.portB ? `<table class="term-list">${cb.portA ? plugRow("A", cb.portA) : ""}${cb.portB ? plugRow("B", cb.portB) : ""}</table>` : ""}
-        <p class="hint-text">${!ws.length
-          ? "A cable plugged into connectors doesn't draw its cores. Describe them with its type, e.g. Cat6 4×2×AWG24."
-          : "A cable whose cores land on terminals can plug into a connector at its other end, such as a motor's socket."}</p>
-        ${canPlug ? `<div class="btn-row"><button class="small" data-act="cablePlug" title="Pick the cable connector its other end plugs into">${ic("plus", "sm")} Plug into a connector…</button></div>` : ""}`, (cb.portA ? 1 : 0) + (cb.portB ? 1 : 0)) : "";
+    // Each end: plugged into a connector, fanned out to terminals, or free, and what it can change to.
+    const KIND = { plug: "plugged into", fan: "fans out to", free: "free, goes to" };
+    const endField = (end, e) => `<div class="field"><span>End ${end} · ${KIND[e.kind]}</span><p class="ref-list">${esc(e.kind === "free" ? cb.to || "—" : endText(e, cb))}</p>
+        <div class="btn-row tight">${endActions(cb, end).map(([act, label, title]) => `<button class="small" data-endact="${end}|${act}" title="${esc(title)}">${esc(label)}</button>`).join("")}</div></div>`;
+    const endsSec = section("cable.ends", "Ends", `${endField("A", ends[0])}${endField("B", ends[1])}
+        <p class="hint-text">Each end of a cable can be plugged into a cable connector, fan out into cores that land on terminals, or be left free, running off the drawing.${ws.length ? "" : defs.length ? " A cable with no end fanned out doesn't draw its cores; the ones its profile lists are below." : " A cable with no end fanned out doesn't draw its cores: describe them with its type, e.g. Cat6 4×2×AWG24, or list them in its cable profile."}</p>`);
     return head("Cable", esc(cb.label || "Cable"), sub, acts) + body(
       section("cable.main", "Cable", `
         ${field("Label", inp("label", cb.label, "text", 'placeholder="e.g. C1"'))}
-        <div class="field"><span>Cable profile</span><div class="inline-row">${cableProfileSelect(cb.profile || "")}<button class="small" data-act="profiles">Edit…</button></div></div>
+        <div class="field"><span>Cable profile</span><div class="inline-row">${cableProfileSelect(cb.profile || "")}<button class="small" data-act="cprofiles" title="Create and edit cable profiles, and the cores they contain">Edit…</button></div></div>
         ${prof && prof.notes ? `<p class="hint-text">${esc(prof.notes)}</p>` : ""}
         ${field("Type", inp("desc", cb.desc, "text", `placeholder="e.g. ${cb.open ? "Cat6 S/FTP, 4x0.75 LiYY" : "3G1.5 H07RN-F"}"`))}
         <div class="row2">${chk("shield", cb.shield, "Shielded")}${chk("twisted", cb.twisted, "Twisted pairs")}</div>
@@ -2339,15 +2556,16 @@
         ${colorField(`Sheath colour · ${esc(wireColorName(cb.color))}`, cb.color)}
         ${breakable(cb) ? field("Draw", sel_("draw", cb.draw || "", drawOpts("cable"))) : ""}
         ${field("Notes", area("notes", cb.notes))}`)
-      + plugs
-      + (cb.open && cb.portA ? "" : section("cable.cores", cb.open ? "Cores" : "Wires", `
+      + endsSec
+      + (cb.open && cb.portA ? (defs.length ? section("cable.cores", "Cores", `
+        <table class="term-list">${defs.map((k, i) => `<tr><td>${colorChip(k.color, k.stripe)}${i + 1}</td><td>${esc(coreText(k))}</td></tr>`).join("")}</table>
+        <p class="hint-text">The cores its profile lists. They aren't drawn while no end of the cable fans out.</p>`, defs.length) : "") : section("cable.cores", cb.open ? "Cores" : "Wires", `
         <table class="term-list">${rows}</table>
+        ${defs.length && defs.length !== ws.length ? `<p class="hint-text">Its profile lists ${plural(defs.length, "core")}; ${plural(ws.length, cb.open ? "core is" : "wire is", cb.open ? "cores are" : "wires are")} drawn.</p>` : ""}
         <p class="hint-text">${cb.open
-          ? "Each core is a wire: click one to set its colour, size or profile. Drag the orange dots to move where the cores fan out and where the cable ends."
+          ? "Each core is a wire: click one to set its colour, size or profile. Fan out the other end too and they join up end to end. Drag the orange dots to move where the cores fan out and where the cable ends."
           : `To add wires, Shift-click them along with the cable, then use <i>Add to ${esc(cb.label || "cable")}</i>. Drag the orange dots at the sheath ends to move where the cores fan out.`}</p>
         <div class="btn-row">
-          ${cb.open ? `<button class="small" data-act="cableCores" title="Pick more terminals for this cable">${ic("plus", "sm")} Add cores…</button>` : ""}
-          ${canLand(cb) ? `<button class="small" data-act="cableLand" title="Pick the terminals its cores go to at the other end, so both ends are drawn">Land the other end…</button>` : ""}
           ${reset}
           ${cb.open ? "" : '<button class="small" data-act="cableUnbundle" title="Remove the cable but keep its wires">Unbundle (keep wires)</button>'}
         </div>`, ws.length)));
@@ -2658,7 +2876,7 @@
       const { list } = editTargets(el), p = cableProfileById(el.value);
       if (!list.length || el.value === "__mixed") return;
       checkpoint();
-      for (const cb of list) if (p) applyCableProfile(cb, p); else cb.profile = "";
+      for (const cb of list) if (p) { applyCableProfile(cb, p); applyCableCores(cb, "all"); } else cb.profile = "";
       refresh();
       return;
     }
@@ -2735,8 +2953,8 @@
     }
     const link = e.target.closest("[data-conn-link]");
     if (link) { sel = new Set([link.dataset.connLink]); refresh(); return; }
-    const unp = e.target.closest("[data-unplug]");
-    if (unp) { const cb = propsTarget(); if (cb) unplug(cb, unp.dataset.unplug === "A" ? cb.portA : cb.portB); return; }
+    const ea = e.target.closest("[data-endact]");
+    if (ea) { const cb = propsTarget(), [end, act] = ea.dataset.endact.split("|"); if (cb) runEndAction(cb, end, act); return; }
     const core = e.target.closest("[data-core]");
     if (core) { removeFromCable(core.dataset.core); return; }
     const b = e.target.closest("[data-act]");
@@ -2775,9 +2993,6 @@
       case "cableDelete": deleteCableAndWires(target); break;
       case "cableSelect": sel = new Set(target.wires); refresh(); break;
       case "cableReset": checkpoint(); target.pa = null; target.pb = null; refresh(); break;
-      case "cableCores": startCable(target.id); break;
-      case "cablePlug": startCable(target.id); break;
-      case "cableLand": startLanding(target.id); break;
       case "fitRail": fitRail(target); break;
       case "tab": showDrawerTab(b.dataset.tab); break;
     }
@@ -2831,6 +3046,7 @@
     }).join("") || '<tr><td colspan="7" class="muted" style="padding:10px">No profiles. Add one below.</td></tr>';
     $("cprofRows").innerHTML = doc.cableProfiles.map((p) => {
       const n = doc.cables.filter((cb) => cb.profile === p.id).length;
+      const ks = p.cores || [];
       return `<tr data-cpid="${esc(p.id)}">
         <td><input data-f="name" type="text" value="${esc(p.name)}"></td>
         <td>${colorChip(p.color)}<select data-f="color">${colorOpts(p.color)}</select> <input data-f="color" type="color" value="${esc(p.color === "gy" ? "#2e9b3c" : p.color)}" title="Custom colour"></td>
@@ -2838,10 +3054,52 @@
         <td class="c"><input data-f="shield" type="checkbox"${p.shield ? " checked" : ""} title="Shielded"></td>
         <td class="c"><input data-f="twisted" type="checkbox"${p.twisted ? " checked" : ""} title="Twisted pairs"></td>
         <td><input data-f="notes" type="text" value="${esc(p.notes || "")}" placeholder="e.g. drain wire, max length"></td>
+        <td><button class="small${coresOpen.has(p.id) ? " on" : ""}" data-cores-toggle title="The cores this cable contains">${ks.length ? plural(ks.length, "core") : "Cores…"}</button></td>
         <td>${n}</td>
         <td><button class="icon-btn danger" data-cpdel title="Delete cable profile">${ic("x", "sm")}</button></td>
-      </tr>`;
-    }).join("") || '<tr><td colspan="8" class="muted" style="padding:10px">No cable profiles. Add one below.</td></tr>';
+      </tr>${coresOpen.has(p.id) ? `<tr class="cores-row" data-cores="${esc(p.id)}"><td colspan="9">${profileCoresTable(p, colorOpts)}</td></tr>` : ""}`;
+    }).join("") || '<tr><td colspan="9" class="muted" style="padding:10px">No cable profiles. Add one below.</td></tr>';
+  }
+
+  // The cores a cable profile lists, unfolded under its row in the dialog.
+  const coresOpen = new Set();
+  function profileCoresTable(p, colorOpts) {
+    const rows = (p.cores || []).map((k, i) => `<tr data-ci="${i}">
+        <td>${i + 1}</td>
+        <td><input data-cf="mark" type="text" value="${esc(k.mark || "")}" placeholder="—"></td>
+        <td>${colorChip(k.color, k.stripe)}<select data-cf="color">${colorOpts(k.color)}</select></td>
+        <td>${stripeSelect("", k.stripe, k.color === "gy").replace('data-k=""', 'data-cf="stripe"')}</td>
+        <td><input data-cf="gauge" type="text" list="gaugeList" value="${esc(k.gauge || "")}"></td>
+        <td><select data-cf="conductor">${[["", "—"], ...CONDUCTORS.map((x) => [x, x])].map(([v, l]) => `<option value="${v}"${(k.conductor || "") === v ? " selected" : ""}>${l}</option>`).join("")}</select></td>
+        <td><button class="icon-btn danger" data-cdel title="Remove this core">${ic("x", "sm")}</button></td>
+      </tr>`).join("");
+    return `<table class="term-table core-table">
+        <thead><tr><th>Core</th><th>Marking</th><th>Colour</th><th>Stripe</th><th>Size</th><th>Conductor</th><th></th></tr></thead>
+        <tbody>${rows || '<tr><td colspan="7" class="muted">No cores listed: the wires in its cables keep their own colours and sizes.</td></tr>'}</tbody>
+      </table>
+      <div class="btn-row"><button class="small" data-cadd>${ic("plus", "sm")} Add core</button><span class="muted">Cables following this profile give their cores these looks, core 1 first. A marking is the number or letters printed on the core.</span></div>`;
+  }
+
+  // Edit one of a cable profile's cores and pass it on to the cables that follow the profile.
+  const coreOf = (e) => {
+    const box = e.target.closest("tr[data-cores]"), tr = e.target.closest("tr[data-ci]");
+    const p = box && cableProfileById(box.dataset.cores);
+    return p ? { p, i: tr ? +tr.dataset.ci : -1 } : null;
+  };
+  function cableProfileChanged(p) {
+    for (const cb of doc.cables) if (cb.profile === p.id) applyCableCores(cb);
+    renderCanvas();
+    renderDrawer();
+    updateToolbar();
+    scheduleSave();
+  }
+  function editProfileCore(p, i, f, value) {
+    const k = p.cores && p.cores[i];
+    if (!k) return;
+    if (!profCheckpointed) { checkpoint(); profCheckpointed = true; }
+    k[f] = value;
+    if (f === "color" && value === "gy") k.stripe = ""; // green/yellow is already banded
+    cableProfileChanged(p);
   }
 
   // Edit a cable profile field and push the change to every cable that follows it.
@@ -2851,18 +3109,26 @@
     if (!p) return;
     if (!profCheckpointed) { checkpoint(); profCheckpointed = true; }
     p[f] = value;
-    for (const cb of doc.cables) if (cb.profile === p.id) applyCableProfile(cb, p);
+    for (const cb of doc.cables) if (cb.profile === p.id) { applyCableProfile(cb, p); applyCableCores(cb); }
     renderCanvas();
     renderDrawer();
     updateToolbar();
     scheduleSave();
   }
   $("cprofRows").addEventListener("input", (e) => {
+    const cf = e.target.dataset.cf, core = cf && coreOf(e);
+    if (core) { if (e.target.tagName !== "SELECT") editProfileCore(core.p, core.i, cf, e.target.value); return; }
     const row = cprofRow(e), f = e.target.dataset.f;
     if (!row || !f || e.target.tagName === "SELECT" || e.target.type === "checkbox") return;
     editCableProfile(row, f, f === "color" ? e.target.value.toLowerCase() : e.target.value);
   });
   $("cprofRows").addEventListener("change", (e) => {
+    const cf = e.target.dataset.cf, core = cf && coreOf(e);
+    if (core) {
+      if (e.target.tagName === "SELECT") editProfileCore(core.p, core.i, cf, e.target.value);
+      if (cf === "color" || cf === "stripe") renderProfiles(); // the chip, and stripes off for green/yellow
+      return;
+    }
     const row = cprofRow(e), f = e.target.dataset.f;
     if (!row || !f) return;
     if (e.target.tagName === "SELECT") editCableProfile(row, f, e.target.value);
@@ -2870,6 +3136,34 @@
     if (f === "color") renderProfiles();
   });
   $("cprofRows").addEventListener("click", (e) => {
+    const tog = e.target.closest("[data-cores-toggle]");
+    if (tog) {
+      const id = tog.closest("tr").dataset.cpid;
+      if (coresOpen.has(id)) coresOpen.delete(id); else coresOpen.add(id);
+      renderProfiles();
+      return;
+    }
+    const core = coreOf(e);
+    if (core && e.target.closest("[data-cadd]")) {
+      // A new core looks like the last one, numbered on from it if that's numbered.
+      const p = core.p, last = (p.cores || [])[p.cores?.length - 1];
+      const k = last ? { ...last, mark: /^\d+$/.test(last.mark || "") ? String(+last.mark + 1) : "" }
+        : { mark: "", color: "#1f1f1f", stripe: "", gauge: convertGauge("0.75 mm²", doc.settings.wireStd), conductor: "Stranded" };
+      if (!profCheckpointed) { checkpoint(); profCheckpointed = true; }
+      p.cores = [...(p.cores || []), k];
+      cableProfileChanged(p);
+      renderProfiles();
+      const marks = $("cprofRows").querySelectorAll(`tr[data-cores="${CSS.escape(p.id)}"] [data-cf="mark"]`);
+      marks[marks.length - 1]?.focus();
+      return;
+    }
+    if (core && e.target.closest("[data-cdel]")) {
+      if (!profCheckpointed) { checkpoint(); profCheckpointed = true; }
+      core.p.cores.splice(core.i, 1);
+      cableProfileChanged(core.p);
+      renderProfiles();
+      return;
+    }
     const b = e.target.closest("[data-cpdel]");
     if (!b) return;
     const p = cableProfileById(b.closest("tr").dataset.cpid);
@@ -2883,7 +3177,7 @@
   });
   $("cprofAdd").addEventListener("click", () => {
     checkpoint();
-    doc.cableProfiles.push({ id: uid("cp"), name: "New cable profile", color: "#1f1f1f", desc: "", shield: false, twisted: false, notes: "" });
+    doc.cableProfiles.push({ id: uid("cp"), name: "New cable profile", color: "#1f1f1f", desc: "", shield: false, twisted: false, notes: "", cores: [] });
     renderProfiles();
     refresh();
     const inputs = $("cprofRows").querySelectorAll('[data-f="name"]');
@@ -3049,8 +3343,11 @@
     return doc.cables.slice().sort((a, b) => natural(a.label, b.label));
   }
 
+  // A cable's cores for lists: its wires, or with none drawn, the cores its profile lists.
   function cableCores(cb) {
-    return cb.wires.map(connById).filter(Boolean).map((c) => `${c.wire || "—"} ${wireLookName(c.color, c.stripe)}`);
+    const ws = coreOrder(cb);
+    if (!ws.length) return profileCores(cb).map(coreText);
+    return ws.map((c) => [c.wire || "—", c.mark, wireLookName(c.color, c.stripe)].filter(Boolean).join(" "));
   }
 
   function busRows() {
@@ -3086,7 +3383,7 @@
           return `<tr data-sel="${esc(cb.id)}" class="${sel.has(cb.id) ? "sel" : ""}">
           <td>${colorChip(cb.color)}<b>${esc(cb.label)}</b></td><td>${esc(type)}</td><td>${esc(cableProfileById(cb.profile)?.name || "")}</td><td>${esc(a)}</td><td>${esc(b)}</td><td>${esc(cableCores(cb).join(", "))}</td><td>${esc(cb.notes || "")}</td></tr>`;
         }).join("")
-        || '<tr><td colspan="7" class="empty">No cables yet. Select some wires and choose “Bundle into a cable”, or drag from one cable connector to another.</td></tr>'}
+        || '<tr><td colspan="7" class="empty">No cables yet. Select some wires and choose “Bundle into a cable”, right-click a terminal and choose “Cable from here…”, or drag from a cable connector to another connector or to a terminal.</td></tr>'}
       </tbody></table>`;
     } else if (drawerTab === "buses") {
       const circ = circuitOf(doc, [...sel].filter((id) => isConn(id) || busById(id)));
@@ -3250,7 +3547,7 @@
       if (!p || !p.id || !p.name) continue;
       const i = doc.cableProfiles.findIndex((x) => x.id === p.id);
       if (i >= 0) doc.cableProfiles[i] = p; else doc.cableProfiles.push(p);
-      for (const cb of doc.cables) if (cb.profile === p.id) applyCableProfile(cb, p);
+      for (const cb of doc.cables) if (cb.profile === p.id) { applyCableProfile(cb, p); applyCableCores(cb); }
       profiles++;
     }
     const names = [...libs];

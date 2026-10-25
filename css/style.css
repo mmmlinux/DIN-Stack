@@ -504,7 +504,18 @@ label.inline { display: inline-flex; align-items: center; gap: 6px; color: var(-
 .cprof-table td:nth-child(2) input[type=color] { width: 34px; height: 26px; vertical-align: middle; }
 .cprof-table td.c { text-align: center; }
 .cprof-table td.c input { width: auto; }
-.cprof-table td:nth-child(7) { text-align: center; color: var(--muted); }
+.cprof-table > tbody > tr > td:nth-child(8) { text-align: center; color: var(--muted); }
+.cprof-table > tbody > tr > td:nth-child(7) button { white-space: nowrap; }
+.cprof-table > tbody > tr > td:nth-child(7) button.on { background: var(--accent-soft); }
+.cprof-table tr.cores-row > td { padding: 4px 4px 10px 24px; background: var(--panel-2); }
+.core-table { background: var(--panel); }
+.core-table td:first-child { width: 36px; color: var(--muted); text-align: center; }
+.core-table td:nth-child(2) { width: 70px; }
+.core-table td:nth-child(3) { white-space: nowrap; }
+.core-table td:nth-child(3) select { width: 120px; }
+.core-table td:nth-child(5) { width: 96px; }
+.core-table + .btn-row { margin-top: 6px; align-items: center; }
+.core-table + .btn-row .muted { font-size: 12px; }
 .link-tools { display: flex; gap: 6px; align-items: center; font-size: 12px; }
 .link-tools .muted { flex: 1; }
 

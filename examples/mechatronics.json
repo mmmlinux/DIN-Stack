@@ -3655,7 +3655,65 @@
       "desc": "Cat6 U/UTP 4×2×AWG24",
       "shield": false,
       "twisted": true,
-      "notes": ""
+      "notes": "Cores in T568B order",
+      "cores": [
+        {
+          "mark": "1",
+          "color": "#f2f2f2",
+          "stripe": "#ef7d00",
+          "gauge": "24 AWG",
+          "conductor": ""
+        },
+        {
+          "mark": "2",
+          "color": "#ef7d00",
+          "stripe": "",
+          "gauge": "24 AWG",
+          "conductor": ""
+        },
+        {
+          "mark": "3",
+          "color": "#f2f2f2",
+          "stripe": "#2e9b3c",
+          "gauge": "24 AWG",
+          "conductor": ""
+        },
+        {
+          "mark": "4",
+          "color": "#1f63c6",
+          "stripe": "",
+          "gauge": "24 AWG",
+          "conductor": ""
+        },
+        {
+          "mark": "5",
+          "color": "#f2f2f2",
+          "stripe": "#1f63c6",
+          "gauge": "24 AWG",
+          "conductor": ""
+        },
+        {
+          "mark": "6",
+          "color": "#2e9b3c",
+          "stripe": "",
+          "gauge": "24 AWG",
+          "conductor": ""
+        },
+        {
+          "mark": "7",
+          "color": "#f2f2f2",
+          "stripe": "#7a4a25",
+          "gauge": "24 AWG",
+          "conductor": ""
+        },
+        {
+          "mark": "8",
+          "color": "#7a4a25",
+          "stripe": "",
+          "gauge": "24 AWG",
+          "conductor": ""
+        }
+      ]
     },
     {
       "id": "cp_ie",
@@ -3664,7 +3722,65 @@
       "desc": "Cat6A S/FTP 4×2×AWG26",
       "shield": true,
       "twisted": true,
-      "notes": ""
+      "notes": "Cores in T568B order",
+      "cores": [
+        {
+          "mark": "1",
+          "color": "#f2f2f2",
+          "stripe": "#ef7d00",
+          "gauge": "26 AWG",
+          "conductor": ""
+        },
+        {
+          "mark": "2",
+          "color": "#ef7d00",
+          "stripe": "",
+          "gauge": "26 AWG",
+          "conductor": ""
+        },
+        {
+          "mark": "3",
+          "color": "#f2f2f2",
+          "stripe": "#2e9b3c",
+          "gauge": "26 AWG",
+          "conductor": ""
+        },
+        {
+          "mark": "4",
+          "color": "#1f63c6",
+          "stripe": "",
+          "gauge": "26 AWG",
+          "conductor": ""
+        },
+        {
+          "mark": "5",
+          "color": "#f2f2f2",
+          "stripe": "#1f63c6",
+          "gauge": "26 AWG",
+          "conductor": ""
+        },
+        {
+          "mark": "6",
+          "color": "#2e9b3c",
+          "stripe": "",
+          "gauge": "26 AWG",
+          "conductor": ""
+        },
+        {
+          "mark": "7",
+          "color": "#f2f2f2",
+          "stripe": "#7a4a25",
+          "gauge": "26 AWG",
+          "conductor": ""
+        },
+        {
+          "mark": "8",
+          "color": "#7a4a25",
+          "stripe": "",
+          "gauge": "26 AWG",
+          "conductor": ""
+        }
+      ]
     },
     {
       "id": "cp_motor",
@@ -3673,7 +3789,51 @@
       "desc": "4G1.5 + 2×0.75",
       "shield": true,
       "twisted": false,
-      "notes": ""
+      "notes": "Brake / thermistor pair: cores 5 and 6",
+      "cores": [
+        {
+          "mark": "U",
+          "color": "#1f1f1f",
+          "stripe": "",
+          "gauge": "16 AWG",
+          "conductor": "Stranded"
+        },
+        {
+          "mark": "V",
+          "color": "#1f1f1f",
+          "stripe": "",
+          "gauge": "16 AWG",
+          "conductor": "Stranded"
+        },
+        {
+          "mark": "W",
+          "color": "#1f1f1f",
+          "stripe": "",
+          "gauge": "16 AWG",
+          "conductor": "Stranded"
+        },
+        {
+          "mark": "",
+          "color": "gy",
+          "stripe": "",
+          "gauge": "16 AWG",
+          "conductor": "Stranded"
+        },
+        {
+          "mark": "5",
+          "color": "#1f1f1f",
+          "stripe": "",
+          "gauge": "18 AWG",
+          "conductor": "Stranded"
+        },
+        {
+          "mark": "6",
+          "color": "#1f1f1f",
+          "stripe": "",
+          "gauge": "18 AWG",
+          "conductor": "Stranded"
+        }
+      ]
     },
     {
       "id": "cp_ctrl",
@@ -3682,7 +3842,58 @@
       "desc": "7G0.75 LiYY",
       "shield": false,
       "twisted": false,
-      "notes": ""
+      "notes": "Numbered black cores",
+      "cores": [
+        {
+          "mark": "1",
+          "color": "#1f1f1f",
+          "stripe": "",
+          "gauge": "18 AWG",
+          "conductor": "Stranded"
+        },
+        {
+          "mark": "2",
+          "color": "#1f1f1f",
+          "stripe": "",
+          "gauge": "18 AWG",
+          "conductor": "Stranded"
+        },
+        {
+          "mark": "3",
+          "color": "#1f1f1f",
+          "stripe": "",
+          "gauge": "18 AWG",
+          "conductor": "Stranded"
+        },
+        {
+          "mark": "4",
+          "color": "#1f1f1f",
+          "stripe": "",
+          "gauge": "18 AWG",
+          "conductor": "Stranded"
+        },
+        {
+          "mark": "5",
+          "color": "#1f1f1f",
+          "stripe": "",
+          "gauge": "18 AWG",
+          "conductor": "Stranded"
+        },
+        {
+          "mark": "6",
+          "color": "#1f1f1f",
+          "stripe": "",
+          "gauge": "18 AWG",
+          "conductor": "Stranded"
+        },
+        {
+          "mark": "",
+          "color": "gy",
+          "stripe": "",
+          "gauge": "18 AWG",
+          "conductor": "Stranded"
+        }
+      ]
     },
     {
       "id": "cp_mains",
@@ -3691,7 +3902,30 @@
       "desc": "3G1.5 H07RN-F",
       "shield": false,
       "twisted": false,
-      "notes": ""
+      "notes": "",
+      "cores": [
+        {
+          "mark": "",
+          "color": "#7a4a25",
+          "stripe": "",
+          "gauge": "16 AWG",
+          "conductor": "Stranded"
+        },
+        {
+          "mark": "",
+          "color": "#1f63c6",
+          "stripe": "",
+          "gauge": "16 AWG",
+          "conductor": "Stranded"
+        },
+        {
+          "mark": "",
+          "color": "gy",
+          "stripe": "",
+          "gauge": "16 AWG",
+          "conductor": "Stranded"
+        }
+      ]
     }
   ],
   "packs": [

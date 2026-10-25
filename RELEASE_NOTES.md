@@ -2,6 +2,40 @@
 
 Changes to the ready-made libraries are listed separately: each library's folder in [`libraries/`](libraries/README.md) has its own release notes.
 
+## 1.7.5 — 2026-10-24
+
+- **Circuit names at both ends of lines:** with *Straight* or *Curved* lines, a wire labelled with its circuit's name (e.g. `+24V`) now has the name at each end, where its destination label would be, instead of once at the middle of the line. The middle of the line shows the wire's number when *Wire names* is ticked, as it does for other wires. Cable cores labelled with their circuit's name get it at their ends too, with lines as with stubs.
+
+## 1.7.4 — 2026-10-24
+
+- **Mechatronics example cables list their cores:** the `#mechatronics` example's cable profiles now have the same cores as the starter profiles, with sizes in AWG to match the example's American wire standard (the motor cable's power cores are 16 AWG and its brake pair 18 AWG, the control cable's cores 18 AWG). Its shielded Industrial Ethernet patch lead now lists its eight cores in T568B order. If you've already opened the example, your saved copy is kept; use **File → Load the example** on the `#mechatronics` link to get the new one.
+
+## 1.7.3 — 2026-10-24
+
+- **Every starter cable profile now lists its cores** in new drawings:
+  - *Industrial Ethernet, shielded*: eight cores in T568B order, 26 AWG, like *Ethernet, Cat6*.
+  - *Motor cable, shielded*: black power cores marked U, V and W, a green/yellow earth (1.5 mm²), and a black pair marked 5 and 6 for a brake or thermistor (0.75 mm²).
+  - *Control cable*: six black cores numbered 1 to 6 and a green/yellow earth (0.75 mm²).
+- Existing drawings keep their cable profiles as they are.
+
+## 1.7.2 — 2026-10-24
+
+- **Cable profiles list their cores:** in **Wire and cable profiles** (the *Edit…* button beside a cable's profile), click **Cores** on a cable profile to list the cores it contains, in order. Each core has a marking (the number or letters printed on it, if any), colour, stripe, size and conductor. **Add core** copies the last one and numbers on from it.
+- **Cables follow them:** a cable given that profile gives its cores those looks, core 1 first, and editing the profile's cores updates them. A core you change by hand keeps its own look until you pick the profile for the cable again. A profile with no cores listed leaves its cables' wires as they are, as before.
+- **Patch leads show them too:** a cable plugged in at both ends lists its profile's cores in its panel and in the *Cores* column of the cables list and printout. When you fan out an end, the bar at the top says which core comes next (e.g. *Next: core 2 (2 Orange 24 AWG)*), and the new cores take the profile's looks.
+- A core's marking shows beside it in the cable's panel, the wire's panel and the cables list.
+- New drawings' *Ethernet, Cat6* profile lists its eight cores in T568B order, and *Mains cable* its brown, blue and green/yellow cores. Existing drawings keep their profiles as they are.
+- Switching the *Wire standard* converts the sizes of cable profile cores, but not their colours: a cable's cores are the colours they're made in.
+- The *Edit…* button beside a cable's profile now opens the dialog at the cable profiles.
+
+## 1.7.1 — 2026-10-24
+
+- **One kind of cable:** patch leads between connectors and bundles of wires are now the same thing. Each end of a cable is plugged into a cable connector, fans out into cores that land on terminals, or is free (running off the drawing), and any two go together: connector to connector, connector to fan-out, or fan-out to fan-out.
+- **Change either end:** a cable's panel has a new **Ends** section, and its right-click menu a section for each end, with what that end can change to: *Plug into a connector…*, *Fan out to terminals…*, *Unplug*, *Leave free* or *Add cores…*. For example, plug one end of a bundle of wires into a motor's socket, or fan out one end of a patch lead onto a terminal strip.
+- **Drag from a connector to a terminal** to make a cable plugged into the connector with one core landing on the terminal. Use *Add cores…* for more.
+- Plugging in or freeing one end of a bundle takes its wires off their terminals at that end (you're asked first). They become the cable's cores, so their circuits no longer run through to that end, and deleting the cable deletes them. Plugging in the end a cable's cores land on, when its other end isn't fanned out, removes the cores, since a cable plugged in there doesn't draw them. Undo puts everything back.
+- *Land the other end…* is now *Fan out to terminals…* on the cable's other end, and works when that end is plugged in too (it's unplugged).
+
 ## 1.6.1 — 2026-10-24
 
 - **Updated Mechatronics example:** the `#mechatronics` example has been replaced with a newer version. It adds terminal blocks TB6 and TB7, two buses and a new wire type, and reworks some of the wiring. If you've already opened the example, your saved copy is kept; use **File → Load the example** on the `#mechatronics` link to get the new one.

@@ -752,7 +752,7 @@ function renderDiagram(doc, opt = {}) {
     if (sel.has(c.id) || inCirc(c.id)) lines += glow(d, sel.has(c.id));
     lines += wirePath(d, c.color, 0.55, 'opacity="0.92"', c.stripe);
     if (ia) lines += `<path d="${d}" class="hit" data-conn="${esc(c.id)}" fill="none" stroke="transparent" stroke-width="3"/>`;
-    const name = circuitLabel(c) || nameOf(c);
+    const name = nameOf(c);
     if (name) {
       const hl = sel.has(c.id) ? ' fill="#1d5fd6" font-weight="bold"' : inCirc(c.id) ? ' fill="#4a86ec"' : ' fill="#1d2126"';
       lineLabels += `<text x="${n(mid.x)}" y="${n(mid.y)}" font-family="${FONT}" font-size="${n(st.labelSize)}" text-anchor="middle" dominant-baseline="central"${hl} stroke="#ffffff" stroke-opacity="0.9" stroke-width="${n(st.labelSize * 0.3)}" stroke-linejoin="round" paint-order="stroke"${ia ? ` data-conn="${esc(c.id)}" class="dest"` : ""}>${esc(name)}</text>`;
@@ -784,7 +784,8 @@ function renderDiagram(doc, opt = {}) {
       if (be) terms += `<g class="term slot" data-term="${esc(k)}"><rect x="${n(p.x - slotSize(p.tpl) / 2 - 0.4)}" y="${n(p.y - slotSize(p.tpl) / 2 - 0.4)}" width="${n(slotSize(p.tpl) + 0.8)}" height="${n(slotSize(p.tpl) + 0.8)}" fill="transparent" class="term-hit"/></g>`;
       continue;
     }
-    const list = (atTerm.get(k) || []).filter((e) => destOn || !isLine(e.c)); // a stub needs a lane even without labels
+    // A stub needs a lane even without labels, and so does a line labelled with its circuit's name.
+    const list = (atTerm.get(k) || []).filter((e) => destOn || !isLine(e.c) || circuitLabel(e.c));
     const flag = String(p.it.termLabels?.[p.t.id] || "").trim();
     const v = SIDE_VEC[p.side];
     if (list.length || flag) {
@@ -803,7 +804,7 @@ function renderDiagram(doc, opt = {}) {
       // share one stub and label. ids holds every wire in the lane, for highlighting.
       const wires = [], byName = new Map();
       for (const e of sorted) {
-        const cn = !isLine(e.c) && circuitLabel(e.c);
+        const cn = circuitLabel(e.c);
         const key = cn && cn + "|" + bundled.has(e.c.id);
         if (key && byName.has(key)) { byName.get(key).ids.push(e.c.id); continue; }
         const lane = { ...e, ids: [e.c.id] };
@@ -841,11 +842,11 @@ function renderDiagram(doc, opt = {}) {
           stubs += wirePath(sd, e.c.color, 0.45, 'stroke-linejoin="round"', e.c.stripe);
         }
         // The arrow only joins a name to where the wire goes ("W3 → TB101-1"); on its own it's just "TB101-1".
-        // A circuit name replaces the destination instead: "+24V" if the circuit has a name, else "TB101-1".
-        // (With lines, a named circuit's name is at the middle of the line, so its ends get no label.)
+        // A circuit name replaces the destination instead, at each end as a destination would be: "+24V" if
+        // the circuit has a name, else "TB101-1".
         let txt;
         const cn = circuitLabel(e.c);
-        if (cn) txt = isLine(e.c) ? "" : cn;
+        if (cn) txt = cn;
         else {
           const name = isLine(e.c) ? "" : nameOf(e.c);
           txt = name && destOn ? `${name} → ${e.ref}` : name || (destOn ? e.ref : "");
