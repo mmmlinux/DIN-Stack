@@ -227,6 +227,7 @@ function busOrder(points) {
 // Electrical circuits: terminals joined by wires, bus bars, or a shared "link" value inside a part
 // (e.g. both sides of a terminal block). Returns a find(terminalKey) -> circuit id function.
 // With opt.direct, only wires and bus bars count: a daisy chain, not crossing to a part's other terminals.
+// With opt.physical, only what's wired together counts (wires, bus bars and links inside parts), not names.
 function buildCircuits(doc, items, tpls, conns, buses, opt = {}) {
   const parent = new Map();
   const find = (k) => {
@@ -252,7 +253,7 @@ function buildCircuits(doc, items, tpls, conns, buses, opt = {}) {
   for (const b of buses) for (const e of b.terms.slice(1)) union(b.terms[0].item + "|" + b.terms[0].term, e.item + "|" + e.term);
   // Same name, same circuit: terminals with the same connector label, and wires or bus bars given the
   // same circuit name, are joined even with no wire between them (e.g. every "+24V" point).
-  if (opt.direct) return find;
+  if (opt.direct || opt.physical) return find;
   const named = new Map();
   forEachName(items, tpls, conns, buses, (name, k) => {
     const nk = netKey(name);
@@ -888,14 +889,7 @@ function renderDiagram(doc, opt = {}) {
       const p = termPos.get(k);
       if (p) rings += `<circle cx="${n(p.x)}" cy="${n(p.y)}" r="${n(termRadius(p.tpl) + 0.8)}" fill="none" stroke="#93c5fd" stroke-width="0.5" pointer-events="none"/>`;
     }
-    for (const c of conns) {
-      if (!sel.has(c.id)) continue;
-      for (const e of [c.a, c.b]) {
-        const p = termPos.get(e.item + "|" + e.term);
-        if (!p) continue; // the far end of a one-ended cable
-        rings += `<circle cx="${n(p.x)}" cy="${n(p.y)}" r="${n(termRadius(p.tpl) + 1)}" fill="none" stroke="#3b82f6" stroke-width="0.6" pointer-events="none"/>`;
-      }
-    }
+    // The selected wires' own ends are marked in the app's overlay, at a fixed size on screen.
     if (be) {
       for (const k of be.terms) {
         const p = termPos.get(k);

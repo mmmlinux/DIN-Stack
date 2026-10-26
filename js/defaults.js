@@ -270,6 +270,17 @@ const DEFAULT_TEMPLATES = [
     w: 60, h: 40, fill: "#eef0f3", radius: 2, showName: true,
     terminals: [T("1", "1", 4, 12), T("2", "2", 4, 28), T("3", "3", 56, 12), T("4", "4", 56, 28)],
   },
+  // D-sub 25 socket along the top; screw terminals along the bottom in two staggered rows at 5.08 mm pitch,
+  // 1–13 in front and 14–25 behind, numbered like the socket's pins.
+  {
+    id: "db25fan", name: "D-sub 25 fan-out block", category: "Generic", prefix: "X",
+    w: 70, h: 66, fill: "#5f8f6a", radius: 1.5, showName: true,
+    terminals: [
+      { ...T("d", "D25", 35, 7), side: "top", kind: "port" },
+      ...Array.from({ length: 13 }, (_, i) => ({ ...T(String(i + 1), String(i + 1), +(4.52 + i * 5.08).toFixed(2), 60), side: "bottom" })),
+      ...Array.from({ length: 12 }, (_, i) => ({ ...T(String(i + 14), String(i + 14), +(7.06 + i * 5.08).toFixed(2), 51), side: "bottom" })),
+    ],
+  },
 ];
 
 // Terminals sharing a link value are connected inside the part, e.g. both sides of a terminal block.
@@ -319,7 +330,7 @@ function applyDefaultSlots(tpl) {
 
 // Built-in types added after the first version, by batch. A diagram saved before a batch existed gets
 // its types once (recorded in doc.packs), so deleting one of them later doesn't bring it back.
-const TEMPLATE_PACKS = { connectors: ["conn2", "conn4", "conn8", "connm12"], plugs: ["plug3"], network: ["ethsw5", "ethsw8", "rj45ft", "connm23", "motor3"] };
+const TEMPLATE_PACKS = { connectors: ["conn2", "conn4", "conn8", "connm12"], plugs: ["plug3"], network: ["ethsw5", "ethsw8", "rj45ft", "connm23", "motor3"], breakout: ["db25fan"] };
 
 function addTemplatePacks(d) {
   d.packs = Array.isArray(d.packs) ? d.packs : [];
@@ -337,16 +348,19 @@ function addTemplatePacks(d) {
 const isLoose = (tpl) => !!tpl && tpl.mount === "free";
 
 // Every object type belongs to a named library, and the sidebar shows one library at a time.
-// Built-in types go in "Built-in"; types made before libraries existed go in "My types".
+// Built-in types go in "Built-in". The project library holds the types made or changed in the diagram:
+// new types, duplicates, edited copies of types from other libraries, and any type with no library set.
+// It used to be called "My types".
 const BUILTIN_LIBRARY = "Built-in";
-const DEFAULT_LIBRARY = "My types";
+const PROJECT_LIBRARY = "This project";
 const isBuiltinId = (id) => DEFAULT_TEMPLATES.some((x) => x.id === id);
 
 // Bring a stored object type up to date (diagrams saved by older versions).
 function upgradeTemplate(tpl) {
   applyDefaultLinks(tpl);
   applyDefaultSlots(tpl);
-  tpl.library = String(tpl.library || "").trim() || (isBuiltinId(tpl.id) ? BUILTIN_LIBRARY : DEFAULT_LIBRARY);
+  tpl.library = String(tpl.library || "").trim() || (isBuiltinId(tpl.id) ? BUILTIN_LIBRARY : PROJECT_LIBRARY);
+  if (tpl.library === "My types") tpl.library = PROJECT_LIBRARY;
 }
 
 DEFAULT_TEMPLATES.forEach(upgradeTemplate);
@@ -385,54 +399,127 @@ function newProject(templates) {
   };
 }
 
+// The example diagram: a small 24 V control panel that uses most of what DIN Stack can draw.
 function exampleProject() {
   const p = newProject();
-  p.meta.title = "Example: 24 V supply with battery backup";
+  p.meta.title = "Example: 24 V control panel with UPS";
+  p.meta.notes = "Mains comes in on X1 through F1 to the power supply PS1. The DC UPS UPS1 and battery GB1 keep 24 V up during a mains cut, and its alarm contact drives K1, which lights the beacon H1 on the door.";
+  const part = (id, tpl, tag, x, y, desc = "") => ({ id, kind: "part", tpl, tag, desc, x, y, rot: 0 });
+  const onRail = (railY, h) => railY + 17.5 - h / 2; // top of a part h mm tall, centred on a 35 mm rail
+  const A = 40, B = 170; // the two rails
   p.items = [
-    { id: "r1", kind: "rail", x: 10, y: 40, length: 250, height: 35 },
-    { id: "f1", kind: "part", tpl: "cb1", tag: "F1", desc: "", x: 14, y: 15, rot: 0 },
-    { id: "ps1", kind: "part", tpl: "psu", tag: "PS1", desc: "24 V DC 5 A", x: 36, y: 12.5, rot: 0 },
-    { id: "ups1", kind: "part", tpl: "ups", tag: "UPS1", desc: "24 V DC UPS", x: 92, y: 12.5, rot: 0 },
-    { id: "es1", kind: "part", tpl: "endstop", tag: "", desc: "", x: 150, y: 32.5, rot: 0 },
-    { id: "gb1", kind: "part", tpl: "battery", tag: "GB1", desc: "12 V 7 Ah ×2", x: 40, y: 130, rot: 0 },
-    { id: "k1", kind: "part", tpl: "relay", tag: "K1", desc: "", x: 210, y: 12.5, rot: 0 },
-    { id: "t1", kind: "text", x: 230, y: 108, text: "Terminal strip TB101–TB107\n+24 V on TB101, 103, 105 (bus bar BB1)\n0 V on TB102, 104, 106 (bus bar BB2)", size: 3 },
+    { id: "r1", kind: "rail", x: 10, y: A, length: 270, height: 35 },
+    { id: "r2", kind: "rail", x: 10, y: B, length: 110, height: 35 },
+    // Rail 1: mains terminals, breaker, power supply, UPS and the 24 V distribution strip.
+    part("es1", "endstop", "", 14, onRail(A, 50)),
+    part("x1", "tb2", "TB1", 23.5, onRail(A, 45), "L"),
+    part("x2", "tb2blue", "TB2", 28.7, onRail(A, 45), "N"),
+    part("x3", "tbpe", "TB3", 33.9, onRail(A, 45), "PE"),
+    part("x4", "tbpe", "TB4", 39.1, onRail(A, 45), "PE"),
+    part("f1", "cb2", "F1", 44.3, onRail(A, 85), "Mains"),
+    part("ps1", "psu", "PS1", 84, onRail(A, 90), "24 V DC 5 A"),
+    part("ups1", "ups", "UPS1", 136, onRail(A, 90), "24 V DC UPS"),
+    part("f2", "cb1", "F2", 192, onRail(A, 85), "24 V out"),
+    part("es2", "endstop", "", 210, onRail(A, 50)),
+    // Rail 2: network switch, alarm relay and the terminals for the cable to the door.
+    part("sw1", "ethsw5", "SW1", 14, onRail(B, 90), "Unmanaged"),
+    part("k1", "relay", "K1", 66, onRail(B, 90), "UPS alarm"),
+    part("es4", "endstop", "", 82, onRail(B, 50)),
+    part("x13", "tb2", "TB13", 91.5, onRail(B, 45)),
+    part("x14", "tb2blue", "TB14", 96.7, onRail(B, 45)),
+    part("es5", "endstop", "", 101.9, onRail(B, 50)),
+    // Loose parts: the battery, and connectors on the enclosure.
+    part("gb1", "battery", "GB1", 130, 150, "12 V 7 Ah ×2"),
+    part("xm", "plug3", "X1", 60, 268, "Mains in"),
+    part("xn", "rj45ft", "X2", 22, 262, "Service port"),
+    { id: "t1", kind: "text", x: 219.5, y: 104, text: "24 V distribution\n+24 V on the grey blocks (bus bar BB1)\n0 V on the blue blocks (bus bar BB2)", size: 2.5 },
+    { id: "t2", kind: "text", x: 130, y: 222, text: "K1 picks up when UPS1 is running on battery\nand lights the beacon H1 on the door.", size: 2.5 },
   ];
-  for (let i = 0; i < 7; i++) {
-    p.items.push({
-      id: "x" + (i + 1), kind: "part", tpl: i === 6 ? "tbpe" : i % 2 ? "tb2blue" : "tb2",
-      tag: "TB" + (101 + i), desc: "", x: 159.5 + i * 5.2, y: 35, rot: 0,
-    });
-  }
-  p.items.push({ id: "es2", kind: "part", tpl: "endstop", tag: "", desc: "", x: 159.5 + 7 * 5.2, y: 32.5, rot: 0 });
-  const c = (id, a, at, b, bt, wire, color, gauge) => ({ id, a: { item: a, term: at }, b: { item: b, term: bt }, wire, color, gauge, notes: "" });
+  // The distribution strip: +24 V and 0 V blocks in turn, between end stops.
+  for (let i = 0; i < 8; i++) p.items.push(part("x" + (i + 5), i % 2 ? "tb2blue" : "tb2", "TB" + (i + 5), 219.5 + i * 5.2, onRail(A, 45)));
+  p.items.push(part("es3", "endstop", "", 219.5 + 8 * 5.2, onRail(A, 50)));
+
+  const prof = (id) => p.wireProfiles.find((x) => x.id === id);
+  let n = 0;
+  const w = (a, at, b, bt, profile, extra) => {
+    const c = { id: "c" + ++n, a: { item: a, term: at }, b: { item: b, term: bt }, wire: "W" + n, notes: "" };
+    if (typeof profile === "string") applyProfile(c, prof(profile));
+    else Object.assign(c, { profile: "", stripe: "", conductor: "Stranded" }, profile);
+    return Object.assign(c, extra);
+  };
   p.connections = [
-    c("c1", "f1", "b", "ps1", "l", "W1", "#1f1f1f", "16 AWG"),
-    c("c2", "ps1", "v1", "ups1", "ip", "W2", "#d32f2f", "16 AWG"),
-    c("c3", "ps1", "g1", "ups1", "in", "W3", "#1f63c6", "16 AWG"),
-    c("c4", "gb1", "p", "ups1", "bp", "W4", "#d32f2f", "14 AWG"),
-    c("c5", "gb1", "n", "ups1", "bn", "W5", "#1f1f1f", "14 AWG"),
-    c("c6", "ups1", "op", "x1", "a", "W6", "#d32f2f", "16 AWG"),
-    c("c7", "ups1", "on", "x2", "a", "W7", "#1f63c6", "16 AWG"),
-    c("c8", "x1", "b", "k1", "a1", "W8", "#d32f2f", "18 AWG"),
-    c("c9", "x2", "b", "k1", "a2", "W9", "#1f63c6", "18 AWG"),
-    c("c10", "ps1", "pe", "x7", "a", "W10", "#2e9b3c", "16 AWG"),
+    // Mains in, through cable C1 from the plug X1 to the mains terminals.
+    w("xm", "l", "x1", "b", "wp_l"),
+    w("xm", "n", "x2", "b", "wp_n"),
+    w("xm", "pe", "x3", "b", "wp_pe"),
+    // Mains terminals to the breaker and power supply; TB4 takes the switch's functional earth.
+    w("x1", "a", "f1", "a", "wp_l"),
+    w("x2", "a", "f1", "c", "wp_n"),
+    w("x3", "a", "ps1", "pe", "wp_pe"),
+    w("x4", "b", "sw1", "fe", "wp_pe"),
+    w("f1", "b", "ps1", "l", "wp_l"),
+    w("f1", "d", "ps1", "n", "wp_n"),
+    // Power supply to UPS.
+    w("ps1", "v1", "ups1", "ip", "wp_24v"),
+    w("ps1", "g1", "ups1", "in", "wp_0v"),
+    // Battery: heavier wires, drawn as lines.
+    w("gb1", "p", "ups1", "bp", { color: "#d32f2f", gauge: "14 AWG" }, { draw: "line" }),
+    w("gb1", "n", "ups1", "bn", { color: "#1f1f1f", gauge: "14 AWG" }, { draw: "line" }),
+    // UPS output, through F2, to the distribution strip.
+    w("ups1", "op", "f2", "a", "wp_24v", { circuit: "+24V" }),
+    w("f2", "b", "x5", "a", "wp_24v"),
+    w("ups1", "on", "x6", "a", "wp_0v", { circuit: "0V" }),
+    // Switch supply.
+    w("x7", "b", "sw1", "vp", "wp_24v"),
+    w("x8", "b", "sw1", "vn", "wp_0v"),
+    // UPS alarm contact switches K1's coil.
+    w("x9", "b", "ups1", "com", "wp_24v"),
+    w("ups1", "alm", "k1", "a1", "wp_sig", { circuit: "UPS alarm" }),
+    w("k1", "a2", "x10", "b", "wp_0v"),
+    // K1's contact switches the beacon, through TB13 and TB14 to cable C3.
+    w("x11", "b", "k1", "c", "wp_24v"),
+    w("k1", "no", "x13", "a", "wp_sig", { circuit: "Beacon" }),
+    w("x12", "b", "x14", "a", "wp_0v"),
   ];
-  const prof = { c1: "wp_l", c2: "wp_24v", c3: "wp_0v", c6: "wp_24v", c7: "wp_0v", c10: "wp_pe" };
-  for (const c of p.connections) {
-    const pr = prof[c.id] && p.wireProfiles.find((x) => x.id === prof[c.id]);
-    if (pr) applyProfile(c, pr); else c.conductor = "Stranded";
-  }
-  // Named circuits, and connector labels for the incoming supply instead of wires from elsewhere.
-  p.connections.find((x) => x.id === "c6").circuit = "+24V";
-  p.connections.find((x) => x.id === "c7").circuit = "0V";
-  p.items.find((x) => x.id === "f1").termLabels = { a: "L1" };
-  p.items.find((x) => x.id === "ps1").termLabels = { n: "N" };
-  // Two bars in the blocks' bus bar slots bridge alternate blocks: +24 V in slot 1, 0 V in slot 2.
-  const bus = (id, label, color, term, items) => ({ id, label, color, notes: "", terms: items.map((item) => ({ item, term })) });
+  const byWire = (...ids) => ids.map((k) => "c" + k);
+
+  // The beacon cable's cores: each runs from a terminal to its core number on the cable.
+  const core = (item, term, i) => ({ id: "c" + ++n, a: { item, term }, b: { item: "cab3", term: String(i) }, wire: "W" + n, notes: "" });
+  const beacon = [core("x13", "b", 1), core("x14", "b", 2)];
+  p.connections.push(...beacon);
+
+  // Cable types from the cable library. A cable's cores take the looks its type lists, core 1 first,
+  // as when a cable profile is picked in the app.
+  p.cableProfiles = ["cp_mains", "cp_cat6", "cp_dc2"].map((id) => {
+    const { category, ...cp } = JSON.parse(JSON.stringify(CABLE_LIBRARY.find((x) => x.id === id)));
+    return cp;
+  });
+  const cable = (id, label, profile, extra) => {
+    const cb = { id, label, to: "", notes: "", open: false, wires: [], pa: null, pb: null, ...extra };
+    const cp = p.cableProfiles.find((x) => x.id === profile);
+    applyCableProfile(cb, cp);
+    cb.wires.map((wid) => p.connections.find((c) => c.id === wid)).forEach((c, i) => {
+      const k = cp.cores[i];
+      Object.assign(c, { profile: "", color: k.color, stripe: k.stripe || "", gauge: k.gauge || "", conductor: k.conductor || "", follow: false, fromCable: true });
+      if (k.mark) c.mark = k.mark;
+    });
+    return cb;
+  };
+  p.cables = [
+    // Mains cable from the plug, drawn broken: a tail at each end says where the other end goes.
+    cable("cab1", "C1", "cp_mains", { wires: byWire(1, 2, 3), draw: "break" }),
+    // Patch lead from switch port 1 to the service port on the enclosure.
+    cable("cab2", "C2", "cp_cat6", { open: true, portA: { item: "sw1", term: "p1" }, portB: { item: "xn", term: "in" } }),
+    // Two cores to the beacon on the door; only this end is drawn.
+    cable("cab3", "C3", "cp_dc2", { open: true, wires: beacon.map((c) => c.id), to: "H1 beacon (door)" }),
+  ];
+
+  // Bus bars along the strips, named for their circuits.
+  const bus = (id, label, color, term, items, circuit) => ({ id, label, color, notes: "", follow: false, circuit, terms: items.map((item) => ({ item, term })) });
   p.buses = [
-    bus("bb1", "BB1", "#d32f2f", "s1", ["x1", "x3", "x5"]),
-    bus("bb2", "BB2", "#1f63c6", "s2", ["x2", "x4", "x6"]),
+    bus("bb1", "BB1", "#d32f2f", "s1", ["x5", "x7", "x9", "x11"], "+24V"),
+    bus("bb2", "BB2", "#1f63c6", "s2", ["x6", "x8", "x10", "x12"], "0V"),
+    bus("bb3", "BB3", "#2e9b3c", "s1", ["x3", "x4"], "PE"),
   ];
   return p;
 }

@@ -15,6 +15,10 @@ const libCores = (conductor, list) => list.map(([color, gauge, mark]) => ({ mark
 // DIN 47100 core colours, used on LiYY and LiYCY data and control cables: white, brown, green, yellow…
 const DIN47100 = ["#f2f2f2", BROWN, "#2e9b3c", "#f0c000", GREY, "#e46aa6", BLUE, "#d32f2f", "#1f1f1f", "#7b3fb0"];
 const din47100 = (n, gauge) => libCores("Stranded", DIN47100.slice(0, n).map((c) => [c, gauge]));
+// DIN 47100 cores 11–25 are two-coloured, given here as [colour, stripe]: grey/pink, red/blue, white/green…
+const PINK = "#e46aa6", YELLOW = "#f0c000";
+const DIN47100_2 = [[GREY, PINK], [RED, BLUE], [WHITE, GREEN], [BROWN, GREEN], [WHITE, YELLOW], [YELLOW, BROWN], [WHITE, GREY], [GREY, BROWN],
+  [WHITE, PINK], [PINK, BROWN], [WHITE, BLUE], [BROWN, BLUE], [WHITE, RED], [BROWN, RED], [WHITE, BLACK]];
 // Numbered black cores 1…n, then a green/yellow earth.
 const numberedCores = (n, gauge) => libCores("Stranded", Array.from({ length: n }, (_, i) => [BLACK, gauge, String(i + 1)]).concat([["gy", gauge]]));
 
@@ -49,6 +53,8 @@ const CABLE_LIBRARY = [
   { category: "Control cables", id: "cp_ctrl7cy", name: "Control cable, shielded", color: GREY, desc: "7×AWG18 numbered, braided screen", shield: true, twisted: false, notes: "Numbered black cores", cores: numberedCores(6, "18 AWG") },
   { category: "Control cables", id: "cp_liyy4", name: "Data cable LiYY, 4 cores", color: GREY, desc: "LiYY 4×AWG20", shield: false, twisted: false, notes: "DIN 47100 colours", cores: din47100(4, "20 AWG") },
   { category: "Control cables", id: "cp_liycy4", name: "Data cable LiYCY, 4 cores", color: GREY, desc: "LiYCY 4×AWG20", shield: true, twisted: false, notes: "DIN 47100 colours", cores: din47100(4, "20 AWG") },
+  { category: "Control cables", id: "cp_dsub25", name: "D-sub 25 cable, shielded", color: GREY, desc: "LiYCY 25×AWG24, D-sub 25 plugs", shield: true, twisted: false, notes: "Cores 1–25 to pins 1–25, DIN 47100 colours. For D-sub 25 fan-out blocks.",
+    cores: [...DIN47100.map((c) => [c, ""]), ...DIN47100_2].map(([color, stripe], i) => ({ mark: String(i + 1), color, stripe, gauge: "24 AWG", conductor: "Stranded" })) },
   { category: "Control cables", id: "cp_liycy8", name: "Data cable LiYCY, 8 cores", color: GREY, desc: "LiYCY 8×AWG20", shield: true, twisted: false, notes: "DIN 47100 colours", cores: din47100(8, "20 AWG") },
 
   // Power, in US colours: black hot, white neutral, green ground; three-phase black, red, blue (208/120 V)

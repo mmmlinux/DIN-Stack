@@ -1,0 +1,452 @@
+{
+  "type": "dinstack-library",
+  "app": "1.9.17",
+  "version": "1.0.1",
+  "name": "American Electrical fuse holders",
+  "templates": [
+    {
+      "id": "aei-2540001",
+      "name": "Fuse holder, 1-pole, 10 × 38 mm, 30 A · American Electrical (2540001)",
+      "library": "American Electrical fuse holders",
+      "category": "Fuse holders, 10 × 38 mm",
+      "mount": "rail",
+      "prefix": "F",
+      "w": 17.5,
+      "h": 81,
+      "fill": "#d9dad4",
+      "radius": 1,
+      "showName": false,
+      "terminals": [
+        {
+          "id": "1",
+          "name": "1",
+          "x": 8.75,
+          "y": 7,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "2",
+          "name": "2",
+          "x": 8.75,
+          "y": 74,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        }
+      ]
+    },
+    {
+      "id": "aei-2540002",
+      "name": "Fuse holder, 1-pole + N, 10 × 38 mm, 32 A · American Electrical (2540002)",
+      "library": "American Electrical fuse holders",
+      "category": "Fuse holders, 10 × 38 mm",
+      "mount": "rail",
+      "prefix": "F",
+      "w": 35.0,
+      "h": 81,
+      "fill": "#d9dad4",
+      "radius": 1,
+      "showName": false,
+      "terminals": [
+        {
+          "id": "1",
+          "name": "1",
+          "x": 8.75,
+          "y": 7,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "2",
+          "name": "2",
+          "x": 8.75,
+          "y": 74,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "n1",
+          "name": "N",
+          "x": 26.25,
+          "y": 7,
+          "side": "auto",
+          "link": "N",
+          "kind": "wire"
+        },
+        {
+          "id": "n2",
+          "name": "N",
+          "x": 26.25,
+          "y": 74,
+          "side": "auto",
+          "link": "N",
+          "kind": "wire"
+        }
+      ]
+    },
+    {
+      "id": "aei-2540003",
+      "name": "Fuse holder, 2-pole, 10 × 38 mm, 30 A · American Electrical (2540003)",
+      "library": "American Electrical fuse holders",
+      "category": "Fuse holders, 10 × 38 mm",
+      "mount": "rail",
+      "prefix": "F",
+      "w": 35.0,
+      "h": 81,
+      "fill": "#d9dad4",
+      "radius": 1,
+      "showName": false,
+      "terminals": [
+        {
+          "id": "1",
+          "name": "1",
+          "x": 8.75,
+          "y": 7,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "2",
+          "name": "2",
+          "x": 8.75,
+          "y": 74,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "3",
+          "name": "3",
+          "x": 26.25,
+          "y": 7,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "4",
+          "name": "4",
+          "x": 26.25,
+          "y": 74,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        }
+      ]
+    },
+    {
+      "id": "aei-2540004",
+      "name": "Fuse holder, 3-pole, 10 × 38 mm, 30 A · American Electrical (2540004)",
+      "library": "American Electrical fuse holders",
+      "category": "Fuse holders, 10 × 38 mm",
+      "mount": "rail",
+      "prefix": "F",
+      "w": 52.5,
+      "h": 81,
+      "fill": "#d9dad4",
+      "radius": 1,
+      "showName": false,
+      "terminals": [
+        {
+          "id": "1",
+          "name": "1",
+          "x": 8.75,
+          "y": 7,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "2",
+          "name": "2",
+          "x": 8.75,
+          "y": 74,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "3",
+          "name": "3",
+          "x": 26.25,
+          "y": 7,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "4",
+          "name": "4",
+          "x": 26.25,
+          "y": 74,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "5",
+          "name": "5",
+          "x": 43.75,
+          "y": 7,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "6",
+          "name": "6",
+          "x": 43.75,
+          "y": 74,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        }
+      ]
+    },
+    {
+      "id": "aei-2540005",
+      "name": "Fuse holder, 3-pole + N, 10 × 38 mm, 30 A · American Electrical (2540005)",
+      "library": "American Electrical fuse holders",
+      "category": "Fuse holders, 10 × 38 mm",
+      "mount": "rail",
+      "prefix": "F",
+      "w": 70.0,
+      "h": 81,
+      "fill": "#d9dad4",
+      "radius": 1,
+      "showName": false,
+      "terminals": [
+        {
+          "id": "1",
+          "name": "1",
+          "x": 8.75,
+          "y": 7,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "2",
+          "name": "2",
+          "x": 8.75,
+          "y": 74,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "3",
+          "name": "3",
+          "x": 26.25,
+          "y": 7,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "4",
+          "name": "4",
+          "x": 26.25,
+          "y": 74,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "5",
+          "name": "5",
+          "x": 43.75,
+          "y": 7,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "6",
+          "name": "6",
+          "x": 43.75,
+          "y": 74,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "n1",
+          "name": "N",
+          "x": 61.25,
+          "y": 7,
+          "side": "auto",
+          "link": "N",
+          "kind": "wire"
+        },
+        {
+          "id": "n2",
+          "name": "N",
+          "x": 61.25,
+          "y": 74,
+          "side": "auto",
+          "link": "N",
+          "kind": "wire"
+        }
+      ]
+    },
+    {
+      "id": "aei-2540011",
+      "name": "Fuse holder, 1-pole, 10 × 38 mm, 30 A, LED indicator · American Electrical (2540011)",
+      "library": "American Electrical fuse holders",
+      "category": "Fuse holders, 10 × 38 mm with LED",
+      "mount": "rail",
+      "prefix": "F",
+      "w": 17.5,
+      "h": 81,
+      "fill": "#d9dad4",
+      "radius": 1,
+      "showName": false,
+      "terminals": [
+        {
+          "id": "1",
+          "name": "1",
+          "x": 8.75,
+          "y": 7,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "2",
+          "name": "2",
+          "x": 8.75,
+          "y": 74,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        }
+      ]
+    },
+    {
+      "id": "aei-2540013",
+      "name": "Fuse holder, 2-pole, 10 × 38 mm, 30 A, LED indicator · American Electrical (2540013)",
+      "library": "American Electrical fuse holders",
+      "category": "Fuse holders, 10 × 38 mm with LED",
+      "mount": "rail",
+      "prefix": "F",
+      "w": 35.0,
+      "h": 81,
+      "fill": "#d9dad4",
+      "radius": 1,
+      "showName": false,
+      "terminals": [
+        {
+          "id": "1",
+          "name": "1",
+          "x": 8.75,
+          "y": 7,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "2",
+          "name": "2",
+          "x": 8.75,
+          "y": 74,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "3",
+          "name": "3",
+          "x": 26.25,
+          "y": 7,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "4",
+          "name": "4",
+          "x": 26.25,
+          "y": 74,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        }
+      ]
+    },
+    {
+      "id": "aei-2540014",
+      "name": "Fuse holder, 3-pole, 10 × 38 mm, 30 A, LED indicator · American Electrical (2540014)",
+      "library": "American Electrical fuse holders",
+      "category": "Fuse holders, 10 × 38 mm with LED",
+      "mount": "rail",
+      "prefix": "F",
+      "w": 52.5,
+      "h": 81,
+      "fill": "#d9dad4",
+      "radius": 1,
+      "showName": false,
+      "terminals": [
+        {
+          "id": "1",
+          "name": "1",
+          "x": 8.75,
+          "y": 7,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "2",
+          "name": "2",
+          "x": 8.75,
+          "y": 74,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "3",
+          "name": "3",
+          "x": 26.25,
+          "y": 7,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "4",
+          "name": "4",
+          "x": 26.25,
+          "y": 74,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "5",
+          "name": "5",
+          "x": 43.75,
+          "y": 7,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        },
+        {
+          "id": "6",
+          "name": "6",
+          "x": 43.75,
+          "y": 74,
+          "side": "auto",
+          "link": "",
+          "kind": "wire"
+        }
+      ]
+    }
+  ]
+}

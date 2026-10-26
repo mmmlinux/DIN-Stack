@@ -121,6 +121,23 @@
     return endRef(it, it && tplOf(it), end.term, doc.settings.termSep);
   }
 
+  // What's attached to a terminal: its wires, the bus bars through it and a cable plugged into it.
+  function attachedTo(t) {
+    const at = (e) => !!e && e.item === t.item && e.term === t.term;
+    return [...doc.connections.filter((c) => at(c.a) || at(c.b)).map((c) => c.id),
+      ...doc.buses.filter((b) => b.terms.some(at)).map((b) => b.id),
+      ...doc.cables.filter((cb) => at(cb.portA) || at(cb.portB)).map((cb) => cb.id)];
+  }
+
+  function setTool(t) {
+    tool = ui.tool = t;
+    saveUi();
+    for (const b of document.querySelectorAll("[data-tool]")) b.classList.toggle("on", b.dataset.tool === t);
+    svg.classList.toggle("tool-select", t === "select");
+    if (pending) { pending = null; renderCanvas(); }
+    setHint("");
+  }
+
   function termPoint(end) {
     const it = itemById(end.item);
     const tpl = it && tplOf(it);
@@ -259,6 +276,7 @@
     view.x = bb.x + bb.width / 2 - r.width / view.scale / 2;
     view.y = bb.y + bb.height / 2 - r.height / view.scale / 2;
     applyView();
+    renderOverlay();
   }
 
   function toWorld(e) {
@@ -296,6 +314,9 @@
   // "wire", "cable", "bus", "rail" and "text". A view setting like zoom: not saved, and undo leaves it alone.
   const SEL_KINDS = { part: "parts", wire: "wires", cable: "cables", bus: "bus bars", rail: "DIN rails", text: "text notes" };
   let selFilter = null;
+  // The tool: "wire" (clicking or dragging from a terminal adds a wire) or "select" (clicking a terminal
+  // selects what's attached to it). Remembered per browser.
+  let tool = "wire";
   function setSelFilter(kinds) {
     selFilter = kinds && kinds.size && kinds.size < Object.keys(SEL_KINDS).length ? kinds : null;
     renderCanvas();
@@ -363,6 +384,46 @@
     m.hidden = false;
   }
 
+  // The ends of each selected wire and cable, drawn at a fixed size on screen so they stand out at any zoom:
+  // a wire's two terminals, and the connectors a cable plugs into or the terminals its cores land on. A wire
+  // drawn as stubs, or a cable drawn broken, also gets a dashed guide from one end to the other.
+  function selectedEnds(px) {
+    const wires = doc.connections.filter((c) => sel.has(c.id));
+    const cables = doc.cables.filter((cb) => sel.has(cb.id));
+    if (!wires.length && !cables.length) return "";
+    let guides = "", rings = "";
+    const seen = new Set();
+    const guide = (a, b) => {
+      guides += `<line x1="${a.x}" y1="${a.y}" x2="${b.x}" y2="${b.y}" stroke="#3b82f6" stroke-opacity="0.7" stroke-width="${1.5 * px}" stroke-dasharray="${6 * px} ${4 * px}"/>`;
+    };
+    const ring = (e) => {
+      const k = e.item + "|" + e.term, p = termPoint(e);
+      if (!p || seen.has(k)) return;
+      seen.add(k);
+      const r = Math.max(termRadius(tplOf(itemById(e.item))) + 1, 7 * px);
+      rings += `<circle cx="${p.x}" cy="${p.y}" r="${r}" fill="#3b82f6" fill-opacity="0.15" stroke="#fff" stroke-width="${5 * px}"/>`
+        + `<circle cx="${p.x}" cy="${p.y}" r="${r}" fill="none" stroke="#3b82f6" stroke-width="${2.5 * px}"/>`;
+    };
+    for (const c of wires) {
+      const a = termPoint(c.a), b = termPoint(c.b);
+      const line = !cableOf(c.id) && c.draw ? c.draw === "line" : doc.settings.lines !== "off";
+      if (a && b && !line && !cableOf(c.id)) guide(a, b);
+      ring(c.a);
+      ring(c.b);
+    }
+    for (const cb of cables) {
+      const ends = cableEndInfo(cb).map((e) => (e.kind === "plug" ? [e.port] : e.kind === "fan" ? e.terms : []));
+      ends.flat().forEach(ring);
+      // The middle of each end, for the guide between them.
+      const mid = ends.map((ts) => {
+        const ps = ts.map(termPoint).filter(Boolean);
+        return ps.length ? { x: ps.reduce((s, p) => s + p.x, 0) / ps.length, y: ps.reduce((s, p) => s + p.y, 0) / ps.length } : null;
+      });
+      if (mid[0] && mid[1] && (cb.draw || doc.settings.cables) === "break") guide(mid[0], mid[1]);
+    }
+    return `<g pointer-events="none">${guides}${rings}</g>`;
+  }
+
   function renderOverlay() {
     let s = "";
     const px = 1 / view.scale;
@@ -371,6 +432,7 @@
       const p = termPoint(from);
       if (p) s += `<line x1="${p.x}" y1="${p.y}" x2="${mouse.x}" y2="${mouse.y}" stroke="#f59e0b" stroke-width="${2 * px}" stroke-dasharray="${6 * px} ${4 * px}" pointer-events="none"/>`;
     }
+    s += selectedEnds(px);
     if (drag && drag.type === "marquee") {
       const x = Math.min(drag.start.x, drag.cur.x), y = Math.min(drag.start.y, drag.cur.y);
       s += `<rect x="${x}" y="${y}" width="${Math.abs(drag.cur.x - drag.start.x)}" height="${Math.abs(drag.cur.y - drag.start.y)}" fill="#3b82f6" fill-opacity="0.08" stroke="#3b82f6" stroke-width="${px}" pointer-events="none"/>`;
@@ -421,7 +483,7 @@
   const UI_KEY = "dinstack.ui.v1";
   // Library categories start folded; openCats lists the ones opened. (It replaced "folded", the list of
   // folded ones, so a library first shows only its category names.)
-  const UI_DEFAULTS = { openCats: [], leftHidden: false, closedSecs: [], drawerTab: "wires", drawerH: 200, drawerClosed: false };
+  const UI_DEFAULTS = { openCats: [], leftHidden: false, closedSecs: [], drawerTab: "wires", drawerH: 200, drawerClosed: false, startScreen: true, tool: "wire" };
   const ui = (() => {
     try { return Object.assign({}, UI_DEFAULTS, JSON.parse(localStorage.getItem(UI_KEY) || "{}")); }
     catch (e) { return { ...UI_DEFAULTS }; }
@@ -433,13 +495,15 @@
   // The library shown in the sidebar (also remembered per browser). ALL_LIBS shows every one;
   // it can't clash with a library, as those always have a name.
   const ALL_LIBS = "";
+  // Library names in the diagram, the project library first.
   function libraries() {
-    return [...new Set(doc.templates.map((t) => t.library))];
+    const libs = [...new Set(doc.templates.map((t) => t.library))];
+    return libs.includes(PROJECT_LIBRARY) ? [PROJECT_LIBRARY, ...libs.filter((l) => l !== PROJECT_LIBRARY)] : libs;
   }
   function currentLib() {
     const libs = libraries();
     if (ui.lib === ALL_LIBS || libs.includes(ui.lib)) return ui.lib;
-    return libs[0] || DEFAULT_LIBRARY;
+    return libs[0] || PROJECT_LIBRARY;
   }
   function setLib(name) {
     ui.lib = name;
@@ -471,9 +535,10 @@
       s += `<button class="lib-cat${closed ? " closed" : ""}" data-cat="${esc(c)}" aria-expanded="${!closed}" title="${closed ? "Show" : "Hide"} ${esc(c)}">${ic("chev-d", "sm")}<span class="cat-name">${esc(c)}</span><span class="count">${list.length}</span></button>`;
       if (closed) continue;
       for (const t of list) {
-        s += `<div class="lib-item" data-tpl="${esc(t.id)}" title="Click to add, or drag onto the diagram">
+        const from = t.basedOn ? `Edited copy of “${t.basedOn.name || t.name}” from ${t.basedOn.library}. ` : "";
+        s += `<div class="lib-item" data-tpl="${esc(t.id)}" title="${esc(from)}Click to add, or drag onto the diagram">
           <div class="thumb">${renderTemplatePreview(t, 32)}</div>
-          <div class="meta"><div class="name">${esc(t.name)}</div><div class="size">${r3(t.w)} × ${r3(t.h)} mm · ${plural(t.terminals.length, "terminal")}${isLoose(t) ? " · loose" : ""}</div></div>
+          <div class="meta"><div class="name">${esc(t.name)}</div><div class="size">${r3(t.w)} × ${r3(t.h)} mm · ${plural(t.terminals.length, "terminal")}${isLoose(t) ? " · loose" : ""}${t.basedOn && lib !== PROJECT_LIBRARY ? " · edited" : ""}</div></div>
           <div class="acts">
             <button class="icon-btn" data-lib="edit" title="Edit this type">${ic("edit", "sm")}</button>
             <button class="icon-btn" data-lib="dup" title="Duplicate this type">${ic("copy", "sm")}</button>
@@ -510,29 +575,42 @@
     return doc.connections.filter((c) => [c.a, c.b].some((e) => parts.has(e.item) && !ids.has(e.term))).length;
   }
 
+  // Editing a type from another library (built-in, ready-made or imported) saves an edited copy in the
+  // project library, unless its Library is changed in the designer. The original stays as it was, so
+  // refreshing its library can't undo the edit, and this diagram's parts switch to the copy.
   function editTemplate(tpl, isNew) {
+    const copies = !isNew && tpl.library !== PROJECT_LIBRARY;
     TplEditor.open(tpl, {
       isNew,
       categories: categories(),
       libraries: libraries(),
       lostCheck: isNew ? null : lostConnections,
+      note: copies ? `Saving puts an edited copy in “${PROJECT_LIBRARY}”, and this diagram's parts use it. “${tpl.library}” keeps the original.` : "",
       onSave(t) {
-        checkpoint();
         const i = doc.templates.findIndex((x) => x.id === t.id);
-        if (i >= 0) doc.templates[i] = t; else doc.templates.push(t);
+        const was = i >= 0 ? doc.templates[i] : null;
+        const copy = copies && was && t.library === was.library;
+        if (copy && JSON.stringify(t) === JSON.stringify(was)) return; // nothing changed
+        checkpoint();
+        if (copy) {
+          Object.assign(t, { id: uid("u"), library: PROJECT_LIBRARY, basedOn: { id: was.id, name: was.name, library: was.library } });
+          doc.templates.push(t);
+          for (const it of doc.items) if (it.kind === "part" && it.tpl === was.id) it.tpl = t.id;
+        } else if (i >= 0) doc.templates[i] = t; else doc.templates.push(t);
         cleanConnections();
         // Follow the type into its library, so it doesn't vanish from view.
         if (currentLib() !== ALL_LIBS && currentLib() !== t.library) setLib(t.library); else renderLibrary();
         refresh();
-        toast(isNew ? `Added “${t.name}” to ${t.library}` : `Updated “${t.name}”`);
+        toast(copy ? `Saved the edited “${t.name}” to ${PROJECT_LIBRARY}; “${was.library}” keeps the original`
+          : isNew ? `Added “${t.name}” to ${t.library}` : `Updated “${t.name}”`);
       },
     });
   }
 
+  // New types and duplicates go in the project library.
   function newTemplate() {
-    const lib = currentLib();
     editTemplate({
-      id: uid("u"), name: "", library: lib === ALL_LIBS ? DEFAULT_LIBRARY : lib, category: "Custom", prefix: "A", w: 40, h: 60,
+      id: uid("u"), name: "", library: PROJECT_LIBRARY, category: "Custom", prefix: "A", w: 40, h: 60,
       fill: "#dfe6ee", radius: 1, showName: true, terminals: [],
     }, true);
   }
@@ -542,6 +620,8 @@
     const copy = JSON.parse(JSON.stringify(src));
     copy.id = uid("u");
     copy.name = src.name + " (copy)";
+    copy.library = PROJECT_LIBRARY;
+    delete copy.basedOn;
     editTemplate(copy, true);
   }
 
@@ -1170,6 +1250,91 @@
     return best ? best.v : onGrid();
   }
 
+  // After swapping a part's type, fit the new part where the old one was (ob: its box before the swap).
+  // It stays on its rail, a side that had something flush against it keeps it flush (the strip beyond
+  // closes up or opens out), and when the new part is bigger, whatever is now in its way is pushed along.
+  // Parts on rails are only pushed along their rail, never off it.
+  function fitSwapped(it, ob) {
+    const tol = 0.5; // how close counts as touching, in mm
+    const lo = (b, a) => (a === "x" ? b.x : b.y);
+    const hi = (b, a) => (a === "x" ? b.x + b.w : b.y + b.h);
+    const perp = (a) => (a === "x" ? "y" : "x");
+    const side = (b1, b2, a) => lo(b1, perp(a)) < hi(b2, perp(a)) - 0.01 && lo(b2, perp(a)) < hi(b1, perp(a)) - 0.01;
+    const rails = doc.items.filter((o) => o.kind === "rail");
+    const railed = new Set(rails.flatMap(mountedOn));
+    const boxes = new Map(doc.items.filter((o) => o !== it && o.kind !== "rail").map((o) => [o, boxOf(o)]));
+    const movable = (a) => [...boxes.keys()].filter((o) => a === "x" || !railed.has(o));
+    const flush = (b, a, s) => movable(a).filter((o) => {
+      const q = boxes.get(o);
+      return side(q, b, a) && Math.abs(s > 0 ? lo(q, a) - hi(b, a) : hi(q, a) - lo(b, a)) <= tol;
+    });
+    const shift = (o, a, d) => {
+      o[a] = r3(o[a] + d);
+      boxes.set(o, boxOf(o));
+    };
+
+    // Where the new part goes on each axis.
+    const nb = boxOf(it); // the new size, still at the old top-left
+    const rail = !isLoose(tplOf(it)) && rails.map((r) => ({ r, b: boxOf(r) }))
+      .filter(({ b }) => ob.y <= b.y + b.h / 2 && ob.y + ob.h >= b.y + b.h / 2 && ob.x < b.x + b.w && ob.x + ob.w > b.x)
+      .sort((p, q) => Math.abs(p.b.y + p.b.h / 2 - ob.y - ob.h / 2) - Math.abs(q.b.y + q.b.h / 2 - ob.y - ob.h / 2))[0];
+    const place = (a, n) => {
+      if (a === "y" && rail) return rail.b.y + rail.b.h / 2 - n / 2;
+      const before = flush(ob, a, -1).length > 0, after = flush(ob, a, 1).length > 0;
+      if (before && after) return a === "x" && rtl() ? hi(ob, a) - n : lo(ob, a);
+      if (before) return lo(ob, a);
+      if (after) return hi(ob, a) - n;
+      // Nothing flush on this axis: keep lined up with the neighbours beside it, if it was.
+      const beside = [...flush(ob, perp(a), -1), ...flush(ob, perp(a), 1)].map((o) => boxes.get(o));
+      if (beside.some((q) => Math.abs(lo(q, a) - lo(ob, a)) <= tol)) return lo(ob, a);
+      if (beside.some((q) => Math.abs(hi(q, a) - hi(ob, a)) <= tol)) return hi(ob, a) - n;
+      if (a === "x") return rtl() ? hi(ob, a) - n : lo(ob, a);
+      return lo(ob, a) + (ob.h - n) / 2;
+    };
+    it.x = r3(place("x", nb.w));
+    it.y = r3(place("y", nb.h));
+    const now = boxOf(it);
+
+    // Push o along by at least d (sign s), and whatever it then runs into.
+    let pushed; // how far each item has been pushed on the side being fitted
+    const shove = (o, a, s, d) => {
+      if (d <= (pushed.get(o) || 0) + 0.001) return;
+      const was = boxes.get(o);
+      shift(o, a, s * (d - (pushed.get(o) || 0)));
+      pushed.set(o, d);
+      const b = boxes.get(o);
+      for (const q of movable(a)) {
+        if (q === o) continue;
+        const qb = boxes.get(q);
+        if (!side(qb, b, a)) continue;
+        const ahead = s > 0 ? lo(qb, a) >= hi(was, a) - tol : hi(qb, a) <= lo(was, a) + tol;
+        const into = s > 0 ? hi(b, a) - lo(qb, a) : hi(qb, a) - lo(b, a);
+        if (ahead && into > 0.01) shove(q, a, s, (pushed.get(q) || 0) + into);
+      }
+    };
+    for (const a of ["x", "y"]) {
+      for (const s of [-1, 1]) {
+        const d = s > 0 ? hi(now, a) - hi(ob, a) : lo(now, a) - lo(ob, a);
+        if (s * d < -0.001) {
+          // This side moved in: bring the strip flush against it along too.
+          const chain = new Set(), queue = [ob];
+          while (queue.length) for (const o of flush(queue.pop(), a, s)) if (!chain.has(o)) { chain.add(o); queue.push(boxes.get(o)); }
+          for (const o of chain) shift(o, a, d);
+        } else if (s * d > 0.001) {
+          pushed = new Map();
+          // This side moved out: push along whatever it now overlaps (including anything flush against it).
+          for (const o of movable(a)) {
+            const b = boxes.get(o);
+            if (!side(b, now, a)) continue;
+            const ahead = s > 0 ? lo(b, a) >= hi(ob, a) - tol : hi(b, a) <= lo(ob, a) + tol;
+            const into = s > 0 ? hi(now, a) - lo(b, a) : hi(b, a) - lo(now, a);
+            if (ahead && into > 0.01) shove(o, a, s, into);
+          }
+        }
+      }
+    }
+  }
+
   function rotateSelection(dir = 1) {
     const parts = [...sel].map(itemById).filter((i) => i && i.kind === "part");
     if (!parts.length) return;
@@ -1720,7 +1885,7 @@
     const connEl = e.target.closest("[data-conn]");
     const busEl = e.target.closest("[data-bus]");
     const cableEl = e.target.closest("[data-cable]");
-    const itemEl = e.target.closest("[data-item]");
+    let itemEl = e.target.closest("[data-item]");
     const handleEl = e.target.closest("[data-cable-handle]");
 
     if (handleEl && !busEdit && !selFilter) {
@@ -1762,7 +1927,16 @@
       filtered = true;
     }
 
-    if (termEl && !filtered) {
+    if (termEl && !filtered && tool === "select" && !pending) {
+      const ids = attachedTo(termKeyParts(termEl.dataset.term));
+      if (ids.length) {
+        if (e.shiftKey) for (const id of ids) sel.add(id); else sel = new Set(ids);
+        refresh();
+        return;
+      }
+      // Nothing on it: the click selects and moves its part.
+      itemEl = { dataset: { item: termKeyParts(termEl.dataset.term).item } };
+    } else if (termEl && !filtered) {
       const t = termKeyParts(termEl.dataset.term);
       if (pending && !(pending.item === t.item && pending.term === t.term)) {
         const from = pending;
@@ -1826,7 +2000,8 @@
         const k = termKeyParts(t.dataset.term);
         const count = doc.connections.filter((c) => [c.a, c.b].some((x) => x.item === k.item && x.term === k.term)).length;
         const label = String(itemById(k.item)?.termLabels?.[k.term] || "").trim();
-        setHint(`${refOf(k)}${label ? ` · ${label}` : ""}${count ? ` · ${count} wire${count > 1 ? "s" : ""}` : ""} — drag to another terminal to wire it`);
+        const what = tool === "select" ? (attachedTo(k).length ? "click to select what's on it" : "nothing on it") : "drag to another terminal to wire it";
+        setHint(`${refOf(k)}${label ? ` · ${label}` : ""}${count ? ` · ${count} wire${count > 1 ? "s" : ""}` : ""} — ${what}`);
       } else setHint("");
       return;
     }
@@ -2159,7 +2334,7 @@
             { label: "Align tops", run: () => alignSelection("top") }, { label: "Align bottoms", run: () => alignSelection("bottom") });
         }
       }
-      if (wires.length || bars.length) out.push("-", { label: "Select whole circuit", run: () => selectCircuit(false) }, { label: "Select daisy chain", run: () => selectCircuit(true) });
+      if (wires.length || bars.length) out.push("-", ...circuitMenu([...wires, ...bars].map((x) => x.id)));
       if (wires.length || cbs.length) out.push({ label: "Show only these wires", run: () => showOnlyWires(selectedWireIds()) });
       if (wires.length) out.push(...drawEntries(wires.filter((c) => !cableOf(c.id)), "wire"), ...labelEntries(wires), ...profileEntries(wires));
       out.push(...drawEntries(cbs.filter(breakable), "cable"));
@@ -2170,8 +2345,7 @@
       const c = wires[0];
       return [
         { heading: `Wire ${c.wire || ""}`.trim() },
-        { label: "Select whole circuit", run: () => selectCircuit(false) },
-        { label: "Select daisy chain", run: () => selectCircuit(true) },
+        ...circuitMenu([c.id]),
         { label: "Show only this wire", run: () => showOnlyWires([c.id]) },
         { label: "Swap ends", run: () => swapEnds(c) },
         cableOf(c.id) ? (cableOf(c.id).open ? null : { label: `Take out of cable ${cableOf(c.id).label || ""}`.trim(), run: () => removeFromCable(c.id) }) : { label: "Bundle into a cable", run: () => bundleWires([c.id]) },
@@ -2203,7 +2377,7 @@
       return [
         { heading: `Bus bar ${b.label || ""}`.trim() },
         { label: "Edit terminals…", run: () => startBus(b.id) },
-        { label: "Select whole circuit", run: () => selectCircuit(false) },
+        ...circuitMenu([b.id]),
         "-",
         { label: "Delete bus bar", hint: "Del", danger: true, run: deleteSelection },
       ];
@@ -2287,6 +2461,8 @@
       else if (selFilter) setSelFilter(null); // keeps what was selected with it
       else if (sel.size) { sel.clear(); refresh(); }
     }
+    else if ((k === "v" || k === "V") && !mod) setTool("select");
+    else if ((k === "w" || k === "W") && !mod) setTool("wire");
     else if (k === "r" || k === "R") rotateSelection(e.shiftKey ? -1 : 1);
     else if ((k === "f" || k === "F") && !mod) fit();
     else if (k === "?") openHelp();
@@ -2457,26 +2633,13 @@
 
   function projectProps() {
     const m = doc.meta;
-    const parts = doc.items.filter((i) => i.kind === "part").length;
-    const stat = (n, label, tab) => `<button class="stat" data-act="tab" data-tab="${tab}" title="Show the ${label.toLowerCase()} list"><b>${n}</b><span>${label}</span></button>`;
-    const profiles = doc.wireProfiles.length ? `<table class="term-list">${doc.wireProfiles.map((p) => {
-      const n = doc.connections.filter((c) => c.profile === p.id).length;
-      return `<tr><td>${colorChip(p.color, p.stripe)}${esc(p.name)}</td><td class="muted">${esc([p.gauge, p.conductor].filter(Boolean).join(", "))} · ${plural(n, "wire")}</td></tr>`;
-    }).join("")}</table>` : '<p class="muted">No profiles yet.</p>';
-    const cprofiles = doc.cableProfiles.length ? `<table class="term-list">${doc.cableProfiles.map((p) => {
-      const n = doc.cables.filter((cb) => cb.profile === p.id).length;
-      return `<tr><td>${colorChip(p.color)}${esc(p.name)}</td><td class="muted">${esc([p.desc, p.shield && "shielded", p.twisted && "twisted pairs"].filter(Boolean).join(", "))} · ${plural(n, "cable")}</td></tr>`;
-    }).join("")}</table>` : '<p class="muted">No cable profiles yet. Add the cables this drawing uses from the cable library.</p>';
     const sub = [m.revision && "Revision " + m.revision, m.date, m.author].filter(Boolean).map(esc).join(" · ");
     return head("Diagram", esc(m.title || "Untitled diagram"), sub || "Nothing selected")
-      + `<div class="stats">${stat(parts, "Parts", "parts")}${stat(doc.connections.length, "Wires", "wires")}${stat(doc.cables.length, "Cables", "cables")}${stat(doc.buses.length, "Bus bars", "buses")}</div>`
       + body(section("diag.title", "Title block", `
         <div class="row2">${field("Revision", inp("meta.revision", m.revision))}${field("Date", inp("meta.date", m.date, "date"))}</div>
         ${field("Author", inp("meta.author", m.author))}
         ${field("Notes", area("meta.notes", m.notes, 3))}
-        <p class="hint-text">Shown on the printout and at the top of exported images. The title is at the top of the window.</p>`)
-      + section("diag.profiles", "Wire profiles", profiles + `<div class="btn-row" style="margin-top:8px"><button class="small" data-act="profiles">${ic("edit", "sm")} Edit wire profiles…</button></div>`, doc.wireProfiles.length)
-      + section("diag.cprofiles", "Cable profiles", cprofiles + `<div class="btn-row" style="margin-top:8px"><button class="small" data-act="cableLib" title="Ready-made cable types to add to this drawing">${ic("plus", "sm")} Cable library…</button><button class="small" data-act="cprofiles">${ic("edit", "sm")} Edit cable profiles…</button></div>`, doc.cableProfiles.length));
+        <p class="hint-text">Shown on the printout and at the top of exported images. The title is at the top of the window.</p>`));
   }
 
   // Object types to swap a part to, grouped by library.
@@ -2599,8 +2762,6 @@
     const parts = [others.length && plural(others.length, "other wire"), bars.length && plural(bars.length, "bus bar")].filter(Boolean);
     const names = circuitNames(doc);
     const name = isConn(id) ? names.conn.get(id) : names.bus.get(id);
-    const direct = circuitOf(doc, [id], { direct: true });
-    const chain = direct.conns.size + direct.buses.size;
     return section("circuit", `Circuit${name ? " · " + esc(name) : ""}`, `
       ${field("Circuit name", `<input type="text" data-circ="${esc(id)}" list="netList" value="${esc(name || "")}" placeholder="e.g. +24V, 0V, L1">`)}
       ${name ? field("Circuit's labels show", `<select data-clabel="${esc(netKey(name))}" title="What this circuit's wire labels show, overriding Named circuits show for the drawing">${[
@@ -2610,7 +2771,7 @@
       ${isConn(id) ? labelShowField([connById(id)]) : ""}
       <p class="hint-text">${parts.length ? parts.join(", ") : "Nothing else connected"} · ${plural(terms.length, "terminal")}</p>
       ${rows.length ? `<table class="term-list">${rows.join("")}</table>` : ""}
-      ${rows.length ? `<div class="btn-row" style="margin-top:8px"><button class="small" data-act="selCircuit">Select whole circuit</button>${chain > 1 && chain < rows.length + 1 ? `<button class="small" data-act="selChain" title="Only the wires and bus bars joined at the same terminals, not those on the far side of a terminal block or inside other parts">Select daisy chain (${chain})</button>` : ""}</div>` : ""}
+      ${rows.length ? `<div style="margin-top:8px">${circuitButtons([id])}</div>` : ""}
       <div class="field"><span>Terminals</span><p class="ref-list">${esc(terms.join(", "))}</p></div>
       <p class="hint-text">Circuits follow wires, bus bars and terminals linked inside a part. Terminals with the same connector label, and wires with the same circuit name, are one circuit even without a wire between them.</p>`);
   }
@@ -2755,7 +2916,7 @@
       s += section("multi.wiring", "Wiring", `
         ${wires && cbs.length === 1 && !cbs[0].open ? `<div class="btn-row"><button class="small primary" data-act="cableAdd">Add ${plural(wires, "wire")} to ${esc(cbs[0].label || "the cable")}</button></div>` : ""}
         ${wires && !cbs.length ? `<div class="btn-row"><button class="small" data-act="cableNew" title="Group these wires into a cable, drawn as one sheath that fans out to each terminal">${ic("cable", "sm")} Bundle ${plural(wires, "wire")} into a cable</button></div>` : ""}
-        <div class="btn-row"><button class="small" data-act="selCircuit">Select whole circuit</button><button class="small" data-act="selChain" title="Only the wires and bus bars joined at the same terminals">Select daisy chain</button></div>
+        ${circuitButtons(ids.filter((id) => isConn(id) || busById(id)))}
         ${wires || cbs.length ? `<div class="btn-row"><button class="small" data-act="showOnly" title="Hide every other wire on the drawing until you choose Show all">Show only these wires</button></div>` : ""}`);
     }
     if (items > 1) {
@@ -2774,11 +2935,38 @@
   }
 
   // ---------- renumbering ----------
-  function selectCircuit(direct) {
-    const circ = circuitOf(doc, [...sel].filter((id) => isConn(id) || busById(id)), { direct });
+  // How far selecting a circuit reaches from some wires and bus bars: "named" is everything in their
+  // circuits, including what shares a name with no wire between; "connected" only what's wired to them
+  // (wires, bus bars and links inside parts); "chain" only wires and bus bars joined at the same terminals.
+  function circuitReach(ids, mode) {
+    return circuitOf(doc, ids, mode === "chain" ? { direct: true } : mode === "connected" ? { physical: true } : {});
+  }
+
+  function selectCircuit(mode) {
+    const circ = circuitReach([...sel].filter((id) => isConn(id) || busById(id)), mode);
     sel = new Set([...circ.conns, ...circ.buses]);
     refresh();
   }
+
+  // The ways to select a circuit from these wires and bus bars, with how many each would select. "named"
+  // is only offered when a circuit name reaches further than the wiring does.
+  function circuitChoices(ids) {
+    const count = (mode) => { const c = circuitReach(ids, mode); return c.conns.size + c.buses.size; };
+    const all = count("named"), wired = count("connected"), chain = count("chain");
+    const cn = circuitNames(doc);
+    const names = [...new Set(ids.map((id) => (isConn(id) ? cn.conn.get(id) : cn.bus.get(id))).filter(Boolean))];
+    const out = [];
+    if (all > wired) {
+      out.push({ mode: "named", n: all, label: names.length === 1 ? `Select all of “${names[0]}”` : "Select whole named circuits",
+        title: "Everything in the circuit, including wiring elsewhere that shares its name, with no wire between" });
+    }
+    out.push({ mode: "connected", n: wired, label: all > wired ? "Select connected wires" : "Select whole circuit",
+      title: "The wires and bus bars wired to this one, through terminals, bus bars and links inside parts" });
+    if (chain > 1 && chain < wired) out.push({ mode: "chain", n: chain, label: "Select daisy chain", title: "Only the wires and bus bars joined at the same terminals, not those on the far side of a terminal block or inside other parts" });
+    return out;
+  }
+  const circuitMenu = (ids) => circuitChoices(ids).map((k) => ({ label: k.label, run: () => selectCircuit(k.mode) }));
+  const circuitButtons = (ids) => `<div class="btn-row">${circuitChoices(ids).map((k) => `<button class="small" data-act="selReach" data-reach="${k.mode}" title="${esc(k.title)}">${esc(k.label)} (${k.n})</button>`).join("")}</div>`;
 
   function selectSameType(it) {
     sel = new Set(doc.items.filter((i) => i.kind === "part" && i.tpl === it.tpl).map((i) => i.id));
@@ -2939,8 +3127,12 @@
       toast(v === "us" ? "Wires switched to AWG and US colours" : "Wires switched to mm² and IEC colours");
       return;
     }
+    // Swapping parts' type: fit each new part where the old one was, and let cables follow what moved.
+    const anchors = k === "tpl" ? cableAnchors() : null;
     for (const target of list) {
+      const swapped = k === "tpl" && target.kind === "part" && target.tpl !== v ? boxOf(target) : null;
       setPath(target, k, v);
+      if (swapped) fitSwapped(target, swapped);
       if (kind === "bus" && k === "color") handEdited(target);
       if (kind === "conn" && /^(color|stripe|gauge|conductor)$/.test(k)) {
         lastWire[k] = v;
@@ -2954,11 +3146,41 @@
         if (p && (k === "desc" ? p.desc || "" : !!p[k]) !== v) target.profile = "";
       }
     }
-    if (k === "tpl") cleanConnections();
+    if (k === "tpl") { followCables(anchors); cleanConnections(); }
+  }
+
+  // A connector label that would attach its terminal to a circuit with a different name asks first, as a
+  // wire would (see askJoin). Labels apply as they're typed; this runs once one is finished, and judges
+  // it without the terminal's old label, so renaming a label isn't taken for a join.
+  let labelWas = null; // { term, value }: a connector label as it was when its box got the focus
+  function labelChanged(el) {
+    const it = propsTarget(), term = el.dataset.tl, now = el.value;
+    const was = labelWas && labelWas.term === term ? labelWas.value : "";
+    labelWas = { term, value: now };
+    if (!it || !now.trim() || netKey(now) === netKey(was)) { refresh(); return; }
+    const set = (v) => { it.termLabels = it.termLabels || {}; if (v.trim()) it.termLabels[term] = v; else delete it.termLabels[term]; };
+    const key = it.id + "|" + term;
+    set("");
+    const there = namedAt(now, key);
+    if (!there) { set(now); refresh(); return; }
+    askJoin([[key, there]], "This connector label", () => { set(now); refresh(); }, () => { set(was); refresh(); });
+  }
+
+  // A terminal (other than notKey) in a circuit called name, if there is one.
+  function namedAt(name, notKey) {
+    const items = itemMap(doc), tpls = tplMap(doc);
+    let at = null;
+    forEachName(items, tpls, validConnections(doc, items, tpls), validBuses(doc, items, tpls), (n, k) => {
+      if (!at && k !== notKey && netKey(n) === netKey(name)) at = k;
+    });
+    return at;
   }
 
   const props = $("props");
-  props.addEventListener("focusin", () => { editCheckpointed = false; });
+  props.addEventListener("focusin", (e) => {
+    editCheckpointed = false;
+    if (e.target.dataset.tl) labelWas = { term: e.target.dataset.tl, value: e.target.value };
+  });
   props.addEventListener("input", (e) => {
     const el = e.target;
     if (el.dataset.rn) { $("rnPreview").textContent = renumberPreview(selectedParts(), readRenumber()); return; }
@@ -3033,7 +3255,7 @@
       refresh();
       return;
     }
-    if (el.dataset.tl) { refresh(); return; }
+    if (el.dataset.tl) { labelChanged(el); return; }
     if (!el.dataset.k) { return; }
     if (el.type === "checkbox" || el.tagName === "SELECT") {
       checkpoint();
@@ -3080,9 +3302,9 @@
       case "rotR": rotateSelection(1); break;
       case "editTpl": editTemplate(tplOf(target), false); break;
       case "renumber": applyRenumber(); break;
-      case "selCircuit": selectCircuit(false); break;
+      case "selCircuit": selectCircuit("named"); break;
+      case "selReach": selectCircuit(b.dataset.reach); break;
       case "showOnly": showOnlyWires(selectedWireIds()); break;
-      case "selChain": selectCircuit(true); break;
       case "profiles": openProfiles(); break;
       case "cprofiles": openProfiles(true); break;
       case "cableLib": openCableLib(); break;
@@ -3107,7 +3329,6 @@
       case "cableSelect": sel = new Set(target.wires); refresh(); break;
       case "cableReset": checkpoint(); target.pa = null; target.pb = null; refresh(); break;
       case "fitRail": fitRail(target); break;
-      case "tab": showDrawerTab(b.dataset.tab); break;
     }
   });
 
@@ -3496,6 +3717,11 @@
       <div class="set-group">
         <h4>Building strips</h4>
         <div class="field"><span>Build direction: where new parts beside a selected one, repeats and packing go</span>${dirToggle()}</div>
+      </div>
+      <div class="set-group">
+        <h4>Starting up</h4>
+        <label class="check"><input data-ui="startScreen" type="checkbox"${ui.startScreen ? " checked" : ""}> Show the start screen when DIN Stack opens</label>
+        <p class="hint-text">Saved in this browser rather than with the diagram. When it's off, DIN Stack opens straight to the diagram you were working on.</p>
       </div>`;
   }
 
@@ -3517,6 +3743,7 @@
     if (e.target.type === "number") applySetting(e.target, true);
   });
   $("settingsBody").addEventListener("change", (e) => {
+    if (e.target.dataset.ui) { ui[e.target.dataset.ui] = e.target.checked; saveUi(); return; }
     if (e.target.type !== "number") { applySetting(e.target, false); renderSettings(); }
   });
   $("settingsBody").addEventListener("click", (e) => {
@@ -3573,10 +3800,12 @@
 
   function renderDrawer() {
     const body = $("drawerBody");
-    const counts = { wires: doc.connections.length, cables: doc.cables.length, buses: doc.buses.length, parts: doc.items.filter((i) => i.kind === "part").length };
+    const counts = { wires: doc.connections.length, cables: doc.cables.length, buses: doc.buses.length, parts: doc.items.filter((i) => i.kind === "part").length, profiles: doc.wireProfiles.length, cprofiles: doc.cableProfiles.length };
     for (const el of document.querySelectorAll("[data-count]")) el.textContent = counts[el.dataset.count];
     for (const b of document.querySelectorAll(".drawer-tabs [data-tab]")) b.classList.toggle("active", b.dataset.tab === drawerTab);
     $("btnListCsv").hidden = drawerTab !== "wires";
+    $("btnListProfiles").hidden = drawerTab !== "profiles" && drawerTab !== "cprofiles";
+    $("btnListCableLib").hidden = drawerTab !== "cprofiles";
     if ($("drawer").classList.contains("collapsed")) return; // filled in when it's opened
     if (drawerTab === "wires") {
       const rows = wireRows();
@@ -3607,6 +3836,23 @@
           <td>${colorChip(b.color)}${esc(wireColorName(b.color))}</td><td>${esc(b.notes)}</td></tr>`).join("")
         || '<tr><td colspan="5" class="empty">No bus bars yet. Right-click empty space on the drawing, choose “Bus bar…”, then click the terminals to bridge.</td></tr>'}
       </tbody></table>`;
+    } else if (drawerTab === "profiles") {
+      const picked = new Set(doc.connections.filter((c) => sel.has(c.id)).map((c) => c.profile));
+      body.innerHTML = `<table class="data-table"><thead><tr><th>Profile</th><th>Colour</th><th>Size</th><th>Conductor</th><th>Wires</th></tr></thead><tbody>
+        ${doc.wireProfiles.map((p) => `<tr data-prof="${esc(p.id)}" class="${picked.has(p.id) ? "net" : ""}" title="Select the wires with this profile">
+          <td><b>${esc(p.name)}</b></td><td>${colorChip(p.color, p.stripe)}${esc(wireLookName(p.color, p.stripe))}</td><td>${esc(p.gauge)}</td><td>${esc(p.conductor || "")}</td>
+          <td>${doc.connections.filter((c) => c.profile === p.id).length}</td></tr>`).join("")
+        || '<tr><td colspan="5" class="empty">No wire profiles yet. Click Edit… to add one.</td></tr>'}
+      </tbody></table>`;
+    } else if (drawerTab === "cprofiles") {
+      const picked = new Set(doc.cables.filter((cb) => sel.has(cb.id)).map((cb) => cb.profile));
+      body.innerHTML = `<table class="data-table"><thead><tr><th>Profile</th><th>Type</th><th>Sheath</th><th>Cores</th><th>Cables</th><th>Notes</th></tr></thead><tbody>
+        ${doc.cableProfiles.map((p) => `<tr data-cprof="${esc(p.id)}" class="${picked.has(p.id) ? "net" : ""}" title="Select the cables with this profile">
+          <td><b>${esc(p.name)}</b></td><td>${esc([p.desc, p.shield && "shielded", p.twisted && "twisted pairs"].filter(Boolean).join(", "))}</td>
+          <td>${colorChip(p.color)}${esc(wireColorName(p.color))}</td><td>${(p.cores || []).length || ""}</td>
+          <td>${doc.cables.filter((cb) => cb.profile === p.id).length}</td><td>${esc(p.notes || "")}</td></tr>`).join("")
+        || '<tr><td colspan="6" class="empty">No cable profiles yet. Add the cables this drawing uses from the cable library.</td></tr>'}
+      </tbody></table>`;
     } else {
       const parts = doc.items.filter((i) => i.kind === "part" && tplOf(i)).sort((a, b) => natural(a.tag || "~", b.tag || "~"));
       const summary = partsSummary().map((g) => `${g.tags.length} × ${esc(g.tpl.name)}`).join(" · ");
@@ -3627,7 +3873,7 @@
   // Hide list rows that don't contain the filter text.
   function filterDrawer() {
     const q = $("listFilter").value.trim().toLowerCase();
-    const rows = [...$("drawerBody").querySelectorAll("tbody tr[data-sel]")];
+    const rows = [...$("drawerBody").querySelectorAll("tbody tr[data-sel], tbody tr[data-prof], tbody tr[data-cprof]")];
     let shown = 0;
     for (const r of rows) {
       const on = !q || r.textContent.toLowerCase().includes(q);
@@ -3658,6 +3904,12 @@
     const tab = e.target.closest("[data-tab]");
     if (tab) { showDrawerTab(tab.dataset.tab); return; }
     if (e.target.closest("#btnDrawerToggle")) { setDrawerClosed(!$("drawer").classList.contains("collapsed")); return; }
+    if (e.target.closest("#btnListProfiles")) { openProfiles(drawerTab === "cprofiles"); return; }
+    if (e.target.closest("#btnListCableLib")) { openCableLib(); return; }
+    const prof = e.target.closest("[data-prof]");
+    if (prof) { sel = new Set(doc.connections.filter((c) => c.profile === prof.dataset.prof).map((c) => c.id)); refresh(); return; }
+    const cprof = e.target.closest("[data-cprof]");
+    if (cprof) { sel = new Set(doc.cables.filter((cb) => cb.profile === cprof.dataset.cprof).map((cb) => cb.id)); refresh(); return; }
     const row = e.target.closest("[data-sel]");
     if (row) { sel = new Set([row.dataset.sel]); refresh(); }
   });
@@ -4028,10 +4280,16 @@
   // Dialogs that Esc and a click on the backdrop close (the designer handles its own).
   const DIALOGS = ["helpModal", "profModal", "libChooser", "settingsModal", "welcomeModal", "cableLib"];
 
-  function newDiagram(ask = true) {
+  // keepLibs false starts from just the built-in library, as it comes.
+  function newDiagram(ask = true, keepLibs = true) {
     if (ask && !confirm("Start a new, empty diagram? Your object library is kept. (You can undo this.)")) return;
     checkpoint();
-    { const std = doc.settings.wireStd, libVersions = doc.libVersions; doc = normalize(newProject(doc.templates)); doc.libVersions = libVersions; setWireStd(std); }
+    {
+      const std = doc.settings.wireStd, libVersions = keepLibs ? doc.libVersions : {};
+      doc = normalize(newProject(keepLibs ? doc.templates : undefined));
+      doc.libVersions = libVersions;
+      setWireStd(std);
+    }
     sel.clear();
     hiddenWires = null;
     afterLoad();
@@ -4047,8 +4305,8 @@
     return d;
   }
 
-  async function loadExample() {
-    if (!confirm("Replace the current diagram with the example? (You can undo this.)")) return;
+  async function loadExample(ask = true) {
+    if (ask && !confirm("Replace the current diagram with the example? (You can undo this.)")) return;
     let ex;
     if (workspace) {
       try { ex = await fetchExample(); }
@@ -4072,21 +4330,71 @@
 
   function openHelp() { $("helpModal").hidden = false; }
 
-  // The welcome tips, shown by themselves the first time DIN Stack is opened in a browser.
-  function openWelcome() {
+  // The start screen, shown each time DIN Stack opens: carry on, start afresh, open a file, or load the
+  // example. In a workspace (e.g. #mechatronics) that's the workspace's example, and it's the suggested
+  // choice. The getting-started tips are open the first time.
+  let hadSaved = false; // set at start: whether this browser had a diagram saved (in this workspace)
+  // On startup the start screen counts down, then carries on with the diagram unless it's used first.
+  let welTimer = null;
+  function stopCountdown() {
+    clearInterval(welTimer);
+    welTimer = null;
+    $("welCountdown").hidden = true;
+  }
+
+  function openWelcome(countdown = false) {
+    const m = $("welcomeModal");
+    // With nothing saved, the diagram behind is the example (a workspace's is still loading), so
+    // "continue" means exploring it.
+    const fresh = !hadSaved && (!!workspace || !ui.welcomed);
+    const name = workspace ? workspace[0].toUpperCase() + workspace.slice(1) + " example" : "example";
+    $("welContinueHead").textContent = fresh ? "Explore the " + name : "Continue";
+    $("welContinueSub").textContent = fresh ? "Look around the example diagram behind this window." : "Carry on with " + (doc.meta.title || "Untitled diagram") + ".";
+    $("welExample").hidden = fresh;
+    $("welExampleHead").textContent = workspace ? "Reload the " + name : "Load the example";
+    $("welExampleSub").textContent = (workspace ? "Replace the diagram with a fresh copy of the " + name : "Replace the diagram with the example, a small 24 V control panel") + ". You can undo this.";
+    $("welcomeTips").open = !ui.welcomed;
+    for (const b of m.querySelectorAll("[data-wel]")) b.classList.remove("primary");
+    // Continue is the default whenever there's a diagram to carry on with.
+    const main = m.querySelector(`[data-wel="${fresh || doc.items.length ? "continue" : workspace ? "example" : "blank"}"]`);
+    main.classList.add("primary");
+    $("welStartup").checked = ui.startScreen;
+    // Only worth asking about libraries when there's more than the built-in one.
+    const extra = libraries().filter((l) => l !== BUILTIN_LIBRARY);
+    $("welBlankCell").classList.toggle("has-opt", extra.length > 0);
+    $("welKeepLibsRow").hidden = !extra.length;
+    $("welKeepLibsRow").title = "Start the new diagram with " + (extra.length ? extra.join(", ") + " as well as the built-in library" : "the built-in library") + ". Untick to start with just the built-in library.";
+    $("welKeepLibs").checked = ui.keepLibs !== false;
     ui.welcomed = true;
     saveUi();
-    $("welcomeModal").hidden = false;
-    $("welcomeModal").querySelector(".primary").focus();
+    m.hidden = false;
+    main.focus();
+    stopCountdown();
+    if (countdown) {
+      let left = 10;
+      const tick = () => {
+        if (left <= 0) { stopCountdown(); m.hidden = true; return; }
+        $("welCountdown").textContent = `Continuing in ${left--} s…`;
+      };
+      $("welCountdown").hidden = false;
+      tick();
+      welTimer = setInterval(tick, 1000);
+    }
   }
 
   $("welcomeModal").addEventListener("click", (e) => {
     const act = e.target.closest("[data-wel]")?.dataset.wel;
     if (!act) return;
+    stopCountdown();
     $("welcomeModal").hidden = true;
-    if (act === "blank") newDiagram(false);
+    if (act === "blank") newDiagram(false, $("welKeepLibsRow").hidden || $("welKeepLibs").checked);
+    if (act === "example") loadExample(false);
+    if (act === "open") $("fileInput").click();
     if (act === "help") openHelp();
   });
+  for (const ev of ["pointerdown", "keydown"]) $("welcomeModal").addEventListener(ev, stopCountdown);
+  $("welStartup").addEventListener("change", (e) => { ui.startScreen = e.target.checked; saveUi(); });
+  $("welKeepLibs").addEventListener("change", (e) => { ui.keepLibs = e.target.checked; saveUi(); });
 
   const commands = {
     new: newDiagram,
@@ -4308,6 +4616,8 @@
   }, true);
 
   new ResizeObserver(() => { applyView(); renderOverlay(); }).observe($("canvasWrap"));
+  $("toolGroup").addEventListener("click", (e) => { const b = e.target.closest("[data-tool]"); if (b) setTool(b.dataset.tool); });
+  setTool(ui.tool === "select" ? "select" : "wire");
   window.addEventListener("beforeunload", () => {
     try { localStorage.setItem(LS_KEY, JSON.stringify(doc)); } catch (e) { /* ignore */ }
   });
@@ -4318,19 +4628,17 @@
   if ("serviceWorker" in navigator && /^https?:$/.test(location.protocol)) {
     navigator.serviceWorker.register("sw.js").catch(() => { /* not installable here; the app still works */ });
   }
-  // First visit: nothing saved in this browser yet and the welcome hasn't been shown. People who used
-  // DIN Stack before the welcome existed already have a saved diagram, so they don't get it.
-  const firstVisit = !ui.welcomed && (() => { try { return !localStorage.getItem(LS_KEY); } catch (e) { return false; } })();
+  hadSaved = (() => { try { return !!localStorage.getItem(LS_KEY); } catch (e) { return false; } })();
   doc = loadInitial();
-  drawerTab = ["wires", "cables", "buses", "parts"].includes(ui.drawerTab) ? ui.drawerTab : "wires";
+  drawerTab = ["wires", "cables", "buses", "parts", "profiles", "cprofiles"].includes(ui.drawerTab) ? ui.drawerTab : "wires";
   $("drawer").classList.toggle("collapsed", !!ui.drawerClosed);
   renderLibrary();
   applyView();
   refresh();
   requestAnimationFrame(fit);
-  if (firstVisit) openWelcome();
+  if (ui.startScreen) openWelcome(true);
   // A new workspace starts as its example, fetched once nothing is saved for it yet.
-  if (workspace && (() => { try { return !localStorage.getItem(LS_KEY); } catch (e) { return true; } })()) {
+  if (workspace && !hadSaved) {
     fetchExample().then((d) => {
       doc = normalize(d);
       sel.clear();

@@ -30,11 +30,11 @@ The library is stored **inside each diagram**:
 A diagram can hold several libraries, and the sidebar shows one at a time. Pick which one with the drop-down at the top of the library:
 
 - **Built-in** holds the types that come with DIN Stack.
-- **My types** holds types you made before libraries existed, and any type with no library set.
+- **This project** holds the object types made or changed in this diagram: new types, duplicates, edited copies of types from other libraries (see [Changing a type that's already in use](#changing-a-type-thats-already-in-use)), and any type with no library set. It's listed first, and only appears once it has a type in it. Diagrams from before 1.9.8 had a *My types* library; its types are now in *This project*.
 - **Each imported library file becomes its own library**, named after the file (see [Saving and sharing a library](#saving-and-sharing-a-library)).
 - **All libraries** shows every type at once. Use it to search across all of them.
 
-The search box searches the library shown. New types go into the library shown (or *My types* when *All libraries* is picked). To move a type to another library, or start a new one, change its **Library** in the designer.
+The search box searches the library shown. New types and duplicates go into *This project*. To move a type to another library, or start a new one, change its **Library** in the designer.
 
 Which library is shown is remembered in your browser and isn't saved with the diagram.
 
@@ -82,6 +82,7 @@ To offer a new library in the list, give it a folder in `libraries/` with the li
 | **AutomationDirect pushbuttons & pilot lights** ([`automationdirect-pushbuttons.json`](../libraries/automationdirect/automationdirect-pushbuttons.json)) | 52 types: 22 mm GCX pushbuttons, selector switches, E-stops and pilot lights (plastic and metal), Fuji Command 30 mm and Eaton HT800 30 mm devices, and Schmersal N (22 mm) and E (30 mm) series devices, their EF contact and light blocks, and NK-T/RK-T joysticks. One type per series and contact arrangement, drawn from the wiring side. |
 | **Misc networking** ([`misc-networking.json`](../libraries/misc-networking/misc-networking.json)) | 5 types: Tripp Lite (Eaton) NGI-U05E 5-port industrial switch and NPOEI-60W-1G PoE++ injector for DIN rail, the StarTech IH2006 HDMI KVM-over-IP transmitter and receiver, and an ASUS computer with six serial ports. |
 | **AACC Mechatronics** ([`aacc-mechatronics.json`](../libraries/aacc-mechatronics/aacc-mechatronics.json)) | 12 types for the AACC Mechatronics panel: TE (Entrelec) ZK2.5 and ZK2.5-4P PI-spring terminal blocks with their EK2.5 end sections, a TB-2503 barrier strip, the Allen-Bradley MicroLogix 1100 PLC (1763-L16AWA, L16BWA, L16BBB and L16DWD), the Siemens SIMATIC NET CSM 1277 switch and PM1207 power supply, and the RHINO PSP05-020S 5 V supply. |
+| **American Electrical fuse holders** ([`american-electrical-fuse-holders.json`](../libraries/american-electrical/american-electrical-fuse-holders.json)) | 8 types: AEI DIN-rail fuse holders for 10 × 38 mm fuses, 30 A 600 V: 2540001 (1-pole), 2540002 (1-pole + N), 2540003 (2-pole), 2540004 (3-pole), 2540005 (3-pole + N), and the LED-indicating 2540011, 2540013 and 2540014 (1-, 2- and 3-pole). |
 
 About the AutomationDirect library:
 
@@ -143,13 +144,20 @@ About the AACC Mechatronics library:
 - **PM1207** (70 × 100 mm) has its input (L, N, PE) along the top and two L+ and two M output terminals along the bottom, as listed in Siemens' datasheet. Which edge each block is on, and the order of the outputs, are assumptions.
 - **RHINO PSP05-020S** is drawn from AutomationDirect's dimension drawing (27 × 75 mm front): output (+V, −V) at the top and input (PE, N, L) at the bottom. The parts list said PSP05-0205, which isn't a part number; PSP05-020S is the 5 V model in the range.
 
+About the American Electrical fuse holders library:
+
+- **Made by ETI** as the EFD 10 fuse-switch disconnector; AEI sells it under its own numbers. Sizes come from ETI's dimension drawing: 17.5 mm per pole along the rail and 81 mm across it. Each type's name ends with its AEI part number, so searching for `2540001` finds it.
+- **Terminals:** each pole has a screw at the top and the bottom, named 1/2, 3/4 and 5/6 from the left. The two sides of a pole aren't linked, since they're only connected while the fuse is in. Screw positions are approximate.
+- **Neutral:** on the + N types, the neutral is the right-hand pole, with both screws named `N` and linked (it has no fuse). That it's on the right is an assumption. AEI lists 2540005 only as "3 pole"; it's drawn as 3-pole + N (70 mm) because it weighs as much as four poles, so check it before relying on it.
+- The LED-indicating types are the same size as the non-indicating ones. AEI's accessories (auxiliary and alarm switches, shunt trips) aren't included.
+
 ## Creating an object type
 
 | To… | Do this |
 | --- | --- |
 | Start from scratch | Click **+ New type** above the library. |
 | Start from a similar type | Hover over it in the library and click **⧉ Duplicate**. |
-| Change an existing type | Hover over it in the library and click **✎ Edit**, or select a part on the diagram and click **Edit object type**. |
+| Change an existing type | Hover over it in the library and click **✎ Edit**, or select a part on the diagram and click **Edit object type**. A type from another library is saved as an edited copy in *This project* (see below). |
 | Remove a type | Hover over it in the library and click **🗑 Delete**. Parts on the diagram that use it are removed too, so you're asked first. |
 
 The designer has the type's settings on the left and a full-size preview on the right, with the terminal table below it. Click **Save** to keep your changes, or **Cancel** (or Esc) to discard them.
@@ -328,6 +336,8 @@ If your relay's datasheet uses numbers like 13/14, 23/24 for its contacts, renam
 - **Every part of a type is drawn from it**, so changing the size, colour or terminal positions updates all of those parts at once.
 - **Renaming a terminal is safe.** Wires stay attached and their labels update.
 - **Deleting a terminal removes the wires attached to it.** The designer warns you before saving how many wires will go. Undo brings them back.
+- **Types from other libraries are copied, not changed.** Editing a type from *Built-in*, a ready-made library or an imported one saves an edited copy in *This project*, and every part on the diagram that used the original switches to the copy. The original stays as it was in its own library, so **Refresh** can't overwrite your changes. The designer says so above its **Save** button. The copy remembers which type it came from; hover over it in the library to see. Saving without changing anything makes no copy.
+- **Types already in *This project* change in place**, as do types whose **Library** you change in the designer (that moves the type instead of copying it).
 - **To make a variant without touching existing parts**, use **Duplicate** and edit the copy.
 - **A part's type can also be changed** from the inspector (**Type**). Wires stay on terminals that have the same internal id in the new type. Duplicated types keep their terminal ids, so swapping between a type and its copy keeps the wiring.
 
@@ -335,7 +345,7 @@ If your relay's datasheet uses numbers like 13/14, 23/24 for its contacts, renam
 
 | Action | Result |
 | --- | --- |
-| **⋯ → Export** | Downloads the library shown, plus your wire profiles, as a file named after the library (for example `my-types.json`). With *All libraries* picked, it downloads `dinstack-library.json` with every type in the diagram. |
+| **⋯ → Export** | Downloads the library shown, plus your wire profiles, as a file named after the library (for example `this-project.json`). With *All libraries* picked, it downloads `dinstack-library.json` with every type in the diagram. |
 | **Import a library file…** (in **⋯**, or the **+** window) | Merges a library file into the current diagram as its own library, and shows it. |
 
 How importing merges:
@@ -358,12 +368,12 @@ A library file is plain JSON, so you can also generate or edit one with a script
 {
   "type": "dinstack-library",
   "app": "1.1.1",
-  "name": "My types",
+  "name": "This project",
   "templates": [
     {
       "id": "u7k2m9q",
       "name": "Relay module, 4-channel",
-      "library": "My types",
+      "library": "This project",
       "category": "Control",
       "mount": "rail",
       "prefix": "K",

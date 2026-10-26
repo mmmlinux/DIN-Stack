@@ -42,6 +42,13 @@
       "name": "AACC Mechatronics",
       "description": "Parts for the AACC Mechatronics panel: TE (Entrelec) ZK2.5 and ZK2.5-4P PI-spring terminal blocks with their EK2.5 end sections, a TB-2503 barrier strip, the Allen-Bradley MicroLogix 1100 PLC (all four 1763-L16 versions), the Siemens CSM 1277 switch and PM1207 power supply, and the RHINO PSP05-020S 5 V supply.",
       "types": 12
+    },
+    {
+      "file": "american-electrical/american-electrical-fuse-holders.json",
+      "version": "1.0.1",
+      "name": "American Electrical fuse holders",
+      "description": "American Electrical (AEI) DIN-rail fuse holders for 10 × 38 mm fuses, 30 A 600 V (ETI EFD 10): 1-, 2- and 3-pole, 1-pole + N and 3-pole + N, and the 1-, 2- and 3-pole LED-indicating versions.",
+      "types": 8
     }
   ]
 }

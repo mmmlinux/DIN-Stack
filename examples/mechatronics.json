@@ -3166,7 +3166,8 @@
       "color": "#d32f2f",
       "stripe": "",
       "gauge": "16 AWG",
-      "conductor": "Stranded"
+      "conductor": "Stranded",
+      "circuit": "+24VDC"
     },
     {
       "id": "c6leg1qr",
@@ -3184,7 +3185,8 @@
       "color": "#1f63c6",
       "stripe": "",
       "gauge": "16 AWG",
-      "conductor": "Stranded"
+      "conductor": "Stranded",
+      "circuit": "+24VDC"
     },
     {
       "id": "cm30xn0d",
@@ -3203,7 +3205,8 @@
       "stripe": "",
       "gauge": "18 AWG",
       "conductor": "Stranded",
-      "follow": false
+      "follow": false,
+      "circuit": "+5VDC"
     },
     {
       "id": "crej5kjd",
@@ -3221,7 +3224,8 @@
       "color": "#1f63c6",
       "stripe": "",
       "gauge": "16 AWG",
-      "conductor": "Stranded"
+      "conductor": "Stranded",
+      "circuit": "+24VDC"
     },
     {
       "id": "cci08chg",
@@ -3240,7 +3244,9 @@
       "stripe": "",
       "gauge": "16 AWG",
       "conductor": "Stranded",
-      "follow": true
+      "follow": true,
+      "circuit": "+24VDC",
+      "labelShow": "name"
     },
     {
       "id": "ceuk5g5b",
@@ -3259,7 +3265,9 @@
       "stripe": "",
       "gauge": "16 AWG",
       "conductor": "Stranded",
-      "follow": true
+      "follow": true,
+      "circuit": "+24VDC",
+      "labelShow": "name"
     },
     {
       "id": "cv2919na",
@@ -3277,7 +3285,8 @@
       "color": "#1f63c6",
       "stripe": "",
       "gauge": "16 AWG",
-      "conductor": "Stranded"
+      "conductor": "Stranded",
+      "circuit": "+24VDC"
     },
     {
       "id": "csehpwa6",
@@ -3295,7 +3304,8 @@
       "color": "#d32f2f",
       "stripe": "",
       "gauge": "16 AWG",
-      "conductor": "Stranded"
+      "conductor": "Stranded",
+      "circuit": "+24VDC"
     },
     {
       "id": "cegsqrmy",
@@ -3314,7 +3324,9 @@
       "stripe": "",
       "gauge": "16 AWG",
       "conductor": "Stranded",
-      "follow": true
+      "follow": true,
+      "circuit": "+24VDC",
+      "labelShow": "name"
     },
     {
       "id": "c3r0j3ma",
@@ -3333,7 +3345,9 @@
       "stripe": "",
       "gauge": "16 AWG",
       "conductor": "Stranded",
-      "follow": true
+      "follow": true,
+      "circuit": "+24VDC",
+      "labelShow": "name"
     },
     {
       "id": "cr5ww1ad",
@@ -3347,12 +3361,13 @@
       },
       "wire": "W21",
       "notes": "",
-      "profile": "wp_l",
+      "profile": "",
       "color": "#1f1f1f",
       "stripe": "",
       "gauge": "16 AWG",
       "conductor": "Stranded",
-      "follow": true
+      "follow": false,
+      "fromCable": true
     },
     {
       "id": "c817x37c",
@@ -3366,12 +3381,13 @@
       },
       "wire": "W22",
       "notes": "",
-      "profile": "wp_n",
+      "profile": "",
       "color": "#f2f2f2",
       "stripe": "",
       "gauge": "16 AWG",
       "conductor": "Stranded",
-      "follow": true
+      "follow": false,
+      "fromCable": true
     },
     {
       "id": "cko9g49p",
@@ -3385,12 +3401,13 @@
       },
       "wire": "W23",
       "notes": "",
-      "profile": "wp_pe",
+      "profile": "",
       "color": "#2e9b3c",
       "stripe": "",
       "gauge": "16 AWG",
       "conductor": "Stranded",
-      "follow": true
+      "follow": false,
+      "fromCable": true
     },
     {
       "id": "cwwr6sym",
@@ -3410,7 +3427,8 @@
       "gauge": "16 AWG",
       "conductor": "Stranded",
       "follow": true,
-      "draw": "break"
+      "draw": "break",
+      "circuit": "+24VDC"
     },
     {
       "id": "cikm3fka",
@@ -3430,7 +3448,8 @@
       "gauge": "16 AWG",
       "conductor": "Stranded",
       "follow": true,
-      "draw": "break"
+      "draw": "break",
+      "circuit": "+24VDC"
     },
     {
       "id": "cb3mpygd",
@@ -3449,7 +3468,8 @@
       "stripe": "",
       "gauge": "16 AWG",
       "conductor": "Stranded",
-      "follow": true
+      "follow": true,
+      "circuit": "+24VDC"
     },
     {
       "id": "c9jvp4f4",
@@ -3468,7 +3488,8 @@
       "stripe": "",
       "gauge": "16 AWG",
       "conductor": "Stranded",
-      "follow": true
+      "follow": true,
+      "circuit": "+24VDC"
     },
     {
       "id": "ctrb742n",
@@ -3487,7 +3508,9 @@
       "stripe": "",
       "gauge": "16 AWG",
       "conductor": "Stranded",
-      "follow": true
+      "follow": true,
+      "circuit": "+24VDC",
+      "labelShow": "name"
     },
     {
       "id": "cjufztzg",
@@ -3506,7 +3529,9 @@
       "stripe": "",
       "gauge": "18 AWG",
       "conductor": "Stranded",
-      "follow": false
+      "follow": false,
+      "circuit": "+5VDC",
+      "labelShow": "name"
     },
     {
       "id": "c4gx8e4u",
@@ -3525,7 +3550,9 @@
       "stripe": "",
       "gauge": "16 AWG",
       "conductor": "Stranded",
-      "follow": true
+      "follow": true,
+      "circuit": "+24VDC",
+      "labelShow": "name"
     }
   ],
   "buses": [
@@ -3548,7 +3575,8 @@
       ],
       "color": "#1f63c6",
       "notes": "",
-      "follow": true
+      "follow": true,
+      "circuit": "+24VDC"
     },
     {
       "id": "bp4s15sp",
@@ -3569,7 +3597,8 @@
       ],
       "color": "#d32f2f",
       "notes": "",
-      "follow": true
+      "follow": true,
+      "circuit": "+24VDC"
     }
   ],
   "wireProfiles": [
@@ -3937,9 +3966,9 @@
     {
       "id": "k7908hkp",
       "label": "C1",
-      "desc": "",
+      "desc": "Power",
       "to": "",
-      "color": "#3a3f45",
+      "color": "#1f1f1f",
       "notes": "",
       "open": true,
       "wires": [
@@ -3950,7 +3979,10 @@
       "pa": null,
       "pb": null,
       "portA": null,
-      "portB": null
+      "portB": null,
+      "profile": "",
+      "shield": false,
+      "twisted": false
     },
     {
       "id": "kos0xe50",

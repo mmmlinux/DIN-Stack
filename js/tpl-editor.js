@@ -80,7 +80,9 @@ const TplEditor = (() => {
     const msgs = [];
     if (outside) msgs.push(`${outside} terminal${outside > 1 ? "s are" : " is"} outside the outline.`);
     if (lost) msgs.push(`Saving will remove ${lost} wire${lost > 1 ? "s" : ""} attached to deleted terminals.`);
-    w.textContent = msgs.join(" ");
+    // With nothing to warn about, the caller's note (if any) says what saving will do.
+    w.textContent = msgs.join(" ") || ed.opts.note || "";
+    w.classList.toggle("note", !msgs.length);
   }
 
   function previewBox() {
@@ -540,7 +542,7 @@ const TplEditor = (() => {
       t.name = t.name.trim();
       if (!t.name) { $("teWarn").textContent = "Give the object type a name."; $("teName").focus(); return; }
       if (!(t.w > 0 && t.h > 0)) { $("teWarn").textContent = "Width and height must be greater than zero."; return; }
-      t.library = (t.library || "").trim() || DEFAULT_LIBRARY;
+      t.library = (t.library || "").trim() || PROJECT_LIBRARY;
       t.category = (t.category || "").trim() || "Custom";
       const done = ed.opts.onSave;
       const copy = JSON.parse(JSON.stringify(t));

@@ -9,5 +9,6 @@ The libraries that come with DIN Stack, loaded from the library manager (**+** b
 | [`amphenol-26482-series-2/`](amphenol-26482-series-2/) | [Amphenol 26482 Series 2 connectors](amphenol-26482-series-2/amphenol-26482-series-2.json) | [Notes](amphenol-26482-series-2/RELEASE_NOTES.md) |
 | [`misc-networking/`](misc-networking/) | [Misc networking](misc-networking/misc-networking.json) | [Notes](misc-networking/RELEASE_NOTES.md) |
 | [`aacc-mechatronics/`](aacc-mechatronics/) | [AACC Mechatronics](aacc-mechatronics/aacc-mechatronics.json) | [Notes](aacc-mechatronics/RELEASE_NOTES.md) |
+| [`american-electrical/`](american-electrical/) | [American Electrical fuse holders](american-electrical/american-electrical-fuse-holders.json) | [Notes](american-electrical/RELEASE_NOTES.md) |
 
 [`index.json`](index.json) lists them for the library manager. The [library guide](../docs/library.md#managing-the-included-libraries) explains how to add one.

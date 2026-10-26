@@ -283,10 +283,6 @@ body.lib-dragging, body.lib-dragging * { cursor: copy !important; user-select: n
 .swatch.gy { background: repeating-linear-gradient(135deg, #2e9b3c 0 4px, #f0c000 4px 8px); }
 .custom-color { display: flex; gap: 6px; align-items: center; font-size: 12px; color: var(--muted); }
 .custom-color input { flex: 1; }
-.stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; padding: 12px 14px 4px; }
-.stat { flex-direction: column; gap: 0; padding: 6px 4px; background: var(--panel-2); border-radius: 8px; }
-.stat b { font-size: 16px; font-variant-numeric: tabular-nums; }
-.stat span { font-size: 11px; color: var(--muted); }
 .term-list { width: 100%; border-collapse: collapse; font-size: 12px; }
 .term-list td { padding: 4px 4px; border-top: 1px solid var(--border); vertical-align: top; }
 .term-list tr:first-child td { border-top: none; }
@@ -326,6 +322,8 @@ body.lib-dragging, body.lib-dragging * { cursor: copy !important; user-select: n
 .float > button { background: none; border-color: transparent; padding: 4px 8px; }
 .float > button:hover { background: var(--panel-3); }
 .float > .icon-btn { padding: 4px; }
+.float > .tool-btn.on { background: var(--accent); color: var(--accent-ink); }
+#canvas.tool-select .term { cursor: pointer; }
 /* Selection filter: the button shows what's allowed, and the drawing gets a crosshair-and-funnel cursor. */
 .float .menu > .icon-btn.filter-on { background: var(--accent); color: var(--accent-ink); }
 .sel-filter-label { font-size: 12px; margin: 0 4px 0 3px; }
@@ -399,13 +397,14 @@ body.lib-dragging, body.lib-dragging * { cursor: copy !important; user-select: n
   width: min(1080px, 100%); max-height: calc(100vh - 32px); display: flex; flex-direction: column;
 }
 .modal.narrow { width: min(560px, 100%); }
-.modal.help-modal { width: min(820px, 100%); height: min(640px, calc(100vh - 32px)); }
+.modal.help-modal { width: min(860px, 100%); height: min(720px, calc(100vh - 32px)); }
 .modal-head { display: flex; align-items: center; justify-content: space-between; padding: 10px 12px 10px 16px; border-bottom: 1px solid var(--border); }
 .modal-head h2 { margin: 0; font-size: 16px; }
 .modal-body { padding: 14px 16px; overflow: auto; min-height: 0; }
 .modal-foot { display: flex; gap: 8px; justify-content: flex-end; align-items: center; padding: 10px 16px; border-top: 1px solid var(--border); }
 .foot-note { margin-right: auto; font-size: 12px; }
 .warn { color: var(--danger); margin-right: auto; font-size: 12px; }
+.warn.note { color: var(--muted); }
 
 /* Settings */
 .set-group { margin-bottom: 16px; }
@@ -415,9 +414,11 @@ body.lib-dragging, body.lib-dragging * { cursor: copy !important; user-select: n
 .set-group .check { margin-bottom: 6px; }
 
 /* Help */
-.help { display: grid; grid-template-columns: 170px minmax(0, 1fr); gap: 0; padding: 0; flex: 1; }
-.help-nav { display: flex; flex-direction: column; gap: 2px; padding: 12px 8px; border-right: 1px solid var(--border); background: var(--panel-2); }
-.help-nav button { justify-content: flex-start; border: none; background: none; padding: 6px 10px; border-radius: 6px; color: var(--muted); }
+.help { display: grid; grid-template-columns: 180px minmax(0, 1fr); grid-template-rows: minmax(0, 1fr); gap: 0; padding: 0; flex: 1; min-height: 0; }
+.help-nav { display: flex; flex-direction: column; gap: 1px; padding: 10px 8px; border-right: 1px solid var(--border); background: var(--panel-2); overflow-y: auto; }
+.help-nav h4 { margin: 8px 2px 3px; padding: 9px 8px 0; border-top: 1px solid var(--border); font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text); }
+.help-nav h4:first-child { margin-top: 2px; padding-top: 0; border-top: none; }
+.help-nav button { justify-content: flex-start; border: none; background: none; padding: 4px 10px; border-radius: 6px; color: var(--muted); }
 .help-nav button:hover { color: var(--text); background: var(--panel-3); }
 .help-nav button.on { background: var(--accent-soft); color: var(--accent); font-weight: 600; }
 .help-panes { padding: 14px 18px; overflow: auto; }
@@ -443,8 +444,25 @@ body.lib-dragging, body.lib-dragging * { cursor: copy !important; user-select: n
 .step-ic { flex: none; display: grid; place-items: center; width: 32px; height: 32px; border-radius: 8px; background: var(--accent-soft); color: var(--accent); }
 .steps li > div > b:first-child { display: block; margin-bottom: 2px; }
 .steps p { margin: 0; color: var(--muted); }
-.welcome-note { font-size: 12px; margin: 16px 0 0; }
+.start-choices { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 8px; }
+.start-choices button {
+  justify-content: flex-start; align-items: flex-start; gap: 12px; padding: 10px 12px; text-align: left;
+  white-space: normal; border-radius: 8px; background: var(--panel);
+}
+.start-choices button:hover { background: var(--accent-soft); }
+.start-choices button.primary { background: var(--accent-soft); color: inherit; border-color: var(--accent); box-shadow: inset 0 0 0 1px var(--accent); }
+.start-choices b { display: block; margin-bottom: 2px; }
+.start-cell { position: relative; display: grid; }
+.start-cell.has-opt button { padding-bottom: 34px; }
+.start-opt { position: absolute; left: 56px; bottom: 10px; margin: 0 !important; font-size: 12px; }
+.start-opt[hidden] { display: none !important; } /* .check would otherwise show it */
+.start-choices small { display: block; color: var(--muted); font-size: 12px; }
+.start-choices .start-count { color: var(--accent); margin-top: 4px; font-variant-numeric: tabular-nums; }
+.start-count[hidden] { display: none; }
+.welcome-tips { margin-top: 14px; }
+.welcome-tips summary { cursor: pointer; color: var(--muted); font-weight: 600; margin-bottom: 10px; }
 .welcome .modal-foot { flex-wrap: wrap; }
+.welcome .modal-foot .check { margin: 0 auto 0 0; }
 
 /* Library chooser */
 .lib-offer { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-top: 1px solid var(--border); }
@@ -561,8 +579,9 @@ label.inline { display: inline-flex; align-items: center; gap: 6px; color: var(-
   .insp-head { position: static; }
   .hint { display: none; }
   .tpl-editor { grid-template-columns: 1fr; }
-  .help { grid-template-columns: 1fr; }
-  .help-nav { flex-direction: row; flex-wrap: wrap; border-right: none; border-bottom: 1px solid var(--border); }
+  .help { grid-template-columns: 1fr; grid-template-rows: auto minmax(0, 1fr); }
+  .help-nav { flex-direction: row; flex-wrap: wrap; border-right: none; border-bottom: 1px solid var(--border); max-height: 38vh; }
+  .help-nav h4 { flex-basis: 100%; margin: 6px 2px 2px; padding-top: 6px; }
 }
 
 /* ---------- Printing ---------- */

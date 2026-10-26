@@ -2,6 +2,95 @@
 
 Changes to the ready-made libraries are listed separately: each library's folder in [`libraries/`](libraries/README.md) has its own release notes.
 
+## 1.9.20 — 2026-10-26
+
+- **Select and Wire tools** at the bottom right of the drawing (keys V and W). With **Select**, clicking a terminal selects its wires, bus bars and plugged-in cable instead of starting a wire; a terminal with nothing on it selects its part. **Wire** works as before. The tool is remembered in this browser.
+
+## 1.9.19 — 2026-10-26
+
+- **Easier to find a cable's other end:** a selected cable's ends (the connectors it plugs into, or the terminals its cores land on) are ringed in bold blue, at a fixed size on screen like a selected wire's. A broken cable also gets a dashed line between its two ends.
+
+## 1.9.18 — 2026-10-26
+
+- **Easier to find a wire's other end:** a selected wire's ends are ringed in bold blue, and the rings keep their size on screen when you zoom out. A wire drawn as stubs also gets a dashed line between its two ends while it's selected.
+
+## 1.9.17 — 2026-10-26
+
+- **New library: American Electrical fuse holders** (version 1.0.1), in the library manager: AEI's 10 × 38 mm DIN-rail fuse holders in 1-, 2- and 3-pole, 1-pole + N and 3-pole + N, and LED-indicating 1-, 2- and 3-pole versions. Details are in its [release notes](libraries/american-electrical/RELEASE_NOTES.md).
+
+## 1.9.16 — 2026-10-26
+
+- The help's topic groups stand out more, with bolder headings and a line between groups.
+
+## 1.9.15 — 2026-10-26
+
+- **Help rewritten as short topics**, grouped under Getting started, Building, Wiring, Cables, Object types, and Output and reference.
+- New help topics: saving and files, rails and notes, libraries, swapping a part's type, lists, printing and exporting, and settings.
+
+## 1.9.14 — 2026-10-26
+
+- **Cable profiles tab** in the lists at the bottom, replacing the cable profiles section in the diagram panel. Clicking a profile selects its cables.
+- The start screen counts down from 10 seconds when DIN Stack opens, then carries on with the current diagram unless it's clicked or a key is pressed.
+
+## 1.9.13 — 2026-10-26
+
+- **D-sub 25 fan-out block** in the built-in *Generic* types: a DIN-rail block with a D-sub 25 socket that breaks out to 25 screw terminals, numbered like the socket's pins.
+- **D-sub 25 cable, shielded** in the cable library (*Control cables*): 25 × 24 AWG cores in DIN 47100 colours, cores 1–25 to pins 1–25.
+
+## 1.9.12 — 2026-10-26
+
+- The start screen's default choice is **Continue** whenever there's a diagram to carry on with, including after opening an example link.
+- Start screen choices reordered: **New diagram**, **Continue**, **Open a file…**, then the example.
+
+## 1.9.11 — 2026-10-26
+
+- Removed the parts, wires, cables and bus bars counters from the diagram panel.
+- **Wire profiles tab** in the lists at the bottom, replacing the wire profiles section in the diagram panel. Clicking a profile selects its wires.
+
+## 1.9.10 — 2026-10-26
+
+- **Updated Mechatronics example:** the 24 V and 5 V circuits are named `+24VDC` and `+5VDC`, several wires are labelled with their circuit name, and the power cable has a black sheath and the description *Power*.
+
+## 1.9.9 — 2026-10-26
+
+- **Connector labels warn before joining named circuits:** a label that would attach a terminal to a differently named circuit now asks first, with the same choices as wires, bus bars and cables.
+- **Select the named circuit or just what's wired:** where a circuit's name reaches beyond its wiring, *Select whole circuit* is split into **Select all of “+24V”** and **Select connected wires**. The circuit panel's buttons show how many each selects.
+
+## 1.9.8 — 2026-10-26
+
+- **Project library:** a new *This project* library holds new types, duplicates, and edited copies of types from other libraries.
+- **Editing a type from another library** saves an edited copy in *This project* and switches the diagram's parts to it, leaving the original unchanged.
+- The *My types* library is renamed *This project*.
+
+## 1.9.7 — 2026-10-26
+
+- **Keep my libraries:** a tick box on the start screen's **New diagram** card chooses whether a new diagram keeps your loaded libraries or starts with only the built-in one.
+
+## 1.9.6 — 2026-10-26
+
+- On the start screen, **Open a file…** and **Load the example** have swapped places.
+
+## 1.9.5 — 2026-10-26
+
+- The start screen always offers **Load the example**, not only on example links.
+
+## 1.9.4 — 2026-10-26
+
+- **New example diagram:** a 24 V control panel with a UPS, replacing the power-supply example. It shows two rails, bus bars, named circuits, broken and line-drawn wires, cables from the cable library (including a patch lead and a one-ended cable), loose parts and notes.
+
+## 1.9.3 — 2026-10-26
+
+- **Swapped parts fit where the old one was:** changing a part's **Type** keeps it on its rail, keeps neighbours snapped against it (a strip opens up or closes in to suit), and pushes aside anything a bigger part would overlap. Cables follow the parts that move.
+
+## 1.9.2 — 2026-10-26
+
+- **Start screen can be turned off:** a tick box on the start screen, and a matching setting under *Starting up* in Settings.
+
+## 1.9.1 — 2026-10-26
+
+- **Start screen every time:** DIN Stack opens with a start screen offering **Continue**, **New diagram** or **Open a file…**. On an example link such as `#mechatronics`, it also offers **Reload the Mechatronics example**.
+- The getting-started tips are a fold-out section of the start screen. **Help → Welcome tips** is now **Help → Start screen**.
+
 ## 1.8.2 — 2026-10-26
 
 - **American wiring is the default.** New drawings use AWG sizes and US colours (black hot, white neutral, green ground). The starter wire profiles are now 16 AWG (18 AWG for control signals), and the built-in example is in AWG. Drawings you already have keep their wire standard. New uses the standard of the drawing you have open, so if yours is metric, switch it once under *Settings → Wire standard*.

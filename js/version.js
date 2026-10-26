@@ -1,2 +1,2 @@
 // Single source of truth for the app version (MAJOR.COMMIT.CHANGE).
-const APP_VERSION = "1.8.2";
+const APP_VERSION = "1.9.20";
