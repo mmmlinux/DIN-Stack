@@ -2,6 +2,27 @@
 
 Changes to the ready-made libraries are listed separately: each library's folder in [`libraries/`](libraries/README.md) has its own release notes.
 
+## 1.8.2 — 2026-10-26
+
+- **American wiring is the default.** New drawings use AWG sizes and US colours (black hot, white neutral, green ground). The starter wire profiles are now 16 AWG (18 AWG for control signals), and the built-in example is in AWG. Drawings you already have keep their wire standard. New uses the standard of the drawing you have open, so if yours is metric, switch it once under *Settings → Wire standard*.
+- **The cable library is in AWG.** Every cable's core sizes and descriptions are in AWG (for example the mains cable is SJOOW 16/3, and the control cable 7×AWG18). A metric drawing still gets the nearest mm² sizes when it adds one.
+- **Power cables in US colours.** Mains cables are black, white and green. Three-phase cables are L1 black, L2 red and L3 blue (the 208/120 V convention), with a white neutral and a green ground. The low-voltage supply cable is red + and black −, and motor and drive cables have a green ground.
+- The Mechatronics example's mains, motor and control cable profiles are updated to match.
+
+## 1.8.1 — 2026-10-26
+
+- **Cable library:** ready-made cable types, each listing its cores, that you add to a drawing's cable profiles. It has Ethernet (Cat5e, Cat6, shielded Industrial Ethernet), PROFINET Type A, PROFIBUS DP, DeviceNet / CANopen, RS-485, M8 and M12 sensor cables (3, 4, 5 and 8 pins), numbered, shielded and LiYY / LiYCY control cables, mains, three-phase, low-voltage, motor and drive cables, and instrument, RTD and type K thermocouple cables. It's built in, so it works offline.
+  - **From a cable:** pick *From the cable library…* in its **Cable profile** drop-down or its right-click menu, then **Use** on a type. That adds the type to the drawing, if it isn't there already, and gives it to the cable.
+  - **Elsewhere:** *Cable library…* in the cable button at the bottom right of the drawing (with cables selected, **Use** gives them the type), *Add from the cable library…* in **Wire and cable profiles**, and *Cable library…* under *Cable profiles* in the right panel.
+  - The library shows which types are already in the drawing. Editing the drawing's copy doesn't change the library; if the copy differs from the library's, **Update** puts the library's back (you're asked first).
+  - In a drawing using American wire sizes, cables added from the library get their core sizes in AWG.
+- **New drawings start with no cable profiles:** add the ones a drawing uses from the cable library. Existing drawings keep their cable profiles, and the five starter profiles are in the library under the same names. *New cable profile* still makes one of your own.
+- **Joining named circuits asks first:** if a new wire, bus bar or cable's cores would join two circuits with different names (say `+24V` to `0V`), a dialog shows the names and where they meet, and asks what to do:
+  - *Call it all +24V* (or the other name) joins them under one name, renamed everywhere in the drawing, and says how many wires, bus bars and connector labels that changes.
+  - *Keep both names* joins them as `+24V / 0V`, as before.
+  - **Don't join** leaves the drawing as it was. For a bus bar or cable, the terminals you picked stay picked so you can change them.
+  - Joins between unnamed circuits, or a named circuit and an unnamed one, don't ask.
+
 ## 1.7.5 — 2026-10-24
 
 - **Circuit names at both ends of lines:** with *Straight* or *Curved* lines, a wire labelled with its circuit's name (e.g. `+24V`) now has the name at each end, where its destination label would be, instead of once at the middle of the line. The middle of the line shows the wire's number when *Wire names* is ticked, as it does for other wires. Cable cores labelled with their circuit's name get it at their ends too, with lines as with stubs.

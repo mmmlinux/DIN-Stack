@@ -140,6 +140,8 @@
     if (s0.labelName === "wire" || s0.labelName === "none") { s0.labelWire = s0.labelName === "wire"; s0.labelName = "dest"; }
     // Cable names in labels became optional in 1.4.31; diagrams from before keep showing them.
     if (!("labelCable" in s0)) s0.labelCable = true;
+    // American became the default wire standard in 1.8.2; diagrams saved without one are metric.
+    if (!("wireStd" in s0)) s0.wireStd = "metric";
     d.settings = Object.assign({}, DEFAULT_SETTINGS, s0);
     // Older diagrams hid the destination labels with a separate tick box; that's the "None" wires mode now.
     if (d.settings.showDest === false) { if (d.settings.lines === "off") d.settings.lines = "none"; d.settings.showDest = true; }
@@ -150,10 +152,17 @@
     d.connections = Array.isArray(d.connections) ? d.connections : [];
     d.buses = Array.isArray(d.buses) ? d.buses : [];
     d.cables = Array.isArray(d.cables) ? d.cables : [];
-    d.wireProfiles = Array.isArray(d.wireProfiles) ? d.wireProfiles : JSON.parse(JSON.stringify(DEFAULT_PROFILES));
+    // The starter profiles are American; older diagrams without profiles get them in their own standard.
+    if (!Array.isArray(d.wireProfiles)) {
+      d.wireProfiles = JSON.parse(JSON.stringify(DEFAULT_PROFILES));
+      for (const p of d.wireProfiles) convertWire(p, profileRole(p), "us", d.settings.wireStd);
+    }
     // How each named circuit's wires are labelled, by circuit name: "name", "dest", or unset to follow the drawing.
     d.circuitLabels = d.circuitLabels && typeof d.circuitLabels === "object" && !Array.isArray(d.circuitLabels) ? d.circuitLabels : {};
-    d.cableProfiles = Array.isArray(d.cableProfiles) ? d.cableProfiles : JSON.parse(JSON.stringify(DEFAULT_CABLE_PROFILES));
+    if (!Array.isArray(d.cableProfiles)) {
+      d.cableProfiles = JSON.parse(JSON.stringify(DEFAULT_CABLE_PROFILES));
+      for (const p of d.cableProfiles) for (const k of p.cores) k.gauge = convertGauge(k.gauge, d.settings.wireStd);
+    }
     // Version of each ready-made library last loaded or refreshed, by library name.
     d.libVersions = d.libVersions && typeof d.libVersions === "object" && !Array.isArray(d.libVersions) ? d.libVersions : {};
     // Only diagrams that use the built-in library get new built-in types; New keeps a custom library as it is.
@@ -963,17 +972,20 @@
     if (picked.length !== cores.length) { toast(`Pick a terminal for each of the ${plural(cores.length, "core")}`); return; }
     const loop = cores.findIndex((k, i) => sameEnd(k.near, picked[i]));
     if (loop >= 0) { toast(`Core ${loop + 1} would start and end on ${refOf(picked[loop])}`); return; }
-    checkpoint();
-    // Every core runs from its old terminal (end A, where pa is) to its new one (end B).
-    cores.forEach((k, i) => { k.c.a = { ...k.near }; k.c.b = { ...picked[i] }; });
-    cb.open = false;
-    delete cb.to;
-    cb.portB = null; // unplugged, if it was plugged in
-    cb.pb = null; // was where the free end lay; now the fan-out point at the new end works itself out
-    busEdit = null;
-    sel = new Set([cb.id]);
-    setHint("");
-    refresh();
+    const key = (e) => e.item + "|" + e.term;
+    askJoin(cores.map((k, i) => [key(k.near), key(picked[i])]), cores.length === 1 ? "This core" : "These cores", () => {
+      checkpoint();
+      // Every core runs from its old terminal (end A, where pa is) to its new one (end B).
+      cores.forEach((k, i) => { k.c.a = { ...k.near }; k.c.b = { ...picked[i] }; });
+      cb.open = false;
+      delete cb.to;
+      cb.portB = null; // unplugged, if it was plugged in
+      cb.pb = null; // was where the free end lay; now the fan-out point at the new end works itself out
+      busEdit = null;
+      sel = new Set([cb.id]);
+      setHint("");
+      refresh();
+    });
   }
 
   function finishCable() {
@@ -1027,23 +1039,27 @@
     if (!busEdit) return;
     if (busEdit.kind === "cable") { finishCable(); return; }
     if (busEdit.terms.length < 2) { toast("Pick at least two terminals for the bus bar"); return; }
-    checkpoint();
-    const terms = busEdit.terms.map(termKeyParts);
-    let b = busEdit.id && busById(busEdit.id);
-    if (b) b.terms = terms;
-    else {
-      b = { id: uid("b"), label: nextBus(), terms, color: "#b87333", notes: "", follow: true };
-      doc.buses.push(b);
-    }
-    // A new bus bar (or a following one with new terminals) takes the colour of the wires in its circuit.
-    if (b.follow) {
-      const src = circuitSource(b);
-      if (src) copyLook(b, src); else b.follow = false;
-    }
-    busEdit = null;
-    sel = new Set([b.id]);
-    setHint("");
-    refresh();
+    // "Don't join" leaves the terminals picked, to change them.
+    const edit = busEdit;
+    askJoin([edit.terms], "This bus bar", () => {
+      checkpoint();
+      const terms = edit.terms.map(termKeyParts);
+      let b = edit.id && busById(edit.id);
+      if (b) b.terms = terms;
+      else {
+        b = { id: uid("b"), label: nextBus(), terms, color: "#b87333", notes: "", follow: true };
+        doc.buses.push(b);
+      }
+      // A new bus bar (or a following one with new terminals) takes the colour of the wires in its circuit.
+      if (b.follow) {
+        const src = circuitSource(b);
+        if (src) copyLook(b, src); else b.follow = false;
+      }
+      busEdit = null;
+      sel = new Set([b.id]);
+      setHint("");
+      refresh();
+    });
   }
 
   function toggleBusTerm(key, onlyAdd) {
@@ -1513,6 +1529,93 @@
     return [...seen.values()].sort(natural);
   }
 
+  // ---------- joining named circuits ----------
+  // A wire, bus bar or cable landing that would join circuits with different names (e.g. +24V to 0V) asks
+  // first. Circuits sharing a name are already one, so ends with different names are different circuits.
+  // joins: lists of "item|term" keys, each list joined together. Returns one entry for each circuit that
+  // would carry several names: { names: every name it would carry, ends: [{ name, names, at: "item|term" }] },
+  // an end for each circuit joined, with its name ("A / B" if it has several) and its names as a list.
+  function namedJoins(joins) {
+    const cn = circuitNames(doc);
+    const parent = new Map(), at = new Map();
+    const find = (n) => { while (parent.get(n) !== n) n = parent.get(n); return n; };
+    for (const keys of joins) {
+      const named = keys.map((k) => [cn.term(k), k]).filter(([n]) => n);
+      for (const [n, k] of named) if (!parent.has(n)) { parent.set(n, n); at.set(n, k); }
+      for (const [n] of named.slice(1)) { const r1 = find(named[0][0]), r2 = find(n); if (r1 !== r2) parent.set(r2, r1); }
+    }
+    const groups = new Map();
+    for (const n of parent.keys()) {
+      const r = find(n);
+      if (!groups.has(r)) groups.set(r, []);
+      groups.get(r).push({ name: n, names: cn.names(at.get(n)), at: at.get(n) });
+    }
+    return [...groups.values()].filter((ends) => ends.length > 1)
+      .map((ends) => ({ ends, names: [...new Set(ends.flatMap((e) => e.names))].sort(natural) }));
+  }
+
+  // Run join() (which makes the change, with its own checkpoint), unless it would join named circuits:
+  // then ask first, and rename them as chosen afterwards. what: e.g. "This wire". cancelled() runs on
+  // "Don't join".
+  let joinAnswer = null;
+  function askJoin(joins, what, join, cancelled) {
+    const found = namedJoins(joins);
+    if (!found.length) { join(); return; }
+    openJoinDialog(found, what);
+    joinAnswer = (picks) => {
+      joinAnswer = null;
+      $("joinModal").hidden = true;
+      if (!picks) { if (cancelled) cancelled(); return; }
+      join();
+      found.forEach((g, i) => { if (picks[i]) nameCircuit(g.ends[0].at, picks[i]); });
+      refresh();
+    };
+  }
+
+  // What calling a join's circuit keep renames: everything in the circuits joined that aren't called just
+  // that already, wherever they are in the drawing. E.g. "3 wires, 1 bus bar and 1 connector label".
+  function renameReach(g, keep) {
+    const conns = new Set(), buses = new Set(), labels = new Set();
+    for (const e of g.ends) {
+      if (e.names.length === 1 && netKey(e.names[0]) === netKey(keep)) continue;
+      const circ = circuitOf(doc, [e.at]);
+      circ.conns.forEach((id) => conns.add(id));
+      circ.buses.forEach((id) => buses.add(id));
+      for (const k of circ.terms) {
+        const p = termKeyParts(k);
+        if (String(itemById(p.item)?.termLabels?.[p.term] || "").trim()) labels.add(k);
+      }
+    }
+    return listText([conns.size && plural(conns.size, "wire"), buses.size && plural(buses.size, "bus bar"), labels.size && plural(labels.size, "connector label")].filter(Boolean));
+  }
+  const listText = (xs) => xs.length > 1 ? xs.slice(0, -1).join(", ") + " and " + xs[xs.length - 1] : xs[0] || "";
+
+  function openJoinDialog(found, what) {
+    const two = found.length === 1 && found[0].ends.length === 2;
+    $("joinTitle").textContent = two ? "Join two named circuits?" : "Join named circuits?";
+    $("joinBody").innerHTML = found.map((g, i) => {
+      const ends = g.ends.map((e) => `<b>${esc(e.name)}</b> (at ${esc(refOf(termKeyParts(e.at)))})`);
+      const opt = (value, title, sub, on) => `<label class="join-opt"><input type="radio" name="join${i}" value="${esc(value)}"${on ? " checked" : ""}><span><b>${esc(title)}</b><span class="muted">${esc(sub)}</span></span></label>`;
+      return `<p>${found.length > 1 ? `${i + 1}. ` : ""}${esc(what)} would join ${two ? `${ends[0]} to ${ends[1]}` : listText(ends)}, making them one circuit.</p>
+        <div class="join-opts">
+          ${g.names.map((n) => {
+            const reach = renameReach(g, n);
+            return opt(n, `Call it all ${n}`, `Renames ${listText(g.names.filter((x) => x !== n))} to ${n}, everywhere in the drawing${reach ? `: ${reach}` : ""}.`);
+          }).join("")}
+          ${opt("", g.names.length > 2 ? "Keep all the names" : "Keep both names", `The circuit is labelled ${g.names.join(" / ")}.`, true)}
+        </div>`;
+    }).join("") + `<p class="hint-text">Joining circuits with different names is often a mistake, such as wiring a supply to its return. <b>Don't join</b> leaves the drawing as it was.</p>`;
+    $("joinModal").hidden = false;
+    $("joinModal").querySelector('[data-join="ok"]').focus();
+  }
+
+  $("joinModal").addEventListener("click", (e) => {
+    const b = e.target.closest("[data-join]");
+    if (!b || !joinAnswer) return;
+    if (b.dataset.join !== "ok") { joinAnswer(null); return; }
+    joinAnswer([...$("joinBody").querySelectorAll(".join-opts")].map((box) => box.querySelector("input:checked")?.value || ""));
+  });
+
   function assignProfile(conns, id) {
     const p = profileById(id);
     for (const c of conns) {
@@ -1537,13 +1640,15 @@
     const same = (e1, e2) => e1.item === e2.item && e1.term === e2.term;
     const dup = doc.connections.find((c) => (same(c.a, a) && same(c.b, b)) || (same(c.a, b) && same(c.b, a)));
     if (dup) { sel = new Set([dup.id]); toast("Those terminals are already connected"); refresh(); return; }
-    checkpoint();
-    const c = { id: uid("c"), a: { ...a }, b: { ...b }, wire: nextWire(), notes: "" };
-    initWire(c);
-    doc.connections.push(c);
-    sel = new Set([c.id]);
-    setHint("");
-    refresh();
+    askJoin([[a.item + "|" + a.term, b.item + "|" + b.term]], "This wire", () => {
+      checkpoint();
+      const c = { id: uid("c"), a: { ...a }, b: { ...b }, wire: nextWire(), notes: "" };
+      initWire(c);
+      doc.connections.push(c);
+      sel = new Set([c.id]);
+      setHint("");
+      refresh();
+    });
   }
 
   // ---------- snapping ----------
@@ -1963,11 +2068,10 @@
   }
 
   function cableProfileEntries(cb) {
-    if (!doc.cableProfiles.length) return [];
     return ["-", { heading: "Cable profile" }, ...doc.cableProfiles.map((p) => ({
       label: p.name, checked: cb.profile === p.id,
       run: () => { checkpoint(); applyCableProfile(cb, p); applyCableCores(cb, "all"); refresh(); },
-    }))];
+    })), { label: "From the cable library…", run: () => openCableLib([cb.id]) }];
   }
 
   function partEntries(it, term) {
@@ -2151,6 +2255,12 @@
     if (!ctx.hidden) { if (e.key === "Escape" || e.key === "Tab") hideCtx(); return; } // the menu has the keyboard
     if (openMenu() && e.key === "Escape") { closeMenus(); return; }
     if (!$("tplModal").hidden) return; // the designer has its own keys
+    if (!$("joinModal").hidden) {
+      // Enter joins, Esc doesn't; a held-down Enter (e.g. the one that finished a bus bar) doesn't count.
+      if (e.key === "Escape") joinAnswer?.(null);
+      else if (e.key === "Enter" && !e.repeat) { e.preventDefault(); $("joinModal").querySelector('[data-join="ok"]').click(); }
+      return;
+    }
     if (DIALOGS.some((id) => !$(id).hidden)) {
       if (e.key === "Escape") for (const id of DIALOGS) $(id).hidden = true;
       return;
@@ -2356,7 +2466,7 @@
     const cprofiles = doc.cableProfiles.length ? `<table class="term-list">${doc.cableProfiles.map((p) => {
       const n = doc.cables.filter((cb) => cb.profile === p.id).length;
       return `<tr><td>${colorChip(p.color)}${esc(p.name)}</td><td class="muted">${esc([p.desc, p.shield && "shielded", p.twisted && "twisted pairs"].filter(Boolean).join(", "))} · ${plural(n, "cable")}</td></tr>`;
-    }).join("")}</table>` : '<p class="muted">No cable profiles yet.</p>';
+    }).join("")}</table>` : '<p class="muted">No cable profiles yet. Add the cables this drawing uses from the cable library.</p>';
     const sub = [m.revision && "Revision " + m.revision, m.date, m.author].filter(Boolean).map(esc).join(" · ");
     return head("Diagram", esc(m.title || "Untitled diagram"), sub || "Nothing selected")
       + `<div class="stats">${stat(parts, "Parts", "parts")}${stat(doc.connections.length, "Wires", "wires")}${stat(doc.cables.length, "Cables", "cables")}${stat(doc.buses.length, "Bus bars", "buses")}</div>`
@@ -2366,7 +2476,7 @@
         ${field("Notes", area("meta.notes", m.notes, 3))}
         <p class="hint-text">Shown on the printout and at the top of exported images. The title is at the top of the window.</p>`)
       + section("diag.profiles", "Wire profiles", profiles + `<div class="btn-row" style="margin-top:8px"><button class="small" data-act="profiles">${ic("edit", "sm")} Edit wire profiles…</button></div>`, doc.wireProfiles.length)
-      + section("diag.cprofiles", "Cable profiles", cprofiles + `<div class="btn-row" style="margin-top:8px"><button class="small" data-act="cprofiles">${ic("edit", "sm")} Edit cable profiles…</button></div>`, doc.cableProfiles.length));
+      + section("diag.cprofiles", "Cable profiles", cprofiles + `<div class="btn-row" style="margin-top:8px"><button class="small" data-act="cableLib" title="Ready-made cable types to add to this drawing">${ic("plus", "sm")} Cable library…</button><button class="small" data-act="cprofiles">${ic("edit", "sm")} Edit cable profiles…</button></div>`, doc.cableProfiles.length));
   }
 
   // Object types to swap a part to, grouped by library.
@@ -2520,9 +2630,10 @@
   }
 
   const cableProfileById = (id) => (id ? doc.cableProfiles.find((p) => p.id === id) : null);
+  const CABLE_LIB_OPT = "__lib"; // the cable profile drop-down's "From the cable library…"
 
   function cableProfileSelect(current) {
-    const opts = [["", "Custom (no profile)"], ...doc.cableProfiles.map((p) => [p.id, [p.name, p.desc].filter(Boolean).join(" — ")])];
+    const opts = [["", "Custom (no profile)"], ...doc.cableProfiles.map((p) => [p.id, [p.name, p.desc].filter(Boolean).join(" — ")]), [CABLE_LIB_OPT, "From the cable library…"]];
     return `<select data-cpf="assign">${mixedOpt(current)}${opts.map(([v, l]) => `<option value="${esc(v)}"${current === v ? " selected" : ""}>${esc(l)}</option>`).join("")}</select>`;
   }
 
@@ -2875,6 +2986,7 @@
     if (el.dataset.cpf === "assign") {
       const { list } = editTargets(el), p = cableProfileById(el.value);
       if (!list.length || el.value === "__mixed") return;
+      if (el.value === CABLE_LIB_OPT) { renderProps(); openCableLib(list.map((cb) => cb.id)); return; }
       checkpoint();
       for (const cb of list) if (p) { applyCableProfile(cb, p); applyCableCores(cb, "all"); } else cb.profile = "";
       refresh();
@@ -2973,6 +3085,7 @@
       case "selChain": selectCircuit(true); break;
       case "profiles": openProfiles(); break;
       case "cprofiles": openProfiles(true); break;
+      case "cableLib": openCableLib(); break;
       case "busNew": startBus(null); break;
       case "busEdit": startBus(target.id); break;
       case "busDone": finishBus(); break;
@@ -3148,7 +3261,7 @@
       // A new core looks like the last one, numbered on from it if that's numbered.
       const p = core.p, last = (p.cores || [])[p.cores?.length - 1];
       const k = last ? { ...last, mark: /^\d+$/.test(last.mark || "") ? String(+last.mark + 1) : "" }
-        : { mark: "", color: "#1f1f1f", stripe: "", gauge: convertGauge("0.75 mm²", doc.settings.wireStd), conductor: "Stranded" };
+        : { mark: "", color: "#1f1f1f", stripe: "", gauge: convertGauge("18 AWG", doc.settings.wireStd), conductor: "Stranded" };
       if (!profCheckpointed) { checkpoint(); profCheckpointed = true; }
       p.cores = [...(p.cores || []), k];
       cableProfileChanged(p);
@@ -3184,6 +3297,106 @@
     const last = inputs[inputs.length - 1];
     last.focus();
     last.select();
+  });
+  $("cprofLib").addEventListener("click", () => openCableLib());
+
+  // ---------- the cable library ----------
+  // Ready-made cable types (CABLE_LIBRARY, in cables.js) to add to the drawing's cable profiles. One added
+  // keeps the library's id, so the library shows which are in the drawing and whether its copy differs.
+  // Opened for some cables (cableLibFor: their ids), Use also gives the type to them.
+  let cableLibFor = null;
+
+  // A library cable as this drawing would have it: a copy, with its sizes in mm² in a metric drawing.
+  function libCableCopy(lp) {
+    const { category, ...p } = JSON.parse(JSON.stringify(lp));
+    for (const k of p.cores) k.gauge = convertGauge(k.gauge, doc.settings.wireStd);
+    return p;
+  }
+
+  // Whether two cable profiles describe the same cable (ids aside).
+  function sameCable(p, q) {
+    const txt = (x, f) => x[f] || "";
+    const ks = (x) => x.cores || [];
+    return ["name", "color", "desc", "notes"].every((f) => txt(p, f) === txt(q, f))
+      && !!p.shield === !!q.shield && !!p.twisted === !!q.twisted
+      && ks(p).length === ks(q).length
+      && ks(p).every((k, i) => ["mark", "color", "stripe", "gauge", "conductor"].every((f) => txt(k, f) === txt(ks(q)[i], f)));
+  }
+
+  // Put a cable profile into the drawing, replacing the one with its id, and pass it on to its cables.
+  function mergeCableProfile(p) {
+    const i = doc.cableProfiles.findIndex((x) => x.id === p.id);
+    if (i >= 0) doc.cableProfiles[i] = p; else doc.cableProfiles.push(p);
+    for (const cb of doc.cables) if (cb.profile === p.id) { applyCableProfile(cb, p); applyCableCores(cb); }
+    return p;
+  }
+
+  function openCableLib(forIds) {
+    cableLibFor = forIds && forIds.length ? forIds : null;
+    $("cableLibSearch").value = "";
+    renderCableLib();
+    $("cableLib").hidden = false;
+    $("cableLibSearch").focus();
+  }
+
+  function renderCableLib() {
+    const q = $("cableLibSearch").value.trim().toLowerCase();
+    const forCbs = (cableLibFor || []).map(cableById).filter(Boolean);
+    const who = forCbs.length === 1 ? `cable ${forCbs[0].label || ""}`.trim() : plural(forCbs.length, "cable");
+    $("cableLibFor").hidden = !forCbs.length;
+    $("cableLibFor").innerHTML = forCbs.length ? `Picking a type for <b>${esc(who)}</b>: <b>Use</b> adds it to this drawing, if it isn't already, and gives it to ${forCbs.length === 1 ? "the cable" : "them"}.` : "";
+    let s = "";
+    for (const cat of [...new Set(CABLE_LIBRARY.map((p) => p.category))]) {
+      const list = CABLE_LIBRARY.filter((p) => p.category === cat && (!q || [p.name, p.desc, p.notes, cat].join(" ").toLowerCase().includes(q)));
+      if (!list.length) continue;
+      s += `<h3 class="cable-lib-cat">${esc(cat)}</h3>`;
+      for (const lp of list) {
+        const copy = libCableCopy(lp), mine = cableProfileById(lp.id);
+        const differs = mine && !sameCable(mine, copy);
+        const n = doc.cables.filter((cb) => cb.profile === lp.id).length;
+        const facts = [lp.desc, plural(copy.cores.length, "core"), lp.shield && "shielded", lp.twisted && "twisted pairs"].filter(Boolean).join(" · ");
+        const status = mine ? (differs ? "In this drawing, changed from the library's" : "In this drawing") + (n ? ` · used by ${plural(n, "cable")}` : "") : "";
+        const btns = (forCbs.length ? `<button class="small primary" data-cl="use" title="${mine ? "Give this drawing's copy to the cable" : "Add it to this drawing and give it to the cable"}${forCbs.length === 1 ? "" : "s"}">Use</button>` : "")
+          + (!mine ? `<button class="small${forCbs.length ? "" : " primary"}" data-cl="add" title="Add it to this drawing's cable profiles">Add</button>`
+            : differs ? `<button class="small" data-cl="update" title="Replace this drawing's copy with the library's">Update</button>` : "");
+        s += `<div class="lib-offer${mine ? " loaded" : ""}" data-clid="${esc(lp.id)}">
+          <div class="meta">
+            <div class="name">${colorChip(lp.color)}${esc(lp.name)}</div>
+            <div class="size">${esc(facts)}</div>
+            <div class="cable-lib-cores">${copy.cores.map((k, i) => `<span title="Core ${i + 1}: ${esc(coreText(k))}">${colorChip(k.color, k.stripe)}</span>`).join("")}</div>
+            ${lp.notes ? `<div class="size">${esc(lp.notes)}</div>` : ""}
+            ${status ? `<div class="status">${esc(status)}</div>` : ""}
+          </div>
+          <div class="actions">${btns}</div>
+        </div>`;
+      }
+    }
+    $("cableLibList").innerHTML = s || '<p class="muted">No cables match.</p>';
+  }
+
+  $("cableLibSearch").addEventListener("input", renderCableLib);
+  $("cableLibList").addEventListener("click", (e) => {
+    const b = e.target.closest("[data-cl]");
+    if (!b) return;
+    const lp = CABLE_LIBRARY.find((p) => p.id === b.closest("[data-clid]").dataset.clid), act = b.dataset.cl;
+    const mine = cableProfileById(lp.id);
+    if (act === "update") {
+      const n = doc.cables.filter((cb) => cb.profile === lp.id).length;
+      if (!confirm(`Replace this drawing's “${mine.name}” with the library's? Changes made to it in this drawing are lost${n ? `, and its ${plural(n, "cable")} change to match` : ""}. (You can undo this.)`)) return;
+    }
+    checkpoint();
+    // Use keeps the drawing's copy if it has one; Add and Update take the library's.
+    const p = act === "use" && mine ? mine : mergeCableProfile(libCableCopy(lp));
+    if (act === "use") {
+      const cbs = (cableLibFor || []).map(cableById).filter(Boolean);
+      for (const cb of cbs) { applyCableProfile(cb, p); applyCableCores(cb, "all"); }
+      cableLibFor = null;
+      $("cableLib").hidden = true;
+      toast(`${cbs.length === 1 ? `${cbs[0].label || "The cable"} is` : `${plural(cbs.length, "cable")} are`} now “${p.name}”`);
+    } else toast(act === "update" ? `Updated “${p.name}” from the cable library` : `Added “${p.name}” to this drawing's cable profiles`);
+    refresh();
+    if (!$("profModal").hidden) renderProfiles();
+    if (!$("cableLib").hidden) renderCableLib();
   });
 
   // Edit a profile field and push the change to every wire that follows the profile.
@@ -3226,7 +3439,7 @@
   });
   $("profAdd").addEventListener("click", () => {
     checkpoint();
-    doc.wireProfiles.push({ id: uid("wp"), name: "New profile", color: "#1f1f1f", gauge: convertGauge("1 mm²", doc.settings.wireStd), conductor: "Stranded" });
+    doc.wireProfiles.push({ id: uid("wp"), name: "New profile", color: "#1f1f1f", gauge: convertGauge("18 AWG", doc.settings.wireStd), conductor: "Stranded" });
     renderProfiles();
     refresh();
     const inputs = $("profRows").querySelectorAll('[data-f="name"]');
@@ -3545,9 +3758,7 @@
     }
     for (const p of Array.isArray(d.cableProfiles) ? d.cableProfiles : []) {
       if (!p || !p.id || !p.name) continue;
-      const i = doc.cableProfiles.findIndex((x) => x.id === p.id);
-      if (i >= 0) doc.cableProfiles[i] = p; else doc.cableProfiles.push(p);
-      for (const cb of doc.cables) if (cb.profile === p.id) { applyCableProfile(cb, p); applyCableCores(cb); }
+      mergeCableProfile(p);
       profiles++;
     }
     const names = [...libs];
@@ -3815,7 +4026,7 @@
 
   // ---------- commands: toolbar, menus and dialog buttons ----------
   // Dialogs that Esc and a click on the backdrop close (the designer handles its own).
-  const DIALOGS = ["helpModal", "profModal", "libChooser", "settingsModal", "welcomeModal"];
+  const DIALOGS = ["helpModal", "profModal", "libChooser", "settingsModal", "welcomeModal", "cableLib"];
 
   function newDiagram(ask = true) {
     if (ask && !confirm("Start a new, empty diagram? Your object library is kept. (You can undo this.)")) return;
@@ -3899,6 +4110,8 @@
     libRefreshAll: refreshAllLibraries,
     libImport: () => { $("libChooser").hidden = true; $("libFileInput").click(); },
     libExport: exportLibrary,
+    // With cables selected, the library can give them the type picked.
+    cableLib: () => openCableLib([...sel].filter((id) => cableById(id))),
   };
 
   // Drop-down menus: a [data-menu] button opens the menu-list with that id.

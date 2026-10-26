@@ -462,6 +462,23 @@ body.lib-dragging, body.lib-dragging * { cursor: copy !important; user-select: n
 .lib-offer .actions { display: flex; gap: 6px; flex-shrink: 0; }
 .lib-offer a { color: var(--accent); }
 
+/* Cable library */
+.cable-lib-search { width: 100%; margin-bottom: 4px; }
+.cable-lib-for { padding: 6px 10px; border-radius: 6px; background: var(--panel-2); }
+.cable-lib-cat { margin: 14px 0 0; font-size: 13px; }
+.cable-lib-cat + .lib-offer { border-top: none; }
+.lib-offer .name .chip { margin-right: 6px; }
+.cable-lib-cores { display: flex; flex-wrap: wrap; gap: 2px; margin: 3px 0 1px; }
+.cable-lib-cores .chip { margin: 0; }
+
+/* Joining named circuits */
+.join-opts { display: flex; flex-direction: column; gap: 6px; margin: 0 0 12px; }
+.join-opt { display: flex; gap: 8px; align-items: flex-start; padding: 6px 8px; border: 1px solid var(--border); border-radius: 6px; cursor: pointer; }
+.join-opt:has(input:checked) { border-color: var(--accent); }
+.join-opt input { margin-top: 2px; }
+.join-opt > span { display: flex; flex-direction: column; gap: 1px; }
+.join-opt .muted { font-size: 12px; }
+
 /* Object type designer */
 .tpl-editor { display: grid; grid-template-columns: 290px minmax(0, 1fr); gap: 16px; }
 .tpl-form { display: flex; flex-direction: column; gap: 10px; }

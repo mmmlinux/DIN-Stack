@@ -3786,7 +3786,7 @@
       "id": "cp_motor",
       "name": "Motor cable, shielded",
       "color": "#ef7d00",
-      "desc": "4G1.5 + 2×0.75",
+      "desc": "3×16 AWG + ground + 2×18 AWG",
       "shield": true,
       "twisted": false,
       "notes": "Brake / thermistor pair: cores 5 and 6",
@@ -3814,7 +3814,7 @@
         },
         {
           "mark": "",
-          "color": "gy",
+          "color": "#2e9b3c",
           "stripe": "",
           "gauge": "16 AWG",
           "conductor": "Stranded"
@@ -3839,7 +3839,7 @@
       "id": "cp_ctrl",
       "name": "Control cable",
       "color": "#8a8f96",
-      "desc": "7G0.75 LiYY",
+      "desc": "7×AWG18 numbered",
       "shield": false,
       "twisted": false,
       "notes": "Numbered black cores",
@@ -3899,28 +3899,28 @@
       "id": "cp_mains",
       "name": "Mains cable",
       "color": "#1f1f1f",
-      "desc": "3G1.5 H07RN-F",
+      "desc": "SJOOW 16/3",
       "shield": false,
       "twisted": false,
-      "notes": "",
+      "notes": "Black hot, white neutral, green ground",
       "cores": [
         {
           "mark": "",
-          "color": "#7a4a25",
+          "color": "#1f1f1f",
           "stripe": "",
           "gauge": "16 AWG",
           "conductor": "Stranded"
         },
         {
           "mark": "",
-          "color": "#1f63c6",
+          "color": "#f2f2f2",
           "stripe": "",
           "gauge": "16 AWG",
           "conductor": "Stranded"
         },
         {
           "mark": "",
-          "color": "gy",
+          "color": "#2e9b3c",
           "stripe": "",
           "gauge": "16 AWG",
           "conductor": "Stranded"

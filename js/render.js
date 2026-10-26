@@ -277,7 +277,8 @@ function forEachName(items, tpls, conns, buses, fn) {
   for (const b of buses) if (netKey(b.circuit)) fn(b.circuit.trim(), b.terms[0].item + "|" + b.terms[0].term);
 }
 
-// Circuit names for the whole diagram: { conn: Map id -> name, bus: Map id -> name, term("item|term") -> name }.
+// Circuit names for the whole diagram: { conn: Map id -> name, bus: Map id -> name, term("item|term") -> name,
+// names("item|term") -> the circuit's names as a list }.
 // A circuit carrying several different names gets them all, joined with " / ".
 function circuitNames(doc) {
   const items = itemMap(doc), tpls = tplMap(doc);
@@ -290,17 +291,18 @@ function circuitNames(doc) {
     const m = byRoot.get(r);
     if (!m.has(netKey(name))) m.set(netKey(name), name);
   });
-  const nameOf = (k) => {
+  const namesOf = (k) => {
     const m = byRoot.get(find(k));
-    return m ? [...m.values()].sort((a, b) => a.localeCompare(b, undefined, { numeric: true })).join(" / ") : "";
+    return m ? [...m.values()].sort((a, b) => a.localeCompare(b, undefined, { numeric: true })) : [];
   };
-  const out = { conn: new Map(), bus: new Map(), term: nameOf };
+  const nameOf = (k) => namesOf(k).join(" / ");
+  const out = { conn: new Map(), bus: new Map(), term: nameOf, names: namesOf };
   for (const c of conns) out.conn.set(c.id, nameOf(c.a.item + "|" + c.a.term));
   for (const b of buses) out.bus.set(b.id, nameOf(b.terms[0].item + "|" + b.terms[0].term));
   return out;
 }
 
-// Everything in the same circuit(s) as the given wires / bus bars:
+// Everything in the same circuit(s) as the given wires / bus bars (or terminals, as "item|term"):
 // { conns: Set of ids, buses: Set of ids, terms: Set of "item|term" }. opt as for buildCircuits.
 function circuitOf(doc, ids, opt) {
   const items = itemMap(doc), tpls = tplMap(doc);
@@ -311,6 +313,7 @@ function circuitOf(doc, ids, opt) {
   const roots = new Set();
   for (const c of conns) if (ids.includes(c.id)) roots.add(find(key(c.a)));
   for (const b of buses) if (ids.includes(b.id)) roots.add(find(key(b.terms[0])));
+  for (const id of ids) if (String(id).includes("|")) roots.add(find(id));
   const out = { conns: new Set(), buses: new Set(), terms: new Set() };
   if (!roots.size) return out;
   for (const c of conns) if (roots.has(find(key(c.a)))) out.conns.add(c.id);

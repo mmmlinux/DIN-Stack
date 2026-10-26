@@ -168,6 +168,8 @@
               <button data-cables="break" role="menuitemradio" title="Each cable is a short tail at each end with a break, labelled with where the other end goes, e.g. K1"><span>Broken (tails)</span><svg class="ic sm check"><use href="#i-check"/></svg></button>
               <div class="menu-sep"></div>
               <button data-wopt="labelCable" role="menuitemcheckbox" title="The cable's name in its labels: along the sheath, and ahead of where it goes, e.g. C1 → K1"><span>Cable names</span><svg class="ic sm check"><use href="#i-check"/></svg></button>
+              <div class="menu-sep"></div>
+              <button data-cmd="cableLib" role="menuitem" title="Ready-made cable types to add to this drawing, or to give the cables selected"><span>Cable library…</span></button>
             </div>
           </div>
           <div class="menu">
@@ -422,9 +424,9 @@
               <li><b>Show only these wires</b> (right-click selected wires, or under <i>Wiring</i> in the right panel) hides every other wire on the drawing, to follow a few at a time. The view tools at the bottom right show how many are shown; click <b>Show all</b> there to bring the rest back. Printouts and exported images always include every wire.</li>
               <li>Click a label or line to set the wire number, colour, size and notes in the inspector.</li>
               <li><b>Stripe</b> adds a tracer stripe, e.g. red with a white stripe. It's drawn as short dashes over the base colour and listed as "Red/White".</li>
-              <li><b>Wire profiles</b> (e.g. "+24 V DC, red, 1.5 mm², stranded") are named wire types. Edit them from the inspector with nothing selected, or with <b>Edit…</b> next to a wire's profile. Assign one to a wire, or to several selected wires at once. Editing a profile updates all its wires.</li>
+              <li><b>Wire profiles</b> (e.g. "+24 V DC, red, 16 AWG, stranded") are named wire types. Edit them from the inspector with nothing selected, or with <b>Edit…</b> next to a wire's profile. Assign one to a wire, or to several selected wires at once. Editing a profile updates all its wires.</li>
               <li>A new wire added to a circuit that already has wires <b>matches them</b> (profile, colour, size, conductor) and keeps following: change the feed wire by hand and the matching wires change with it. Changing a wire by hand stops it following; tick <b>Match the circuit</b> to turn it back on. Bus bars work the same way for their colour.</li>
-              <li><b>Wire standard</b> in Settings switches between metric (mm², brown line, blue neutral, green/yellow earth) and American (AWG, black hot, white neutral, green ground). Existing wires and profiles are converted to the nearest size.</li>
+              <li><b>Wire standard</b> in Settings switches between American (AWG, black hot, white neutral, green ground) and metric (mm², brown line, blue neutral, green/yellow earth). Existing wires and profiles are converted to the nearest size. New diagrams use the same standard as the one you have open; the first one is American.</li>
             </ul>
           </section>
           <section data-pane="h-cable" hidden>
@@ -436,6 +438,7 @@
               <li><b>Cable connectors</b> are sockets that take a cable's plug rather than single wires, such as the RJ45 ports on an <i>Ethernet switch</i> or the socket on a motor. Drag from one connector to another to plug a cable in between them, as with a patch lead, or from a connector to a terminal for a cable plugged in at one end with a core landing on the terminal. Right-click a connector for <i>Plug in a cable…</i>, <i>Select cable</i> or <i>Unplug the cable</i>.</li>
               <li>A cable whose cores land on terminals can plug into a connector at its other end, such as a motor cable from a drive's U, V, W and PE to the motor's socket. While picking its terminals, click the connector too, or use <b>Plug into a connector…</b> on its other end. Plugging in or freeing one end of a bundle of wires takes them off their terminals at that end: they become the cable's cores (you're asked first).</li>
               <li><b>Cable profiles</b> are named cable types: sheath colour, type (e.g. Cat6 S/FTP), <i>Shielded</i>, <i>Twisted pairs</i> and notes. Pick one under <b>Cable profile</b> in a cable's panel, and edit them with <i>Edit cable profiles…</i> (in the right panel with nothing selected). A shielded cable is drawn with a dashed outline along its sheath.</li>
+              <li><b>The cable library</b> has ready-made cable types (Ethernet, PROFINET, PROFIBUS, M8 and M12 sensor cables, control, power, motor and instrument cables) with their cores. Add the ones a drawing uses to its cable profiles: pick <i>From the cable library…</i> in a cable's <b>Cable profile</b> drop-down or its right-click menu to add one and give it to the cable, or open <i>Cable library…</i> from the cable button at the bottom right of the drawing or the <i>Cable profiles</i> section of the right panel. New drawings start with no cable profiles. Editing a drawing's copy doesn't change the library; <b>Update</b> in the library replaces a copy that differs.</li>
               <li><b>Cores in a cable profile:</b> click <b>Cores</b> on a cable profile to list the cores it contains, in order, each with a marking (e.g. 1, 2… on numbered cores), colour, stripe, size and conductor. A cable given that profile gives its cores those looks, core 1 first, and editing them updates its cables. A core changed by hand keeps its own look until the profile is picked for the cable again. With no cores listed, the wires inside a cable keep their own looks. A patch lead lists its profile's cores in its panel, and when you fan out one of its ends, the bar at the top says which core comes next.</li>
               <li><b>One-ended cables:</b> when the other end isn't on the drawing, right-click empty space → <b>Cable…</b> (or right-click a terminal → <i>Cable from here…</i>), click the terminals its cores go to, and press Enter or <b>Done</b> in the bar at the top. The sheath runs off to a free end; fill in <b>Goes to</b> (e.g. "Pump P1") to label it. Each core is a wire, referenced as C1-1, C1-2…</li>
               <li><b>Drawing the other end later:</b> right-click the cable → <i>Fan out to terminals…</i> under its free or plugged-in end (also in its panel's <b>Ends</b> section), then click the terminal each core goes to, in core order: core 1, then core 2, and so on. The bar at the top says which core is next. Press Enter or <b>Done</b> once every core has a terminal, and the cable is drawn with both ends, like wires bundled into a cable.</li>
@@ -452,6 +455,7 @@
               <li>A selected wire also lights up the rest of its circuit in lighter blue: every wire connected to it, including through the other side of a terminal block. Which terminals are connected inside a part is set with <b>Link</b> in the object type designer.</li>
               <li><b>Select whole circuit</b> selects everything in it. <b>Select daisy chain</b> selects only the wires and bus bars joined at the same terminals, such as a jumper chain along the tops of a strip, without crossing to the other side of the terminal blocks.</li>
               <li><b>Circuit names:</b> select a wire and type a <b>Circuit name</b> (e.g. <code>+24V</code>). The whole circuit takes the name, and it shows in the wire list.</li>
+              <li><b>Joining named circuits:</b> if a new wire, bus bar or cable's cores would join two circuits with different names (say <code>+24V</code> to <code>0V</code>), you're asked first. Pick <i>Call it all +24V</i> (or the other name) to join them under one name, renamed everywhere in the drawing, <i>Keep both names</i> to join them as <code>+24V / 0V</code>, or <b>Don't join</b> to leave the drawing as it was.</li>
               <li><b>Circuit name or where it goes:</b> <i>Circuit's labels show</i> picks whether a named circuit's wires are labelled with its name (<code>+24V</code>) or with where each wire goes (<code>TB101-1</code>). <i>This wire's label shows</i> overrides that for one wire, so most of a +24V circuit can just say <code>+24V</code> while the wires you care about show where they land. Right-click wires → <i>Label shows</i> does the same for several at once.</li>
               <li><b>Connector labels:</b> select a part and type a label next to a terminal under <i>Terminals</i>. The label is drawn at the terminal as a boxed tag, so you don't have to draw a wire from where it comes from (handy for power feeds). Terminals and wires with the same name are treated as one circuit.</li>
             </ul>
@@ -559,14 +563,46 @@
         </table>
         <div class="btn-row"><button id="profAdd" class="small primary"><svg class="ic sm"><use href="#i-plus"/></svg> Add profile</button></div>
         <h3 id="cprofHead" class="prof-sub">Cable profiles</h3>
-        <p class="muted">A cable profile is a named cable type: its sheath colour, type (e.g. Cat6 S/FTP), whether it's shielded or has twisted pairs, any notes, and the cores it contains. Cables assigned to a profile follow it, and editing it here updates all of them. Click <b>Cores</b> to list its cores in order, each with a marking, colour, stripe, size and conductor: a cable's cores then take those looks, core 1 first. With no cores listed, the wires inside a cable keep their own looks.</p>
+        <p class="muted">A cable profile is a named cable type. Add the ones this drawing uses from the <b>cable library</b>, or make your own. Each has its sheath colour, type (e.g. Cat6 S/FTP), whether it's shielded or has twisted pairs, any notes, and the cores it contains. Cables assigned to a profile follow it, and editing it here updates all of them. Click <b>Cores</b> to list its cores in order, each with a marking, colour, stripe, size and conductor: a cable's cores then take those looks, core 1 first. With no cores listed, the wires inside a cable keep their own looks.</p>
         <table class="term-table cprof-table">
           <thead><tr><th>Name</th><th>Sheath</th><th>Type</th><th>Shielded</th><th>Twisted pairs</th><th>Notes</th><th>Cores</th><th>Cables</th><th></th></tr></thead>
           <tbody id="cprofRows"></tbody>
         </table>
-        <div class="btn-row"><button id="cprofAdd" class="small primary"><svg class="ic sm"><use href="#i-plus"/></svg> Add cable profile</button></div>
+        <div class="btn-row"><button id="cprofLib" class="small primary" title="Ready-made cable types to add to this drawing"><svg class="ic sm"><use href="#i-plus"/></svg> Add from the cable library…</button><button id="cprofAdd" class="small" title="Make a cable profile of your own"><svg class="ic sm"><use href="#i-plus"/></svg> New cable profile</button></div>
       </div>
       <div class="modal-foot"><button data-close="profModal" class="primary">Done</button></div>
+    </div>
+  </div>
+
+  <!-- Cable library: ready-made cable types to add to the drawing -->
+  <div class="modal-back" id="cableLib" hidden>
+    <div class="modal narrow">
+      <div class="modal-head">
+        <h2>Cable library</h2>
+        <button class="icon-btn" data-close="cableLib" title="Close"><svg class="ic"><use href="#i-x"/></svg></button>
+      </div>
+      <div class="modal-body">
+        <p class="muted" style="margin-top:0">Ready-made cable types. <b>Add</b> puts one in this drawing's cable profiles, for its cables to use; edit your copy under <i>Edit cable profiles…</i> without changing the library. <b>Update</b> replaces a copy that differs from the library's. All of these can be undone.</p>
+        <p id="cableLibFor" class="cable-lib-for" hidden></p>
+        <input id="cableLibSearch" type="search" class="cable-lib-search" placeholder="Search cables, e.g. Cat6, M12, shielded" aria-label="Search the cable library">
+        <div id="cableLibList"></div>
+      </div>
+      <div class="modal-foot"><button data-close="cableLib" class="primary">Done</button></div>
+    </div>
+  </div>
+
+  <!-- Joining circuits with different names -->
+  <div class="modal-back" id="joinModal" hidden>
+    <div class="modal narrow" role="alertdialog" aria-labelledby="joinTitle" aria-describedby="joinBody">
+      <div class="modal-head">
+        <h2 id="joinTitle">Join two named circuits?</h2>
+        <button class="icon-btn" data-join="cancel" title="Don't join (Esc)"><svg class="ic"><use href="#i-x"/></svg></button>
+      </div>
+      <div class="modal-body" id="joinBody"></div>
+      <div class="modal-foot">
+        <button data-join="cancel" title="Leave the drawing as it was (Esc)">Don't join</button>
+        <button data-join="ok" class="primary" title="Join them, and rename as picked (Enter)">Join</button>
+      </div>
     </div>
   </div>
 
@@ -580,6 +616,7 @@
 
   <script src="js/version.js"></script>
   <script src="js/defaults.js"></script>
+  <script src="js/cables.js"></script>
   <script src="js/render.js"></script>
   <script src="js/tpl-editor.js"></script>
   <script src="js/app.js"></script>

@@ -86,34 +86,26 @@ function convertWire(o, role, from, to) {
 const CONDUCTORS = ["Stranded", "Solid"];
 
 // Starter wire profiles: named presets of colour, size and conductor that wires can be assigned to.
+// They're American (AWG, US colours); a metric drawing gets them converted with convertWire.
 const DEFAULT_PROFILES = [
-  { id: "wp_24v", name: "+24 V DC", color: "#d32f2f", gauge: "1.5 mm²", conductor: "Stranded" },
-  { id: "wp_0v", name: "0 V DC", color: "#1f63c6", gauge: "1.5 mm²", conductor: "Stranded" },
-  { id: "wp_pe", name: "Protective earth", color: "gy", gauge: "1.5 mm²", conductor: "Stranded" },
-  { id: "wp_l", name: "AC line", color: "#7a4a25", gauge: "1.5 mm²", conductor: "Stranded" },
-  { id: "wp_n", name: "AC neutral", color: "#123a7a", gauge: "1.5 mm²", conductor: "Stranded" },
-  { id: "wp_sig", name: "Control signal", color: "#7b3fb0", gauge: "0.75 mm²", conductor: "Stranded" },
+  { id: "wp_24v", name: "+24 V DC", color: "#d32f2f", gauge: "16 AWG", conductor: "Stranded" },
+  { id: "wp_0v", name: "0 V DC", color: "#1f63c6", gauge: "16 AWG", conductor: "Stranded" },
+  { id: "wp_pe", name: "Ground (PE)", color: "#2e9b3c", gauge: "16 AWG", conductor: "Stranded" },
+  { id: "wp_l", name: "AC hot (line)", color: "#1f1f1f", gauge: "16 AWG", conductor: "Stranded" },
+  { id: "wp_n", name: "AC neutral", color: "#f2f2f2", gauge: "16 AWG", conductor: "Stranded" },
+  { id: "wp_sig", name: "Control signal", color: "#7b3fb0", gauge: "18 AWG", conductor: "Stranded" },
 ];
 
-// Starter cable profiles: named cable types (sheath colour, type, shield, twisted pairs) that cables can follow.
+// Cable profiles: named cable types (sheath colour, type, shield, twisted pairs) that cables can follow.
 // A profile can list the cores it contains, in order ({ mark, color, stripe, gauge, conductor }): a cable
 // following it gives its cores those looks, core 1 first. With no cores listed, its wires keep their own looks.
+// The ready-made ones are in the cable library (cables.js); these help describe their cores.
 const WHITE = "#f2f2f2";
 const BLACK = "#1f1f1f";
 const T568B = (gauge) => [["#ef7d00", true], ["#ef7d00"], ["#2e9b3c", true], ["#1f63c6"], ["#1f63c6", true], ["#2e9b3c"], ["#7a4a25", true], ["#7a4a25"]]
   .map(([c, striped], i) => ({ mark: String(i + 1), color: striped ? WHITE : c, stripe: striped ? c : "", gauge, conductor: "" }));
 // Cores as [mark, colour, size]: numbered black cores, with green/yellow (unmarked) for earth.
 const coreList = (list) => list.map(([mark, color, gauge]) => ({ mark, color, stripe: "", gauge, conductor: "Stranded" }));
-const DEFAULT_CABLE_PROFILES = [
-  { id: "cp_cat6", name: "Ethernet, Cat6", color: "#1f63c6", desc: "Cat6 U/UTP 4×2×AWG24", shield: false, twisted: true, notes: "Cores in T568B order", cores: T568B("24 AWG") },
-  { id: "cp_ie", name: "Industrial Ethernet, shielded", color: "#2e9b3c", desc: "Cat6A S/FTP 4×2×AWG26", shield: true, twisted: true, notes: "Cores in T568B order", cores: T568B("26 AWG") },
-  { id: "cp_motor", name: "Motor cable, shielded", color: "#ef7d00", desc: "4G1.5 + 2×0.75", shield: true, twisted: false, notes: "Brake / thermistor pair: cores 5 and 6",
-    cores: coreList([["U", BLACK, "1.5 mm²"], ["V", BLACK, "1.5 mm²"], ["W", BLACK, "1.5 mm²"], ["", "gy", "1.5 mm²"], ["5", BLACK, "0.75 mm²"], ["6", BLACK, "0.75 mm²"]]) },
-  { id: "cp_ctrl", name: "Control cable", color: "#8a8f96", desc: "7G0.75 LiYY", shield: false, twisted: false, notes: "Numbered black cores",
-    cores: coreList([1, 2, 3, 4, 5, 6].map((i) => [String(i), BLACK, "0.75 mm²"]).concat([["", "gy", "0.75 mm²"]])) },
-  { id: "cp_mains", name: "Mains cable", color: "#1f1f1f", desc: "3G1.5 H07RN-F", shield: false, twisted: false, notes: "",
-    cores: [["#7a4a25"], ["#1f63c6"], ["gy"]].map(([color]) => ({ mark: "", color, stripe: "", gauge: "1.5 mm²", conductor: "Stranded" })) },
-];
 
 // Copy a cable profile's properties onto a cable and remember which profile it follows.
 function applyCableProfile(cb, p) {
@@ -375,7 +367,7 @@ const DEFAULT_SETTINGS = {
   snapEdges: true,
   direction: "ltr",   // ltr | rtl: which way strips grow when adding, repeating and packing
   termSep: "-",       // joins part tag and terminal name in references, e.g. TB101-1
-  wireStd: "metric",  // metric | us: wire sizes (mm² or AWG) and line / neutral / earth colours
+  wireStd: "us",      // us | metric: wire sizes (mm² or AWG) and line / neutral / earth colours
 };
 
 function newProject(templates) {
@@ -388,7 +380,7 @@ function newProject(templates) {
     connections: [],
     buses: [],
     wireProfiles: JSON.parse(JSON.stringify(DEFAULT_PROFILES)),
-    cableProfiles: JSON.parse(JSON.stringify(DEFAULT_CABLE_PROFILES)),
+    cableProfiles: [], // added from the cable library
     packs: Object.keys(TEMPLATE_PACKS),
   };
 }
@@ -415,16 +407,16 @@ function exampleProject() {
   p.items.push({ id: "es2", kind: "part", tpl: "endstop", tag: "", desc: "", x: 159.5 + 7 * 5.2, y: 32.5, rot: 0 });
   const c = (id, a, at, b, bt, wire, color, gauge) => ({ id, a: { item: a, term: at }, b: { item: b, term: bt }, wire, color, gauge, notes: "" });
   p.connections = [
-    c("c1", "f1", "b", "ps1", "l", "W1", "#7a4a25", "1.5 mm²"),
-    c("c2", "ps1", "v1", "ups1", "ip", "W2", "#d32f2f", "1.5 mm²"),
-    c("c3", "ps1", "g1", "ups1", "in", "W3", "#1f63c6", "1.5 mm²"),
-    c("c4", "gb1", "p", "ups1", "bp", "W4", "#d32f2f", "2.5 mm²"),
-    c("c5", "gb1", "n", "ups1", "bn", "W5", "#1f1f1f", "2.5 mm²"),
-    c("c6", "ups1", "op", "x1", "a", "W6", "#d32f2f", "1.5 mm²"),
-    c("c7", "ups1", "on", "x2", "a", "W7", "#1f63c6", "1.5 mm²"),
-    c("c8", "x1", "b", "k1", "a1", "W8", "#d32f2f", "0.75 mm²"),
-    c("c9", "x2", "b", "k1", "a2", "W9", "#1f63c6", "0.75 mm²"),
-    c("c10", "ps1", "pe", "x7", "a", "W10", "gy", "1.5 mm²"),
+    c("c1", "f1", "b", "ps1", "l", "W1", "#1f1f1f", "16 AWG"),
+    c("c2", "ps1", "v1", "ups1", "ip", "W2", "#d32f2f", "16 AWG"),
+    c("c3", "ps1", "g1", "ups1", "in", "W3", "#1f63c6", "16 AWG"),
+    c("c4", "gb1", "p", "ups1", "bp", "W4", "#d32f2f", "14 AWG"),
+    c("c5", "gb1", "n", "ups1", "bn", "W5", "#1f1f1f", "14 AWG"),
+    c("c6", "ups1", "op", "x1", "a", "W6", "#d32f2f", "16 AWG"),
+    c("c7", "ups1", "on", "x2", "a", "W7", "#1f63c6", "16 AWG"),
+    c("c8", "x1", "b", "k1", "a1", "W8", "#d32f2f", "18 AWG"),
+    c("c9", "x2", "b", "k1", "a2", "W9", "#1f63c6", "18 AWG"),
+    c("c10", "ps1", "pe", "x7", "a", "W10", "#2e9b3c", "16 AWG"),
   ];
   const prof = { c1: "wp_l", c2: "wp_24v", c3: "wp_0v", c6: "wp_24v", c7: "wp_0v", c10: "wp_pe" };
   for (const c of p.connections) {

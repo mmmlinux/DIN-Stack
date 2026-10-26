@@ -12,6 +12,7 @@ const FILES = [
   "css/style.css",
   "js/version.js",
   "js/defaults.js",
+  "js/cables.js",
   "js/render.js",
   "js/tpl-editor.js",
   "js/app.js",
