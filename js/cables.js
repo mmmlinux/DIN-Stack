@@ -20,6 +20,8 @@ const PINK = "#e46aa6", YELLOW = "#f0c000";
 const DIN47100_2 = [[GREY, PINK], [RED, BLUE], [WHITE, GREEN], [BROWN, GREEN], [WHITE, YELLOW], [YELLOW, BROWN], [WHITE, GREY], [GREY, BROWN],
   [WHITE, PINK], [PINK, BROWN], [WHITE, BLUE], [BROWN, BLUE], [WHITE, RED], [BROWN, RED], [WHITE, BLACK]];
 // Numbered black cores 1…n, then a green/yellow earth.
+// USB 2.0 cores, marked with their signals.
+const usb2 = () => coreList([["VBUS", RED, "24 AWG"], ["D−", WHITE, "28 AWG"], ["D+", GREEN, "28 AWG"], ["GND", BLACK, "24 AWG"]]);
 const numberedCores = (n, gauge) => libCores("Stranded", Array.from({ length: n }, (_, i) => [BLACK, gauge, String(i + 1)]).concat([["gy", gauge]]));
 
 const CABLE_LIBRARY = [
@@ -30,12 +32,22 @@ const CABLE_LIBRARY = [
   { category: "Ethernet", id: "cp_profinet", name: "PROFINET Type A", color: "#2e9b3c", desc: "2×2×AWG22 star quad, solid", shield: true, twisted: true, notes: "Yellow TD+, orange TD−, white RD+, blue RD− (RJ45 pins 1, 2, 3, 6)",
     cores: libCores("Solid", [["#f0c000", "22 AWG"], ["#ef7d00", "22 AWG"], [WHITE, "22 AWG"], [BLUE, "22 AWG"]]) },
 
+  // USB 2.0: red VBUS, white D−, green D+ (a twisted pair), black GND, under a foil and braid screen
+  { category: "USB", id: "cp_usb2_ab", name: "USB 2.0, A to B", color: GREY, desc: "1×2×AWG28 + 2×AWG24, shielded", shield: true, twisted: true, notes: "Red VBUS, white D−, green D+, black GND (pins 1–4 at both plugs)", cores: usb2() },
+  { category: "USB", id: "cp_usb2_amicro", name: "USB 2.0, A to Micro-B", color: BLACK, desc: "1×2×AWG28 + 2×AWG24, shielded", shield: true, twisted: true, notes: "Red VBUS, white D−, green D+, black GND. Micro-B pin 4 (ID) not connected.", cores: usb2() },
+  { category: "USB", id: "cp_usb2_amini", name: "USB 2.0, A to Mini-B", color: BLACK, desc: "1×2×AWG28 + 2×AWG24, shielded", shield: true, twisted: true, notes: "Red VBUS, white D−, green D+, black GND. Mini-B pin 4 (ID) not connected.", cores: usb2() },
+  { category: "USB", id: "cp_usb2_ac", name: "USB 2.0, A to C", color: BLACK, desc: "1×2×AWG28 + 2×AWG24, shielded", shield: true, twisted: true, notes: "Red VBUS, white D−, green D+, black GND. 56 kΩ pull-up on CC in the C plug.", cores: usb2() },
+  { category: "USB", id: "cp_usb2_cc", name: "USB 2.0, C to C", color: BLACK, desc: "1×2×AWG28 + 2×AWG24 + CC, shielded", shield: true, twisted: true, notes: "Red VBUS, white D−, green D+, black GND, blue CC (colours vary by maker)",
+    cores: usb2().concat(coreList([["CC", BLUE, "28 AWG"]])) },
+
   // Fieldbus and serial
   { category: "Fieldbus and serial", id: "cp_profibus", name: "PROFIBUS DP", color: "#7b3fb0", desc: "1×2×AWG22, solid", shield: true, twisted: true, notes: "Red B, green A",
     cores: libCores("Solid", [["#d32f2f", "22 AWG"], ["#2e9b3c", "22 AWG"]]) },
   { category: "Fieldbus and serial", id: "cp_devicenet", name: "DeviceNet / CANopen, thin", color: GREY, desc: "Thin cable, 2 pairs + drain", shield: true, twisted: true, notes: "White CAN_H, blue CAN_L, red V+, black V−, bare drain",
     cores: libCores("Stranded", [[WHITE, "24 AWG"], [BLUE, "24 AWG"], ["#d32f2f", "22 AWG"], [BLACK, "22 AWG"], [COPPER, "24 AWG"]]) },
   { category: "Fieldbus and serial", id: "cp_rs485", name: "RS-485 / Modbus, 2 pairs", color: GREY, desc: "2×2×AWG24, shielded", shield: true, twisted: true, notes: "Pairs white/brown and green/yellow (DIN 47100)", cores: din47100(4, "24 AWG") },
+  { category: "Fieldbus and serial", id: "cp_serial9", name: "Serial cable, 9 cores, shielded", color: GREY, desc: "9×AWG28, D-sub 9", shield: true, twisted: false, notes: "Cores 1–9 to D-sub 9 pins 1–9, DIN 47100 colours. RS-232: 2 RxD, 3 TxD, 5 GND.",
+    cores: din47100(9, "28 AWG").map((k, i) => ({ ...k, mark: String(i + 1) })) },
 
   // Sensors and actuators
   { category: "Sensors and actuators", id: "cp_m8_3", name: "M8 sensor cable, 3-pin", color: BLACK, desc: "PUR 3×AWG24", shield: false, twisted: false, notes: "Pin 1 brown, 3 blue, 4 black",

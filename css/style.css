@@ -122,10 +122,14 @@ html.dev .dev-badge { display: inline-block; }
 .menus { display: flex; gap: 2px; }
 .menus > .menu > button { background: none; border-color: transparent; padding: 4px 8px; }
 .menus > .menu > button:hover, .menus > .menu > button[aria-expanded=true] { background: var(--panel-3); }
-.title-input { flex: 1 1 200px; max-width: 460px; border-color: transparent !important; font-weight: 600; font-size: 14px; background: transparent !important; }
-.title-input:hover { border-color: var(--border) !important; }
-.title-input:focus { border-color: var(--accent) !important; background: var(--panel) !important; }
-.top-tools { display: flex; align-items: center; gap: 2px; margin-left: auto; }
+.title-field { position: relative; display: flex; align-items: center; flex: 1 1 200px; max-width: 460px; min-width: 0; cursor: text; }
+.title-input { flex: 1; min-width: 0; padding-right: 28px !important; border: 1px dashed var(--border-strong) !important; font-weight: 600; font-size: 14px; background: transparent !important; }
+.title-field .ic { position: absolute; right: 9px; color: var(--muted); pointer-events: none; }
+.title-field:hover .title-input { border-style: solid !important; border-color: var(--accent) !important; background: var(--panel) !important; }
+.title-field:hover .ic { color: var(--accent); }
+.title-input:focus { border-style: solid !important; border-color: var(--accent) !important; background: var(--panel) !important; }
+.title-input:focus + .ic { display: none; }
+.top-tools { display: flex; align-items: center; gap: 2px; }
 .sep { width: 1px; height: 20px; background: var(--border); margin: 0 4px; flex: none; }
 
 /* Drop-down menus */
@@ -155,6 +159,7 @@ html.dev .dev-badge { display: inline-block; }
   display: flex; flex-direction: column; font-size: 13px;
 }
 .ctx-menu[hidden] { display: none; }
+.ctx-menu:focus { outline: none; }
 .ctx-menu button {
   justify-content: space-between; gap: 16px;
   border: none; background: none; text-align: left; padding: 5px 10px; border-radius: 5px; color: var(--text);
@@ -163,6 +168,10 @@ html.dev .dev-badge { display: inline-block; }
 .ctx-menu button[disabled] { opacity: 0.45; cursor: default; }
 .ctx-menu button.danger { color: var(--danger); }
 .ctx-menu button.checked span::before { content: "✓ "; }
+/* An entry with a submenu, and the submenu beside it. */
+.ctx-menu button.has-sub.open { background: var(--accent-soft); }
+.ctx-menu .sub-arrow { color: var(--muted); font-size: 15px; line-height: 1; }
+.ctx-sub { z-index: 61; max-height: calc(100vh - 8px); overflow-y: auto; }
 .ctx-sep { height: 1px; background: var(--border); margin: 4px 6px; }
 .ctx-head { padding: 4px 10px 2px; font-size: 11px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.03em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
@@ -224,7 +233,21 @@ body.lib-dragging, body.lib-dragging * { cursor: copy !important; user-select: n
 .drag-chip[hidden] { display: none; }
 .version { font-size: 11px; color: var(--muted); text-align: center; padding-top: 6px; border-top: 1px solid var(--border); }
 .version a { color: inherit; }
-.version a:hover { color: var(--text); }
+.version a:hover, .version-btn:hover { color: var(--text); }
+.version-btn { background: none; border: none; padding: 0; font: inherit; color: inherit; cursor: pointer; }
+.version-btn:hover { text-decoration: underline; }
+
+/* Version history */
+.history h3 { font-size: 14px; margin: 18px 0 4px; padding-top: 12px; border-top: 1px solid var(--border); }
+.history h3:first-of-type { border-top: none; padding-top: 0; }
+.history .now { margin-left: 8px; padding: 1px 6px; border-radius: 4px; font-size: 11px; font-weight: 600; background: var(--accent-soft); color: var(--accent); vertical-align: 1px; }
+.history h4 { margin: 12px 0 2px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--muted); }
+.history-notes p { margin: 8px 0 0; font-size: 12px; color: var(--muted); }
+.history .range { margin-left: 10px; font-size: 12px; font-weight: 400; color: var(--muted); }
+.history ul, .history ol { margin: 0; padding-left: 18px; }
+.history li { margin: 4px 0; line-height: 1.45; }
+.history p { margin: 0 0 8px; }
+.history a { color: var(--accent); }
 
 /* The library panel folds down to a thin strip */
 .left-expand { display: none; }
@@ -303,6 +326,8 @@ body.lib-dragging, body.lib-dragging * { cursor: copy !important; user-select: n
 #canvas .term { cursor: crosshair; }
 #canvas .term:hover .term-dot { stroke: #2563eb; stroke-width: 0.6; fill: #dbe7ff; }
 #canvas .dest, #canvas .hit { cursor: pointer; }
+#canvas .bracket-bar.ns { cursor: ns-resize; }
+#canvas .bracket-bar.ew { cursor: ew-resize; }
 #canvas .dest:hover { fill: #1d5fd6; text-decoration: underline; }
 #canvas.wiring .item { cursor: crosshair; }
 .float-dock { position: absolute; z-index: 5; right: 10px; bottom: 10px; display: flex; align-items: flex-end; gap: 8px; }
@@ -324,6 +349,8 @@ body.lib-dragging, body.lib-dragging * { cursor: copy !important; user-select: n
 .float > .icon-btn { padding: 4px; }
 .float > .tool-btn.on { background: var(--accent); color: var(--accent-ink); }
 #canvas.tool-select .term { cursor: pointer; }
+#canvas.tool-measure, #canvas.tool-measure .item, #canvas.tool-measure .term, #canvas.tool-measure .dest, #canvas.tool-measure .hit { cursor: crosshair; }
+#canvas.tool-measure.panning { cursor: grabbing; }
 /* Selection filter: the button shows what's allowed, and the drawing gets a crosshair-and-funnel cursor. */
 .float .menu > .icon-btn.filter-on { background: var(--accent); color: var(--accent-ink); }
 .sel-filter-label { font-size: 12px; margin: 0 4px 0 3px; }
@@ -333,6 +360,16 @@ body.lib-dragging, body.lib-dragging * { cursor: copy !important; user-select: n
 }
 #canvas.filtering.panning { cursor: grabbing; }
 .float > .filter-chip { color: var(--accent); font-size: 12px; padding: 3px 8px; }
+/* Page tabs, at the bottom left of the drawing (the top left when it's narrow). */
+.page-tabs { position: absolute; z-index: 5; left: 10px; bottom: 10px; max-width: calc(100% - 440px); overflow-x: auto; scrollbar-width: none; }
+.page-tabs::-webkit-scrollbar { display: none; }
+.float > .page-tab { flex: none; padding: 4px 10px; white-space: nowrap; max-width: 180px; overflow: hidden; text-overflow: ellipsis; }
+.float > .page-tab.on { background: var(--accent-soft); color: var(--accent); font-weight: 600; }
+.page-tabs > .icon-btn { flex: none; }
+.page-tabs .page-name { flex: none; width: auto; padding: 3px 6px; font: inherit; }
+@container (max-width: 760px) {
+  .page-tabs { bottom: auto; top: 10px; max-width: calc(100% - 20px); }
+}
 .zoom-label { min-width: 44px; text-align: center; color: var(--muted); font-size: 12px; font-variant-numeric: tabular-nums; }
 .mode-bar {
   position: absolute; z-index: 6; left: 50%; top: 52px; transform: translateX(-50%);
@@ -343,8 +380,18 @@ body.lib-dragging, body.lib-dragging * { cursor: copy !important; user-select: n
 .mode-bar .muted { color: #b3bac3; }
 .mode-bar button { background: #2c3238; border-color: #3d444c; color: #f3f4f6; }
 .mode-bar button.primary { background: #3b82f6; border-color: #3b82f6; color: #fff; }
+.mode-bar .mode-core { display: flex; align-items: center; gap: 6px; font-size: 12px; }
+.mode-bar select { background: #2c3238; border-color: #3d444c; color: #f3f4f6; font-size: 12px; padding: 3px 6px; max-width: 220px; }
+.core-pick { width: 100%; margin-top: 3px; font-size: 12px; font-weight: 400; padding: 2px 4px; }
+/* A cable's wire's drop-downs, on a line of their own under it. */
+.term-list tr.core-ctl td { border-top: none; padding-top: 0; }
+.core-ctl-row { display: flex; gap: 6px; }
+.core-ctl-row .core-pick { flex: 3 1 0; min-width: 0; margin-top: 0; }
+.core-ctl-row .core-pick[data-core-thru] { flex: 2 1 0; }
+/* A cable core connected at one end only: not connected through. */
+.nc { color: var(--danger); font-style: italic; }
 .hint {
-  position: absolute; left: 50%; bottom: 12px; transform: translateX(-50%); z-index: 6;
+  position: absolute; left: 50%; bottom: 56px; transform: translateX(-50%); z-index: 6; /* above the buttons at the bottom right */
   background: rgba(29, 33, 38, 0.88); color: #fff; padding: 6px 12px; border-radius: 16px; max-width: calc(100% - 200px);
   font-size: 12px; pointer-events: none; opacity: 0; transition: opacity 0.15s; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
@@ -489,6 +536,13 @@ body.lib-dragging, body.lib-dragging * { cursor: copy !important; user-select: n
 .cable-lib-cores { display: flex; flex-wrap: wrap; gap: 2px; margin: 3px 0 1px; }
 .cable-lib-cores .chip { margin: 0; }
 
+/* Favourite profiles */
+.icon-btn.star.on, .icon-btn.star.on:hover:not(:disabled) { color: #d99a00; }
+.icon-btn.star.on .ic { fill: currentColor; }
+.data-table .fav-col { width: 1px; padding: 0 0 0 6px; }
+.data-table .fav-col .icon-btn { display: block; padding: 2px; }
+.prof-offer { gap: 8px; }
+
 /* Joining named circuits */
 .join-opts { display: flex; flex-direction: column; gap: 6px; margin: 0 0 12px; }
 .join-opt { display: flex; gap: 8px; align-items: flex-start; padding: 6px 8px; border: 1px solid var(--border); border-radius: 6px; cursor: pointer; }
@@ -528,20 +582,20 @@ label.inline { display: inline-flex; align-items: center; gap: 6px; color: var(-
 .term-table td:nth-child(5) { width: 64px; }
 .term-table .icon-btn { padding: 2px; }
 .prof-table td { padding: 4px; }
-.prof-table td:nth-child(2) { white-space: nowrap; }
-.prof-table td:nth-child(2) select { width: 130px; }
-.prof-table td:nth-child(2) input[type=color] { width: 34px; height: 26px; vertical-align: middle; }
-.prof-table td:nth-child(6) { text-align: center; color: var(--muted); }
+.prof-table td:nth-child(3) { white-space: nowrap; }
+.prof-table td:nth-child(3) select { width: 130px; }
+.prof-table td:nth-child(3) input[type=color] { width: 34px; height: 26px; vertical-align: middle; }
+.prof-table td:nth-child(7) { text-align: center; color: var(--muted); }
 .prof-sub { margin: 18px 0 4px; font-size: 14px; }
 .cprof-table td { padding: 4px; }
-.cprof-table td:nth-child(2) { white-space: nowrap; }
-.cprof-table td:nth-child(2) select { width: 130px; }
-.cprof-table td:nth-child(2) input[type=color] { width: 34px; height: 26px; vertical-align: middle; }
+.cprof-table > tbody > tr > td:nth-child(3) { white-space: nowrap; }
+.cprof-table > tbody > tr > td:nth-child(3) select { width: 130px; }
+.cprof-table > tbody > tr > td:nth-child(3) input[type=color] { width: 34px; height: 26px; vertical-align: middle; }
 .cprof-table td.c { text-align: center; }
 .cprof-table td.c input { width: auto; }
-.cprof-table > tbody > tr > td:nth-child(8) { text-align: center; color: var(--muted); }
-.cprof-table > tbody > tr > td:nth-child(7) button { white-space: nowrap; }
-.cprof-table > tbody > tr > td:nth-child(7) button.on { background: var(--accent-soft); }
+.cprof-table > tbody > tr > td:nth-child(9) { text-align: center; color: var(--muted); }
+.cprof-table > tbody > tr > td:nth-child(8) button { white-space: nowrap; }
+.cprof-table > tbody > tr > td:nth-child(8) button.on { background: var(--accent-soft); }
 .cprof-table tr.cores-row > td { padding: 4px 4px 10px 24px; background: var(--panel-2); }
 .core-table { background: var(--panel); }
 .core-table td:first-child { width: 36px; color: var(--muted); text-align: center; }
@@ -570,7 +624,7 @@ label.inline { display: inline-flex; align-items: center; gap: 6px; color: var(-
   body { overflow: auto; }
   #app, #app.left-collapsed { grid-template-columns: 1fr; grid-template-rows: auto 65vh auto auto auto; height: auto; }
   .topbar { flex-wrap: wrap; }
-  .title-input { order: 5; flex-basis: 100%; max-width: none; }
+  .title-field { order: 5; flex-basis: 100%; max-width: none; }
   .sidebar.left, .sidebar.right, .canvas-wrap, .drawer { grid-column: 1; grid-row: auto; border-left: none; border-right: none; }
   .canvas-wrap { order: 1; }
   .drawer { order: 2; }
@@ -585,17 +639,27 @@ label.inline { display: inline-flex; align-items: center; gap: 6px; color: var(-
 }
 
 /* ---------- Printing ---------- */
-.print-area { display: none; }
+/* The print settings' summary of what will come out, beside the dialog's buttons. */
+.print-foot .foot-note { margin-right: auto; font-size: 12px; line-height: 1.35; }
+/* The printout's text styles apply off screen too, so the app can measure how tall the heading and notes are.
+   The heading's title and revision line are one line each, so it's the same height on every sheet. */
+.print-area { display: none; font: 10pt Arial, Helvetica, sans-serif; color: #000; }
+.print-area .phead { margin-bottom: 4mm; padding-bottom: 2mm; border-bottom: 0.3mm solid #999; }
+.print-area h1 { font-size: 16pt; margin: 0 0 1mm; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.print-area .pmeta { display: flex; justify-content: space-between; gap: 6mm; color: #444; white-space: nowrap; }
+.print-area .pnotes { white-space: pre-wrap; margin-bottom: 4mm; }
 @media print {
-  @page { margin: 12mm; }
+  @page { margin: 12mm; } /* until the print settings set the paper and margins */
   body { overflow: visible; background: #fff; color: #000; }
   #app, .modal-back, .toast, .drag-chip { display: none !important; }
-  .print-area { display: block; font: 10pt Arial, Helvetica, sans-serif; }
-  .print-area h1 { font-size: 16pt; margin: 0 0 2mm; }
-  .print-area .pmeta { color: #444; margin-bottom: 4mm; }
-  .print-area .pnotes { white-space: pre-wrap; margin-bottom: 4mm; }
-  .print-area svg { width: 100%; height: auto; max-height: 240mm; display: block; margin-bottom: 6mm; }
+  .print-area { display: block; }
+  /* Each sheet of drawing is sized by the app to fit a page of the paper, and has that page to itself;
+     the lists start on a page of their own after the drawings. */
+  .print-area .psheet { break-inside: avoid; overflow: hidden; }
+  .print-area .psheet + .psheet, .print-area .psheet + .plists { break-before: page; }
+  .print-area .psheet svg { display: block; }
   .print-area h2 { font-size: 12pt; margin: 6mm 0 2mm; break-after: avoid; }
+  .print-area .plists > h2:first-child { margin-top: 0; }
   .print-area table { width: 100%; border-collapse: collapse; font-size: 9pt; }
   .print-area th, .print-area td { border: 0.3mm solid #999; padding: 1mm 2mm; text-align: left; }
   .print-area th { background: #eee; }

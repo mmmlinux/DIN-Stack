@@ -172,8 +172,9 @@ const TplEditor = (() => {
         <td><select data-k="kind" title="A bus bar slot takes bus bars only, not wires. A cable connector (such as an RJ45 socket) takes a cable's plug, not single wires."><option value="wire">Wire</option><option value="bus"${isSlot(t) ? " selected" : ""}>Bus bar slot</option><option value="port"${isPort(t) ? " selected" : ""}>Cable connector</option></select></td>
         <td><select data-k="side"${isSlot(t) ? " disabled" : ""}>${sides.map((s) => `<option value="${s}"${(t.side || "auto") === s ? " selected" : ""}>${s === "auto" ? "Auto (" + localSide(ed.tpl, { ...t, side: "auto" }) + ")" : s}</option>`).join("")}</select></td>
         <td><input data-k="link" type="text" value="${esc(t.link || "")}" placeholder="—" title="Same value = connected inside the part"></td>
+        <td><input data-k="desc" type="text" value="${esc(t.desc || "")}" placeholder="e.g. +24 VDC" title="What the terminal is for. Shown when the mouse is over the terminal."></td>
         <td><button class="icon-btn danger" data-del title="Delete terminal"><svg class="ic sm"><use href="#i-x"/></svg></button></td>
-      </tr>`).join("") || `<tr><td colspan="7" class="muted" style="padding:10px">No terminals yet. Click on the drawing to add one.</td></tr>`;
+      </tr>`).join("") || `<tr><td colspan="8" class="muted" style="padding:10px">No terminals yet. Click on the drawing to add one.</td></tr>`;
   }
 
   // Tools for the selected terminals, shown above the table.
@@ -479,6 +480,7 @@ const TplEditor = (() => {
       const targets = ed.sel.has(t.id) && /^(kind|side|link)$/.test(k) ? selected() : [t];
       for (const x of targets) {
         if (k === "name") x.name = e.target.value;
+        else if (k === "desc") x.desc = e.target.value;
         else if (k === "link") x.link = e.target.value.trim();
         else if (k === "side") x.side = e.target.value;
         else if (k === "kind") x.kind = e.target.value;

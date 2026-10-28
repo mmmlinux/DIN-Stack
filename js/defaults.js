@@ -370,12 +370,13 @@ const DEFAULT_SETTINGS = {
   labelSize: 2,       // destination label text height in mm
   tagSize: 3,         // part tag text height in mm
   lines: "off",       // how wires are drawn: off (a stub at each terminal) | straight | curved (lines between terminals)
-                      // (a wire can say otherwise with draw: "line" or "break")
+                      // (a wire can say otherwise with draw: "straight", "curved" or "break")
   cables: "full",     // how cables are drawn: full (the sheath runs end to end) | break (a short tail at each end)
   labelCable: false,  // the cable's name in its labels: along the sheath ("C1 · 3G1.5"), and at a break ("C1 → K1")
   wireLabels: true,   // where each wire goes, at its terminals ("→ TB101-1")
   labelName: "dest",  // what a named circuit's wire labels show: "dest" (where each goes, TB101-1) or "circuit" (+24V)
   labelWire: false,   // the wire's number in its labels too: in a stub's label ("W3 → TB101-1"), or at the middle of a line
+  labelPage: true,    // a wire or cable label for an end on another page says which page: "TB101-1 (Door)"
   showDest: true,     // only read from older diagrams: false there means no wires shown
   showTermNames: true,
   snapEdges: true,
@@ -383,6 +384,37 @@ const DEFAULT_SETTINGS = {
   termSep: "-",       // joins part tag and terminal name in references, e.g. TB101-1
   wireStd: "us",      // us | metric: wire sizes (mm² or AWG) and line / neutral / earth colours
 };
+
+// Paper sizes for printing, portrait, in mm. Each belongs to the American or metric standard, and other is
+// its nearest size in the other standard, swapped in when the diagram's standard changes.
+const PAPERS = {
+  halfletter: { name: "Half Letter (5.5 × 8.5 in)", w: 139.7, h: 215.9, std: "us", other: "a5" },
+  letter: { name: "Letter (8.5 × 11 in)", w: 215.9, h: 279.4, std: "us", other: "a4" },
+  legal: { name: "Legal (8.5 × 14 in)", w: 215.9, h: 355.6, std: "us", other: "a4" },
+  tabloid: { name: "Tabloid (11 × 17 in)", w: 279.4, h: 431.8, std: "us", other: "a3" },
+  ansic: { name: "ANSI C (17 × 22 in)", w: 431.8, h: 558.8, std: "us", other: "a2" },
+  a5: { name: "A5 (148 × 210 mm)", w: 148, h: 210, std: "metric", other: "halfletter" },
+  a4: { name: "A4 (210 × 297 mm)", w: 210, h: 297, std: "metric", other: "letter" },
+  a3: { name: "A3 (297 × 420 mm)", w: 297, h: 420, std: "metric", other: "tabloid" },
+  a2: { name: "A2 (420 × 594 mm)", w: 420, h: 594, std: "metric", other: "ansic" },
+};
+
+// Print margins offered, in mm: quarter inches for American, round millimetres for metric.
+const PRINT_MARGINS = { us: [6.35, 12.7, 19.05, 25.4], metric: [5, 10, 15, 20] };
+
+const nearestMargin = (mm, std) => (PRINT_MARGINS[std] || PRINT_MARGINS.metric).reduce((b, v) => (Math.abs(v - mm) < Math.abs(b - mm) ? v : b));
+
+// Print settings, saved with the diagram (settings.print). scale: "fit" (each page on one sheet), "shrink"
+// (real size, shrunk to fit one sheet if need be), "width" (fitted to the paper's width) or "scale" (percent
+// of real size); the last two go on over more sheets when a page doesn't fit. pages: "all", "current" or
+// "none" (only the lists). orient: "auto" picks whichever takes fewer sheets, then prints bigger.
+function printDefaults(std) {
+  const us = std === "us";
+  return {
+    paper: us ? "letter" : "a4", orient: "auto", margin: us ? 12.7 : 10, scale: "fit", percent: 100, pages: "all",
+    head: true, wires: true, cables: true, buses: true, parts: true,
+  };
+}
 
 function newProject(templates) {
   return {

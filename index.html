@@ -10,6 +10,8 @@
   <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
   <meta name="theme-color" content="#1f2933">
   <link rel="stylesheet" href="css/style.css">
+  <!-- The paper size and margins for printing, set from the print settings when printing -->
+  <style id="printPage" media="print"></style>
   <!-- Local development marker: a .dev file next to this page (gitignored, so never on the live site)
        turns the logo banner red. See "Developing" in the README. -->
   <script src=".dev" async onload="document.documentElement.classList.add('dev')" onerror="this.remove()"></script>
@@ -22,6 +24,7 @@
     <symbol id="i-plus" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="M12 5v14"/></symbol>
     <symbol id="i-minus" viewBox="0 0 24 24"><path d="M5 12h14"/></symbol>
     <symbol id="i-x" viewBox="0 0 24 24"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></symbol>
+    <symbol id="i-star" viewBox="0 0 24 24"><path d="m12 2.8 2.85 5.95 6.55.85-4.8 4.55 1.2 6.5L12 17.5l-5.8 3.15 1.2-6.5-4.8-4.55 6.55-.85z"/></symbol>
     <symbol id="i-check" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></symbol>
     <symbol id="i-trash" viewBox="0 0 24 24"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></symbol>
     <symbol id="i-copy" viewBox="0 0 24 24"><rect width="13" height="13" x="9" y="9" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></symbol>
@@ -47,6 +50,7 @@
     <symbol id="i-cable" viewBox="0 0 24 24"><path d="M2 12h8" stroke-width="3.2"/><path d="M10 12c4 0 5-5 9-5h3M10 12h12M10 12c4 0 5 5 9 5h3"/></symbol>
     <symbol id="i-filter" viewBox="0 0 24 24"><path d="M3 4h18l-7 8.5V19l-4 2v-8.5z"/></symbol>
     <symbol id="i-pointer" viewBox="0 0 24 24"><path d="M5 3l14 8.5-6.2 1.3L9.5 19z"/></symbol>
+    <symbol id="i-ruler" viewBox="0 0 24 24"><path d="M3 16.5 16.5 3 21 7.5 7.5 21z"/><path d="m7.5 12 2 2M10.5 9l2 2M13.5 6l2 2"/></symbol>
     <symbol id="i-wire-add" viewBox="0 0 24 24"><circle cx="5" cy="19" r="2.5"/><circle cx="14" cy="10" r="2.5"/><path d="M6.8 17.2l5.4-5.4M19 2v6M16 5h6"/></symbol>
     <symbol id="i-wire" viewBox="0 0 24 24"><circle cx="5" cy="17" r="2.5"/><circle cx="19" cy="7" r="2.5"/><path d="M7 15.5C12 15 12 9 17 8.5"/></symbol>
   </svg>
@@ -63,20 +67,37 @@
           <button data-menu="fileMenu" aria-haspopup="true">File <svg class="ic sm"><use href="#i-chev-d"/></svg></button>
           <div class="menu-list" id="fileMenu" hidden>
             <button data-cmd="new"><span>New diagram</span></button>
-            <button data-cmd="open"><span>Open…</span></button>
+            <button data-cmd="open"><span>Open…</span><kbd class="mod-key">Ctrl+O</kbd></button>
+            <button data-cmd="example"><span>Open the example</span></button>
+            <div class="menu-sep"></div>
             <button data-cmd="save"><span>Save</span><kbd class="mod-key">Ctrl+S</kbd></button>
+            <button data-cmd="saveAs"><span>Save as…</span><kbd class="mod-key">Ctrl+Shift+S</kbd></button>
             <div class="menu-sep"></div>
-            <button data-cmd="example"><span>Load the example</span></button>
-          </div>
-        </div>
-        <div class="menu">
-          <button data-menu="exportMenu" aria-haspopup="true">Export <svg class="ic sm"><use href="#i-chev-d"/></svg></button>
-          <div class="menu-list" id="exportMenu" hidden>
-            <button data-cmd="print"><span>Print / PDF…</span></button>
-            <div class="menu-sep"></div>
+            <div class="menu-head">Export</div>
             <button data-cmd="exportSvg"><span>SVG image (true scale)</span></button>
             <button data-cmd="exportPng"><span>PNG image</span></button>
             <button data-cmd="exportCsv"><span>Wire list (CSV)</span></button>
+            <div class="menu-sep"></div>
+            <button data-cmd="print"><span>Print / PDF…</span><kbd class="mod-key">Ctrl+P</kbd></button>
+          </div>
+        </div>
+        <div class="menu">
+          <button data-menu="editMenu" aria-haspopup="true">Edit <svg class="ic sm"><use href="#i-chev-d"/></svg></button>
+          <div class="menu-list" id="editMenu" hidden>
+            <button data-cmd="undo" data-needs="undo"><span>Undo</span><kbd class="mod-key">Ctrl+Z</kbd></button>
+            <button data-cmd="redo" data-needs="redo"><span>Redo</span><kbd class="mod-key">Ctrl+Y</kbd></button>
+            <div class="menu-sep"></div>
+            <button data-cmd="cut" data-needs="items"><span>Cut</span><kbd class="mod-key">Ctrl+X</kbd></button>
+            <button data-cmd="copy" data-needs="items"><span>Copy</span><kbd class="mod-key">Ctrl+C</kbd></button>
+            <button data-cmd="paste" data-needs="clipboard"><span>Paste</span><kbd class="mod-key">Ctrl+V</kbd></button>
+            <button data-cmd="duplicate" data-needs="items"><span>Duplicate</span><kbd class="mod-key">Ctrl+D</kbd></button>
+            <button data-cmd="delete" data-needs="sel"><span>Delete</span><kbd>Del</kbd></button>
+            <div class="menu-sep"></div>
+            <button data-cmd="selectAll"><span>Select all</span><kbd class="mod-key">Ctrl+A</kbd></button>
+            <button data-cmd="selectNone" data-needs="sel"><span>Select none</span><kbd>Esc</kbd></button>
+            <button data-cmd="find"><span>Find in the lists…</span><kbd class="mod-key">Ctrl+F</kbd></button>
+            <div class="menu-sep"></div>
+            <button data-cmd="settings"><span>Settings…</span></button>
           </div>
         </div>
         <div class="menu">
@@ -87,13 +108,14 @@
           </div>
         </div>
       </nav>
-      <input id="titleInput" class="title-input" type="text" spellcheck="false" aria-label="Diagram title" title="Diagram title">
       <div class="top-tools">
         <button id="btnUndo" class="icon-btn" data-cmd="undo" title="Undo (Ctrl+Z)"><svg class="ic"><use href="#i-undo"/></svg></button>
         <button id="btnRedo" class="icon-btn" data-cmd="redo" title="Redo (Ctrl+Y)"><svg class="ic"><use href="#i-redo"/></svg></button>
-        <span class="sep"></span>
-        <button class="icon-btn" data-cmd="settings" title="Settings: snapping, text sizes, wire standard…"><svg class="ic"><use href="#i-sliders"/></svg></button>
       </div>
+      <label class="title-field" title="The diagram's name: click to change it">
+        <input id="titleInput" class="title-input" type="text" spellcheck="false" aria-label="Diagram title" placeholder="Name this diagram">
+        <svg class="ic sm" aria-hidden="true"><use href="#i-edit"/></svg>
+      </label>
     </header>
 
     <aside class="sidebar left">
@@ -101,7 +123,7 @@
       <div class="panel-head">
         <h2>Library</h2>
         <span class="head-tools">
-          <button data-cmd="newType" class="small primary" title="Design a new object type"><svg class="ic sm"><use href="#i-plus"/></svg> New type</button>
+          <button data-cmd="newType" class="small primary" title="Design a new part"><svg class="ic sm"><use href="#i-plus"/></svg> New part</button>
           <button id="btnLeftCollapse" class="icon-btn" title="Hide the library for more drawing space"><svg class="ic"><use href="#i-chev-l2"/></svg></button>
         </span>
       </div>
@@ -123,7 +145,7 @@
         <button id="btnLibFold" class="icon-btn" title="Collapse all categories"><svg class="ic"><use href="#i-fold"/></svg></button>
       </div>
       <div id="library" class="library"></div>
-      <div class="version"><span id="versionLabel"></span> · <a href="https://github.com/mmmlinux/DIN-Stack" target="_blank" rel="noopener" title="Source code, issues and release notes on GitHub">GitHub</a></div>
+      <div class="version"><button id="versionLabel" class="version-btn" title="Version history: what changed in each version"></button> · <a href="https://github.com/mmmlinux/DIN-Stack" target="_blank" rel="noopener" title="Source code, issues and release notes on GitHub">GitHub</a></div>
     </aside>
 
     <main class="canvas-wrap" id="canvasWrap">
@@ -143,11 +165,15 @@
       </svg>
 
 
+      <!-- Bottom left: the diagram's pages -->
+      <div class="float page-tabs" id="pageTabs" role="tablist" aria-label="Pages"></div>
+
       <!-- Bottom-right dock: view tools (how the drawing is shown), then zoom -->
       <div class="float-dock">
         <div class="float" role="group" aria-label="Tool" id="toolGroup">
           <button class="icon-btn tool-btn" data-tool="select" title="Select (V): click a terminal to select the wires, bus bars and cable on it"><svg class="ic"><use href="#i-pointer"/></svg></button>
           <button class="icon-btn tool-btn" data-tool="wire" title="Wire (W): drag from one terminal to another, or click both, to add a wire"><svg class="ic"><use href="#i-wire-add"/></svg></button>
+          <button class="icon-btn tool-btn" data-tool="measure" title="Measure (M): drag across the drawing to measure a distance"><svg class="ic"><use href="#i-ruler"/></svg></button>
         </div>
         <div class="float" role="group" aria-label="View">
           <div class="menu">
@@ -160,6 +186,7 @@
               <div class="menu-sep"></div>
               <button data-wopt="wireLabels" role="menuitemcheckbox" title="Where each wire goes, at its terminals, e.g. TB101-1"><span>Labels</span><svg class="ic sm check"><use href="#i-check"/></svg></button>
               <button data-wopt="labelWire" role="menuitemcheckbox" title="The wire's number ahead of where it goes, e.g. W3 → TB101-1, or W3 at the middle of each line"><span>Wire names</span><svg class="ic sm check"><use href="#i-check"/></svg></button>
+              <button data-wopt="labelPage" role="menuitemcheckbox" title="For a wire to another page, which page its other end is on, e.g. TB101-1 (Door). Also for cables."><span>Page names</span><svg class="ic sm check"><use href="#i-check"/></svg></button>
               <div class="menu-sep"></div>
               <div class="menu-head">Named circuits show</div>
               <button data-lname="dest" role="menuitemradio" title="Where each wire goes, e.g. TB101-1, like wires in unnamed circuits"><span>Where each wire goes</span><svg class="ic sm check"><use href="#i-check"/></svg></button>
@@ -174,6 +201,7 @@
               <button data-cables="break" role="menuitemradio" title="Each cable is a short tail at each end with a break, labelled with where the other end goes, e.g. K1"><span>Broken (tails)</span><svg class="ic sm check"><use href="#i-check"/></svg></button>
               <div class="menu-sep"></div>
               <button data-wopt="labelCable" role="menuitemcheckbox" title="The cable's name in its labels: along the sheath, and ahead of where it goes, e.g. C1 → K1"><span>Cable names</span><svg class="ic sm check"><use href="#i-check"/></svg></button>
+              <button data-wopt="labelPage" role="menuitemcheckbox" title="For a cable to another page, which page its other end is on, e.g. K1 (Door). Also for wires."><span>Page names</span><svg class="ic sm check"><use href="#i-check"/></svg></button>
               <div class="menu-sep"></div>
               <button data-cmd="cableLib" role="menuitem" title="Ready-made cable types to add to this drawing, or to give the cables selected"><span>Cable library…</span></button>
             </div>
@@ -350,7 +378,7 @@
           <div id="teSelBar" class="sel-bar" hidden></div>
           <div class="term-table-wrap">
             <table class="term-table">
-              <thead><tr><th>Name</th><th>X</th><th>Y</th><th title="Wire terminal, or a slot that takes bus bars only">Type</th><th>Label side</th><th title="Terminals with the same Link value are connected inside the part">Link</th><th></th></tr></thead>
+              <thead><tr><th>Name</th><th>X</th><th>Y</th><th title="Wire terminal, or a slot that takes bus bars only">Type</th><th>Label side</th><th title="Terminals with the same Link value are connected inside the part">Link</th><th title="What the terminal is for, shown when the mouse is over it">Description</th><th></th></tr></thead>
               <tbody id="teTerms"></tbody>
             </table>
           </div>
@@ -381,6 +409,18 @@
     </div>
   </div>
 
+  <!-- Print settings, shown before printing -->
+  <div class="modal-back" id="printModal" hidden>
+    <div class="modal narrow">
+      <div class="modal-head">
+        <h2>Print / PDF</h2>
+        <button class="icon-btn" data-close="printModal" title="Close"><svg class="ic"><use href="#i-x"/></svg></button>
+      </div>
+      <div class="modal-body" id="printBody"></div>
+      <div class="modal-foot print-foot"><span class="muted foot-note" id="printSummary"></span><button data-close="printModal">Cancel</button><button data-cmd="doPrint" class="primary">Print…</button></div>
+    </div>
+  </div>
+
   <!-- Help -->
   <div class="modal-back" id="helpModal" hidden>
     <div class="modal help-modal">
@@ -398,6 +438,7 @@
           <button data-pane-btn="h-parts">Parts</button>
           <button data-pane-btn="h-strips">Terminal strips</button>
           <button data-pane-btn="h-rails">Rails and notes</button>
+          <button data-pane-btn="h-pages">Pages</button>
           <button data-pane-btn="h-libs">Libraries</button>
           <h4>Wiring</h4>
           <button data-pane-btn="h-wire">Drawing wires</button>
@@ -426,7 +467,8 @@
               <li><b>Drawing</b> (middle): your DIN rails, parts, wires and cables, at their real size in millimetres.</li>
               <li><b>Inspector</b> (right): the settings of whatever is selected. With nothing selected, it shows the diagram's title block (revision, date, author, notes).</li>
               <li><b>Lists</b> (bottom): wires, cables, bus bars, parts, wire profiles and cable profiles. Drag the top edge to resize them, or use the arrow at the right to hide them.</li>
-              <li><b>Top bar:</b> the <b>File</b>, <b>Export</b> and <b>Help</b> menus, the diagram's title (click it to rename), undo and redo, and <b>Settings</b> (the sliders button).</li>
+              <li><b>Top bar:</b> the <b>File</b>, <b>Edit</b> and <b>Help</b> menus, undo and redo, and the diagram's title (click it to rename). <b>Settings…</b> is in the Edit menu.</li>
+              <li><b>Bottom left of the drawing:</b> the diagram's pages, one tab each, and <b>+</b> to add one.</li>
               <li><b>Bottom right of the drawing:</b> the <b>Select</b> and <b>Wire</b> tools, buttons for how wires and cables are drawn, the selection filter, and zoom.</li>
               <li><b>Right-click</b> anything, or empty space, for what you can do with it.</li>
             </ul>
@@ -435,8 +477,8 @@
             <h3>Saving and files</h3>
             <ul>
               <li>Your work is <b>saved automatically</b> in this browser, and is there next time you open DIN Stack in it.</li>
-              <li><b>File → Save</b> (Ctrl+S) downloads the diagram as a file, to keep a copy or open it on another computer. <b>File → Open…</b> opens one.</li>
-              <li><b>File → New diagram</b> starts an empty one, keeping your libraries. <b>File → Load the example</b> loads a small 24 V control panel to explore. Both can be undone.</li>
+              <li><b>File → Save</b> (Ctrl+S) downloads the diagram as a file, to keep a copy or open it on another computer. <b>Save as…</b> (Ctrl+Shift+S) lets you choose the file's name and folder (in browsers that can; otherwise it asks for a name). <b>File → Open…</b> (Ctrl+O) opens one.</li>
+              <li><b>File → New diagram</b> starts an empty one, keeping your libraries. <b>File → Open the example</b> loads a small 24 V control panel to explore. Both can be undone.</li>
               <li>The <b>start screen</b> appears when DIN Stack opens: continue, start a new diagram, open a file or load the example. If nothing is clicked within 10 seconds, it carries on with your diagram. Turn it off with its tick box or in Settings, and open it any time from <b>Help → Start screen</b>.</li>
               <li><b>Example links</b> such as <code>#mechatronics</code> open a ready-made example in its own workspace, saved separately from your usual diagram.</li>
             </ul>
@@ -445,6 +487,7 @@
             <h3>Moving around</h3>
             <ul>
               <li>Drag empty space to pan (or hold <b>Space</b> and drag). Use the mouse wheel to zoom, or the zoom buttons at the bottom right. <b>F</b> fits the diagram to the window.</li>
+              <li>With the <b>Measure</b> tool (M), drag across the drawing to measure a distance in mm and inches. The ends snap to terminals and to the corners and edges of parts and rails. Hold <b>Shift</b> to keep the line level or upright, or <b>Alt</b> to turn snapping off. A measurement at an angle also shows its distance across and down. Click or press Esc to clear it.</li>
             </ul>
             <h3>Selecting</h3>
             <ul>
@@ -495,10 +538,25 @@
             <h3>Text notes</h3>
             <ul>
               <li>Right-click empty space → <b>Text note here</b>. Set its text, size, colour and bold in the inspector. Notes are printed and exported with the drawing.</li>
+              <li><b>Group notes:</b> select some parts or rails, right-click → <b>Group note</b>. The note gets a bracket across the items, with a line to the note, and follows them when they're all moved. Drag the note to another side of the items and the bracket moves there. The bracket starts just clear of the items' wire labels; drag its long line in or out to place it, or set its distance in the note's panel, or click <b>Clear the labels</b> there to fit it again after rewiring. To link an existing note, select it with the items → <b>Link note to the selected items</b>.</li>
+              <li>Turn a note a quarter turn with <b>R</b> (or Shift+R the other way), the turn buttons in its panel, or its right-click menu. Its <b>Angle</b> sets any angle, e.g. 45°. A note turns about its middle.</li>
             </ul>
             <h3>Copying</h3>
             <ul>
               <li>Ctrl+C and Ctrl+V copy and paste parts, rails and notes, with the wires, bus bars and cables between them. Ctrl+D duplicates the selection. Right-click empty space → <b>Paste here</b> pastes at that spot.</li>
+            </ul>
+          </section>
+          <section data-pane="h-pages" hidden>
+            <h3>Pages</h3>
+            <ul>
+              <li>A diagram can have several pages, for example the back panel, the door and a junction box. The tabs at the bottom left of the drawing switch between them, and <b>+</b> adds one.</li>
+              <li>Double-click a tab to rename the page. Right-click it to rename, duplicate, move or delete the page.</li>
+              <li>To move parts, rails or notes to another page, select them, right-click and pick the page under <b>Move to page</b>, or <b>New page</b>. They keep their place, and the parts on a rail go with it.</li>
+              <li><b>Wiring between pages:</b> start a wire on one page, open the other page and click the terminal it goes to. Cables and bus bars work the same way while you pick their terminals.</li>
+              <li>A wire or cable to another page is always drawn broken at each end, its label saying where it goes and on which page, e.g. <code>W3 → S1-13 (Door)</code>. Untick <b>Page names</b> under the wires or cables button at the bottom right (or in Settings) to leave the page out. Right-click it and choose <b>Go to other end</b> to jump there.</li>
+              <li>Hold the mouse over a wire, its label or a cable to see what it is: its name, where each end goes and on which page, its circuit, colour, size, profile and notes.</li>
+              <li>Snapping, selection boxes, Ctrl+A and measuring work on the page you're on. The lists cover the whole diagram, with a <b>Page</b> column; clicking a row on another page opens that page.</li>
+              <li><b>Print / PDF</b> prints each page on a sheet of its own. SVG and PNG export the page you're on.</li>
             </ul>
           </section>
           <section data-pane="h-libs" hidden>
@@ -516,7 +574,7 @@
             <ul>
               <li>With the <b>Wire</b> tool (W), drag from one terminal to another, or click one terminal and then another. Esc cancels a wire you've started.</li>
               <li>With the <b>Select</b> tool (V), clicking a terminal selects what's on it (its wires, bus bars and any cable plugged in) without starting a wire, so you can see where they go. A terminal with nothing on it selects its part. Right-click a terminal → <i>Start a wire here</i> still works.</li>
-              <li>The two tool buttons are at the bottom right of the drawing.</li>
+              <li>The tool buttons are at the bottom right of the drawing.</li>
               <li>Terminals are referenced as tag plus terminal name, e.g. <code>TB101-1</code>. The separator is in Settings.</li>
               <li>New wires are numbered W1, W2…, and take a colour and size from the circuit they join, or a guess from the terminal names (e.g. <code>+24V</code>, <code>0V</code>, <code>PE</code>).</li>
             </ul>
@@ -525,6 +583,8 @@
               <li>Click a wire's label or line to set its <b>wire number</b>, <b>profile</b>, <b>colour</b>, <b>stripe</b>, <b>size</b>, <b>conductor</b> and <b>notes</b>.</li>
               <li><b>Stripe</b> adds a tracer stripe, e.g. red with a white stripe, listed as "Red/White".</li>
               <li><b>Swap ends</b> (right-click) swaps a wire's From and To.</li>
+              <li><b>Moving a wire's end:</b> right-click the wire near the end to move, or its label at that terminal, and pick <b>Move end at…</b>, then click the terminal it goes to instead. This works for a cable's cores too.</li>
+              <li><b>Finding the other end:</b> right-clicking a wire or cable offers only what can be done at the end you clicked, plus <b>Go to other end</b>, which scrolls the drawing to it. A cable with a free end shows the options for both ends instead.</li>
               <li><b>Finding the other end:</b> a selected wire's two ends are ringed in blue, and the rings stay the same size however far you zoom out. A wire drawn as stubs also gets a dashed line between its ends. Clicking a wire in the list below does the same.</li>
             </ul>
           </section>
@@ -534,7 +594,7 @@
               <li>The wire button at the bottom right of the drawing picks <i>Stubs</i> (a short stub at each terminal), <i>Straight lines</i> or <i>Curved lines</i>.</li>
               <li><i>Labels</i> shows where each wire goes at its terminals, e.g. <code>TB101-1</code>. <i>Wire names</i> adds the wire's number: <code>W3 → TB101-1</code>, or at the middle of a line.</li>
               <li><i>Named circuits show</i> picks whether a named circuit's wires are labelled with its name (<code>+24V</code>) or with where they go.</li>
-              <li>One wire can be drawn differently from the rest: set its <b>Draw as</b> to a line or to <i>Broken</i> (a labelled stub at each end). Handy for breaking just the long runs, or drawing a short jumper as a line.</li>
+              <li>One wire can be drawn differently from the rest: set its <b>Draw as</b> (or right-click → <b>Draw wire</b>) to <i>Straight line</i>, <i>Curved line</i> or <i>Broken</i> (a labelled stub at each end). Handy for breaking just the long runs, or drawing a short jumper as a line.</li>
               <li>The printout and exported images look the same as the drawing.</li>
             </ul>
           </section>
@@ -542,6 +602,7 @@
             <h3>Wire profiles</h3>
             <ul>
               <li>A wire profile is a named wire type, e.g. "+24 V DC: red, 16 AWG, stranded". Pick one under <b>Profile</b> in a wire's panel, for one wire or several selected.</li>
+              <li><b>Favourites:</b> only the profiles starred ★ are offered in the <b>Profile</b> drop-down and the right-click menu's <i>Wire profile</i>, so they stay short. <i>All wire profiles…</i> there opens a window with all of them to search and pick from. Star or unstar a profile there, in <b>Edit…</b> or in the <b>Wire profiles</b> list at the bottom. New profiles start as favourites.</li>
               <li>Editing a profile updates all its wires. Edit them with <b>Edit…</b> next to a wire's profile, or from the <b>Wire profiles</b> list at the bottom, where clicking a profile selects its wires.</li>
               <li>Changing a wire's colour or size by hand makes it a custom wire again.</li>
             </ul>
@@ -561,6 +622,7 @@
               <li>A circuit is everything connected together: wires, bus bars, and terminals joined inside a part (both sides of a terminal block, say).</li>
               <li>Selecting a wire lights up the rest of its circuit in lighter blue, on the drawing and in the wire list.</li>
               <li>Which terminals are joined inside a part is set with <b>Link</b> in the object type designer.</li>
+              <li>A terminal's <b>Description</b> in the object type designer (e.g. <code>+24 VDC</code>) shows when the mouse is over that terminal on every part of the type.</li>
             </ul>
             <h3>Selecting a circuit</h3>
             <ul>
@@ -578,7 +640,7 @@
             </ul>
             <h3>Connector labels</h3>
             <ul>
-              <li>Select a part and type a label next to a terminal under <i>Terminals</i>. It's drawn at the terminal as a boxed tag, so you don't need to draw a wire from where the supply comes from.</li>
+              <li>Select a part and type a label next to a terminal under <i>Terminals</i>. It isn't drawn: it shows when the mouse is over the terminal. You don't need to draw a wire from where the supply comes from.</li>
               <li>Terminals and wires with the same name count as one circuit.</li>
             </ul>
             <h3>Joining named circuits</h3>
@@ -605,10 +667,14 @@
               <li><b>A cable with one end on the drawing:</b> right-click empty space → <b>Cable…</b> (or right-click a terminal → <i>Cable from here…</i>), click the terminals its cores go to, and press Enter. Fill in <b>Goes to</b> (e.g. "Pump P1") to label the free end. Its cores are referenced as C1-1, C1-2…</li>
               <li><b>Drawing the other end later:</b> right-click the cable → <i>Fan out to terminals…</i>, then click the terminal each core goes to, in order. The bar at the top says which core is next.</li>
               <li>The <b>Ends</b> section of a cable's panel changes either end: plug in, fan out, unplug, leave free or add cores.</li>
+              <li><b>Moving a cable's end:</b> right-click the cable near the end to move and pick <b>Move end…</b> (also in the <b>Ends</b> section of its panel). Click the terminal each core moves to, in core order, or drag along a row. <b>Keep</b> leaves a core where it is, and so does clicking Done before picking one for it. The other end stays where it is. To move a plugged-in end, use <i>Plug into another connector…</i>.</li>
+              <li><b>Using only some cores:</b> when a cable whose profile lists its cores fans out from a plugged-in or free end, each terminal you click gets the <b>Next core</b> shown in the bar at the top. Pick another core there, or click <b>Skip</b> to leave one spare. The panel on the right lists each picked terminal with its core, to change or swap them, and the drawing shows each terminal's core number. Afterwards, the <b>Cores</b> section of the cable's panel can still change which core each wire is.</li>
+              <li><b>Cores connected at one end only:</b> when landing a cable's other end, click <b>Skip</b> to leave a core not connected at that end. In the cable's panel, each wire's drop-down says which ends it's connected at (<i>Both ends</i>, <i>End A only</i> or <i>End B only</i>); a wire at one end only is marked <i>not connected through</i> and drawn at that end only. Pick <i>Both ends</i>, or <b>Connect through…</b> in the wire's panel, then click the terminal at its other end. Taking the last wire off one end of a cable leaves that end free.</li>
             </ul>
             <h3>How cables look</h3>
             <ul>
               <li>Drag the orange dots on a selected cable to move where its cores fan out. They move with the parts at that end.</li>
+              <li>A cable drawn <i>Broken</i> has two dots at each end: one where the cores fan out and one where the tail stops, so each tail can be put wherever it fits. <i>Reset fan-out points</i> puts them all back.</li>
               <li>The cable button at the bottom right draws cables <i>Full length</i> or <i>Broken</i>: a short tail at each end labelled with where the other end goes. A cable's own <b>Draw</b> setting overrides that. <i>Cable names</i> adds its name, e.g. <code>C1 → K1</code>.</li>
               <li>A shielded cable is drawn with a dashed outline along its sheath.</li>
               <li><b>Finding the other end:</b> a selected cable's ends are ringed in blue: the connectors it plugs into, or the terminals its cores land on. The rings stay the same size however far you zoom out, and a broken cable also gets a dashed line between its ends.</li>
@@ -622,6 +688,8 @@
               <li>Drag from one connector to another to plug in a cable between them, like a patch lead.</li>
               <li>Drag from a connector to a terminal for a cable plugged in at one end with its cores landing on terminals at the other, such as a motor cable from a drive's U, V, W and PE.</li>
               <li>Right-click a connector for <i>Plug in a cable…</i>, <i>Select cable</i> or <i>Unplug the cable</i>.</li>
+              <li><b>Several connectors at one end:</b> an end of a cable can plug into more than one connector, alongside its loose cores, e.g. a motor cable with a power plug, an encoder plug and two cores on terminal blocks at the drive end, and one connector at the motor. Use <b>Add a connector…</b> for that end (in the cable's <i>Ends</i> section, or right-click the cable → <i>End A</i> or <i>End B</i>). The end branches at its fan-out point, a length of sheath to each connector, and each connector can be unplugged on its own.</li>
+              <li>When making a new cable with <i>Cable…</i>, the first connector you click is the far end; any more connectors go at the near end, with the cores.</li>
               <li>For a cable from outside the enclosure, put a loose part such as the <i>Mains plug</i> at the far end.</li>
             </ul>
           </section>
@@ -630,6 +698,7 @@
             <ul>
               <li>A cable profile is a named cable type: sheath colour, type (e.g. Cat6 S/FTP), <i>Shielded</i>, <i>Twisted pairs</i>, notes, and the cores it contains.</li>
               <li>Pick one under <b>Cable profile</b> in a cable's panel. Editing a profile updates all its cables.</li>
+              <li>Like wire profiles, only the favourites ★ are offered in the drop-down and right-click menu; <i>All cable profiles…</i> opens the rest.</li>
               <li>They're listed under <b>Cable profiles</b> at the bottom: click one to select its cables, or <b>Edit…</b> to change them.</li>
             </ul>
             <h3>Cores</h3>
@@ -639,7 +708,7 @@
             </ul>
             <h3>The cable library</h3>
             <ul>
-              <li>Ready-made cable types with their cores: Ethernet, PROFINET, PROFIBUS, M8 and M12 sensor cables, control and D-sub 25 cables, power, motor and instrument cables.</li>
+              <li>Ready-made cable types with their cores: Ethernet, PROFINET, PROFIBUS, 9-core serial, M8 and M12 sensor cables, control and D-sub 25 cables, power, motor and instrument cables.</li>
               <li>Open it from <i>From the cable library…</i> in a cable's <b>Cable profile</b> drop-down, the cable button at the bottom right, or the <b>Cable profiles</b> list. <b>Add</b> puts a copy in this drawing; <b>Update</b> replaces a copy that differs.</li>
               <li>New drawings start with no cable profiles. Editing a drawing's copy doesn't change the library.</li>
             </ul>
@@ -647,7 +716,7 @@
           <section data-pane="h-types" hidden>
             <h3>Designing a type</h3>
             <ul>
-              <li><b>+ New type</b> opens the designer. Set the name, library, category, tag prefix and size in millimetres.</li>
+              <li><b>+ New part</b> opens the designer. Set the name, library, category, tag prefix and size in millimetres.</li>
               <li>Click on the preview to add a terminal there, or add a whole row or grid at once.</li>
               <li><b>Add a grid</b> places blocks like a 2 × 16 header or an IC. Numbering can wrap by rows or columns, go around like an IC, or use row letters (A1… B1…), starting from any corner.</li>
               <li>Drag over empty space to select several terminals, then drag one to move them all. Shift+click adds to the selection, the arrow keys nudge, Ctrl+D copies, Delete removes and Ctrl+Z undoes.</li>
@@ -680,14 +749,17 @@
             </ul>
             <h3>Printing and exporting</h3>
             <ul>
-              <li><b>Export → Print / PDF…</b> prints the drawing with its title block, followed by the wire, cable, bus bar and parts lists. Pick <i>Save as PDF</i> in the print window for a PDF.</li>
-              <li><b>Export → SVG image</b> is true to scale, for printing at 1:1 or using in other drawings. <b>PNG image</b> is a picture of the drawing.</li>
-              <li><b>Export → Wire list (CSV)</b>, or <b>CSV</b> above the wire list, downloads the wire list for a spreadsheet.</li>
+              <li><b>File → Print / PDF…</b> (Ctrl+P) opens the print settings first: paper size, orientation (or <i>Automatic</i>) and margins, how big the drawing comes out, and what to print. Then <b>Print…</b> opens the print window; pick <i>Save as PDF</i> there for a PDF, and the same paper size as in the settings.</li>
+              <li><b>Size of the drawing:</b> <i>Fit each page on one sheet</i>; <i>Real size, shrunk to fit one sheet if too big</i>; <i>Fit to the paper's width</i>; or a <i>Set scale</i>, where 100% is real size (1:1). With the last two, a page too big for one sheet goes on over several, each labelled with its row and column.</li>
+              <li>Each sheet of drawing gets a page to itself, with a heading at the top that's the same on every sheet (title, page, revision, and which sheet it is when a page takes several), and the drawing centred under it. The notes go under the heading on the first sheet. The lists start on a new page. Choose which drawing pages to print (all, the one open, or none) and which lists, and whether to print the heading.</li>
+              <li>Paper sizes and margins follow the wire standard: American uses Letter, Legal, Tabloid… and inches, metric uses A4, A3… and mm. Switching the standard in Settings switches the paper to the nearest size.</li>
+              <li><b>File → SVG image</b> is true to scale, for printing at 1:1 or using in other drawings. <b>PNG image</b> is a picture of the drawing. Both are of the page you're on.</li>
+              <li><b>File → Wire list (CSV)</b>, or <b>CSV</b> above the wire list, downloads the wire list for a spreadsheet.</li>
             </ul>
           </section>
           <section data-pane="h-settings" hidden>
             <h3>Settings</h3>
-            <p class="muted" style="margin:0 0 6px">The sliders button at the top right. Saved with the diagram, except where noted.</p>
+            <p class="muted" style="margin:0 0 6px"><b>Edit → Settings…</b>. Saved with the diagram, except where noted.</p>
             <ul>
               <li><b>Drawing:</b> snap grid, how wires and cables are drawn, labels, text heights, snapping to neighbours and rails, and terminal names.</li>
               <li><b>Wiring:</b> the wire standard (American or metric) and how terminals are referenced (<code>TB101-1</code>, <code>TB101:1</code>…).</li>
@@ -701,15 +773,18 @@
               <li>Right-click a part, terminal, wire, bus bar, cable, rail or note for the things you can do with it.</li>
               <li>Right-click empty space to add a rail, note, bus bar or cable there, paste, undo or fit the view.</li>
               <li>Right-clicking something in a multiple selection keeps the selection, so the menu applies to all of it.</li>
+              <li>Entries with <b>›</b> open a submenu: hover over them, click them, or press →. ← goes back.</li>
             </ul>
             <h3>Keyboard</h3>
             <table class="keys">
               <tr><td>Delete</td><td>Delete selection</td></tr>
               <tr><td>Ctrl+Z / Ctrl+Y</td><td>Undo / redo</td></tr>
-              <tr><td>Ctrl+C / Ctrl+V / Ctrl+D</td><td>Copy / paste / duplicate</td></tr>
-              <tr><td>Ctrl+A</td><td>Select everything</td></tr>
-              <tr><td>Ctrl+S</td><td>Save the diagram as a file</td></tr>
-              <tr><td>V / W</td><td>Select tool / Wire tool</td></tr>
+              <tr><td>Ctrl+X / Ctrl+C / Ctrl+V / Ctrl+D</td><td>Cut / copy / paste / duplicate</td></tr>
+              <tr><td>Ctrl+A</td><td>Select everything on the page</td></tr>
+              <tr><td>Ctrl+F</td><td>Find in the lists (the filter box)</td></tr>
+              <tr><td>Ctrl+O / Ctrl+S / Ctrl+Shift+S</td><td>Open / save / save as</td></tr>
+              <tr><td>Ctrl+P</td><td>Print / PDF</td></tr>
+              <tr><td>V / W / M</td><td>Select tool / Wire tool / Measure tool</td></tr>
               <tr><td>R / Shift+R</td><td>Rotate selected 90° right / left</td></tr>
               <tr><td>Arrow keys</td><td>Nudge one grid step (Shift = ×10)</td></tr>
               <tr><td>F</td><td>Fit to window</td></tr>
@@ -717,7 +792,7 @@
               <tr><td>Alt + drag</td><td>Move without snapping</td></tr>
               <tr><td>Ctrl + drag</td><td>Push the touching parts along</td></tr>
               <tr><td>Enter</td><td>Finish a bus bar or cable</td></tr>
-              <tr><td>Esc</td><td>Cancel wiring / clear selection</td></tr>
+              <tr><td>Esc</td><td>Cancel wiring / clear a measurement / clear selection</td></tr>
               <tr><td>Space or Esc</td><td>Turn the selection filter off</td></tr>
               <tr><td>?</td><td>This help</td></tr>
             </table>
@@ -755,7 +830,7 @@
             <li><span class="step-ic"><svg class="ic"><use href="#i-rail"/></svg></span><div><b>Place parts</b><p>Click a type in the library on the left, or drag it onto the drawing. Parts snap flush against each other and centre on DIN rails. Right-click empty space on the drawing to add rails, notes, bus bars and cables.</p></div></li>
             <li><span class="step-ic"><svg class="ic"><use href="#i-wire"/></svg></span><div><b>Wire them up</b><p>Drag from one terminal to another. Each terminal is labelled with where its wire goes, and the wire list below fills in as you go.</p></div></li>
             <li><span class="step-ic"><svg class="ic"><use href="#i-edit"/></svg></span><div><b>Edit anything</b><p>Click a part, wire or bus bar to change it in the inspector on the right. Right-click it for more.</p></div></li>
-            <li><span class="step-ic"><svg class="ic"><use href="#i-download"/></svg></span><div><b>Keep your work</b><p>Everything is saved in this browser automatically. Use <b>File → Save</b> for a file you can open elsewhere, and <b>Export</b> to print or make images.</p></div></li>
+            <li><span class="step-ic"><svg class="ic"><use href="#i-download"/></svg></span><div><b>Keep your work</b><p>Everything is saved in this browser automatically. Use <b>File → Save</b> for a file you can open elsewhere. The <b>File</b> menu also prints and makes images.</p></div></li>
           </ol>
         </details>
       </div>
@@ -793,21 +868,56 @@
         <button class="icon-btn" data-close="profModal" title="Close"><svg class="ic"><use href="#i-x"/></svg></button>
       </div>
       <div class="modal-body">
-        <p class="muted" style="margin-top:0">A profile is a named wire type. Wires assigned to a profile take its colour, stripe, size and conductor, and editing a profile here updates all of them. Changing a wire by hand makes it a custom wire again.</p>
+        <p class="muted" style="margin-top:0">A profile is a named wire type. Wires assigned to a profile take its colour, stripe, size and conductor, and editing a profile here updates all of them. Changing a wire by hand makes it a custom wire again. Only the favourites (★) are offered in the drop-downs and right-click menus; the others are under <i>All wire profiles…</i> there.</p>
         <table class="term-table prof-table">
-          <thead><tr><th>Name</th><th>Colour</th><th>Stripe</th><th>Size</th><th>Conductor</th><th>Wires</th><th></th></tr></thead>
+          <thead><tr><th title="Favourites: offered in the drop-downs and right-click menus">★</th><th>Name</th><th>Colour</th><th>Stripe</th><th>Size</th><th>Conductor</th><th>Wires</th><th></th></tr></thead>
           <tbody id="profRows"></tbody>
         </table>
         <div class="btn-row"><button id="profAdd" class="small primary"><svg class="ic sm"><use href="#i-plus"/></svg> Add profile</button></div>
         <h3 id="cprofHead" class="prof-sub">Cable profiles</h3>
-        <p class="muted">A cable profile is a named cable type. Add the ones this drawing uses from the <b>cable library</b>, or make your own. Each has its sheath colour, type (e.g. Cat6 S/FTP), whether it's shielded or has twisted pairs, any notes, and the cores it contains. Cables assigned to a profile follow it, and editing it here updates all of them. Click <b>Cores</b> to list its cores in order, each with a marking, colour, stripe, size and conductor: a cable's cores then take those looks, core 1 first. With no cores listed, the wires inside a cable keep their own looks.</p>
+        <p class="muted">A cable profile is a named cable type. Add the ones this drawing uses from the <b>cable library</b>, or make your own. Each has its sheath colour, type (e.g. Cat6 S/FTP), whether it's shielded or has twisted pairs, any notes, and the cores it contains. Cables assigned to a profile follow it, and editing it here updates all of them. Click <b>Cores</b> to list its cores in order, each with a marking, colour, stripe, size and conductor: a cable's cores then take those looks, core 1 first. With no cores listed, the wires inside a cable keep their own looks. As with wire profiles, only the favourites (★) are offered in the drop-downs and right-click menus.</p>
         <table class="term-table cprof-table">
-          <thead><tr><th>Name</th><th>Sheath</th><th>Type</th><th>Shielded</th><th>Twisted pairs</th><th>Notes</th><th>Cores</th><th>Cables</th><th></th></tr></thead>
+          <thead><tr><th title="Favourites: offered in the drop-downs and right-click menus">★</th><th>Name</th><th>Sheath</th><th>Type</th><th>Shielded</th><th>Twisted pairs</th><th>Notes</th><th>Cores</th><th>Cables</th><th></th></tr></thead>
           <tbody id="cprofRows"></tbody>
         </table>
         <div class="btn-row"><button id="cprofLib" class="small primary" title="Ready-made cable types to add to this drawing"><svg class="ic sm"><use href="#i-plus"/></svg> Add from the cable library…</button><button id="cprofAdd" class="small" title="Make a cable profile of your own"><svg class="ic sm"><use href="#i-plus"/></svg> New cable profile</button></div>
       </div>
       <div class="modal-foot"><button data-close="profModal" class="primary">Done</button></div>
+    </div>
+  </div>
+
+  <!-- Version history: the release notes -->
+  <div class="modal-back" id="historyModal" hidden>
+    <div class="modal help-modal">
+      <div class="modal-head">
+        <h2>Version history</h2>
+        <button class="icon-btn" data-close="historyModal" title="Close"><svg class="ic"><use href="#i-x"/></svg></button>
+      </div>
+      <div class="modal-body history" id="historyBody"></div>
+      <div class="modal-foot">
+        <a class="foot-note" href="https://github.com/mmmlinux/DIN-Stack/blob/main/RELEASE_NOTES.md" target="_blank" rel="noopener">Release notes on GitHub</a>
+        <button data-close="historyModal" class="primary">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Choosing from all of the drawing's wire or cable profiles -->
+  <div class="modal-back" id="profPick" hidden>
+    <div class="modal narrow">
+      <div class="modal-head">
+        <h2 id="profPickTitle">Wire profiles</h2>
+        <button class="icon-btn" data-close="profPick" title="Close"><svg class="ic"><use href="#i-x"/></svg></button>
+      </div>
+      <div class="modal-body">
+        <p id="profPickFor" class="cable-lib-for"></p>
+        <input id="profPickSearch" type="search" class="cable-lib-search" placeholder="Search profiles" aria-label="Search the profiles">
+        <div id="profPickList"></div>
+      </div>
+      <div class="modal-foot">
+        <button id="profPickEdit" title="Create and edit profiles" style="margin-right:auto"><svg class="ic sm"><use href="#i-edit"/></svg> Edit profiles…</button>
+        <button id="profPickLib" title="Ready-made cable types to add to this drawing">Cable library…</button>
+        <button data-close="profPick">Cancel</button>
+      </div>
     </div>
   </div>
 
@@ -845,7 +955,7 @@
 
   <datalist id="gaugeList"></datalist>
   <datalist id="netList"></datalist>
-  <div id="ctxMenu" class="ctx-menu" role="menu" hidden></div>
+  <div id="ctxMenu" class="ctx-menu" role="menu" tabindex="-1" hidden></div>
   <div id="printArea" class="print-area"></div>
   <input id="fileInput" type="file" accept=".json,application/json" hidden>
   <input id="libFileInput" type="file" accept=".json,application/json" hidden>

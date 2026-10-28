@@ -14,7 +14,12 @@ File: [`automationdirect-din-relays.json`](automationdirect-din-relays.json)
 
 ### 1.0.0
 
-The library as first published in DIN Stack 1.1.2 (59 object types covering 206 part numbers), before libraries had version numbers.
+The library as first published in DIN Stack 1.1.2, before libraries had version numbers: the DIN-rail relays, timers, monitoring relays and relay sockets that AutomationDirect sells.
+
+- 59 object types covering 206 part numbers, in seven *AD relays* categories: interface, solid state & optocoupler, force guided, intrinsically safe, monitoring, timers and sockets.
+- Brands: Murrelektronik, Klemsan, Dold, Gefran, Macromatic, Fuji Electric and AutomationDirect's own sockets.
+- Sizes come from AutomationDirect's drawings, and terminals carry the names printed on the devices. Terminal positions are approximate.
+- Search the library by part number (for example `52000`, `RK7814` or `GRSH`) to find the type that covers it.
 
 ## AutomationDirect pushbuttons & pilot lights
 

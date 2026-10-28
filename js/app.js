@@ -49,6 +49,10 @@
   const cableOf = (connId) => doc.cables.find((cb) => cb.wires.includes(connId));
   const exists = (id) => !!(itemById(id) || connById(id) || busById(id) || cableById(id));
   const boxOf = (it) => itemBox(it, it.kind === "part" ? tplOf(it) : null);
+  // The page open: what's drawn, and where snapping, selecting and measuring look.
+  const onPage = (it) => !!it && pageOf(doc, it) === doc.page;
+  const pageItems = () => doc.items.filter(onPage);
+  const endHere = (e) => !!e && onPage(itemById(e.item));
   const rtl = () => doc.settings.direction === "rtl";
   // An icon from the sprite in index.html.
   const ic = (name, cls = "") => `<svg class="ic${cls ? " " + cls : ""}" aria-hidden="true"><use href="#i-${name}"/></svg>`;
@@ -126,16 +130,86 @@
     const at = (e) => !!e && e.item === t.item && e.term === t.term;
     return [...doc.connections.filter((c) => at(c.a) || at(c.b)).map((c) => c.id),
       ...doc.buses.filter((b) => b.terms.some(at)).map((b) => b.id),
-      ...doc.cables.filter((cb) => at(cb.portA) || at(cb.portB)).map((cb) => cb.id)];
+      ...doc.cables.filter((cb) => cablePlugs(cb).some(at)).map((cb) => cb.id)];
   }
 
   function setTool(t) {
-    tool = ui.tool = t;
-    saveUi();
+    tool = t;
+    // Measure is for a quick check, so the app opens with the last Select or Wire tool instead.
+    if (t !== "measure") { ui.tool = t; saveUi(); }
     for (const b of document.querySelectorAll("[data-tool]")) b.classList.toggle("on", b.dataset.tool === t);
     svg.classList.toggle("tool-select", t === "select");
-    if (pending) { pending = null; renderCanvas(); }
-    setHint("");
+    svg.classList.toggle("tool-measure", t === "measure");
+    const redraw = !!(pending || measure || measureHover);
+    measure = measureHover = pending = null;
+    if (redraw) renderCanvas();
+    setHint(t === "measure" ? MEASURE_TIP : "");
+  }
+
+  // ---------- measuring ----------
+  // The measure tool's line, {a, b} in mm: kept on screen after the drag until Esc, another tool or the
+  // next measurement. measureHover is where a measurement would start, shown before the drag.
+  let measure = null, measureHover = null;
+  const MEASURE_TIP = "Drag to measure · Shift keeps it level or upright · Alt turns snapping off";
+  // Where a measurement's end lands: the nearest terminal, or corner or edge middle of a part or rail,
+  // within a few pixels; failing those, the nearest point on one of their edges. Alt measures from exactly
+  // where the pointer is.
+  function measureSnap(w, free) {
+    const exact = { x: r3(w.x), y: r3(w.y) };
+    if (free) return exact;
+    const thr = 8 / view.scale;
+    let best = null, bd = thr;
+    const near = (x, y) => { const d = Math.hypot(x - w.x, y - w.y); if (d < bd) { bd = d; best = { x, y }; } };
+    const boxes = pageItems().filter((it) => it.kind !== "text").map(boxOf);
+    for (const b of boxes) for (const fx of [0, 0.5, 1]) for (const fy of [0, 0.5, 1]) if (fx !== 0.5 || fy !== 0.5) near(b.x + b.w * fx, b.y + b.h * fy);
+    for (const it of pageItems()) {
+      const tpl = it.kind === "part" && tplOf(it);
+      if (tpl) for (const t of tpl.terminals) { const p = termWorld(it, tpl, t); near(p.x, p.y); }
+    }
+    if (best) return { x: r3(best.x), y: r3(best.y) };
+    const clamp = (v, lo, hi) => Math.min(hi, Math.max(lo, v));
+    for (const b of boxes) {
+      const cx = clamp(w.x, b.x, b.x + b.w), cy = clamp(w.y, b.y, b.y + b.h);
+      for (const x of [b.x, b.x + b.w]) near(x, cy);
+      for (const y of [b.y, b.y + b.h]) near(cx, y);
+    }
+    return best ? { x: r3(best.x), y: r3(best.y) } : exact;
+  }
+  // The end of a measurement from a, snapped, and with Shift held kept level or upright.
+  function measureEnd(a, w, e) {
+    const b = measureSnap(w, e.altKey);
+    if (!e.shiftKey) return b;
+    return Math.abs(b.x - a.x) >= Math.abs(b.y - a.y) ? { x: b.x, y: a.y } : { x: a.x, y: b.y };
+  }
+  const mmText = (v) => `${Math.round(v * 100) / 100} mm`;
+  const inText = (v) => `${(v / 25.4).toFixed(2)} in`;
+  function measureText(m) {
+    const dx = Math.abs(m.b.x - m.a.x), dy = Math.abs(m.b.y - m.a.y);
+    const d = Math.hypot(dx, dy);
+    return { main: `${mmText(d)} (${inText(d)})`, parts: dx > 0.005 && dy > 0.005 ? `↔ ${mmText(dx)} · ↕ ${mmText(dy)}` : "" };
+  }
+  // The measurement in the overlay, at a fixed size on screen: the line with its ends marked, dotted
+  // across-and-down legs when it's at an angle, and the distance beside its middle.
+  function measureOverlay(px) {
+    const C = "#c026d3";
+    const dot = (p) => `<circle cx="${p.x}" cy="${p.y}" r="${4 * px}" fill="#fff" stroke="${C}" stroke-width="${2 * px}"/>`;
+    if (!measure) return measureHover ? `<g pointer-events="none">${dot(measureHover)}</g>` : "";
+    const { a, b } = measure;
+    let s = "";
+    if (a.x !== b.x && a.y !== b.y) s += `<path d="M${a.x} ${a.y}H${b.x}V${b.y}" fill="none" stroke="${C}" stroke-opacity="0.6" stroke-width="${px}" stroke-dasharray="${2 * px} ${3 * px}"/>`;
+    s += `<line x1="${a.x}" y1="${a.y}" x2="${b.x}" y2="${b.y}" stroke="#fff" stroke-width="${4 * px}" stroke-linecap="round"/>`
+      + `<line x1="${a.x}" y1="${a.y}" x2="${b.x}" y2="${b.y}" stroke="${C}" stroke-width="${2 * px}" stroke-linecap="round"/>` + dot(a) + dot(b);
+    const len = Math.hypot(b.x - a.x, b.y - a.y);
+    if (len > 0) {
+      // Beside the middle of the line, on its upper side.
+      let nx = -(b.y - a.y) / len, ny = (b.x - a.x) / len;
+      if (ny > 0 || (ny === 0 && nx > 0)) { nx = -nx; ny = -ny; }
+      const t = measureText(measure), gap = (t.parts ? 26 : 16) * px;
+      const x = (a.x + b.x) / 2 + nx * gap, y = (a.y + b.y) / 2 + ny * gap;
+      const text = (ty, str, size, weight) => `<text x="${x}" y="${ty}" font-family="${FONT}" font-size="${size}" font-weight="${weight}" text-anchor="middle" dominant-baseline="central" fill="${C}" stroke="#fff" stroke-width="${4 * px}" stroke-linejoin="round" paint-order="stroke">${esc(str)}</text>`;
+      s += t.parts ? text(y - 8 * px, t.main, 13 * px, 600) + text(y + 8 * px, t.parts, 11 * px, 400) : text(y, t.main, 13 * px, 600);
+    }
+    return `<g pointer-events="none">${s}</g>`;
   }
 
   function termPoint(end) {
@@ -160,13 +234,26 @@
     // American became the default wire standard in 1.8.2; diagrams saved without one are metric.
     if (!("wireStd" in s0)) s0.wireStd = "metric";
     d.settings = Object.assign({}, DEFAULT_SETTINGS, s0);
+    // Print settings (1.10.19), with paper and margins to suit the wire standard.
+    const pd = printDefaults(d.settings.wireStd);
+    d.settings.print = Object.assign(pd, s0.print && typeof s0.print === "object" ? s0.print : {});
+    if (!PAPERS[d.settings.print.paper]) d.settings.print.paper = pd.paper;
     // Older diagrams hid the destination labels with a separate tick box; that's the "None" wires mode now.
     if (d.settings.showDest === false) { if (d.settings.lines === "off") d.settings.lines = "none"; d.settings.showDest = true; }
     // "None" (no wires drawn) became stubs without labels or wire names.
     if (d.settings.lines === "none") Object.assign(d.settings, { lines: "off", wireLabels: false, labelName: "dest", labelWire: false });
     d.templates = Array.isArray(d.templates) ? d.templates : [];
     d.items = Array.isArray(d.items) ? d.items : [];
+    // Pages (1.10.16): each item is on one page, and doc.page is the page open. Diagrams from before
+    // have everything on one page.
+    d.pages = (Array.isArray(d.pages) ? d.pages : []).filter((p) => p && p.id);
+    if (!d.pages.length) d.pages = [{ id: "p1", name: "Page 1" }];
+    for (const p of d.pages) p.name = String(p.name || "Page");
+    for (const it of d.items) it.page = pageOf(d, it);
+    if (!d.pages.some((p) => p.id === d.page)) d.page = d.pages[0].id;
     d.connections = Array.isArray(d.connections) ? d.connections : [];
+    // A wire drawn as a line on its own (draw "line", before 1.10.23) is now a straight or curved one, as it looked.
+    for (const c of d.connections) if (c && c.draw === "line") c.draw = d.settings.lines === "curved" ? "curved" : "straight";
     d.buses = Array.isArray(d.buses) ? d.buses : [];
     d.cables = Array.isArray(d.cables) ? d.cables : [];
     // The starter profiles are American; older diagrams without profiles get them in their own standard.
@@ -180,6 +267,8 @@
       d.cableProfiles = JSON.parse(JSON.stringify(DEFAULT_CABLE_PROFILES));
       for (const p of d.cableProfiles) for (const k of p.cores) k.gauge = convertGauge(k.gauge, d.settings.wireStd);
     }
+    // Favourite profiles (fav) are the ones drop-downs and right-click menus offer; before 1.10.24 they all were.
+    for (const list of [d.wireProfiles, d.cableProfiles]) if (!list.some((p) => p && "fav" in p)) for (const p of list) if (p) p.fav = true;
     // Version of each ready-made library last loaded or refreshed, by library name.
     d.libVersions = d.libVersions && typeof d.libVersions === "object" && !Array.isArray(d.libVersions) ? d.libVersions : {};
     // Only diagrams that use the built-in library get new built-in types; New keeps a custom library as it is.
@@ -279,15 +368,38 @@
     renderOverlay();
   }
 
+  // A plain { x, y }: a DOMPoint's x and y wouldn't survive being copied with { ...p }.
   function toWorld(e) {
     const pt = svg.createSVGPoint();
     pt.x = e.clientX; pt.y = e.clientY;
-    return pt.matrixTransform(svg.getScreenCTM().inverse());
+    const w = pt.matrixTransform(svg.getScreenCTM().inverse());
+    return { x: w.x, y: w.y };
   }
 
   function viewCenter() {
     const r = svg.getBoundingClientRect();
     return { x: view.x + r.width / view.scale / 2, y: view.y + r.height / view.scale / 2 };
+  }
+
+  // Scroll the drawing so point p is in the middle, at the same zoom.
+  function centerOn(p) {
+    if (!p) return;
+    const r = svg.getBoundingClientRect();
+    view.x = p.x - r.width / view.scale / 2;
+    view.y = p.y - r.height / view.scale / 2;
+    applyView();
+    renderOverlay();
+  }
+
+  // Of keys, the one whose point (at(key), or null) is nearest the mouse; undefined if none has a point.
+  function nearest(keys, at) {
+    let best, d = Infinity;
+    for (const k of keys) {
+      const p = at(k);
+      const dk = p ? (p.x - mouse.x) ** 2 + (p.y - mouse.y) ** 2 : Infinity;
+      if (dk < d) { d = dk; best = k; }
+    }
+    return best;
   }
 
   // ---------- show only some wires ----------
@@ -314,8 +426,9 @@
   // "wire", "cable", "bus", "rail" and "text". A view setting like zoom: not saved, and undo leaves it alone.
   const SEL_KINDS = { part: "parts", wire: "wires", cable: "cables", bus: "bus bars", rail: "DIN rails", text: "text notes" };
   let selFilter = null;
-  // The tool: "wire" (clicking or dragging from a terminal adds a wire) or "select" (clicking a terminal
-  // selects what's attached to it). Remembered per browser.
+  // The tool: "wire" (clicking or dragging from a terminal adds a wire), "select" (clicking a terminal
+  // selects what's attached to it) or "measure" (dragging measures the drawing). Select and Wire are
+  // remembered per browser.
   let tool = "wire";
   function setSelFilter(kinds) {
     selFilter = kinds && kinds.size && kinds.size < Object.keys(SEL_KINDS).length ? kinds : null;
@@ -325,14 +438,227 @@
   const allows = (kind) => !selFilter || selFilter.has(kind);
   // Everything the filter lets through, for Ctrl+A.
   function selectableAll() {
-    if (!selFilter) return doc.items.map((i) => i.id);
+    if (!selFilter) return pageItems().map((i) => i.id);
     return [
-      ...doc.items.filter((i) => allows(i.kind)).map((i) => i.id),
-      ...(allows("wire") ? doc.connections.filter((c) => !hiddenWires || !hiddenWires.has(c.id)).map((c) => c.id) : []),
-      ...(allows("bus") ? doc.buses.map((b) => b.id) : []),
-      ...(allows("cable") ? doc.cables.map((cb) => cb.id) : []),
+      ...pageItems().filter((i) => allows(i.kind)).map((i) => i.id),
+      ...(allows("wire") ? doc.connections.filter((c) => (!hiddenWires || !hiddenWires.has(c.id)) && (endHere(c.a) || endHere(c.b))).map((c) => c.id) : []),
+      ...(allows("bus") ? doc.buses.filter((b) => b.terms.some(endHere)).map((b) => b.id) : []),
+      ...(allows("cable") ? doc.cables.filter((cb) => pagesOf(cb.id).includes(doc.page)).map((cb) => cb.id) : []),
     ];
   }
+
+  // ---------- pages ----------
+  // Each page has its own view, kept while the app is open: switching back finds it as it was left.
+  const pageViews = new Map();
+  let shownPage = null;
+  // After the open page changes (switched, undone, or a diagram loaded), bring back that page's view.
+  // Returns true if the page has none yet, so it should be fitted once drawn.
+  function syncPage() {
+    if (shownPage === doc.page) return false;
+    if (shownPage) pageViews.set(shownPage, { ...view });
+    shownPage = doc.page;
+    measure = measureHover = null;
+    const v = pageViews.get(doc.page);
+    if (!v) return true;
+    view = { ...v };
+    applyView();
+    return false;
+  }
+
+  // Open a page. keep: what stays selected (by default nothing, as what was selected isn't on it).
+  // Wiring and picking terminals carry on, so a wire or cable can go from one page to another.
+  function setPage(id, keep) {
+    if (id === doc.page || !doc.pages.some((p) => p.id === id)) return;
+    doc.page = id;
+    sel = new Set(keep || []);
+    refresh();
+  }
+
+  // The pages a part, rail, note, wire, bus bar or cable is on: a wire, bus bar or cable can be on several.
+  function pagesOf(id) {
+    const it = itemById(id);
+    if (it) return [pageOf(doc, it)];
+    const c = connById(id), b = busById(id), cb = cableById(id);
+    const ends = c ? [c.a, c.b] : b ? b.terms : cb ? [...cablePlugs(cb), ...cb.wires.map(connById).filter(Boolean).flatMap((w) => [w.a, w.b])] : [];
+    return [...new Set(ends.map((e) => e && itemById(e.item)).filter(Boolean).map((x) => pageOf(doc, x)))];
+  }
+  const pagesText = (id) => pagesOf(id).map((p) => pageName(doc, p)).join(", ");
+  // " (Door)" after a reference to something on a page other than the one open.
+  const pageNote = (itemId) => { const it = itemById(itemId); return it && !onPage(it) ? ` (${pageName(doc, pageOf(doc, it))})` : ""; };
+
+  // Show point p, on item itemId's page.
+  function goTo(itemId, p) {
+    const it = itemById(itemId);
+    if (it && !onPage(it)) setPage(pageOf(doc, it), sel);
+    centerOn(p);
+  }
+
+  function newPageName() {
+    const names = new Set(doc.pages.map((p) => p.name.toLowerCase()));
+    let i = doc.pages.length + 1;
+    while (names.has("page " + i)) i++;
+    return "Page " + i;
+  }
+
+  // Add a page after the open one; returns its id. Doesn't open it or checkpoint.
+  function insertPage(name) {
+    const pg = { id: uid("pg"), name: name || newPageName() };
+    doc.pages.splice(doc.pages.findIndex((p) => p.id === doc.page) + 1, 0, pg);
+    return pg.id;
+  }
+
+  function addPage() {
+    checkpoint();
+    const id = insertPage();
+    setPage(id);
+    renamePage(id);
+  }
+
+  function duplicatePage(id) {
+    const pg = doc.pages.find((p) => p.id === id);
+    if (!pg) return;
+    checkpoint();
+    const src = selectionPayload(new Set(doc.items.filter((it) => pageOf(doc, it) === id).map((it) => it.id)));
+    if (id === doc.page) pageViews.set(id, { ...view });
+    const copy = insertPage(pg.name + " (copy)");
+    doc.page = copy;
+    if (pageViews.has(id)) pageViews.set(copy, { ...pageViews.get(id) });
+    cloneItems(src, 0, 0);
+    sel.clear();
+    refresh();
+  }
+
+  function deletePage(id) {
+    const pg = doc.pages.find((p) => p.id === id);
+    if (!pg || doc.pages.length < 2) return;
+    const n = doc.items.filter((it) => pageOf(doc, it) === id).length;
+    if (n && !confirm(`Delete page “${pg.name}” and the ${plural(n, "item")} on it? Wires and cables to them go too. (You can undo this.)`)) return;
+    checkpoint();
+    const i = doc.pages.indexOf(pg);
+    doc.items = doc.items.filter((it) => pageOf(doc, it) !== id);
+    doc.pages.splice(i, 1);
+    pageViews.delete(id);
+    if (doc.page === id) doc.page = doc.pages[Math.min(i, doc.pages.length - 1)].id;
+    cleanConnections();
+    sel.clear();
+    refresh();
+  }
+
+  function movePage(id, by) {
+    const i = doc.pages.findIndex((p) => p.id === id), j = i + by;
+    if (i < 0 || j < 0 || j >= doc.pages.length) return;
+    checkpoint();
+    [doc.pages[i], doc.pages[j]] = [doc.pages[j], doc.pages[i]];
+    refresh();
+  }
+
+  // Move the selected parts, rails and notes (and the parts on selected rails) to another page, or with
+  // id null to a new one, at the same place on it. The page opens with them still selected.
+  function moveToPage(id) {
+    const moving = new Set([...sel].filter((s) => itemById(s)));
+    for (const s of [...moving]) {
+      const it = itemById(s);
+      if (it.kind === "rail") for (const m of mountedOn(it)) moving.add(m.id);
+    }
+    if (!moving.size) return;
+    checkpoint();
+    if (!id) id = insertPage();
+    for (const s of moving) itemById(s).page = id;
+    pageViews.set(id, { ...view });
+    setPage(id, moving);
+    toast(`Moved ${plural(moving.size, "item")} to ${pageName(doc, id)}`);
+  }
+
+  function moveToPageEntries() {
+    return [{ label: "Move to page", sub: [...doc.pages.filter((p) => p.id !== doc.page).map((p) => ({ label: p.name, run: () => moveToPage(p.id) })),
+      "-", { label: "New page", run: () => moveToPage(null) }] }];
+  }
+
+  function pageMenu(id) {
+    const i = doc.pages.findIndex((p) => p.id === id);
+    return [
+      { heading: doc.pages[i].name },
+      { label: "Rename", run: () => renamePage(id) },
+      { label: "Duplicate page", run: () => duplicatePage(id) },
+      { label: "Move left", disabled: i === 0, run: () => movePage(id, -1) },
+      { label: "Move right", disabled: i === doc.pages.length - 1, run: () => movePage(id, 1) },
+      "-",
+      { label: "Add a page", run: addPage },
+      "-",
+      { label: "Delete page", danger: true, disabled: doc.pages.length < 2, run: () => deletePage(id) },
+    ];
+  }
+
+  // The page tabs at the bottom left of the drawing. While one is being renamed they're left alone.
+  let pageRenaming = false, pageTabsKey = "";
+  function renderPages() {
+    if (pageRenaming) return;
+    const el = $("pageTabs");
+    const key = JSON.stringify(doc.pages);
+    if (key !== pageTabsKey) {
+      pageTabsKey = key;
+      el.innerHTML = doc.pages.map((p) => `<button role="tab" class="page-tab" data-page="${esc(p.id)}" title="${esc(p.name)}: double-click to rename, right-click for more">${esc(p.name)}</button>`).join("")
+        + `<button class="icon-btn" data-cmd="addPage" title="Add a page">${ic("plus")}</button>`;
+    }
+    for (const b of el.querySelectorAll("[data-page]")) {
+      const on = b.dataset.page === doc.page;
+      b.classList.toggle("on", on);
+      b.setAttribute("aria-selected", String(on));
+      if (!on) continue;
+      // Keep the open page's tab in sight when there are more tabs than room.
+      const l = b.offsetLeft, r = l + b.offsetWidth;
+      if (l < el.scrollLeft) el.scrollLeft = l;
+      else if (r > el.scrollLeft + el.clientWidth) el.scrollLeft = r - el.clientWidth;
+    }
+  }
+
+  // Rename a page in place, in its tab: Enter or clicking away keeps the new name, Esc doesn't.
+  function renamePage(id) {
+    const pg = doc.pages.find((p) => p.id === id);
+    const tab = $("pageTabs").querySelector(`[data-page="${CSS.escape(id)}"]`);
+    if (!pg || !tab) return;
+    const input = document.createElement("input");
+    input.className = "page-name";
+    input.value = pg.name;
+    input.setAttribute("aria-label", "Page name");
+    const fitWidth = () => { input.size = Math.max(6, input.value.length + 1); };
+    fitWidth();
+    tab.replaceWith(input);
+    pageRenaming = true;
+    input.focus();
+    input.select();
+    let done = false;
+    const finish = (keep) => {
+      if (done) return;
+      done = true;
+      pageRenaming = false;
+      pageTabsKey = "";
+      const v = input.value.trim();
+      if (keep && v && v !== pg.name) { checkpoint(); pg.name = v; }
+      refresh();
+    };
+    input.addEventListener("input", fitWidth);
+    input.addEventListener("keydown", (e) => {
+      e.stopPropagation();
+      if (e.key === "Enter") finish(true);
+      else if (e.key === "Escape") finish(false);
+    });
+    input.addEventListener("blur", () => finish(true));
+  }
+
+  $("pageTabs").addEventListener("click", (e) => {
+    const t = e.target.closest("[data-page]");
+    if (t) setPage(t.dataset.page);
+  });
+  $("pageTabs").addEventListener("dblclick", (e) => {
+    const t = e.target.closest("[data-page]");
+    if (t) renamePage(t.dataset.page);
+  });
+  $("pageTabs").addEventListener("contextmenu", (e) => {
+    const t = e.target.closest("[data-page]");
+    e.preventDefault();
+    showCtx(e.clientX, e.clientY, t ? pageMenu(t.dataset.page) : [{ label: "Add a page", run: addPage }]);
+  });
 
   // ---------- rendering ----------
   let gaugeListStd = null;
@@ -342,7 +668,10 @@
       $("gaugeList").innerHTML = wireGauges(gaugeListStd).map((g) => `<option value="${esc(g)}">`).join("");
     }
     $("netList").innerHTML = allNetNames().map((v) => `<option value="${esc(v)}">`).join("");
+    const unseen = syncPage();
+    renderPages();
     renderCanvas();
+    if (unseen) fit();
     renderProps();
     renderDrawer();
     updateToolbar();
@@ -350,7 +679,7 @@
   }
 
   function renderCanvas() {
-    content.innerHTML = renderDiagram(doc, { interactive: true, sel, pending, busEdit, hideWires: hiddenWires });
+    content.innerHTML = renderDiagram(doc, { interactive: true, sel, pending, busEdit, hideWires: hiddenWires, page: doc.page });
     svg.classList.toggle("wiring", !!pending || !!busEdit);
     svg.classList.toggle("filtering", !!selFilter && !busEdit);
     renderOverlay();
@@ -363,23 +692,32 @@
     if (!busEdit) { m.hidden = true; return; }
     const n = busEdit.terms.length, cable = busEdit.kind === "cable";
     const name = cableById(busEdit.id)?.label || "the cable";
-    const what = busEdit.land ? `Other end of ${name}`
-      : busEdit.plug ? `Plugging in end ${busEdit.end} of ${name}`
+    const rl = busEdit.reland && connById(busEdit.reland.id);
+    const what = rl ? `Moving ${rl.wire || "the wire"}'s end at ${refOf(rl[busEdit.reland.end])}`
+      : busEdit.move ? `Moving end ${busEdit.move} of ${name}`
+      : busEdit.land ? `Other end of ${name}`
+      : busEdit.connect ? `Connecting core ${coreNumbers(cableById(busEdit.id) || { wires: [] }).get(busEdit.connect) || ""} of ${name}`
+      : busEdit.plug ? (busEdit.add ? `Adding a connector at end ${busEdit.end} of ${name}` : `Plugging in end ${busEdit.end} of ${name}`)
       : busEdit.fan ? (busEdit.adding ? `Adding cores to ${name}` : `Fanning out end ${busEdit.end} of ${name}`)
       : cable ? (busEdit.id ? `Adding to ${name}` : "New cable")
       : busEdit.id ? `Editing bus bar ${busById(busEdit.id)?.label || ""}` : "New bus bar";
-    const tip = busEdit.land ? landingTip()
-      : busEdit.plug ? "Click the cable connector it plugs into"
+    const tip = rl ? "Click the terminal it goes to instead"
+      : busEdit.land ? landingTip()
+      : busEdit.connect ? `Click the terminal ${connById(busEdit.connect)?.wire || "it"} goes to at the end it isn't connected at`
+      : busEdit.plug ? (busEdit.add ? "Click the cable connector this end plugs into as well" : "Click the cable connector it plugs into")
+      : n && cable && !busEdit.id ? `${n} picked. The first connector is the far end; any more go at this end, with the cores`
       : n ? `${n} picked`
       : busEdit.fan ? "Click the terminals its cores land on, in order, or drag along a row"
-      : cable ? "Click the terminals its cores go to, in order, and any cable connector it plugs into" : "Click terminals or bus bar slots, or drag along a row";
-    // While picking terminals for a cable's cores, which core of its profile comes next.
-    const pcb = cable && !busEdit.land && !busEdit.plug && cableById(busEdit.id);
-    const defs = pcb ? profileCores(pcb) : [], next = defs[(pcb ? pcb.wires.length : 0) + busEdit.terms.filter((k) => !isPortEnd(termKeyParts(k))).length];
-    const coreTip = defs.length ? (next ? ` · Next: core ${defs.indexOf(next) + 1} (${coreText(next)})` : ` · All ${plural(defs.length, "core")} of its profile picked`) : "";
-    m.innerHTML = `<b>${esc(what)}</b><span class="muted">${esc(tip + coreTip)}</span>
+      : cable ? "Click the terminals its cores go to, in order, and the cable connectors it plugs into: the first connector is the far end, any more go at this end" : "Click terminals or bus bar slots, or drag along a row";
+    // While fanning out a cable whose profile lists its cores, the core the next terminal gets.
+    const pc = pickCores();
+    const nextCore = pc ? `<label class="mode-core">Next core <select data-next-core title="The core the next terminal you click gets">${coreOptions(pc, busEdit.next, (n) => !pc.free(n))}</select></label>
+      <button class="small" data-act="coreSkip" title="Leave this core spare and go on to the next one">Skip</button>`
+      : busEdit.land && landingPlan().some((k) => k.to === undefined) ? (busEdit.move ? '<button class="small" data-act="landSkip" title="Leave this core where it is, and go on to the next one">Keep</button>'
+        : '<button class="small" data-act="landSkip" title="Leave this core not connected at this end, and go on to the next one">Skip</button>') : "";
+    m.innerHTML = `<b>${esc(what)}</b><span class="muted">${esc(pc && !n ? "Click a terminal for each core you use" : tip)}</span>${nextCore}
       ${!cable && n > 2 ? `<button class="small" data-act="busAlt0" title="Keep the 1st, 3rd, 5th… along the row">Keep 1st, 3rd…</button><button class="small" data-act="busAlt1" title="Keep the 2nd, 4th, 6th… along the row">Keep 2nd, 4th…</button>` : ""}
-      ${busEdit.plug ? "" : `<button class="small primary" data-act="busDone"${busReady() ? "" : " disabled"} title="Enter">${ic("check", "sm")} Done</button>`}
+      ${busEdit.plug || busEdit.connect || busEdit.reland ? "" : `<button class="small primary" data-act="busDone"${busReady() ? "" : " disabled"} title="Enter">${ic("check", "sm")} Done</button>`}
       <button class="small" data-act="busCancel" title="Esc">Cancel</button>`;
     m.hidden = false;
   }
@@ -397,7 +735,7 @@
       guides += `<line x1="${a.x}" y1="${a.y}" x2="${b.x}" y2="${b.y}" stroke="#3b82f6" stroke-opacity="0.7" stroke-width="${1.5 * px}" stroke-dasharray="${6 * px} ${4 * px}"/>`;
     };
     const ring = (e) => {
-      const k = e.item + "|" + e.term, p = termPoint(e);
+      const k = e.item + "|" + e.term, p = endHere(e) && termPoint(e);
       if (!p || seen.has(k)) return;
       seen.add(k);
       const r = Math.max(termRadius(tplOf(itemById(e.item))) + 1, 7 * px);
@@ -405,18 +743,18 @@
         + `<circle cx="${p.x}" cy="${p.y}" r="${r}" fill="none" stroke="#3b82f6" stroke-width="${2.5 * px}"/>`;
     };
     for (const c of wires) {
-      const a = termPoint(c.a), b = termPoint(c.b);
-      const line = !cableOf(c.id) && c.draw ? c.draw === "line" : doc.settings.lines !== "off";
+      const a = endHere(c.a) && termPoint(c.a), b = endHere(c.b) && termPoint(c.b);
+      const line = !cableOf(c.id) && c.draw ? c.draw !== "break" : doc.settings.lines !== "off";
       if (a && b && !line && !cableOf(c.id)) guide(a, b);
       ring(c.a);
       ring(c.b);
     }
     for (const cb of cables) {
-      const ends = cableEndInfo(cb).map((e) => (e.kind === "plug" ? [e.port] : e.kind === "fan" ? e.terms : []));
+      const ends = cableEndInfo(cb).map((e) => [...(e.kind === "plug" ? [e.port] : e.kind === "fan" ? e.terms : []), ...e.extra]);
       ends.flat().forEach(ring);
       // The middle of each end, for the guide between them.
       const mid = ends.map((ts) => {
-        const ps = ts.map(termPoint).filter(Boolean);
+        const ps = ts.filter(endHere).map(termPoint).filter(Boolean);
         return ps.length ? { x: ps.reduce((s, p) => s + p.x, 0) / ps.length, y: ps.reduce((s, p) => s + p.y, 0) / ps.length } : null;
       });
       if (mid[0] && mid[1] && (cb.draw || doc.settings.cables) === "break") guide(mid[0], mid[1]);
@@ -424,15 +762,31 @@
     return `<g pointer-events="none">${guides}${rings}</g>`;
   }
 
+  // While fanning out a cable's cores, the core picked for each terminal, by it on the drawing.
+  function pickedCoreBadges(px) {
+    if (!busEdit || !busEdit.coreOf) return "";
+    let s = "";
+    for (const [k, n] of Object.entries(busEdit.coreOf)) {
+      const e = termKeyParts(k), p = endHere(e) && termPoint(e);
+      if (!p) continue;
+      const x = p.x + 10 * px, y = p.y - 10 * px;
+      s += `<circle cx="${x}" cy="${y}" r="${8 * px}" fill="#3b82f6" stroke="#fff" stroke-width="${1.5 * px}"/>`
+        + `<text x="${x}" y="${y}" font-family="${FONT}" font-size="${10 * px}" font-weight="700" text-anchor="middle" dominant-baseline="central" fill="#fff">${n}</text>`;
+    }
+    return `<g pointer-events="none">${s}</g>`;
+  }
+
   function renderOverlay() {
     let s = "";
     const px = 1 / view.scale;
     const from = drag && drag.type === "wire" ? drag.from : pending;
     if (from && (pending || drag.moved)) {
-      const p = termPoint(from);
+      const p = endHere(from) && termPoint(from);
       if (p) s += `<line x1="${p.x}" y1="${p.y}" x2="${mouse.x}" y2="${mouse.y}" stroke="#f59e0b" stroke-width="${2 * px}" stroke-dasharray="${6 * px} ${4 * px}" pointer-events="none"/>`;
     }
     s += selectedEnds(px);
+    s += measureOverlay(px);
+    s += pickedCoreBadges(px);
     if (drag && drag.type === "marquee") {
       const x = Math.min(drag.start.x, drag.cur.x), y = Math.min(drag.start.y, drag.cur.y);
       s += `<rect x="${x}" y="${y}" width="${Math.abs(drag.cur.x - drag.start.x)}" height="${Math.abs(drag.cur.y - drag.start.y)}" fill="#3b82f6" fill-opacity="0.08" stroke="#3b82f6" stroke-width="${px}" pointer-events="none"/>`;
@@ -547,7 +901,7 @@
         </div>`;
       }
     }
-    $("library").innerHTML = s || `<div class="muted lib-empty">${shown.length ? "No matching object types." : "This library is empty. Use <b>+ New type</b>, or <b>+</b> above to load a ready-made library."}</div>`;
+    $("library").innerHTML = s || `<div class="muted lib-empty">${shown.length ? "No matching object types." : "This library is empty. Use <b>+ New part</b>, or <b>+</b> above to load a ready-made library."}</div>`;
     const allFolded = cats.length && cats.every((c) => !ui.openCats.includes(c));
     $("btnLibFold").innerHTML = ic(allFolded ? "unfold" : "fold");
     $("btnLibFold").title = allFolded ? "Expand all categories" : "Collapse all categories";
@@ -654,7 +1008,7 @@
     const tpl = doc.templates.find((t) => t.id === tplId);
     if (!tpl) return;
     checkpoint();
-    const it = { id: uid(), kind: "part", tpl: tplId, tag: autoTag(tpl.prefix), desc: "", x: 0, y: 0, rot: 0 };
+    const it = { id: uid(), kind: "part", tpl: tplId, tag: autoTag(tpl.prefix), desc: "", x: 0, y: 0, rot: 0, page: doc.page };
     // Beside the selected part only when both are on rails or both are loose.
     const sp = !at && !topLeft && singleSelectedPart();
     const prev = sp && isLoose(tplOf(sp)) === isLoose(tpl) ? sp : null;
@@ -683,7 +1037,7 @@
     checkpoint();
     const c = at && "x" in at ? at : viewCenter();
     const g = doc.settings.grid || 1;
-    const it = { id: uid(), kind: "rail", x: Math.round((c.x - 100) / g) * g, y: Math.round((c.y - 17.5) / g) * g, length: 200, height: 35 };
+    const it = { id: uid(), kind: "rail", x: Math.round((c.x - 100) / g) * g, y: Math.round((c.y - 17.5) / g) * g, length: 200, height: 35, page: doc.page };
     doc.items.unshift(it); // rails sit behind everything
     sel = new Set([it.id]);
     refresh();
@@ -691,12 +1045,73 @@
 
   function addText(at) {
     checkpoint();
-    const c = at && "x" in at ? at : viewCenter();
-    const it = { id: uid(), kind: "text", x: r3(c.x - 20), y: r3(c.y - 3), text: "Note", size: 3.5, color: "#1d2126", bold: false };
+    // A note added at a point starts there; one added without a point goes near the middle of the view.
+    const c = at && "x" in at ? { x: at.x, y: at.y - 2 } : { x: viewCenter().x - 20, y: viewCenter().y - 3 };
+    const it = { id: uid(), kind: "text", x: r3(c.x), y: r3(c.y), text: "Note", size: 3.5, color: "#1d2126", bold: false, page: doc.page };
     doc.items.push(it);
     sel = new Set([it.id]);
     refresh();
     focusProp("text");
+  }
+
+  // ---------- group notes ----------
+  // A group note is a text note with links: the ids of the parts and rails it describes. It's drawn with a
+  // bracket along their side facing it (renderNoteBracket), and moves with them when they're all dragged.
+  const noteLinks = (it) => (it.links || []).map(itemById).filter((x) => x && x.kind !== "text");
+
+  // How far the bracket of a note linked to items should be from them on a side: clear of their wire
+  // labels by 2 mm, measured as drawn, and at least 4 mm.
+  function bracketGap(items, side) {
+    const ids = new Set(items.map((i) => i.id)), g = groupBox(items.map(boxOf));
+    const inv = svg.getScreenCTM().inverse();
+    const world = (x, y) => { const pt = svg.createSVGPoint(); pt.x = x; pt.y = y; return pt.matrixTransform(inv); };
+    let reach = 0;
+    for (const el of svg.querySelectorAll("[data-at]")) {
+      if (!ids.has(el.dataset.at.split("|")[0])) continue;
+      const r = el.getBoundingClientRect(), a = world(r.left, r.top), b = world(r.right, r.bottom);
+      reach = Math.max(reach, { top: g.y - a.y, bottom: b.y - g.y - g.h, left: g.x - a.x, right: b.x - g.x - g.w }[side]);
+    }
+    return Math.max(4, Math.ceil(reach + 2));
+  }
+
+  // A note for the selected parts and rails, above them, its bracket spanning them all.
+  function addGroupNote() {
+    const items = [...sel].map(itemById).filter((i) => i && i.kind !== "text");
+    if (!items.length) return;
+    checkpoint();
+    const g = groupBox(items.map(boxOf)), gap = bracketGap(items, "top");
+    const it = { id: uid(), kind: "text", text: "Group note", size: 3.5, color: "#1d2126", bold: false, page: doc.page, links: items.map((i) => i.id), gap };
+    const { w, h } = itemBox({ ...it, x: 0, y: 0 });
+    // Above the bracket and its leader.
+    Object.assign(it, { x: r3(g.x + g.w / 2 - w / 2), y: r3(g.y - gap - 2 - 6 - h) });
+    doc.items.push(it);
+    sel = new Set([it.id]);
+    refresh();
+    focusProp("text");
+  }
+
+  // Link the one selected note to the other selected parts and rails, in place of what it was linked to.
+  function linkNote() {
+    const items = [...sel].map(itemById).filter(Boolean);
+    const note = items.find((i) => i.kind === "text"), rest = items.filter((i) => i.kind !== "text");
+    if (!note || !rest.length) return;
+    checkpoint();
+    note.links = rest.map((i) => i.id);
+    note.gap = bracketGap(rest, bracketSide(note, groupBox(rest.map(boxOf))));
+    sel = new Set([note.id]);
+    refresh();
+  }
+  const canLinkNote = (items) => items.filter((i) => i.kind === "text").length === 1 && items.some((i) => i.kind !== "text");
+
+  // The moving ids, with every group note whose items are all among them, so a note goes with its group.
+  function withGroupNotes(ids) {
+    const out = new Set(ids);
+    for (const it of doc.items) {
+      if (it.kind !== "text" || out.has(it.id)) continue;
+      const ls = noteLinks(it);
+      if (ls.length && ls.every((x) => out.has(x.id))) out.add(it.id);
+    }
+    return out;
   }
 
   function focusProp(key) {
@@ -716,13 +1131,17 @@
   function deleteSelection() {
     if (!sel.size) return;
     checkpoint();
+    // Bundles losing wires: an end with none left is left free.
+    const ends = new Map(doc.cables.filter((cb) => !cb.open && cb.wires.some((id) => sel.has(id))).map((cb) => [cb, coreEnds(cb)]));
     doc.items = doc.items.filter((i) => !sel.has(i.id));
     doc.connections = doc.connections.filter((c) => !sel.has(c.id));
     doc.buses = doc.buses.filter((b) => !sel.has(b.id));
-    // Deleting a cable unbundles it and its wires stay, except a one-ended cable, whose cores go with it.
-    const cores = new Set(doc.cables.filter((cb) => cb.open && sel.has(cb.id)).flatMap((cb) => cb.wires));
+    // Deleting a cable unbundles it and its wires stay, except a one-ended cable's cores and a bundle's cores
+    // not connected through, which go with it.
+    const cores = new Set(doc.cables.filter((cb) => sel.has(cb.id)).flatMap((cb) => cb.wires.filter((id) => cb.open || cableSide(connById(id), cb))));
     doc.connections = doc.connections.filter((c) => !cores.has(c.id));
     doc.cables = doc.cables.filter((cb) => !sel.has(cb.id));
+    for (const [cb, e] of ends) settleBundle(cb, e);
     cleanConnections();
     sel.clear();
     refresh();
@@ -741,10 +1160,12 @@
 
   // Put wires into a cable (a new one, or an existing one), taking them out of any other cable first.
   function bundleWires(wireIds, into) {
-    const ids = wireIds.filter((id) => connById(id));
+    // A core with an end on its cable (not connected through) can't leave it.
+    const ids = wireIds.filter((id) => connById(id) && !doc.cables.some((cb) => cableSide(connById(id), cb)));
     if (!ids.length) return;
     checkpoint();
     for (const cb of doc.cables) cb.wires = cb.wires.filter((id) => !ids.includes(id));
+    for (const id of ids) delete connById(id).core; // they take free core numbers in the cable they join
     let cb = into && cableById(into);
     if (cb) { cb.wires.push(...ids); applyCableCores(cb, new Set(ids)); }
     else {
@@ -759,19 +1180,28 @@
   function removeFromCable(connId) {
     const cb = cableOf(connId);
     if (!cb) return;
+    const ends = cb.open ? {} : coreEnds(cb);
+    delete ends[connId];
+    const left = Object.values(ends);
+    if (left.length && left.every(Boolean) && new Set(left).size > 1) { toast(BOTH_ENDS_MSG); return; }
     checkpoint();
+    const gone = cb.open || cableSide(connById(connId), cb); // a core with an end on the cable can't outlive it
     cb.wires = cb.wires.filter((id) => id !== connId);
     if (connById(connId)) leaveCable(connById(connId));
-    if (cb.open) doc.connections = doc.connections.filter((c) => c.id !== connId); // a core can't outlive its cable
+    if (gone) doc.connections = doc.connections.filter((c) => c.id !== connId);
+    settleBundle(cb, ends); // an end with no wires left is left free
     doc.cables = doc.cables.filter((x) => x.wires.length);
     refresh();
   }
 
   function unbundle(cb) {
     checkpoint();
-    cb.wires.map(connById).filter(Boolean).forEach(leaveCable);
+    // Cores not connected through have nowhere to go without the cable.
+    const ws = cb.wires.map(connById).filter(Boolean), keep = ws.filter((c) => !cableSide(c, cb));
+    keep.forEach(leaveCable);
+    doc.connections = doc.connections.filter((c) => keep.includes(c) || !ws.includes(c));
     doc.cables = doc.cables.filter((x) => x !== cb);
-    sel = new Set(cb.wires);
+    sel = new Set(keep.map((c) => c.id));
     refresh();
   }
 
@@ -792,17 +1222,119 @@
   // its own look when the profile is edited, until the profile is picked for the cable again.
   const profileCores = (cb) => cableProfileById(cb.profile)?.cores || [];
 
-  // A cable's cores in core order: by core number when they're numbered on the cable, else as bundled.
+  // Which end of a core ("a" or "b") is on its cable rather than a terminal, or "": a one-ended cable's
+  // cores have their free end there ({ item: cb.id, term: core number }), and so does a bundled core that
+  // isn't connected at one end of the cable (not connected through).
+  const cableSide = (c, cb) => (!c || !cb ? "" : c.a.item === cb.id ? "a" : c.b.item === cb.id ? "b" : "");
+
+  // Each of a cable's cores has a number, saying which of its profile's cores it is (core 3 takes the look
+  // of the profile's third core), so a cable can use some of its cores and leave others spare. A one-ended
+  // cable's core number is its free end's terminal on the cable; a bundled wire's is c.core, or for a wire
+  // bundled without one, the lowest number not taken, in bundle order. Returns { wire id: number }.
+  function coreNumbers(cb) {
+    const out = new Map(), ws = cb.wires.map(connById).filter(Boolean);
+    if (cb.open) {
+      for (const c of ws) out.set(c.id, parseInt((c.a.item === cb.id ? c.a : c.b).term, 10) || 0);
+      return out;
+    }
+    const taken = new Set();
+    for (const c of ws) {
+      const n = c.core > 0 ? c.core : cableSide(c, cb) ? parseInt(c[cableSide(c, cb)].term, 10) : 0;
+      if (n > 0 && !taken.has(n)) { out.set(c.id, n); taken.add(n); }
+    }
+    let n = 1;
+    for (const c of ws) if (!out.has(c.id)) { while (taken.has(n)) n++; out.set(c.id, n); taken.add(n); }
+    return out;
+  }
+
+  // A cable's cores in core order.
   function coreOrder(cb) {
-    return cb.open ? freeCores(cb).map((k) => k.c) : cb.wires.map(connById).filter(Boolean);
+    const num = coreNumbers(cb);
+    return cb.wires.map(connById).filter(Boolean).sort((p, q) => num.get(p.id) - num.get(q.id));
+  }
+
+  // Core n of a cable in a few words, from its profile: "3: Green 28 AWG".
+  function coreLabel(defs, n) {
+    const k = defs[n - 1];
+    if (!k) return `${n}: not in its profile`;
+    return `${n}: ${[k.mark && k.mark !== String(n) ? k.mark : "", wireLookName(k.color, k.stripe), k.gauge].filter(Boolean).join(" ")}`;
+  }
+
+  // Make a wire core n of its cable, swapping numbers with the core that was n, and give both the looks of
+  // their profile cores.
+  function setCoreNumber(id, n) {
+    const cb = cableOf(id);
+    if (!cb) return;
+    const num = coreNumbers(cb), was = num.get(id);
+    if (!(n > 0) || n === was) return;
+    checkpoint();
+    const other = [...num].find(([, m]) => m === n)?.[0];
+    // A bundle's numbers are all written down, so the ones worked out don't shift.
+    if (!cb.open) for (const [wid, m] of num) connById(wid).core = m;
+    const put = (wid, m) => {
+      const c = connById(wid), side = cableSide(c, cb);
+      if (side) c[side] = { item: cb.id, term: String(m) };
+      if (!cb.open) c.core = m;
+    };
+    put(id, n);
+    if (other) put(other, was);
+    applyCableCores(cb, new Set([id, other].filter(Boolean)));
+    refresh();
+  }
+
+  // Where each of a bundle's cores is connected, by wire id: "" at both ends, "A" or "B" at that end only.
+  function coreEnds(cb) {
+    const s = bundleSides(cb), out = {};
+    for (const c of cb.wires.map(connById).filter(Boolean)) {
+      const side = cableSide(c, cb); // its end that isn't on a terminal
+      out[c.id] = !side ? "" : (s[c.id] || "a") === side ? "B" : "A";
+    }
+    return out;
+  }
+
+  // A bundle whose cores are now all connected at the same one end has nothing left at its other end, so
+  // that end's left free, making it one-ended (ends: from coreEnds, as they are now). Returns false, changing
+  // nothing, when both ends still have cores but none runs through, which a cable can't be drawn as.
+  function settleBundle(cb, ends) {
+    if (!cb || cb.open) return true;
+    const ws = cb.wires.map(connById).filter(Boolean);
+    if (!ws.length || ws.some((c) => !ends[c.id])) return true;
+    const at = new Set(ws.map((c) => ends[c.id]));
+    if (at.size > 1) return false;
+    // The end with the cores is end A now, keeping its fan-out point and its connectors. The other end is
+    // plugged into its connectors if it has any, else free.
+    const coresAtB = [...at][0] === "B";
+    if (coresAtB) cb.pa = cb.pb;
+    const keep = (coresAtB ? cb.plugsB : cb.plugsA) || [], lose = (coresAtB ? cb.plugsA : cb.plugsB) || [];
+    cb.ta = cb.tb = null;
+    Object.assign(cb, { open: true, pb: null, portA: null, portB: lose[0] || null, plugsA: keep, plugsB: lose.slice(1), to: "" });
+    ws.forEach((c) => delete c.core); // a one-ended cable's cores are numbered by their free ends
+    return true;
+  }
+  const BOTH_ENDS_MSG = "Both ends of the cable have cores, so one of them needs to be connected through";
+
+  // Take a bundled core off its terminal at one end of the cable ("A" or "B"): it stays in the cable there,
+  // not connected through. If that end has no wires left, it's left free.
+  function disconnectCore(id, end) {
+    const c = connById(id), cb = cableOf(id);
+    if (!c || !cb || cb.open || cableSide(c, cb)) return;
+    const ends = coreEnds(cb);
+    ends[id] = end === "A" ? "B" : "A";
+    if (Object.values(ends).every(Boolean) && new Set(Object.values(ends)).size > 1) { toast(BOTH_ENDS_MSG); renderProps(); return; }
+    checkpoint();
+    const atA = bundleSides(cb)[id] || "a", n = coreNumbers(cb).get(id);
+    c[end === "A" ? atA : atA === "a" ? "b" : "a"] = { item: cb.id, term: String(n) };
+    c.core = n;
+    settleBundle(cb, ends);
+    refresh();
   }
 
   // Give a cable's cores the looks its profile lists: "all" of them (the profile was just picked), those in
   // a Set of wire ids (new cores), or by default all but those changed by hand (the profile was edited).
   function applyCableCores(cb, which) {
-    const defs = profileCores(cb);
-    coreOrder(cb).forEach((c, i) => {
-      const k = defs[i];
+    const defs = profileCores(cb), num = coreNumbers(cb);
+    coreOrder(cb).forEach((c) => {
+      const k = defs[num.get(c.id) - 1];
       if (!k || !(which === "all" || (which instanceof Set ? which.has(c.id) : !c.ownLook))) return;
       Object.assign(c, { profile: "", color: k.color, stripe: k.stripe || "", gauge: k.gauge || "", conductor: k.conductor || "", follow: false, fromCable: true });
       delete c.ownLook;
@@ -812,6 +1344,7 @@
 
   // A wire leaving its cable keeps its look but not its core marking.
   function leaveCable(c) {
+    delete c.core;
     delete c.fromCable;
     delete c.ownLook;
     delete c.mark;
@@ -828,7 +1361,37 @@
     const t = e && tplOf(itemById(e.item))?.terminals.find((x) => x.id === e.term);
     return !!t && isPort(t);
   }
-  const cableAtPort = (e) => doc.cables.find((cb) => sameEnd(cb.portA, e) || sameEnd(cb.portB, e));
+  // Each end of a cable can be plugged into more than one connector: its main one (portA / portB, unless
+  // its cores land there) and more (plugsA / plugsB), e.g. a motor cable with a power plug, an encoder plug
+  // and two loose cores at the drive end. An end with more than one thing on it branches at its fan-out point.
+  const endPlugs = (cb, end) => [end === "A" ? cb.portA : cb.portB, ...((end === "A" ? cb.plugsA : cb.plugsB) || [])].filter(Boolean);
+  const cablePlugs = (cb) => [...endPlugs(cb, "A"), ...endPlugs(cb, "B")];
+  const cableAtPort = (e) => doc.cables.find((cb) => cablePlugs(cb).some((p) => sameEnd(p, e)));
+
+  // Swap a cable's ends over: its connectors and the layout points dragged at each end.
+  function swapCableEnds(cb) {
+    [cb.portA, cb.portB] = [cb.portB || null, cb.portA || null];
+    [cb.plugsA, cb.plugsB] = [cb.plugsB || [], cb.plugsA || []];
+    [cb.pa, cb.pb] = [cb.pb || null, cb.pa || null];
+    [cb.ta, cb.tb] = [cb.tb || null, cb.ta || null];
+  }
+
+  // Plug one more connector into an end of a cable that already has something there (its cores or a
+  // connector). Returns true when done, false if the connector can't take it.
+  function addCablePlug(cb, end, port) {
+    const used = cableAtPort(port);
+    if (used) { toast(used === cb ? `${cb.label || "The cable"} is already plugged into ${refOf(port)}` : `${refOf(port)} already has cable ${used.label || ""}`.trim()); return false; }
+    checkpoint();
+    if (end === "B" && cb.open && !cb.portB) { cb.portB = { ...port }; cb.pb = cb.tb = null; delete cb.to; } // a free end is plugged in now
+    else {
+      const k = end === "A" ? "plugsA" : "plugsB";
+      cb[k] = [...(cb[k] || []), { ...port }];
+    }
+    cleanConnections();
+    sel = new Set([cb.id]);
+    refresh();
+    return true;
+  }
 
   // A new cable plugged into two connectors, e.g. a patch lead from a switch port to a PLC.
   function plugCable(a, b) {
@@ -863,10 +1426,15 @@
     refresh();
   }
 
-  // Take a cable's plug out of a connector. A cable left with no cores and no plug goes.
+  // Take a cable's plug out of a connector. An end's next connector takes over as its main one; with none, a
+  // cable with no cores is plugged in at its other end only. A cable left with no cores and no plug goes.
   function unplug(cb, e) {
     checkpoint();
-    if (sameEnd(cb.portA, e)) { cb.portA = cb.portB; cb.portB = null; } else if (sameEnd(cb.portB, e)) cb.portB = null;
+    for (const k of ["plugsA", "plugsB"]) if (cb[k]) cb[k] = cb[k].filter((p) => !sameEnd(p, e));
+    if (sameEnd(cb.portA, e)) {
+      if (cb.plugsA?.length) cb.portA = cb.plugsA.shift();
+      else { swapCableEnds(cb); cb.portB = null; }
+    } else if (sameEnd(cb.portB, e)) cb.portB = cb.plugsB?.length ? cb.plugsB.shift() : null;
     if (!cb.wires.length && !cb.portA) { doc.cables = doc.cables.filter((x) => x !== cb); sel.delete(cb.id); }
     cleanConnections();
     refresh();
@@ -886,38 +1454,64 @@
     const pos = (e) => ({ ...(termPoint(e) || { x: 0, y: 0 }), e });
     const g = cableGeometry(cb, conns, pos);
     const out = {};
-    for (const k of g ? g.cores : []) out[k.c.id] = k.ea.e === k.c.a ? "a" : "b";
+    for (const k of g ? g.cores : []) out[k.c.id] = (k.ea ? k.ea.e === k.c.a : k.eb.e !== k.c.a) ? "a" : "b";
     return out;
   }
 
-  // A cable's ends: [end A, end B], each { kind: "plug" | "fan" | "free", port, terms }.
+  // Where a cable's ends are on the drawing: [end A, end B], each the middle of its terminals, its
+  // connector or its free end, as the drawing has them; null for an end it can't place.
+  function cableEndPoints(cb) {
+    const pos = (e) => { const p = termPoint(e); return p && { ...p, tpl: tplOf(itemById(e.item)) }; };
+    const g = cableGeometry(cb, new Map(doc.connections.map((c) => [c.id, c])), pos);
+    return g ? [g.cA || null, g.cB || null] : [null, null];
+  }
+
+  // A cable's ends: [end A, end B], each { kind: "plug" | "fan" | "free", port, terms, extra }, extra being the
+  // end's other connectors.
   function cableEndInfo(cb) {
     const ws = cb.wires.map(connById).filter(Boolean);
+    const extra = (k) => (cb[k] || []).slice();
     if (!cb.open) {
       const s = bundleSides(cb);
-      return [{ kind: "fan", terms: ws.map((c) => (s[c.id] === "b" ? c.b : c.a)) }, { kind: "fan", terms: ws.map((c) => (s[c.id] === "b" ? c.a : c.b)) }];
+      const on = (e) => e.item !== cb.id; // not a core's end that isn't connected there
+      return [{ kind: "fan", terms: ws.map((c) => (s[c.id] === "b" ? c.b : c.a)).filter(on), extra: extra("plugsA") },
+        { kind: "fan", terms: ws.map((c) => (s[c.id] === "b" ? c.a : c.b)).filter(on), extra: extra("plugsB") }];
     }
     const a = ws.length ? { kind: "fan", terms: ws.map((c) => (c.a.item === cb.id ? c.b : c.a)) } : { kind: "plug", port: cb.portA };
-    return [a, cb.portB ? { kind: "plug", port: cb.portB } : { kind: "free" }];
+    return [{ ...a, extra: extra("plugsA") }, cb.portB ? { kind: "plug", port: cb.portB, extra: extra("plugsB") } : { kind: "free", extra: [] }];
   }
 
   // What each end can change to: [action, menu label, tooltip].
   function endActions(cb, end) {
     const [me, other] = end === "A" ? cableEndInfo(cb) : cableEndInfo(cb).reverse();
     const out = [];
+    if (me.kind === "fan" && me.terms.length) out.push(["move", "Move end…", "Move this end's cores to other terminals, core by core"]);
     if (me.kind === "fan" && cb.open) out.push(["fan", "Add cores…", "Pick more terminals for the cable's cores to land on"]);
     out.push(["plug", me.kind === "plug" ? "Plug into another connector…" : "Plug into a connector…",
       me.kind === "fan" ? (cb.open ? "Plug this end into a cable connector instead. Its cores go, as a cable plugged in at both ends doesn't draw its cores"
         : "Plug this end into a cable connector instead. The wires lose their terminals at this end and become the cable's cores")
         : "Pick the cable connector this end plugs into"]);
     if (me.kind !== "fan") out.push(["fan", "Fan out to terminals…", "Pick the terminals the cable's cores land on at this end"]);
-    if (me.kind === "plug") out.push(["free", "Unplug", other.kind === "free" ? "Unplug the cable. With nothing on the drawing at either end, it goes" : "Unplug this end and leave it free, running off the drawing"]);
+    if (me.kind !== "free") out.push(["addplug", "Add a connector…", "Plug this end into another cable connector as well, e.g. a second plug on a motor cable. The end branches, a length of sheath to each connector"]);
+    // With more than one connector, each can come out on its own; the main one's place goes to the next.
+    if (me.extra.length) {
+      [...(me.kind === "plug" ? [me.port] : []), ...me.extra].forEach((p, i) => out.push(["unplug:" + i, `Unplug ${refOf(p)}`, "Take the cable's plug out of this connector only"]));
+      if (me.kind === "fan" && !cb.open) out.push(["free", "Leave free", "Take the wires off their terminals at this end and unplug its connectors, so the cable runs off the drawing. The wires become the cable's cores"]);
+    } else if (me.kind === "plug") out.push(["free", "Unplug", other.kind === "free" ? "Unplug the cable. With nothing on the drawing at either end, it goes" : "Unplug this end and leave it free, running off the drawing"]);
     else if (me.kind === "fan" && !cb.open) out.push(["free", "Leave free", "Take the wires off their terminals at this end, so the cable runs off the drawing. The wires become the cable's cores"]);
     return out;
   }
 
   function runEndAction(cb, end, act) {
-    if (act === "plug") {
+    if (act.startsWith("unplug:")) { const p = endPlugs(cb, end)[+act.slice(7)]; if (p) unplug(cb, p); return; }
+    if (act === "move") startMoveEnd(cb.id, end);
+    else if (act === "addplug") {
+      pending = null;
+      busEdit = { kind: "cable", id: cb.id, terms: [], end, plug: true, add: true };
+      setHint("");
+      refresh();
+    }
+    else if (act === "plug") {
       pending = null;
       busEdit = { kind: "cable", id: cb.id, terms: [], end, plug: true };
       setHint("");
@@ -942,22 +1536,31 @@
     if (port) {
       const used = cableAtPort(port);
       if (used && used !== cb) { toast(`${refOf(port)} already has cable ${used.label || ""}`.trim()); return false; }
-      const [a, b] = cableEndInfo(cb);
-      const otherPort = (end === "A" ? b : a).port;
-      if (otherPort && sameEnd(otherPort, port)) { toast(`The other end of ${cb.label || "the cable"} is already plugged into ${refOf(port)}`); return false; }
+      const own = end === "A" ? cb.portA : cb.portB;
+      if (!sameEnd(own, port) && cablePlugs(cb).some((p) => sameEnd(p, port))) { toast(`${cb.label || "The cable"} is already plugged into ${refOf(port)}`); return false; }
     }
     const ws = cb.wires.map(connById).filter(Boolean);
     const name = cb.label || "the cable";
     if (!cb.open) {
-      const ask = `${port ? `Plugging this end of ${name} into ${refOf(port)}` : `Leaving this end of ${name} free`} takes its ${plural(ws.length, "wire")} off their terminals at this end. They become the cable's cores, so they no longer carry their circuits through to this end, and deleting the cable deletes them. Go ahead? (You can undo this.)`;
+      // Which end of each wire is at this end of the cable; a core connected only here has no terminal left.
+      const s = bundleSides(cb), cut = end === "A" ? "a" : "b", num = coreNumbers(cb);
+      const here = (c) => ((s[c.id] || "a") === cut ? "a" : "b");
+      const lost = ws.filter((c) => cableSide(c, cb) && cableSide(c, cb) !== here(c));
+      const ask = `${port ? `Plugging this end of ${name} into ${refOf(port)}` : `Leaving this end of ${name} free`} takes its ${plural(ws.length - lost.length, "wire")} off their terminals at this end. They become the cable's cores, so they no longer carry their circuits through to this end, and deleting the cable deletes them.${lost.length ? ` ${plural(lost.length, "core")} connected only at this end ${lost.length === 1 ? "goes" : "go"}.` : ""} Go ahead? (You can undo this.)`;
       if (!confirm(ask)) return null;
       checkpoint();
-      const s = bundleSides(cb), cut = end === "A" ? "a" : "b";
-      ws.forEach((c, i) => { c[(s[c.id] || "a") === cut ? "a" : "b"] = { item: cb.id, term: String(i + 1) }; });
+      doc.connections = doc.connections.filter((c) => !lost.includes(c));
+      cb.wires = cb.wires.filter((id) => !lost.some((c) => c.id === id));
+      ws.filter((c) => !lost.includes(c)).forEach((c) => { c[here(c)] = { item: cb.id, term: String(num.get(c.id)) }; delete c.core; });
       cb.open = true;
+      // The other end's connectors go with it to end A; this end's stay with it, unless it's left free.
+      const mine = (end === "A" ? cb.plugsA : cb.plugsB) || [], theirs = (end === "A" ? cb.plugsB : cb.plugsA) || [];
+      cb.plugsA = theirs;
+      cb.plugsB = port ? mine : [];
       // The fan-out point that's left is end A's now; the other end's position is worked out again.
       cb.pa = end === "A" ? cb.pb : cb.pa;
       cb.pb = null;
+      cb.ta = cb.tb = null;
       cb.portA = null;
       cb.portB = port ? { ...port } : null;
       cb.to = "";
@@ -968,11 +1571,11 @@
       doc.connections = doc.connections.filter((c) => !cb.wires.includes(c.id));
       cb.wires = [];
       cb.portA = { ...port };
-      cb.pa = null; cb.pb = null;
+      resetLayout(cb);
     } else {
       checkpoint();
       if (end === "A") cb.portA = { ...port };
-      else { cb.portB = port ? { ...port } : null; cb.pb = null; }
+      else { cb.portB = port ? { ...port } : null; cb.pb = null; cb.tb = null; if (!port) cb.plugsB = []; }
     }
     if (cb.portB) delete cb.to;
     cleanConnections();
@@ -1025,42 +1628,128 @@
     refresh();
   }
 
+  // While landing a cable's other end: each core in core order with the terminal picked for it (to), null
+  // for one left not connected at this end (busEdit.skip, by wire id), or undefined for one still to pick.
+  // Each terminal clicked goes to the first core still to pick (busEdit.landTo: wire id -> terminal key).
+  // Moving an end (busEdit.move), each core connected at that end instead, where Skip (to null) keeps it put.
+  function landingPlan() {
+    const to = busEdit.landTo || {}, skip = busEdit.skip || [];
+    const cb = cableById(busEdit.id) || { wires: [] };
+    return (busEdit.move ? endCores(cb, busEdit.move) : freeCores(cb))
+      .map((k) => ({ ...k, to: skip.includes(k.c.id) ? null : to[k.c.id] ? termKeyParts(to[k.c.id]) : undefined }));
+  }
+
   // What to click next while landing a cable's other end.
   function landingTip() {
-    const cores = freeCores(cableById(busEdit.id) || { wires: [] }), n = busEdit.terms.length;
-    if (n >= cores.length) return `All ${plural(cores.length, "core")} have a terminal. Press Enter or click Done`;
-    const k = cores[n];
-    return `Core ${n + 1} of ${cores.length} (${k.c.wire || "wire"}, from ${refOf(k.near)}): click the terminal it goes to`;
+    const plan = landingPlan(), k = plan.find((x) => x.to === undefined);
+    if (busEdit.move) {
+      return k ? `Core ${k.n || plan.indexOf(k) + 1} (${k.c.wire || "wire"}, on ${refOf(k.from)}): click the terminal it moves to, or Keep to leave it there`
+        : "Every core has a new terminal or stays where it is. Press Enter or click Done";
+    }
+    if (!k) return plan.some((x) => x.to) ? "Every core has a terminal or is left not connected. Press Enter or click Done" : "Pick a terminal for at least one core";
+    return `Core ${k.n || plan.indexOf(k) + 1} (${k.c.wire || "wire"}, from ${refOf(k.near)}): click the terminal it goes to, or Skip to leave it not connected at this end`;
+  }
+
+  // Leave a core not connected at the end being landed (the next one to pick, or wire id), or connect it again.
+  function skipLanding(id) {
+    const plan = landingPlan();
+    id = id || plan.find((k) => k.to === undefined)?.c.id;
+    if (!id) return;
+    busEdit.skip = busEdit.skip || [];
+    busEdit.landTo = busEdit.landTo || {};
+    if (busEdit.skip.includes(id)) busEdit.skip = busEdit.skip.filter((x) => x !== id);
+    else { busEdit.skip.push(id); delete busEdit.landTo[id]; }
+    busEdit.terms = Object.values(busEdit.landTo);
+    renderCanvas();
+    renderProps();
+  }
+
+  // Fanning out an end of a cable whose profile lists its cores: which core each picked terminal gets
+  // (busEdit.coreOf, by terminal key) and which the next one gets (busEdit.next), so cores can be skipped
+  // or put on any terminal. Null when not fanning out such a cable.
+  function pickCores() {
+    const cb = busEdit && busEdit.fan && busEdit.id && cableById(busEdit.id);
+    const defs = cb ? profileCores(cb) : [];
+    if (!defs.length) return null;
+    busEdit.coreOf = busEdit.coreOf || {};
+    const onCable = new Set(coreNumbers(cb).values()), picked = new Set(Object.values(busEdit.coreOf));
+    const pc = { cb, defs, onCable, free: (n) => !onCable.has(n) && !picked.has(n) };
+    if (!(busEdit.next && pc.free(busEdit.next))) busEdit.next = nextFreeCore(pc);
+    return pc;
+  }
+  // The first free core after core n, going round; past the profile's cores once they're all used.
+  function nextFreeCore(pc, after = 0) {
+    const N = pc.defs.length;
+    for (let i = 1; i <= N; i++) { const n = ((after + i - 1) % N) + 1; if (pc.free(n)) return n; }
+    let n = N + 1;
+    while (!pc.free(n)) n++;
+    return n;
+  }
+  // The core choices for a drop-down: the profile's cores (those already on the cable can't be picked), and
+  // any picked past them.
+  function coreOptions(pc, current, disable) {
+    const max = Math.max(pc.defs.length, current || 0);
+    return Array.from({ length: max }, (_, i) => i + 1).map((n) => `<option value="${n}"${n === current ? " selected" : ""}${n !== current && disable(n) ? " disabled" : ""}>${esc(coreLabel(pc.defs, n))}${pc.onCable.has(n) ? " (on the cable)" : ""}</option>`).join("");
+  }
+  function skipCore() {
+    const pc = pickCores();
+    if (!pc) return;
+    busEdit.next = nextFreeCore(pc, busEdit.next);
+    renderModeBar();
+    renderProps();
+  }
+  // Give a picked terminal core n, swapping with the picked terminal that had it.
+  function setPickedCore(key, n) {
+    const pc = pickCores();
+    if (!pc || !(key in busEdit.coreOf) || pc.onCable.has(n)) return;
+    const other = Object.keys(busEdit.coreOf).find((k) => busEdit.coreOf[k] === n);
+    if (other) busEdit.coreOf[other] = busEdit.coreOf[key];
+    busEdit.coreOf[key] = n;
+    pickCores(); // moves next on if it was just taken
+    renderCanvas();
+    renderProps();
   }
 
   // A cable whose cores land on terminals at one end only: its other end (free, or plugged into a
   // connector, which it's then unplugged from) can fan out to terminals too.
   const canLand = (cb) => !!cb && cb.open && !cb.portA && cb.wires.length > 0;
 
-  // Enough terminals picked to finish: a terminal for every core when landing a cable's other end.
-  function busReady() {
-    const n = busEdit.terms.length;
-    if (busEdit.plug) return false; // done as soon as a connector is clicked
-    if (busEdit.land) return n === freeCores(cableById(busEdit.id) || { wires: [] }).length;
-    return n >= (busEdit.kind === "cable" ? 1 : 2);
+  // The cores connected at one end of a cable ("A" or "B"), in core order: each with the side of the wire
+  // that's at that end (side), the terminal it's on there (from) and its other end (near).
+  function endCores(cb, end) {
+    const s = cb.open ? {} : bundleSides(cb), num = coreNumbers(cb);
+    return cb.wires.map(connById).filter(Boolean).map((c) => {
+      const atA = cb.open ? (c.a.item === cb.id ? "b" : "a") : s[c.id] || "a";
+      const side = end === "A" ? atA : atA === "a" ? "b" : "a";
+      return { c, side, from: c[side], near: c[side === "a" ? "b" : "a"], n: num.get(c.id) || 0 };
+    }).filter((k) => k.from.item !== cb.id).sort((p, q) => p.n - q.n);
   }
 
-  function finishLanding() {
-    const cb = cableById(busEdit.id);
+  // Move one end of a cable to other terminals: pick a new terminal for each core there, in core order, or
+  // Keep one where it is.
+  function startMoveEnd(id, end) {
+    const cb = cableById(id);
+    if (!cb || !endCores(cb, end).length) return;
+    pending = null;
+    busEdit = { kind: "cable", id: cb.id, terms: [], land: true, move: end };
+    setHint("");
+    refresh();
+  }
+
+  function finishMove() {
+    const cb = cableById(busEdit.id), end = busEdit.move;
     if (!cb) { cancelBus(); return; }
-    const cores = freeCores(cb), picked = busEdit.terms.map(termKeyParts);
-    if (picked.length !== cores.length) { toast(`Pick a terminal for each of the ${plural(cores.length, "core")}`); return; }
-    const loop = cores.findIndex((k, i) => sameEnd(k.near, picked[i]));
-    if (loop >= 0) { toast(`Core ${loop + 1} would start and end on ${refOf(picked[loop])}`); return; }
+    const used = landingPlan().filter((k) => k.to && !sameEnd(k.to, k.from));
+    if (!used.length) { cancelBus(); return; } // nothing moved
+    const loop = used.find((k) => sameEnd(k.near, k.to));
+    if (loop) { toast(`Core ${loop.n} would start and end on ${refOf(loop.to)}`); return; }
     const key = (e) => e.item + "|" + e.term;
-    askJoin(cores.map((k, i) => [key(k.near), key(picked[i])]), cores.length === 1 ? "This core" : "These cores", () => {
+    // Only a core connected through joins circuits; a one-ended cable's cores end on the cable itself.
+    askJoin(used.filter((k) => k.near.item !== cb.id).map((k) => [key(k.near), key(k.to)]), used.length === 1 ? "This core" : "These cores", () => {
       checkpoint();
-      // Every core runs from its old terminal (end A, where pa is) to its new one (end B).
-      cores.forEach((k, i) => { k.c.a = { ...k.near }; k.c.b = { ...picked[i] }; });
-      cb.open = false;
-      delete cb.to;
-      cb.portB = null; // unplugged, if it was plugged in
-      cb.pb = null; // was where the free end lay; now the fan-out point at the new end works itself out
+      used.forEach((k) => { k.c[k.side] = { ...k.to }; });
+      // The fan-out point and tail at the moved end work themselves out again.
+      if (end === "A") { cb.pa = null; cb.ta = null; } else { cb.pb = null; cb.tb = null; }
       busEdit = null;
       sel = new Set([cb.id]);
       setHint("");
@@ -1068,35 +1757,134 @@
     });
   }
 
+  // Enough terminals picked to finish: when landing a cable's other end, a terminal or Skip for every core.
+  function busReady() {
+    const n = busEdit.terms.length;
+    if (busEdit.plug) return false; // done as soon as a connector is clicked
+    if (busEdit.connect || busEdit.reland) return false; // done as soon as a terminal is clicked
+    if (busEdit.land) { const plan = landingPlan(); return (busEdit.move || plan.every((k) => k.to !== undefined)) && plan.some((k) => k.to); }
+    return n >= (busEdit.kind === "cable" ? 1 : 2);
+  }
+
+  function finishLanding() {
+    if (busEdit.move) { finishMove(); return; }
+    const cb = cableById(busEdit.id);
+    if (!cb) { cancelBus(); return; }
+    const plan = landingPlan(), used = plan.filter((k) => k.to);
+    if (plan.some((k) => k.to === undefined)) { toast("Pick a terminal for each core, or Skip the ones not connected at this end"); return; }
+    if (!used.length) { toast("Pick a terminal for at least one core. To use none at this end, leave it free"); return; }
+    const loop = used.find((k) => sameEnd(k.near, k.to));
+    if (loop) { toast(`Core ${loop.n} would start and end on ${refOf(loop.to)}`); return; }
+    const key = (e) => e.item + "|" + e.term;
+    askJoin(used.map((k) => [key(k.near), key(k.to)]), used.length === 1 ? "This core" : "These cores", () => {
+      checkpoint();
+      // Every core runs from its old terminal (end A, where pa is) to its new one (end B), or stays in the
+      // cable there, not connected through.
+      plan.forEach((k) => {
+        k.c.a = { ...k.near };
+        k.c.b = k.to ? { ...k.to } : { item: cb.id, term: String(k.n) };
+        if (k.n > 0) k.c.core = k.n;
+      });
+      cb.open = false;
+      delete cb.to;
+      cb.portB = null; // unplugged, if it was plugged in
+      cb.pb = null; // was where the free end lay; now the fan-out point at the new end works itself out
+      cb.ta = cb.tb = null;
+      busEdit = null;
+      sel = new Set([cb.id]);
+      setHint("");
+      refresh();
+    });
+  }
+
+  // Connect a bundled core at the end of the cable it isn't connected at: pick the terminal it goes to.
+  function startConnect(id) {
+    const c = connById(id), cb = cableOf(id);
+    if (!c || !cb || cb.open || !cableSide(c, cb)) return;
+    pending = null;
+    busEdit = { kind: "cable", id: cb.id, terms: [], connect: id };
+    setHint("");
+    refresh();
+  }
+
+  function finishConnect(p) {
+    const c = connById(busEdit.connect), cb = cableById(busEdit.id), side = cableSide(c, cb);
+    if (!c || !side) { cancelBus(); return; }
+    const near = c[side === "a" ? "b" : "a"];
+    if (sameEnd(near, p)) { toast(`This core's other end is on ${refOf(p)}`); return; }
+    askJoin([[near.item + "|" + near.term, p.item + "|" + p.term]], "This core", () => {
+      checkpoint();
+      c[side] = { ...p };
+      busEdit = null;
+      sel = new Set([cb.id]);
+      setHint("");
+      refresh();
+    });
+  }
+
+  // Move one end of a wire ("a" or "b") to another terminal: click the terminal it goes to.
+  function startReland(id, end) {
+    const c = connById(id);
+    if (!c || !termPoint(c[end])) return;
+    pending = null;
+    busEdit = { kind: "wire", terms: [], reland: { id, end } };
+    setHint("");
+    refresh();
+  }
+
+  function finishReland(p) {
+    const { id, end } = busEdit.reland, c = connById(id);
+    if (!c) { cancelBus(); return; }
+    if (sameEnd(c[end], p)) { cancelBus(); return; } // put back where it was
+    const other = c[end === "a" ? "b" : "a"];
+    if (sameEnd(other, p)) { toast(`The wire's other end is on ${refOf(p)}`); return; }
+    askJoin([[other.item + "|" + other.term, p.item + "|" + p.term]], "This wire", () => {
+      checkpoint();
+      c[end] = { ...p };
+      busEdit = null;
+      sel = new Set([c.id]);
+      setHint("");
+      refresh();
+    });
+  }
+
   function finishCable() {
     if (busEdit.land) { finishLanding(); return; }
+    if (busEdit.connect) { cancelBus(); return; } // nothing to finish until a terminal is clicked
     if (busEdit.plug) { cancelBus(); return; } // nothing to finish until a connector is clicked
     if (busEdit.fan && !busEdit.terms.length) { toast("Pick at least one terminal for the cable's cores"); return; }
     let cb = busEdit.id && cableById(busEdit.id);
     const picked = busEdit.terms.map(termKeyParts);
-    // Fanning out an end that was plugged in (busEdit.fan) unplugs it.
-    const fanned = busEdit.fan ? (busEdit.end === "A" ? cb?.portA : cb?.portB) : null;
-    const plugs = [...(cb ? [cb.portA, cb.portB].filter((e) => e && e !== fanned) : []), ...picked.filter(isPortEnd)];
-    const terms = picked.filter((e) => !isPortEnd(e));
-    const cores = (cb ? cb.wires.length : 0) + terms.length;
-    if (!cores && !plugs.length) { toast("Pick at least one terminal or cable connector for the cable"); return; }
-    if (plugs.length > 2) { toast("A cable has two ends, so it can plug into two connectors at most"); return; }
-    if (cores && plugs.length > 1) { toast("A cable whose cores land on terminals can plug into one connector, at its other end"); return; }
+    const plugs = picked.filter(isPortEnd), terms = picked.filter((e) => !isPortEnd(e));
+    if (!cb && !terms.length && !plugs.length) { toast("Pick at least one terminal or cable connector for the cable"); return; }
+    const taken = plugs.find(cableAtPort);
+    if (taken) { toast(`${refOf(taken)} already has cable ${cableAtPort(taken).label || ""}`.trim()); return; }
     checkpoint();
     if (!cb) {
+      // A new cable: its cores land at end A. The first connector picked is its far end, end B; the rest
+      // go at end A, with the cores. With no cores, the first two connectors are ends B and A.
       cb = { id: uid("k"), label: nextCable(), desc: "", to: "", color: "#3a3f45", notes: "", open: true, wires: [], pa: null, pb: null };
       doc.cables.push(cb);
-    }
-    // Cores land at end A, so a plug goes at end B; with no cores, the plugs are ends A and B.
-    if (cores) { cb.portA = null; cb.portB = plugs[0] || null; } else { cb.portA = plugs[0]; cb.portB = plugs[1] || null; }
-    if (busEdit.fan) {
-      if (fanned || busEdit.end === "B") { cb.pa = null; cb.pb = null; } // the cable's shape has changed
+      cb.portB = plugs[0] ? { ...plugs[0] } : null;
+      const rest = plugs.slice(1).map((e) => ({ ...e }));
+      if (!terms.length) cb.portA = rest.shift() || null;
+      if (!terms.length && !cb.portA) { cb.portA = cb.portB; cb.portB = null; } // just one connector: end A, end B free
+      cb.plugsA = rest;
+      if (cb.portB) delete cb.to;
+    } else if (busEdit.fan) {
+      // Fanning out an end: its cores land there, so it's end A, and its main connector (if it was plugged
+      // in) comes out; its other connectors stay.
+      if (busEdit.end === "B" && !cb.wires.length) swapCableEnds(cb);
+      if (!cb.wires.length) cb.portA = null;
+      if (!cb.wires.length || busEdit.end === "B") resetLayout(cb); // the cable's shape has changed
       if (cb.portB) delete cb.to; // only a free end says where it goes
     }
-    let core = Math.max(0, ...cb.wires.map(connById).filter(Boolean).map((c) => parseInt((c.a.item === cb.id ? c.a : c.b).term, 10) || 0));
+    // Each core takes the number picked for its terminal, or the next one after the cable's cores.
+    const coreOf = (busEdit.fan && busEdit.coreOf) || {};
+    let core = Math.max(0, ...cb.wires.map(connById).filter(Boolean).map((c) => parseInt((c.a.item === cb.id ? c.a : c.b).term, 10) || 0), ...Object.values(coreOf));
     const made = new Set();
     for (const e of terms) {
-      const c = { id: uid("c"), a: { ...e }, b: { item: cb.id, term: String(++core) }, wire: nextWire(), notes: "" };
+      const c = { id: uid("c"), a: { ...e }, b: { item: cb.id, term: String(coreOf[e.item + "|" + e.term] || ++core) }, wire: nextWire(), notes: "" };
       initWire(c);
       doc.connections.push(c);
       cb.wires.push(c.id);
@@ -1117,6 +1905,7 @@
 
   function finishBus() {
     if (!busEdit) return;
+    if (busEdit.reland) { cancelBus(); return; } // nothing to finish until a terminal is clicked
     if (busEdit.kind === "cable") { finishCable(); return; }
     if (busEdit.terms.length < 2) { toast("Pick at least two terminals for the bus bar"); return; }
     // "Don't join" leaves the terminals picked, to change them.
@@ -1151,18 +1940,37 @@
       const cb = cableById(busEdit.id);
       const end = busEdit.end;
       if (!cb) { cancelBus(); return; }
+      const add = busEdit.add;
       busEdit = null;
-      const done = setCableEnd(cb, end, p);
-      if (done === false) busEdit = { kind: "cable", id: cb.id, terms: [], end, plug: true }; // that connector's taken: pick another
+      const done = add ? addCablePlug(cb, end, p) : setCableEnd(cb, end, p);
+      if (done === false) busEdit = { kind: "cable", id: cb.id, terms: [], end, plug: true, add }; // that connector's taken: pick another
       if (!done) refresh();
+      return;
+    }
+    if (busEdit.connect || busEdit.reland) {
+      if (onlyAdd || isSlot(t)) return;
+      if (isPort(t)) { toast(`${refOf(p)} is a cable connector, which takes a cable rather than a single wire`); return; }
+      if (busEdit.connect) finishConnect(p); else finishReland(p);
       return;
     }
     if (busEdit.land) {
       if (isSlot(t)) return;
       if (isPort(t)) { toast(`${refOf(p)} is a cable connector. To plug the cable in instead, use Plug into a connector…`); return; }
-      const n = freeCores(cableById(busEdit.id) || { wires: [] }).length;
-      if (!busEdit.terms.includes(key) && busEdit.terms.length >= n) { toast(`Every core has a terminal. Click a picked one to take it off, or press Enter`); return; }
-    } else if (busEdit.fan) {
+      // A picked terminal clicked again comes off its core, which is then the next to pick.
+      const to = busEdit.landTo = busEdit.landTo || {};
+      const had = Object.keys(to).find((id) => to[id] === key);
+      if (had) { if (onlyAdd) return; delete to[had]; }
+      else {
+        const k = landingPlan().find((x) => x.to === undefined);
+        if (!k) { toast(busEdit.move ? "Every core has a new terminal or stays where it is. Click a picked one to take it off, or press Enter" : "Every core has a terminal or is left not connected. Click a picked one to take it off, or press Enter"); return; }
+        to[k.c.id] = key;
+      }
+      busEdit.terms = Object.values(to);
+      renderCanvas();
+      renderProps();
+      return;
+    }
+    if (busEdit.fan) {
       if (isSlot(t)) return;
       if (isPort(t)) { toast(`${refOf(p)} is a cable connector. To plug this end into it instead, use Plug into a connector…`); return; }
     } else if (busEdit.kind === "cable") {
@@ -1174,6 +1982,15 @@
     if (i >= 0 && !onlyAdd) busEdit.terms.splice(i, 1);
     else if (i < 0) busEdit.terms.push(key);
     else return;
+    const pc = pickCores();
+    if (pc) {
+      if (i >= 0) delete busEdit.coreOf[key];
+      else {
+        const n = busEdit.next;
+        busEdit.coreOf[key] = n;
+        busEdit.next = nextFreeCore(pickCores(), n);
+      }
+    }
     renderCanvas();
     renderProps();
   }
@@ -1260,9 +2077,9 @@
     const hi = (b, a) => (a === "x" ? b.x + b.w : b.y + b.h);
     const perp = (a) => (a === "x" ? "y" : "x");
     const side = (b1, b2, a) => lo(b1, perp(a)) < hi(b2, perp(a)) - 0.01 && lo(b2, perp(a)) < hi(b1, perp(a)) - 0.01;
-    const rails = doc.items.filter((o) => o.kind === "rail");
+    const rails = pageItems().filter((o) => o.kind === "rail");
     const railed = new Set(rails.flatMap(mountedOn));
-    const boxes = new Map(doc.items.filter((o) => o !== it && o.kind !== "rail").map((o) => [o, boxOf(o)]));
+    const boxes = new Map(pageItems().filter((o) => o !== it && o.kind !== "rail").map((o) => [o, boxOf(o)]));
     const movable = (a) => [...boxes.keys()].filter((o) => a === "x" || !railed.has(o));
     const flush = (b, a, s) => movable(a).filter((o) => {
       const q = boxes.get(o);
@@ -1335,13 +2152,15 @@
     }
   }
 
+  // A quarter turn for the selected parts and text notes. A note turns about its middle, so stays put.
   function rotateSelection(dir = 1) {
-    const parts = [...sel].map(itemById).filter((i) => i && i.kind === "part");
-    if (!parts.length) return;
+    const items = [...sel].map(itemById).filter((i) => i && (i.kind === "part" || i.kind === "text"));
+    if (!items.length) return;
     checkpoint();
-    for (const it of parts) {
+    for (const it of items) {
       const b = boxOf(it);
-      it.rot = (((it.rot || 0) + 90 * dir) % 360 + 360) % 360;
+      it.rot = ((((+it.rot || 0) + 90 * dir) % 360) + 360) % 360;
+      if (it.kind === "text") continue;
       it.x = r3(it.x + (b.w - b.h) / 2);
       it.y = r3(it.y + (b.h - b.w) / 2);
     }
@@ -1349,7 +2168,7 @@
   }
 
   function nudge(dx, dy) {
-    const items = [...sel].map(itemById).filter(Boolean);
+    const items = [...withGroupNotes([...sel].filter((id) => itemById(id)))].map(itemById);
     if (!items.length) return;
     checkpoint();
     const anchors = cableAnchors();
@@ -1367,26 +2186,36 @@
     const conns = new Map(doc.connections.map((c) => [c.id, c]));
     const out = [];
     for (const cb of doc.cables) {
-      if (!cb.pa && !cb.pb) continue;
+      if (!hasLayout(cb)) continue;
       const ws = cb.wires.map((id) => conns.get(id)).filter(Boolean);
       let ends;
       if (cb.open) {
         const near = ws.map((c) => (c.a.item === cb.id ? c.b : c.a));
-        const one = near.length ? near : cb.portA ? [cb.portA] : [];
-        ends = { pa: one, pb: cb.portB ? [] : one };
+        const one = [...(near.length ? near : cb.portA ? [cb.portA] : []), ...(cb.plugsA || [])];
+        // With more connectors at end B, its fan-out point (pb) goes with them; else pb is the free end.
+        const atB = endPlugs(cb, "B");
+        ends = { pa: one, pb: atB.length > 1 ? atB : cb.portB ? [] : one, ta: one, tb: cb.portB ? atB : one };
       } else {
-        if (!ws.length || ws.some((c) => !termPoint(c.a) || !termPoint(c.b))) continue;
+        if (!ws.length || ws.some((c) => [c.a, c.b].some((e) => e.item !== cb.id && !termPoint(e)))) continue;
         const g = cableGeometry(cb, conns, (e) => ({ ...termPoint(e), e }));
         if (!g) continue;
-        ends = { pa: g.cores.map((k) => k.ea.e), pb: g.cores.map((k) => k.eb.e) };
+        ends = { pa: [...g.cores.filter((k) => k.ea).map((k) => k.ea.e), ...(cb.plugsA || [])], pb: [...g.cores.filter((k) => k.eb).map((k) => k.eb.e), ...(cb.plugsB || [])] };
+        ends.ta = ends.pa; ends.tb = ends.pb;
       }
-      for (const key of ["pa", "pb"]) {
+      for (const key of ["pa", "pb", "ta", "tb"]) {
         const from = ends[key].map(termPoint);
         if (!cb[key] || !from.length || from.some((p) => !p)) continue;
         out.push({ cb, key, p: { ...cb[key] }, ends: ends[key], from });
       }
     }
     return out;
+  }
+
+  // Points of a cable's layout that have been dragged: fan-out points (pa, pb), a one-ended cable's free
+  // end (pb) and a broken cable's tail ends (ta, tb).
+  const hasLayout = (cb) => !!(cb.pa || cb.pb || cb.ta || cb.tb);
+  function resetLayout(cb) {
+    cb.pa = cb.pb = cb.ta = cb.tb = null;
   }
 
   function followCables(anchors) {
@@ -1398,7 +2227,7 @@
     }
   }
 
-  // Copy the given items (and wires between them) offset by dx, dy.
+  // Copy the given items (and wires between them) offset by dx, dy, onto the page open.
   function cloneItems(src, dx, dy) {
     const usedTags = new Set(doc.items.map((i) => i.tag).filter(Boolean));
     const idMap = new Map();
@@ -1406,6 +2235,7 @@
     for (const it of src.items) {
       const c = JSON.parse(JSON.stringify(it));
       c.id = uid();
+      c.page = doc.page;
       c.x = r3(c.x + dx); c.y = r3(c.y + dy);
       if (c.kind === "part" && c.tag) {
         let t = c.tag, guard = 0;
@@ -1419,6 +2249,8 @@
       idMap.set(it.id, c.id);
       out.push(c);
     }
+    // A copied group note is linked to the copies of its items; with none of them copied, to nothing.
+    for (const c of out) if (c.links) { c.links = c.links.map((id) => idMap.get(id)).filter(Boolean); if (!c.links.length) delete c.links; }
     doc.items.push(...out);
     const connMap = new Map();
     for (const c of src.connections) {
@@ -1432,8 +2264,10 @@
     }
     for (const cb of src.cables || []) {
       if (!cb.wires.every((w) => connMap.has(w))) continue;
+      if (cablePlugs(cb).some((e) => !idMap.has(e.item))) continue; // plugged into a part that wasn't copied
       const shift = (p) => p && { x: r3(p.x + dx), y: r3(p.y + dy) };
-      doc.cables.push({ ...JSON.parse(JSON.stringify(cb)), id: uid("k"), label: nextCable(), wires: cb.wires.map((w) => connMap.get(w)), pa: shift(cb.pa), pb: shift(cb.pb) });
+      const port = (e) => e && { item: idMap.get(e.item), term: e.term };
+      doc.cables.push({ ...JSON.parse(JSON.stringify(cb)), id: uid("k"), label: nextCable(), wires: cb.wires.map((w) => connMap.get(w)), pa: shift(cb.pa), pb: shift(cb.pb), ta: shift(cb.ta), tb: shift(cb.tb), portA: port(cb.portA), portB: port(cb.portB), plugsA: (cb.plugsA || []).map(port), plugsB: (cb.plugsB || []).map(port) });
     }
     for (const b of src.buses || []) {
       if (!b.terms.every((e) => idMap.has(e.item))) continue;
@@ -1445,13 +2279,15 @@
     sel = new Set(out.map((i) => i.id));
   }
 
-  function selectionPayload() {
-    const items = doc.items.filter((i) => sel.has(i.id));
+  function selectionPayload(pick = sel) {
+    const items = doc.items.filter((i) => pick.has(i.id));
     const ids = new Set(items.map((i) => i.id));
     const connections = doc.connections.filter((c) => ids.has(c.a.item) && ids.has(c.b.item));
     const buses = doc.buses.filter((b) => b.terms.every((e) => ids.has(e.item)));
     const wireIds = new Set(connections.map((c) => c.id));
-    const cables = doc.cables.filter((cb) => cb.wires.every((w) => wireIds.has(w)));
+    // A plugged-in cable has no wires, so it goes along only when the parts it's plugged into do.
+    const plugged = (e) => !e || ids.has(e.item);
+    const cables = doc.cables.filter((cb) => (cb.wires.length || cb.portA) && cb.wires.every((w) => wireIds.has(w)) && cablePlugs(cb).every(plugged));
     return JSON.parse(JSON.stringify({ items, connections, buses, cables }));
   }
 
@@ -1461,6 +2297,30 @@
     checkpoint();
     cloneItems(p, 10, 10);
     refresh();
+  }
+
+  function cutSelection() {
+    const p = selectionPayload();
+    if (!p.items.length) return;
+    clipboard = p;
+    deleteSelection();
+    toast(`Cut ${plural(p.items.length, "item")}`);
+  }
+
+  // Find: the lists' filter box, opening the lists if they're hidden.
+  function findInLists() {
+    if ($("drawer").classList.contains("collapsed")) setDrawerClosed(false);
+    $("listFilter").focus();
+    $("listFilter").select();
+  }
+
+  // Grey out the Edit menu's commands that have nothing to work on.
+  function updateEditMenu() {
+    const has = {
+      undo: undoStack.length > 0, redo: redoStack.length > 0, sel: sel.size > 0,
+      items: [...sel].some((id) => itemById(id)), clipboard: !!(clipboard && clipboard.items.length),
+    };
+    for (const b of $("editMenu").querySelectorAll("[data-needs]")) b.disabled = !has[b.dataset.needs];
   }
 
   function copySelection() {
@@ -1565,6 +2425,12 @@
       else convertWire(c, guessRole(c.a, c.b), from, to);
     }
     lastWire.gauge = convertGauge(lastWire.gauge, to);
+    // Paper follows the standard too: Letter sizes and inch margins, or A sizes and mm.
+    const pr = doc.settings.print;
+    if (pr) {
+      if (PAPERS[pr.paper]?.std !== to) pr.paper = PAPERS[pr.paper]?.other || printDefaults(to).paper;
+      pr.margin = nearestMargin(pr.margin, to);
+    }
   }
 
   const profileById = (id) => (id ? doc.wireProfiles.find((p) => p.id === id) : null);
@@ -1829,7 +2695,7 @@
     const tryX = (v) => { const d = Math.abs(v - nx); if (d < thr && (!bx || d < bx.d)) bx = { d, v }; };
     const tryY = (v) => { const d = Math.abs(v - ny); if (d < thr && (!by || d < by.d)) by = { d, v }; };
     if (doc.settings.snapEdges && it.kind !== "text") {
-      for (const o of doc.items) {
+      for (const o of pageItems()) {
         if (exclude.has(o.id) || o.kind === "text") continue;
         const ob = boxOf(o);
         const vOver = ny < ob.y + ob.h && ny + h > ob.y;
@@ -1859,7 +2725,7 @@
   function mountedOn(rail) {
     const rb = boxOf(rail);
     const cy = rb.y + rb.h / 2;
-    return doc.items.filter((o) => {
+    return pageItems().filter((o) => {
       if (o.kind !== "part" || isLoose(tplOf(o))) return false;
       const b = boxOf(o);
       return b.y <= cy && b.y + b.h >= cy && b.x >= rb.x - 0.01 && b.x + b.w <= rb.x + rb.w + 0.01;
@@ -1888,6 +2754,27 @@
     let itemEl = e.target.closest("[data-item]");
     const handleEl = e.target.closest("[data-cable-handle]");
 
+    if (tool === "measure" && !busEdit) {
+      pending = null;
+      const a = measureSnap(w, e.altKey);
+      drag = { type: "measure", sx: e.clientX, sy: e.clientY, moved: false };
+      measure = { a, b: a };
+      measureHover = null;
+      svg.setPointerCapture(e.pointerId);
+      renderOverlay();
+      return;
+    }
+
+    // Dragging a group note's bracket in or out from its items.
+    const barEl = e.target.closest("[data-bracket]");
+    if (barEl && !busEdit && !selFilter && e.button === 0) {
+      const id = barEl.dataset.bracket;
+      if (!sel.has(id) || sel.size > 1) { sel = new Set([id]); refresh(); }
+      drag = { type: "bracket", id, sx: e.clientX, sy: e.clientY, moved: false };
+      svg.setPointerCapture(e.pointerId);
+      return;
+    }
+
     if (handleEl && !busEdit && !selFilter) {
       // Dragging a cable's breakout point.
       const [cid, end] = handleEl.dataset.cableHandle.split("|");
@@ -1897,9 +2784,9 @@
     }
 
     if (busEdit) {
-      // Plugging a cable end in: a click on a connector does it, after the pointer events are over, as it
+      // Plugging a cable end in, or landing a core or wire end: a click does it, after the pointer events are over, as it
       // may ask first and a dialog mid-click can lose the pointer's release.
-      if (busEdit.plug && termEl) {
+      if ((busEdit.plug || busEdit.connect || busEdit.reland) && termEl) {
         const key = termEl.dataset.term;
         setTimeout(() => toggleBusTerm(key), 0);
         return;
@@ -1967,15 +2854,16 @@
         sel.add(id);
       } else if (!sel.has(id)) sel = new Set([id]);
       else clickedSelected = true;
-      const moving = new Set([...sel].filter((s) => itemById(s)));
+      let moving = new Set([...sel].filter((s) => itemById(s)));
       for (const s of [...moving]) {
         const it = itemById(s);
         if (it.kind === "rail") for (const m of mountedOn(it)) moving.add(m.id);
       }
+      moving = withGroupNotes(moving);
       const orig = new Map();
       for (const s of moving) { const it = itemById(s); orig.set(s, { x: it.x, y: it.y }); }
       // Everything's starting position, for pushing neighbours along with Ctrl held.
-      const all = new Map(doc.items.map((it) => [it.id, { x: it.x, y: it.y }]));
+      const all = new Map(pageItems().map((it) => [it.id, { x: it.x, y: it.y }]));
       drag = { type: "move", primary: id, start: w, sx: e.clientX, sy: e.clientY, orig, all, moving, moved: false, clickedSelected, cables: cableAnchors() };
       svg.setPointerCapture(e.pointerId);
       refresh();
@@ -1993,15 +2881,23 @@
     if (!drag) {
       const t = e.target.closest && e.target.closest("[data-term]");
       if (busEdit) return;
+      if (tool === "measure") {
+        measureHover = measureSnap(w, e.altKey);
+        setHint(measure ? `${measureText(measure).main} — click to clear, or drag to measure again` : MEASURE_TIP);
+        renderOverlay();
+        return;
+      }
       if (pending) {
-        setHint(t ? `Connect ${refOf(pending)} to ${refOf(termKeyParts(t.dataset.term))}` : `Wiring from ${refOf(pending)} — click another terminal (Esc to cancel)`);
+        setHint(t ? `Connect ${refOf(pending)}${pageNote(pending.item)} to ${refOf(termKeyParts(t.dataset.term))}` : `Wiring from ${refOf(pending)}${pageNote(pending.item)} — click another terminal, on this page or another (Esc to cancel)`);
         renderOverlay();
       } else if (t) {
         const k = termKeyParts(t.dataset.term);
         const count = doc.connections.filter((c) => [c.a, c.b].some((x) => x.item === k.item && x.term === k.term)).length;
-        const label = String(itemById(k.item)?.termLabels?.[k.term] || "").trim();
+        const hit = itemById(k.item);
+        const label = String(hit?.termLabels?.[k.term] || "").trim();
+        const desc = String((hit && tplOf(hit)?.terminals.find((x) => x.id === k.term)?.desc) || "").trim();
         const what = tool === "select" ? (attachedTo(k).length ? "click to select what's on it" : "nothing on it") : "drag to another terminal to wire it";
-        setHint(`${refOf(k)}${label ? ` · ${label}` : ""}${count ? ` · ${count} wire${count > 1 ? "s" : ""}` : ""} — ${what}`);
+        setHint(`${refOf(k)}${desc ? ` · ${desc}` : ""}${label ? ` · ${label}` : ""}${count ? ` · ${count} wire${count > 1 ? "s" : ""}` : ""} — ${what}`);
       } else setHint("");
       return;
     }
@@ -2047,6 +2943,17 @@
       followCables(drag.cables);
       setHint(axis ? (pushed.size ? `Pushing ${pushed.size} touching item${pushed.size === 1 ? "" : "s"} ${{ x: rx > 0 ? "right" : "left", y: ry > 0 ? "down" : "up" }[axis]} along with the selection` : "Nothing touching the selection on that side to push") : "");
       renderCanvas();
+    } else if (drag.type === "bracket") {
+      if (!drag.moved && Math.hypot(e.clientX - drag.sx, e.clientY - drag.sy) < 3) return;
+      const note = itemById(drag.id), ls = note ? noteLinks(note) : [];
+      if (!ls.length) return;
+      if (!drag.moved) { checkpoint(); drag.moved = true; }
+      // How far out past the items' edge on the bracket's side the mouse is, in half millimetres.
+      const g = groupBox(ls.map(boxOf)), side = bracketSide(note, g);
+      const out = { top: g.y - w.y, bottom: w.y - g.y - g.h, left: g.x - w.x, right: w.x - g.x - g.w }[side];
+      note.gap = Math.max(0, Math.round(out * 2) / 2);
+      setHint(`Bracket ${note.gap} mm from the items`);
+      renderCanvas();
     } else if (drag.type === "cablept") {
       if (!drag.moved && Math.hypot(e.clientX - drag.sx, e.clientY - drag.sy) < 3) return;
       const cb = cableById(drag.id);
@@ -2054,7 +2961,7 @@
       if (!drag.moved) { checkpoint(); drag.moved = true; }
       const g = doc.settings.grid || 0;
       const gs = (v) => (g > 0 && !e.altKey ? Math.round(v / g) * g : r3(v));
-      cb["p" + drag.end] = { x: gs(w.x), y: gs(w.y) };
+      cb[drag.end.length > 1 ? drag.end : "p" + drag.end] = { x: gs(w.x), y: gs(w.y) }; // pa / pb, or a tail end ta / tb
       renderCanvas();
     } else if (drag.type === "wire") {
       if (!drag.moved && Math.hypot(e.clientX - drag.sx, e.clientY - drag.sy) > 3) drag.moved = true;
@@ -2063,6 +2970,13 @@
       renderOverlay();
     } else if (drag.type === "marquee") {
       drag.cur = w;
+      renderOverlay();
+    } else if (drag.type === "measure") {
+      if (!drag.moved && Math.hypot(e.clientX - drag.sx, e.clientY - drag.sy) < 3) return;
+      drag.moved = true;
+      measure.b = measureEnd(measure.a, w, e);
+      const t = measureText(measure);
+      setHint(t.main + (t.parts ? ` · ${t.parts}` : ""));
       renderOverlay();
     } else if (drag.type === "bussweep") {
       const t = document.elementFromPoint(e.clientX, e.clientY)?.closest("[data-term]");
@@ -2079,6 +2993,12 @@
       if (!d.moved && !d.keepSel) { sel.clear(); refresh(); }
     } else if (d.type === "cablept") {
       if (d.moved) refresh();
+    } else if (d.type === "bracket") {
+      setHint("");
+      if (d.moved) refresh();
+    } else if (d.type === "measure") {
+      // A click without a drag clears the measurement.
+      if (!d.moved) { measure = null; setHint(MEASURE_TIP); }
     } else if (d.type === "move") {
       setHint("");
       if (d.moved) refresh();
@@ -2097,25 +3017,28 @@
       const x1 = Math.min(d.start.x, d.cur.x), x2 = Math.max(d.start.x, d.cur.x);
       const y1 = Math.min(d.start.y, d.cur.y), y2 = Math.max(d.start.y, d.cur.y);
       sel = new Set(d.base);
-      for (const it of doc.items) {
+      for (const it of pageItems()) {
         if (!allows(it.kind)) continue;
         const b = boxOf(it);
         if (b.x < x2 && b.x + b.w > x1 && b.y < y2 && b.y + b.h > y1) sel.add(it.id);
       }
       if (selFilter) {
         // Filtered boxes also pick wires, bus bars and cables with an end in the box.
-        const inBox = (e) => { const p = e && termPoint(e); return !!p && p.x >= x1 && p.x <= x2 && p.y >= y1 && p.y <= y2; };
+        const inBox = (e) => { const p = endHere(e) && termPoint(e); return !!p && p.x >= x1 && p.x <= x2 && p.y >= y1 && p.y <= y2; };
         const wireIn = (c) => !!c && [c.a, c.b].some(inBox);
         if (allows("wire")) for (const c of doc.connections) if ((!hiddenWires || !hiddenWires.has(c.id)) && wireIn(c)) sel.add(c.id);
         if (allows("bus")) for (const b of doc.buses) if (b.terms.some(inBox)) sel.add(b.id);
-        if (allows("cable")) for (const cb of doc.cables) if (inBox(cb.portA) || inBox(cb.portB) || cb.wires.some((id) => wireIn(connById(id)))) sel.add(cb.id);
+        if (allows("cable")) for (const cb of doc.cables) if (cablePlugs(cb).some(inBox) || cb.wires.some((id) => wireIn(connById(id)))) sel.add(cb.id);
       }
       refresh();
     }
     renderOverlay();
   });
 
-  svg.addEventListener("pointerleave", () => { if (!drag && !pending && !busEdit) setHint(""); });
+  svg.addEventListener("pointerleave", () => {
+    if (measureHover) { measureHover = null; renderOverlay(); }
+    if (!drag && !pending && !busEdit) setHint("");
+  });
 
   svg.addEventListener("dblclick", (e) => {
     const itemEl = e.target.closest("[data-item]");
@@ -2140,44 +3063,117 @@
   let ctxItems = [];
 
   function hideCtx() {
+    closeSub();
     if (ctx.hidden) return;
     ctx.hidden = true;
     ctxItems = [];
   }
 
-  // entries: { label, run, hint?, danger?, disabled?, checked? }, "-" for a divider, or { heading }.
-  function showCtx(x, y, entries) {
-    const list = entries.filter(Boolean).filter((e, i, a) => e !== "-" || (i > 0 && a[i - 1] !== "-" && i < a.length - 1));
-    ctxItems = list;
-    ctx.innerHTML = list.map((e, i) => {
+  // A submenu: an entry with sub (a list of entries) opens it beside itself, on hover, click or →.
+  const ctxSub = document.createElement("div");
+  ctxSub.className = "ctx-menu ctx-sub";
+  ctxSub.setAttribute("role", "menu");
+  ctxSub.hidden = true;
+  document.body.appendChild(ctxSub);
+  let subItems = [], subOf = -1;
+
+  // Entries without empty ones or doubled, leading or trailing dividers.
+  const tidyCtx = (entries) => entries.filter(Boolean).filter((e, i, a) => e !== "-" || (i > 0 && a[i - 1] !== "-" && i < a.length - 1));
+  function ctxHtml(list) {
+    return list.map((e, i) => {
       if (e === "-") return '<div class="ctx-sep"></div>';
       if (e.heading) return `<div class="ctx-head">${esc(e.heading)}</div>`;
+      if (e.sub) return `<button role="menuitem" aria-haspopup="true" data-i="${i}" class="has-sub"${e.disabled || !e.sub.length ? " disabled" : ""}><span>${esc(e.label)}</span><span class="sub-arrow">›</span></button>`;
       return `<button role="menuitem" data-i="${i}"${e.disabled ? " disabled" : ""} class="${e.danger ? "danger" : ""}${e.checked ? " checked" : ""}"><span>${esc(e.label)}</span>${e.hint ? `<kbd>${esc(e.hint)}</kbd>` : ""}</button>`;
     }).join("");
+  }
+
+  function openSub(i, focus) {
+    const e = ctxItems[i];
+    if (!e || !e.sub) return;
+    if (subOf !== i) {
+      subOf = i;
+      subItems = tidyCtx(e.sub);
+      ctxSub.innerHTML = ctxHtml(subItems);
+      ctxSub.hidden = false;
+      // Beside its entry, on the right if there's room, else on the left.
+      const b = ctx.querySelector(`[data-i="${i}"]`).getBoundingClientRect(), r = ctxSub.getBoundingClientRect();
+      ctxSub.style.left = (b.right + r.width + 4 <= innerWidth ? b.right + 2 : Math.max(4, b.left - r.width - 2)) + "px";
+      ctxSub.style.top = Math.max(4, Math.min(b.top - 5, innerHeight - r.height - 4)) + "px";
+      for (const x of ctx.querySelectorAll(".has-sub")) x.classList.toggle("open", +x.dataset.i === i);
+    }
+    if (focus) ctxSub.querySelector("button:not([disabled])")?.focus();
+  }
+
+  function closeSub() {
+    if (subOf < 0) return;
+    ctxSub.hidden = true;
+    subOf = -1;
+    subItems = [];
+    for (const x of ctx.querySelectorAll(".has-sub.open")) x.classList.remove("open");
+  }
+
+  // entries: { label, run, hint?, danger?, disabled?, checked? }, "-" for a divider, or { heading }.
+  function showCtx(x, y, entries) {
+    closeSub();
+    const list = tidyCtx(entries);
+    ctxItems = list;
+    ctx.innerHTML = ctxHtml(list);
     ctx.hidden = false;
     const r = ctx.getBoundingClientRect();
     ctx.style.left = Math.max(4, Math.min(x, innerWidth - r.width - 4)) + "px";
     ctx.style.top = Math.max(4, Math.min(y, innerHeight - r.height - 4)) + "px";
-    ctx.querySelector("button:not([disabled])")?.focus();
+    // The menu takes the keyboard, with no entry picked until the mouse or ↓ ↑ picks one.
+    ctx.focus({ preventScroll: true });
   }
 
   ctx.addEventListener("click", (e) => {
     const b = e.target.closest("button[data-i]");
     if (!b) return;
     const entry = ctxItems[+b.dataset.i];
+    // Opened from the keyboard (Enter, a click with no mouse), a submenu picks its first entry.
+    if (entry && entry.sub) { openSub(+b.dataset.i, e.detail === 0); return; }
     hideCtx();
     entry && entry.run && entry.run();
   });
-  ctx.addEventListener("keydown", (e) => {
-    const btns = [...ctx.querySelectorAll("button:not([disabled])")];
+  ctxSub.addEventListener("click", (e) => {
+    const b = e.target.closest("button[data-i]");
+    if (!b) return;
+    const entry = subItems[+b.dataset.i];
+    hideCtx();
+    entry && entry.run && entry.run();
+  });
+  // Hovering an entry opens its submenu, or closes the one open.
+  ctx.addEventListener("mouseover", (e) => {
+    const b = e.target.closest("button[data-i]");
+    if (!b || b.disabled) return;
+    if (ctxItems[+b.dataset.i]?.sub) openSub(+b.dataset.i); else closeSub();
+  });
+  const arrowKeys = (menu, e) => {
+    const btns = [...menu.querySelectorAll("button:not([disabled])")];
     const i = btns.indexOf(document.activeElement);
-    if (e.key === "ArrowDown" || e.key === "ArrowUp") {
+    e.preventDefault();
+    btns[(i + (e.key === "ArrowDown" ? 1 : -1) + btns.length) % btns.length]?.focus();
+  };
+  ctx.addEventListener("keydown", (e) => {
+    const b = document.activeElement?.closest?.("button[data-i]");
+    if (e.key === "ArrowDown" || e.key === "ArrowUp") arrowKeys(ctx, e);
+    else if (e.key === "ArrowRight" && b && ctxItems[+b.dataset.i]?.sub) { e.preventDefault(); openSub(+b.dataset.i, true); }
+    else if (e.key === "Escape") { e.stopPropagation(); hideCtx(); }
+  });
+  ctxSub.addEventListener("keydown", (e) => {
+    e.stopPropagation();
+    if (e.key === "ArrowDown" || e.key === "ArrowUp") arrowKeys(ctxSub, e);
+    else if (e.key === "ArrowLeft" || e.key === "Escape") {
       e.preventDefault();
-      btns[(i + (e.key === "ArrowDown" ? 1 : -1) + btns.length) % btns.length]?.focus();
-    } else if (e.key === "Escape") { e.stopPropagation(); hideCtx(); }
+      const i = subOf;
+      closeSub();
+      ctx.querySelector(`[data-i="${i}"]`)?.focus();
+    } else if (e.key === "Tab") hideCtx();
   });
   ctx.addEventListener("contextmenu", (e) => e.preventDefault());
-  document.addEventListener("pointerdown", (e) => { if (!ctx.contains(e.target)) hideCtx(); }, true);
+  ctxSub.addEventListener("contextmenu", (e) => e.preventDefault());
+  document.addEventListener("pointerdown", (e) => { if (!ctx.contains(e.target) && !ctxSub.contains(e.target)) hideCtx(); }, true);
   window.addEventListener("blur", hideCtx);
   window.addEventListener("resize", hideCtx);
   svg.addEventListener("wheel", hideCtx, { passive: true });
@@ -2187,10 +3183,10 @@
   function profileEntries(conns) {
     if (!doc.wireProfiles.length) return [];
     const cur = new Set(conns.map((c) => c.profile || ""));
-    return ["-", { heading: "Wire profile" }, ...doc.wireProfiles.map((p) => ({
+    return [{ label: "Wire profile", sub: tidyCtx([...offered(doc.wireProfiles, cur).map((p) => ({
       label: p.name, checked: cur.size === 1 && cur.has(p.id),
       run: () => { checkpoint(); assignProfile(conns, p.id); refresh(); },
-    }))];
+    })), "-", unfaved(doc.wireProfiles) && { label: "All wire profiles…", run: () => openProfPick("wire", conns.map((c) => c.id)) }]) }];
   }
 
   // What a named circuit's wire labels show unless a wire says otherwise: "name" or "dest".
@@ -2216,18 +3212,18 @@
   // each end. Wires in cables are drawn by their cable, and a cable running to a free end can't break.
   function drawOpts(kind) {
     return kind === "cable"
-      ? [["", `As for the drawing (${doc.settings.cables === "break" ? "broken" : "full length"})`], ["full", "Full length"], ["break", "Broken: a tail at each end"]]
-      : [["", `As for the drawing (${doc.settings.lines === "off" ? "stubs" : "a line"})`], ["line", "A line to the other end"], ["break", "Broken: a stub at each end"]];
+      ? [["", `Default (${doc.settings.cables === "break" ? "broken" : "full length"})`], ["full", "Full length"], ["break", "Broken: a tail at each end"]]
+      : [["", `Default (${{ off: "stubs", straight: "straight lines", curved: "curved lines" }[doc.settings.lines] || "a line"})`], ["straight", "Straight line"], ["curved", "Curved line"], ["break", "Broken: a stub at each end"]];
   }
   const breakable = (cb) => !cb.open || !!cb.portB;
 
   function drawEntries(list, kind) {
     if (!list.length) return [];
     const cur = new Set(list.map((x) => x.draw || ""));
-    return ["-", { heading: kind === "cable" ? "Draw cable" : "Draw wire" }, ...drawOpts(kind).map(([v, l]) => ({
+    return [{ label: kind === "cable" ? "Draw cable" : "Draw wire", sub: drawOpts(kind).map(([v, l]) => ({
       label: l, checked: cur.size === 1 && cur.has(v),
       run: () => { checkpoint(); for (const x of list) if (v) x.draw = v; else delete x.draw; refresh(); },
-    }))];
+    })) }];
   }
 
   // Per-wire label choice for wires in named circuits: as for the circuit, its name, or where the wire goes.
@@ -2237,16 +3233,17 @@
     if (!named.length) return [];
     const cur = new Set(named.map((c) => c.labelShow || ""));
     const set = (v) => () => { checkpoint(); for (const c of named) if (v) c.labelShow = v; else delete c.labelShow; refresh(); };
-    return ["-", { heading: "Label shows" }, ...[["", "As for the circuit"], ["name", "Circuit name"], ["dest", "Where it goes"]].map(([v, l]) => ({
+    return [{ label: "Label shows", sub: [["", "As for the circuit"], ["name", "Circuit name"], ["dest", "Where it goes"]].map(([v, l]) => ({
       label: l, checked: cur.size === 1 && cur.has(v), run: set(v),
-    }))];
+    })) }];
   }
 
   function cableProfileEntries(cb) {
-    return ["-", { heading: "Cable profile" }, ...doc.cableProfiles.map((p) => ({
+    return [{ label: "Cable profile", sub: tidyCtx([...offered(doc.cableProfiles, new Set([cb.profile])).map((p) => ({
       label: p.name, checked: cb.profile === p.id,
       run: () => { checkpoint(); applyCableProfile(cb, p); applyCableCores(cb, "all"); refresh(); },
-    })), { label: "From the cable library…", run: () => openCableLib([cb.id]) }];
+    })), "-", unfaved(doc.cableProfiles) && { label: "All cable profiles…", run: () => openProfPick("cable", [cb.id]) },
+    { label: "From the cable library…", run: () => openCableLib([cb.id]) }]) }];
   }
 
   function partEntries(it, term) {
@@ -2278,11 +3275,13 @@
       { label: `Repeat once ${rtl() ? "to the left" : "to the right"}`, run: () => repeatSideways(it.id, 1) },
       { label: "Rotate right", hint: "R", run: () => rotateSelection(1) },
       { label: "Rotate left", hint: "Shift+R", run: () => rotateSelection(-1) },
+      { label: "Group note", run: addGroupNote },
       "-",
       { label: `Select all ${tpl.name}`, run: () => selectSameType(it) },
     );
     if (tagPrefix(it.tag)) out.push({ label: `Select all “${tagPrefix(it.tag)}…”`, run: () => selectSamePrefix(it) });
     if (!term) out.push({ label: "New bus bar…", run: () => startBus(null) });
+    out.push(...moveToPageEntries());
     out.push("-", { label: "Delete", hint: "Del", danger: true, run: deleteSelection });
     return out;
   }
@@ -2312,7 +3311,9 @@
         { label: "Undo", hint: mod + "Z", disabled: !undoStack.length, run: undo },
         { label: "Redo", hint: mod + "Y", disabled: !redoStack.length, run: redo },
         "-",
-        { label: "Select all", hint: mod + "A", disabled: !doc.items.length, run: () => { sel = new Set(doc.items.map((i) => i.id)); refresh(); } },
+        { label: "Select all", hint: mod + "A", disabled: !pageItems().length, run: () => { sel = new Set(pageItems().map((i) => i.id)); refresh(); } },
+        "-",
+        { label: "Add a page", run: addPage },
         { label: "Fit to window", hint: "F", run: fit },
       ];
     }
@@ -2329,13 +3330,17 @@
       if (items.length) {
         out.push({ label: "Duplicate", hint: mod + "D", run: duplicateSelection }, { label: "Copy", hint: mod + "C", run: copySelection },
           { label: "Rotate right", hint: "R", run: () => rotateSelection(1) }, { label: "Rotate left", hint: "Shift+R", run: () => rotateSelection(-1) });
+        if (canLinkNote(items)) out.push({ label: "Link note to the selected items", run: linkNote });
+        else if (!items.some((i) => i.kind === "text")) out.push({ label: "Group note", run: addGroupNote });
         if (items.filter((i) => i.kind !== "text").length > 1) {
-          out.push("-", { label: "Pack side by side", run: () => alignSelection("pack") }, { label: "Align middles", run: () => alignSelection("middle") },
-            { label: "Align tops", run: () => alignSelection("top") }, { label: "Align bottoms", run: () => alignSelection("bottom") });
+          out.push({ label: "Align", sub: [{ label: "Pack side by side", run: () => alignSelection("pack") }, { label: "Align middles", run: () => alignSelection("middle") },
+            { label: "Align tops", run: () => alignSelection("top") }, { label: "Align bottoms", run: () => alignSelection("bottom") }] });
         }
       }
+      if (items.length) out.push(...moveToPageEntries());
       if (wires.length || bars.length) out.push("-", ...circuitMenu([...wires, ...bars].map((x) => x.id)));
       if (wires.length || cbs.length) out.push({ label: "Show only these wires", run: () => showOnlyWires(selectedWireIds()) });
+      out.push("-");
       if (wires.length) out.push(...drawEntries(wires.filter((c) => !cableOf(c.id)), "wire"), ...labelEntries(wires), ...profileEntries(wires));
       out.push(...drawEntries(cbs.filter(breakable), "cable"));
       out.push("-", { label: `Delete ${sel.size} items`, hint: "Del", danger: true, run: deleteSelection });
@@ -2343,12 +3348,22 @@
     }
     if (wires.length) {
       const c = wires[0];
+      // The end clicked: the one whose label was right-clicked, else the nearer one. Of the other end, the menu
+      // only offers to go to it.
+      const at = connEl && connEl.dataset.conn === c.id ? connEl.dataset.at : "";
+      const ends = ["a", "b"].filter((k) => termPoint(c[k]));
+      const here = ends.find((k) => c[k].item + "|" + c[k].term === at) || nearest(ends, (k) => endHere(c[k]) && termPoint(c[k]));
+      const there = ends.find((k) => k !== here);
       return [
         { heading: `Wire ${c.wire || ""}`.trim() },
+        here ? { label: `Move end at ${refOf(c[here])}…`, run: () => startReland(c.id, here) } : null,
+        there ? { label: `Go to other end (${refOf(c[there])}${pageNote(c[there].item)})`, run: () => goTo(c[there].item, termPoint(c[there])) } : null,
         ...circuitMenu([c.id]),
         { label: "Show only this wire", run: () => showOnlyWires([c.id]) },
         { label: "Swap ends", run: () => swapEnds(c) },
-        cableOf(c.id) ? (cableOf(c.id).open ? null : { label: `Take out of cable ${cableOf(c.id).label || ""}`.trim(), run: () => removeFromCable(c.id) }) : { label: "Bundle into a cable", run: () => bundleWires([c.id]) },
+        cableOf(c.id) ? (cableOf(c.id).open || cableSide(c, cableOf(c.id)) ? null
+          : { label: `Take out of cable ${cableOf(c.id).label || ""}`.trim(), run: () => removeFromCable(c.id) }) : { label: "Bundle into a cable", run: () => bundleWires([c.id]) },
+        "-",
         ...drawEntries(cableOf(c.id) ? [] : [c], "wire"),
         ...labelEntries([c]),
         ...profileEntries([c]),
@@ -2358,13 +3373,27 @@
     }
     if (cbs.length) {
       const cb = cbs[0];
-      const ends = cableEndInfo(cb);
+      const ends = cableEndInfo(cb), pts = cableEndPoints(cb);
+      // A part each end is on (a connector or a terminal), for which page it's on.
+      const endItem = ends.map((x) => (x.kind === "plug" ? x.port?.item : x.kind === "fan" ? x.terms[0]?.item : null));
+      // The end clicked: the one whose fan-out dot was right-clicked, else the nearer one on this page. Of
+      // the other end, the menu only offers to go to it.
+      const handle = cableEl && cableEl.dataset.cableHandle;
+      const i = handle ? (handle.endsWith("b") ? 1 : 0) : nearest([0, 1], (j) => (!endItem[j] || onPage(itemById(endItem[j])) ? pts[j] : null)) ?? 0;
+      const end = i ? "B" : "A", other = i ? "A" : "B";
+      const endMenu = (e, j) => ["-", { label: `End ${e}: ${endText(ends[j], cb)}`, sub: endActions(cb, e).map(([act, label]) => ({ label, run: () => runEndAction(cb, e, act) })) }];
+      // A free end isn't connected to anything, so there's nothing to go to: what can be done with it is
+      // shown as well, the clicked end first.
+      const free = ends.some((x) => x.kind === "free");
       return [
         { heading: `Cable ${cb.label || ""}`.trim() },
         cb.wires.length ? { label: cb.open ? "Select its cores" : "Select its wires", run: () => { sel = new Set(cb.wires); refresh(); } } : null,
-        { label: cb.open ? "Reset layout" : "Reset fan-out points", disabled: !(cb.pa || cb.pb), run: () => { checkpoint(); cb.pa = null; cb.pb = null; refresh(); } },
-        ...["A", "B"].flatMap((end, i) => ["-", { heading: `End ${end} · ${endText(ends[i], cb)}` },
-          ...endActions(cb, end).map(([act, label]) => ({ label, run: () => runEndAction(cb, end, act) }))]),
+        cb.wires.length ? { label: cb.open ? "Show only its cores" : "Show only its wires", run: () => showOnlyWires(cb.wires) } : null,
+        { label: cb.open ? "Reset layout" : "Reset fan-out points", disabled: !hasLayout(cb), run: () => { checkpoint(); resetLayout(cb); refresh(); } },
+        ...endMenu(end, i),
+        ...(free ? endMenu(other, 1 - i)
+          : [pts[1 - i] ? { label: `Go to end ${other} (${endText(ends[1 - i], cb)}${pageNote(endItem[1 - i])})`, run: () => goTo(endItem[1 - i], pts[1 - i]) } : null]),
+        "-",
         ...drawEntries(breakable(cb) ? [cb] : [], "cable"),
         ...cableProfileEntries(cb),
         "-",
@@ -2389,6 +3418,7 @@
         { label: "Fit to parts", run: () => fitRail(it) },
         { label: "Duplicate", hint: mod + "D", run: duplicateSelection },
         { label: "Copy", hint: mod + "C", run: copySelection },
+        ...moveToPageEntries(),
         "-",
         { label: "Delete rail", hint: "Del", danger: true, run: deleteSelection },
       ];
@@ -2397,8 +3427,13 @@
       return [
         { heading: "Text note" },
         { label: "Edit text", run: () => focusProp("text") },
+        { label: "Rotate right", hint: "R", run: () => rotateSelection(1) },
+        { label: "Rotate left", hint: "Shift+R", run: () => rotateSelection(-1) },
+        ...(noteLinks(it).length ? [{ label: `Select its ${plural(noteLinks(it).length, "item")}`, run: () => { sel = new Set(noteLinks(it).map((x) => x.id)); refresh(); } },
+          { label: "Unlink from its items", run: () => { checkpoint(); delete it.links; refresh(); } }] : []),
         { label: "Duplicate", hint: mod + "D", run: duplicateSelection },
         { label: "Copy", hint: mod + "C", run: copySelection },
+        ...moveToPageEntries(),
         "-",
         { label: "Delete note", hint: "Del", danger: true, run: deleteSelection },
       ];
@@ -2412,10 +3447,10 @@
     mouse = toWorld(e);
     if (busEdit) {
       showCtx(e.clientX, e.clientY, [
-        { heading: busEdit.kind === "cable" ? "Cable" : "Bus bar" },
+        { heading: busEdit.reland ? "Wire" : busEdit.kind === "cable" ? "Cable" : "Bus bar" },
         { label: "Done", hint: "Enter", disabled: !busReady(), run: finishBus },
-        busEdit.kind === "cable" ? null : { label: "Keep 1st, 3rd…", disabled: busEdit.terms.length < 3, run: () => alternateBus(0) },
-        busEdit.kind === "cable" ? null : { label: "Keep 2nd, 4th…", disabled: busEdit.terms.length < 3, run: () => alternateBus(1) },
+        busEdit.kind !== "bus" ? null : { label: "Keep 1st, 3rd…", disabled: busEdit.terms.length < 3, run: () => alternateBus(0) },
+        busEdit.kind !== "bus" ? null : { label: "Keep 2nd, 4th…", disabled: busEdit.terms.length < 3, run: () => alternateBus(1) },
         { label: "Cancel", hint: "Esc", run: cancelBus },
       ]);
       return;
@@ -2441,7 +3476,10 @@
     }
     const inField = /INPUT|TEXTAREA|SELECT/.test(e.target.tagName) || e.target.isContentEditable;
     const mod = e.ctrlKey || e.metaKey;
-    if (mod && e.key.toLowerCase() === "s") { e.preventDefault(); saveFile(); return; }
+    if (mod && e.key.toLowerCase() === "s") { e.preventDefault(); if (e.shiftKey) saveFileAs(); else saveFile(); return; }
+    if (mod && e.key.toLowerCase() === "o") { e.preventDefault(); $("fileInput").click(); return; }
+    if (mod && e.key.toLowerCase() === "p") { e.preventDefault(); openPrint(); return; }
+    if (mod && e.key.toLowerCase() === "f") { e.preventDefault(); findInLists(); return; }
     if (inField) return;
     const k = e.key;
     if (busEdit) {
@@ -2453,16 +3491,19 @@
     else if (mod && (k.toLowerCase() === "y" || (k.toLowerCase() === "z" && e.shiftKey))) { e.preventDefault(); redo(); }
     else if (mod && k.toLowerCase() === "d") { e.preventDefault(); duplicateSelection(); }
     else if (mod && k.toLowerCase() === "c") { copySelection(); }
+    else if (mod && k.toLowerCase() === "x") { e.preventDefault(); cutSelection(); }
     else if (mod && k.toLowerCase() === "v") { e.preventDefault(); paste(); }
     else if (mod && k.toLowerCase() === "a") { e.preventDefault(); sel = new Set(selectableAll()); refresh(); }
     else if (k === "Delete" || k === "Backspace") { e.preventDefault(); deleteSelection(); }
     else if (k === "Escape") {
-      if (pending) { pending = null; setHint(""); renderCanvas(); }
+      if (measure && !drag) { measure = null; setHint(""); renderOverlay(); }
+      else if (pending) { pending = null; setHint(""); renderCanvas(); }
       else if (selFilter) setSelFilter(null); // keeps what was selected with it
       else if (sel.size) { sel.clear(); refresh(); }
     }
     else if ((k === "v" || k === "V") && !mod) setTool("select");
     else if ((k === "w" || k === "W") && !mod) setTool("wire");
+    else if ((k === "m" || k === "M") && !mod) setTool("measure");
     else if (k === "r" || k === "R") rotateSelection(e.shiftKey ? -1 : 1);
     else if ((k === "f" || k === "F") && !mod) fit();
     else if (k === "?") openHelp();
@@ -2563,6 +3604,12 @@
 
   function busEditProps() {
     if (busEdit.land) return landingProps();
+    if (busEdit.reland) {
+      const c = connById(busEdit.reland.id), end = busEdit.reland.end;
+      return head("Wire", esc(`Move an end of ${c?.wire || "the wire"}`), "Click the terminal this end of the wire goes to instead. Its other end stays where it is.") + `<div class="picked">
+        ${c ? `<p>${colorChip(c.color, c.stripe)}${esc(refOf(c[end === "a" ? "b" : "a"]))} → <s class="muted">${esc(refOf(c[end]))}</s> → <span class="muted">…</span></p>` : ""}
+        <div class="btn-row"><button data-act="busCancel">Cancel (Esc)</button></div></div>`;
+    }
     const refs = busEdit.terms.map((k) => refOf(termKeyParts(k)));
     const cable = busEdit.kind === "cable";
     const cb = cable && busEdit.id && cableById(busEdit.id);
@@ -2571,15 +3618,29 @@
       return head("Cable", esc(`Plug in end ${busEdit.end} of ${name}`), "Click the cable connector (socket) this end plugs into.") + `<div class="picked">
         <div class="btn-row"><button data-act="busCancel">Cancel (Esc)</button></div></div>`;
     }
+    if (busEdit.connect) {
+      const c = connById(busEdit.connect), side = cableSide(c, cb);
+      return head("Cable", esc(`Connect core ${coreNumbers(cb).get(busEdit.connect) || ""} of ${name}`), "Click the terminal this core goes to at the end of the cable it isn't connected at, so it's connected through.") + `<div class="picked">
+        ${c && side ? `<p>${colorChip(c.color, c.stripe)}${esc(c.wire || "—")}: ${esc(refOf(c[side === "a" ? "b" : "a"]))} → <span class="muted">…</span></p>` : ""}
+        <div class="btn-row"><button data-act="busCancel">Cancel (Esc)</button></div></div>`;
+    }
     const title = cable ? (busEdit.fan && !busEdit.adding ? `Fan out end ${busEdit.end} of ${name}` : cb ? "Add cores to " + name : "New cable") : busEdit.id ? "Edit bus bar " + (busById(busEdit.id)?.label || "") : "New bus bar";
-    const sub = busEdit.fan
+    const pc = cable && pickCores();
+    const sub = pc
+      ? "Click a terminal for each core you use. Each gets the next core shown at the top: pick another core there, or Skip to leave one spare. Change a terminal's core below; picking a core another terminal has swaps them."
+      : busEdit.fan
       ? "Click the terminals the cable's cores land on at this end, in core order, or drag along a row."
       : cable
       ? "Click the terminals the cable's cores go to, in core order, or drag along a row, and any cable connector it plugs into. Its other end can be plugged in, fanned out or left free once it's made."
       : "Click terminals or bus bar slots (the small squares in the middle of terminal blocks) to add or remove them, or drag along a row to sweep them in.";
     const min = cable ? 1 : 2;
+    const coreRows = pc && busEdit.terms.map((k) => `<tr><td>${esc(refOf(termKeyParts(k)))}</td><td><select class="core-pick" data-core-of="${esc(k)}" title="The core that lands on this terminal">${coreOptions(pc, busEdit.coreOf[k], (n) => pc.onCable.has(n))}</select></td><td class="x"><button class="icon-btn" data-unpick="${esc(k)}" title="Take this terminal off">${ic("x", "sm")}</button></td></tr>`).join("");
+    const spare = pc && pc.defs.map((_, i) => i + 1).filter((n) => pc.free(n));
     return head(cable ? "Cable" : "Bus bar", esc(title), sub) + `<div class="picked">
-      ${refs.length ? `<p><b>${plural(refs.length, cable ? "core" : "terminal")}</b></p><p class="ref-list">${esc(refs.join(", "))}</p>` : '<p class="muted">No terminals picked yet.</p>'}
+      ${pc ? (refs.length ? `<p><b>${plural(refs.length, "core")}</b></p><table class="term-list">${coreRows}</table>` : '<p class="muted">No terminals picked yet.</p>')
+        + (pc.onCable.size ? `<p class="hint-text">Already on the cable: ${plural(pc.onCable.size, "core")} (${[...pc.onCable].sort((a, b) => a - b).join(", ")}).</p>` : "")
+        + `<p class="hint-text">${spare.length ? `Spare: ${spare.length === pc.defs.length ? "all its cores" : plural(spare.length, "core") + " (" + spare.join(", ") + ")"}.` : `All ${plural(pc.defs.length, "core")} of its profile are used.`}</p>`
+      : refs.length ? `<p><b>${plural(refs.length, cable ? "core" : "terminal")}</b></p><p class="ref-list">${esc(refs.join(", "))}</p>` : '<p class="muted">No terminals picked yet.</p>'}
       ${!cable && refs.length > 2 ? `<div class="field"><span>Bridge every other one</span><div class="btn-row tight">
         <button class="small" data-act="busAlt0" title="Keep the 1st, 3rd, 5th… along the row">Keep 1st, 3rd…</button>
         <button class="small" data-act="busAlt1" title="Keep the 2nd, 4th, 6th… along the row">Keep 2nd, 4th…</button>
@@ -2592,12 +3653,32 @@
 
   // Landing a one-ended cable's other end: each core with the terminal picked for it so far.
   function landingProps() {
+    if (busEdit.move) return moveEndProps();
     const cb = cableById(busEdit.id);
-    const cores = freeCores(cb || { wires: [] }), picked = busEdit.terms.map(termKeyParts);
-    const rows = cores.map((k, i) => `<tr${i === picked.length ? ' class="next"' : ""}><td>${colorChip(k.c.color, k.c.stripe)}${esc(k.c.wire || "—")}</td><td>${esc(refOf(k.near))} → ${picked[i] ? esc(refOf(picked[i])) : '<span class="muted">…</span>'}</td></tr>`).join("");
-    const sub = "Click the terminal each core goes to, in core order, or drag along a row. Click a picked terminal again to take it off. The cable then has both ends on the drawing.";
+    const plan = landingPlan(), next = plan.find((k) => k.to === undefined);
+    const rows = plan.map((k) => `<tr${k === next ? ' class="next"' : ""}><td>${colorChip(k.c.color, k.c.stripe)}${esc(k.c.wire || "—")}</td><td>${esc(refOf(k.near))} → ${k.to ? esc(refOf(k.to)) : k.to === null ? '<span class="nc">not connected</span>' : '<span class="muted">…</span>'}</td>
+      <td class="x"><button class="small" data-land-skip="${esc(k.c.id)}" title="${k.to === null ? "Connect this core at this end after all" : "Leave this core not connected at this end"}">${k.to === null ? "Use" : "Skip"}</button></td></tr>`).join("");
+    const sub = "Click the terminal each core goes to, in core order, or drag along a row. Skip a core to leave it not connected at this end. Click a picked terminal again to take it off. The cable then has both ends on the drawing.";
+    const picked = plan.filter((k) => k.to).length, skipped = plan.filter((k) => k.to === null).length;
     return head("Cable", esc("Other end of " + (cb?.label || "cable")), sub) + `<div class="picked">
-      <p><b>${picked.length} of ${plural(cores.length, "core")}</b></p>
+      <p><b>${picked} of ${plural(plan.length, "core")}</b>${skipped ? ` · ${skipped} not connected` : ""}</p>
+      <table class="term-list">${rows}</table>
+      <div class="btn-row">
+        <button data-act="busDone" class="primary"${busReady() ? "" : " disabled"}>Done (Enter)</button>
+        <button data-act="busCancel">Cancel (Esc)</button>
+      </div></div>`;
+  }
+
+  // Moving an end of a cable: each core at that end with where it's moving to so far.
+  function moveEndProps() {
+    const cb = cableById(busEdit.id);
+    const plan = landingPlan(), next = plan.find((k) => k.to === undefined);
+    const rows = plan.map((k) => `<tr${k === next ? ' class="next"' : ""}><td>${colorChip(k.c.color, k.c.stripe)}${esc(k.c.wire || "—")}</td><td>${k.to ? `<s class="muted">${esc(refOf(k.from))}</s> → ${esc(refOf(k.to))}` : `${esc(refOf(k.from))}${k.to === null ? ' <span class="muted">(stays)</span>' : ' → <span class="muted">…</span>'}`}</td>
+      <td class="x"><button class="small" data-land-skip="${esc(k.c.id)}" title="${k.to === null ? "Move this core after all" : "Leave this core where it is"}">${k.to === null ? "Move" : "Keep"}</button></td></tr>`).join("");
+    const sub = "Click the terminal each core moves to, in core order, or drag along a row. Keep a core to leave it where it is; cores not picked when you click Done stay too. Click a picked terminal again to take it off. The other end of the cable stays where it is.";
+    const moved = plan.filter((k) => k.to).length;
+    return head("Cable", esc(`Move end ${busEdit.move} of ${cb?.label || "cable"}`), sub) + `<div class="picked">
+      <p><b>${moved} of ${plural(plan.length, "core")}</b> moving</p>
       <table class="term-list">${rows}</table>
       <div class="btn-row">
         <button data-act="busDone" class="primary"${busReady() ? "" : " disabled"}>Done (Enter)</button>
@@ -2664,7 +3745,8 @@
       return { t, refs: refs.join("<br>") };
     }).map(({ t, refs }) => {
       const label = isSlot(t) ? "" : `<input type="text" class="term-label" data-tl="${esc(t.id)}" list="netList" value="${esc(it.termLabels?.[t.id] || "")}" placeholder="Connector label" title="Name the circuit at this terminal, e.g. +24V. Terminals with the same label are connected.">`;
-      return `<tr><td>${esc(t.name)}</td><td>${label}${refs || (isSlot(t) ? '<span class="muted">Bus bar slot</span>' : "")}</td></tr>`;
+      const desc = String(t.desc || "").trim();
+      return `<tr><td>${esc(t.name)}${desc ? `<br><span class="muted">${esc(desc)}</span>` : ""}</td><td>${label}${refs || (isSlot(t) ? '<span class="muted">Bus bar slot</span>' : "")}</td></tr>`;
     }).join("");
     const prefix = tagPrefix(it.tag);
     const sub = `${esc(tpl.name)} · ${r3(b.w)} × ${r3(b.h)} mm${it.rot ? ` · rotated ${it.rot}°` : ""}${isLoose(tpl) ? " · loose" : ""}`;
@@ -2701,12 +3783,16 @@
   function textProps(it) {
     const first = String(it.text || "").split("\n")[0].trim();
     return head("Text note", esc(first.length > 40 ? first.slice(0, 40) + "…" : first || "Note"), "",
-      actBtn("dup", "copy", "Duplicate (Ctrl+D)") + sepEl + actBtn("delete", "trash", "Delete (Del)"))
+      actBtn("rotL", "rot-l", "Rotate left (Shift+R)") + actBtn("rotR", "rot-r", "Rotate right (R)") + actBtn("dup", "copy", "Duplicate (Ctrl+D)") + sepEl + actBtn("delete", "trash", "Delete (Del)"))
       + body(section("text.main", "Note", `
         ${field("Text", area("text", it.text, 4))}
         <div class="row2">${field("Size (mm)", num("size", it.size, 0.5, 'min="0.5"'))}${field("Colour", inp("color", it.color || "#1d2126", "color"))}</div>
-        ${chk("bold", it.bold, "Bold")}
-        <div class="row2">${field("X (mm)", num("x", it.x))}${field("Y (mm)", num("y", it.y))}</div>`));
+        <div class="row2">${field("Angle (°)", num("rot", +it.rot || 0, 15, 'title="Clockwise. R and Shift+R turn it a quarter turn"'))}<div class="field"><span>&nbsp;</span>${chk("bold", it.bold, "Bold")}</div></div>
+        <div class="row2">${field("X (mm)", num("x", it.x))}${field("Y (mm)", num("y", it.y))}</div>`)
+        + (noteLinks(it).length ? section("text.group", "Group", `
+        <p class="hint-text">A bracket spans its ${plural(noteLinks(it).length, "item")} (${esc(noteLinks(it).map((x) => x.tag || (x.kind === "rail" ? "rail" : "part")).join(", "))}) on the side facing the note, with a line to it. Drag the note to another side to move the bracket there; dragging all its items takes the note along.</p>
+        <div class="field"><span>Bracket distance (mm)</span><div class="inline-row">${num("gap", it.gap === undefined ? 4 : it.gap, 0.5, 'min="0" title="How far out from the items the bracket is drawn"')}<button class="small" data-act="noteGap" title="Set the distance to just clear the items' wire labels on the bracket's side">Clear the labels</button></div></div>
+        <div class="btn-row"><button class="small" data-act="noteSelLinks">Select its items</button><button class="small" data-act="noteUnlink">Unlink</button></div>`) : ""));
   }
 
   function connProps(c) {
@@ -2714,7 +3800,9 @@
     const acts = actBtn("swap", "swap", "Swap From and To") + actBtn("selCircuit", "wire", "Select the whole circuit") + sepEl + actBtn("delete", "trash", "Delete wire (Del)");
     const cable = cb
       ? `<p style="margin:0 0 8px"><a class="link" data-conn-link="${esc(cb.id)}">${esc(cb.label || "Cable")}${cb.desc ? " · " + esc(cb.desc) : ""}</a>${c.mark ? ` · core marked ${esc(c.mark)}` : ""}</p>
-         ${cb.open ? '<p class="hint-text">This wire is a core of a cable whose other end isn’t fanned out. To draw it end to end, select the cable and use <i>Fan out to terminals…</i> on its other end.</p>' : '<div class="btn-row"><button class="small" data-act="cableRemove">Take out of cable</button></div>'}`
+         ${cb.open ? '<p class="hint-text">This wire is a core of a cable whose other end isn’t fanned out. To draw it end to end, select the cable and use <i>Fan out to terminals…</i> on its other end.</p>'
+           : cableSide(c, cb) ? '<p class="hint-text"><span class="nc">Not connected through</span>: this core is connected at one end of the cable only.</p><div class="btn-row"><button class="small" data-act="coreConnect" title="Pick the terminal it goes to at the end it isn\'t connected at">Connect through…</button><button class="small" data-act="cableRemove">Remove core</button></div>'
+           : '<div class="btn-row"><button class="small" data-act="cableRemove">Take out of cable</button></div>'}`
       : `<p class="hint-text">Not in a cable. To bundle several wires together, Shift-click them and use <i>Bundle into a cable</i>.</p>
          <div class="btn-row"><button class="small" data-act="cableNew" title="Draw this wire as a cable">${ic("cable", "sm")} Bundle into a cable</button></div>`;
     return head("Wire", esc(c.wire || "Wire"), `${esc(refOf(c.a))} ↔ ${esc(refOf(c.b))}`, acts) + body(
@@ -2741,9 +3829,17 @@
     return `<select data-k="${k}"${off ? ' disabled title="Green/yellow is already banded"' : ""}>${mixedOpt(value)}${opts.map(([v, l]) => `<option value="${esc(v)}"${(value || "") === v ? " selected" : ""}>${esc(l)}</option>`).join("")}</select>`;
   }
 
+  // Favourite profiles are offered in drop-downs and right-click menus, along with any in use (a Set of
+  // ids, cur); the rest are picked from all of them in the chooser.
+  const offered = (list, cur) => list.filter((p) => p.fav || cur.has(p.id));
+  const unfaved = (list) => list.some((p) => !p.fav);
+  const PICK_OPT = "__pick"; // a profile drop-down's "All … profiles…"
+
   // Profile picker; choosing one assigns it to the selected wire(s). "mixed" shows when selected wires differ.
   function profileSelect(current, mixed) {
-    const opts = (mixed ? [["__mixed", "(mixed)"]] : []).concat([["", "Custom (no profile)"]], doc.wireProfiles.map((p) => [p.id, profileLabel(p)]));
+    const cur = mixed ? new Set() : new Set([current || ""]);
+    const opts = (mixed ? [["__mixed", "(mixed)"]] : []).concat([["", "Custom (no profile)"]], offered(doc.wireProfiles, cur).map((p) => [p.id, profileLabel(p)]),
+      unfaved(doc.wireProfiles) ? [[PICK_OPT, "All wire profiles…"]] : []);
     return `<select data-pf="assign">${opts.map(([v, l]) => `<option value="${esc(v)}"${(mixed ? v === "__mixed" : v === (current || "")) ? " selected" : ""}>${esc(l)}</option>`).join("")}</select>`;
   }
 
@@ -2785,16 +3881,20 @@
   // One end of a cable (from cableEndInfo) in a few words: the connector it's plugged into, the parts its
   // cores land on, or where its free end goes (given the cable).
   function endText(e, cb) {
-    if (e.kind === "plug") return refOf(e.port);
-    if (e.kind === "fan") return [...new Set(e.terms.map((t) => refOf(t).split(doc.settings.termSep)[0]))].join(", ");
+    const more = (e.extra || []).map(refOf);
+    if (e.kind === "plug") return [refOf(e.port), ...more].join(", ");
+    if (e.kind === "fan") return [...more, ...new Set(e.terms.map((t) => refOf(t).split(doc.settings.termSep)[0]))].join(", ");
     return (cb && cb.to) || "not drawn";
   }
 
   const cableProfileById = (id) => (id ? doc.cableProfiles.find((p) => p.id === id) : null);
   const CABLE_LIB_OPT = "__lib"; // the cable profile drop-down's "From the cable library…"
 
+  const cableProfileLabel = (p) => [p.name, p.desc].filter(Boolean).join(" — ");
+
   function cableProfileSelect(current) {
-    const opts = [["", "Custom (no profile)"], ...doc.cableProfiles.map((p) => [p.id, [p.name, p.desc].filter(Boolean).join(" — ")]), [CABLE_LIB_OPT, "From the cable library…"]];
+    const opts = [["", "Custom (no profile)"], ...offered(doc.cableProfiles, new Set([current])).map((p) => [p.id, cableProfileLabel(p)]),
+      ...(unfaved(doc.cableProfiles) ? [[PICK_OPT, "All cable profiles…"]] : []), [CABLE_LIB_OPT, "From the cable library…"]];
     return `<select data-cpf="assign">${mixedOpt(current)}${opts.map(([v, l]) => `<option value="${esc(v)}"${current === v ? " selected" : ""}>${esc(l)}</option>`).join("")}</select>`;
   }
 
@@ -2805,18 +3905,37 @@
     const [endA, endB] = ends.map((e) => endText(e, cb));
     const defs = profileCores(cb);
     const prof = cableProfileById(cb.profile);
-    const rows = ws.map((c) => `<tr><td>${colorChip(c.color, c.stripe)}<a data-conn-link="${esc(c.id)}">${esc(c.wire || "—")}</a>${c.mark ? ` <span class="muted">${esc(c.mark)}</span>` : ""}</td><td>${cb.open ? `${esc(refOf(c.a.item === cb.id ? c.a : c.b))} → ${esc(refOf(near(c)))}` : `${esc(refOf(c.a))} ↔ ${esc(refOf(c.b))}`}</td><td class="x"><button class="icon-btn" data-core="${esc(c.id)}" title="${cb.open ? "Remove this core" : "Take this wire out of the cable"}">${ic("x", "sm")}</button></td></tr>`).join("");
-    const reset = `<button class="small" data-act="cableReset" title="Put the ${cb.open ? "fan-out and end points" : "fan-out points"} back where they're worked out automatically"${cb.pa || cb.pb ? "" : " disabled"}>${cb.open ? "Reset layout" : "Reset fan-out points"}</button>`;
+    const num = coreNumbers(cb);
+    const corePick = (c) => (defs.length ? `<select class="core-pick" data-core-num="${esc(c.id)}" title="Which of its profile's cores this is. Picking one another wire has swaps them">${Array.from({ length: Math.max(defs.length, num.get(c.id)) }, (_, i) => i + 1).map((n) => `<option value="${n}"${n === num.get(c.id) ? " selected" : ""}>${esc(coreLabel(defs, n))}</option>`).join("")}</select>` : "");
+    // A bundle's wires each say whether they're connected through, or at one end of the cable only: picking
+    // one end unhooks the wire at the other, and picking "Both ends" again asks for a terminal there.
+    const sides = cb.open ? {} : bundleSides(cb);
+    const endOf = (c) => { const side = cableSide(c, cb); return side ? ((sides[c.id] || "a") === side ? "A" : "B") : ""; };
+    const through = (c) => {
+      const off = endOf(c);
+      return `<select class="core-pick" data-core-thru="${esc(c.id)}" title="Which ends of the cable this wire is connected at. At one end only, it's not connected through">${[["", "Both ends"], ["A", "End B only"], ["B", "End A only"]].map(([v, l]) => `<option value="${v}"${v === off ? " selected" : ""}>${l}</option>`).join("")}</select>`;
+    };
+    const route = (c) => {
+      if (cb.open) return `${esc(refOf(c.a.item === cb.id ? c.a : c.b))} → ${esc(refOf(near(c)))}`;
+      if (!cableSide(c, cb)) return `${esc(refOf(c.a))} ↔ ${esc(refOf(c.b))}`;
+      return `${esc(refOf(near(c)))} → <span class="nc" title="This core isn't connected at end ${endOf(c)} of the cable">not connected through</span>`;
+    };
+    // Its drop-downs go on a line of their own under each wire, where they have room.
+    const picks = (c) => (defs.length || !cb.open ? `<tr class="core-ctl"><td colspan="2"><div class="core-ctl-row">${corePick(c)}${cb.open ? "" : through(c)}</div></td><td></td></tr>` : "");
+    const rows = coreOrder(cb).map((c) => `<tr><td>${colorChip(c.color, c.stripe)}<a data-conn-link="${esc(c.id)}">${esc(c.wire || "—")}</a>${c.mark ? ` <span class="muted">${esc(c.mark)}</span>` : ""}</td><td>${route(c)}</td><td class="x"><button class="icon-btn" data-core="${esc(c.id)}" title="${cb.open || cableSide(c, cb) ? "Remove this core" : "Take this wire out of the cable"}">${ic("x", "sm")}</button></td></tr>${picks(c)}`).join("");
+    const unhooked = cb.open ? 0 : ws.filter((c) => cableSide(c, cb)).length;
+    const reset = `<button class="small" data-act="cableReset" title="Put the ${cb.open ? "fan-out and end points" : "fan-out points"} back where they're worked out automatically"${hasLayout(cb) ? "" : " disabled"}>${cb.open ? "Reset layout" : "Reset fan-out points"}</button>`;
     const both = ends[1].kind !== "free"; // two drawn ends, rather than one end and where it goes
     const sub = (ws.length ? plural(ws.length, "core") + " · " : "") + `${esc(endA)} ${!both && !cb.to ? "· other end not drawn" : (both ? "↔ " : "→ ") + esc(endB)}`;
     const acts = (ws.length ? actBtn("cableSelect", "wire", cb.open ? "Select its cores" : "Select its wires") : "")
       + sepEl + actBtn("cableDelete", "trash", cb.open ? "Delete cable" : "Delete cable and wires");
     // Each end: plugged into a connector, fanned out to terminals, or free, and what it can change to.
     const KIND = { plug: "plugged into", fan: "fans out to", free: "free, goes to" };
-    const endField = (end, e) => `<div class="field"><span>End ${end} · ${KIND[e.kind]}</span><p class="ref-list">${esc(e.kind === "free" ? cb.to || "—" : endText(e, cb))}</p>
+    const kindOf = (e) => (e.extra.length ? (e.kind === "fan" ? "connectors and cores" : "plugged into") : KIND[e.kind]);
+    const endField = (end, e) => `<div class="field"><span>End ${end} · ${kindOf(e)}</span><p class="ref-list">${esc(e.kind === "free" ? cb.to || "—" : endText(e, cb))}</p>
         <div class="btn-row tight">${endActions(cb, end).map(([act, label, title]) => `<button class="small" data-endact="${end}|${act}" title="${esc(title)}">${esc(label)}</button>`).join("")}</div></div>`;
     const endsSec = section("cable.ends", "Ends", `${endField("A", ends[0])}${endField("B", ends[1])}
-        <p class="hint-text">Each end of a cable can be plugged into a cable connector, fan out into cores that land on terminals, or be left free, running off the drawing.${ws.length ? "" : defs.length ? " A cable with no end fanned out doesn't draw its cores; the ones its profile lists are below." : " A cable with no end fanned out doesn't draw its cores: describe them with its type, e.g. Cat6 4×2×AWG24, or list them in its cable profile."}</p>`);
+        <p class="hint-text">Each end of a cable can be plugged into a cable connector, fan out into cores that land on terminals, or be left free, running off the drawing. <i>Add a connector…</i> plugs an end into more connectors as well, e.g. a motor cable's power and encoder plugs and two loose cores at the drive end.${ws.length ? "" : defs.length ? " A cable with no end fanned out doesn't draw its cores; the ones its profile lists are below." : " A cable with no end fanned out doesn't draw its cores: describe them with its type, e.g. Cat6 4×2×AWG24, or list them in its cable profile."}</p>`);
     return head("Cable", esc(cb.label || "Cable"), sub, acts) + body(
       section("cable.main", "Cable", `
         ${field("Label", inp("label", cb.label, "text", 'placeholder="e.g. C1"'))}
@@ -2833,6 +3952,7 @@
         <table class="term-list">${defs.map((k, i) => `<tr><td>${colorChip(k.color, k.stripe)}${i + 1}</td><td>${esc(coreText(k))}</td></tr>`).join("")}</table>
         <p class="hint-text">The cores its profile lists. They aren't drawn while no end of the cable fans out.</p>`, defs.length) : "") : section("cable.cores", cb.open ? "Cores" : "Wires", `
         <table class="term-list">${rows}</table>
+        ${unhooked ? `<p class="hint-text">${plural(unhooked, "core")} ${unhooked === 1 ? "is" : "are"} connected at one end only: not connected through.</p>` : ""}
         ${defs.length && defs.length !== ws.length ? `<p class="hint-text">Its profile lists ${plural(defs.length, "core")}; ${plural(ws.length, cb.open ? "core is" : "wire is", cb.open ? "cores are" : "wires are")} drawn.</p>` : ""}
         <p class="hint-text">${cb.open
           ? "Each core is a wire: click one to set its colour, size or profile. Fan out the other end too and they join up end to end. Drag the orange dots to move where the cores fan out and where the cable ends."
@@ -2898,7 +4018,7 @@
       const ink = same(notes, (it) => it.color || "#1d2126");
       s += section("multi.notes", "Text notes", grp("text", `
         <div class="row2">${field("Size (mm)", num("size", same(notes, "size"), 0.5, 'min="0.5"'))}${field("Colour", inp("color", ink === MIXED ? notes[0].color || "#1d2126" : ink, "color"))}</div>
-        ${chk("bold", same(notes, (it) => !!it.bold), "Bold")}`), notes.length);
+        <div class="row2">${field("Angle (°)", num("rot", same(notes, (it) => +it.rot || 0), 15, 'title="Clockwise"'))}<div class="field"><span>&nbsp;</span>${chk("bold", same(notes, (it) => !!it.bold), "Bold")}</div></div>`), notes.length);
     }
     return s;
   }
@@ -2918,6 +4038,11 @@
         ${wires && !cbs.length ? `<div class="btn-row"><button class="small" data-act="cableNew" title="Group these wires into a cable, drawn as one sheath that fans out to each terminal">${ic("cable", "sm")} Bundle ${plural(wires, "wire")} into a cable</button></div>` : ""}
         ${circuitButtons(ids.filter((id) => isConn(id) || busById(id)))}
         ${wires || cbs.length ? `<div class="btn-row"><button class="small" data-act="showOnly" title="Hide every other wire on the drawing until you choose Show all">Show only these wires</button></div>` : ""}`);
+    }
+    {
+      const its = ids.map(itemById).filter(Boolean);
+      if (canLinkNote(its)) s += section("multi.note", "Group note", `<div class="btn-row"><button class="small primary" data-act="linkNote" title="Draw the note's bracket around the other selected items">Link note to the selected items</button></div>`);
+      else if (its.length && !its.some((i) => i.kind === "text")) s += section("multi.note", "Group note", `<div class="btn-row"><button class="small" data-act="groupNote" title="A note above these items, with a bracket spanning them">${ic("note", "sm")} Add a group note</button></div>`);
     }
     if (items > 1) {
       s += section("multi.arrange", "Arrange", `
@@ -2965,17 +4090,20 @@
     if (chain > 1 && chain < wired) out.push({ mode: "chain", n: chain, label: "Select daisy chain", title: "Only the wires and bus bars joined at the same terminals, not those on the far side of a terminal block or inside other parts" });
     return out;
   }
-  const circuitMenu = (ids) => circuitChoices(ids).map((k) => ({ label: k.label, run: () => selectCircuit(k.mode) }));
+  const circuitMenu = (ids) => {
+    const ks = circuitChoices(ids).map((k) => ({ label: `${k.label} (${k.n})`, run: () => selectCircuit(k.mode) }));
+    return ks.length > 1 ? [{ label: "Select circuit", sub: ks }] : ks;
+  };
   const circuitButtons = (ids) => `<div class="btn-row">${circuitChoices(ids).map((k) => `<button class="small" data-act="selReach" data-reach="${k.mode}" title="${esc(k.title)}">${esc(k.label)} (${k.n})</button>`).join("")}</div>`;
 
   function selectSameType(it) {
-    sel = new Set(doc.items.filter((i) => i.kind === "part" && i.tpl === it.tpl).map((i) => i.id));
+    sel = new Set(pageItems().filter((i) => i.kind === "part" && i.tpl === it.tpl).map((i) => i.id));
     refresh();
   }
 
   function selectSamePrefix(it) {
     const p = tagPrefix(it.tag);
-    sel = new Set(doc.items.filter((i) => i.kind === "part" && tagPrefix(i.tag) === p).map((i) => i.id));
+    sel = new Set(pageItems().filter((i) => i.kind === "part" && tagPrefix(i.tag) === p).map((i) => i.id));
     refresh();
   }
 
@@ -3124,7 +4252,7 @@
     if (v === undefined || v === "__mixed") return;
     if (k === "settings.wireStd") {
       setWireStd(v);
-      toast(v === "us" ? "Wires switched to AWG and US colours" : "Wires switched to mm² and IEC colours");
+      toast(v === "us" ? "Wires switched to AWG and US colours, paper to Letter sizes" : "Wires switched to mm² and IEC colours, paper to A sizes");
       return;
     }
     // Swapping parts' type: fit each new part where the old one was, and let cables follow what moved.
@@ -3205,10 +4333,20 @@
   });
   props.addEventListener("change", (e) => {
     const el = e.target;
+    if (el.dataset.coreOf) { setPickedCore(el.dataset.coreOf, parseInt(el.value, 10)); return; }
+    if (el.dataset.coreNum) { setCoreNumber(el.dataset.coreNum, parseInt(el.value, 10)); return; }
+    if ("coreThru" in el.dataset) {
+      // A core not connected at one end is connected there first, to unhook it at the other end instead.
+      const id = el.dataset.coreThru;
+      if (cableSide(connById(id), cableOf(id))) { if (el.value) renderProps(); else startConnect(id); }
+      else if (el.value) disconnectCore(id, el.value);
+      return;
+    }
     if (el.dataset.cpf === "assign") {
       const { list } = editTargets(el), p = cableProfileById(el.value);
       if (!list.length || el.value === "__mixed") return;
       if (el.value === CABLE_LIB_OPT) { renderProps(); openCableLib(list.map((cb) => cb.id)); return; }
+      if (el.value === PICK_OPT) { renderProps(); openProfPick("cable", list.map((cb) => cb.id)); return; }
       checkpoint();
       for (const cb of list) if (p) { applyCableProfile(cb, p); applyCableCores(cb, "all"); } else cb.profile = "";
       refresh();
@@ -3216,6 +4354,7 @@
     }
     if (el.dataset.pf === "assign") {
       if (el.value === "__mixed") return;
+      if (el.value === PICK_OPT) { renderProps(); openProfPick("wire", [...sel].filter((id) => connById(id))); return; }
       checkpoint();
       assignProfile([...sel].map(connById).filter(Boolean), el.value);
       refresh();
@@ -3291,6 +4430,10 @@
     if (ea) { const cb = propsTarget(), [end, act] = ea.dataset.endact.split("|"); if (cb) runEndAction(cb, end, act); return; }
     const core = e.target.closest("[data-core]");
     if (core) { removeFromCable(core.dataset.core); return; }
+    const unpick = e.target.closest("[data-unpick]");
+    if (unpick) { toggleBusTerm(unpick.dataset.unpick); return; }
+    const landSkip = e.target.closest("[data-land-skip]");
+    if (landSkip) { skipLanding(landSkip.dataset.landSkip); return; }
     const b = e.target.closest("[data-act]");
     if (!b) return;
     const act = b.dataset.act;
@@ -3298,6 +4441,11 @@
     switch (act) {
       case "delete": deleteSelection(); break;
       case "dup": duplicateSelection(); break;
+      case "noteSelLinks": { const t = propsTarget(); if (t) { sel = new Set(noteLinks(t).map((x) => x.id)); refresh(); } break; }
+      case "noteGap": { const t = propsTarget(), ls = t ? noteLinks(t) : []; if (ls.length) { checkpoint(); t.gap = bracketGap(ls, bracketSide(t, groupBox(ls.map(boxOf)))); refresh(); } break; }
+      case "noteUnlink": { const t = propsTarget(); if (t) { checkpoint(); delete t.links; refresh(); } break; }
+      case "groupNote": addGroupNote(); break;
+      case "linkNote": linkNote(); break;
       case "rotL": rotateSelection(-1); break;
       case "rotR": rotateSelection(1); break;
       case "editTpl": editTemplate(tplOf(target), false); break;
@@ -3324,10 +4472,11 @@
       case "cableNew": bundleWires([...sel].filter(isConn)); break;
       case "cableAdd": bundleWires([...sel].filter(isConn), [...sel].find((id) => cableById(id))); break;
       case "cableRemove": removeFromCable(target.id); break;
+      case "coreConnect": startConnect(target.id); break;
       case "cableUnbundle": unbundle(target); break;
       case "cableDelete": deleteCableAndWires(target); break;
       case "cableSelect": sel = new Set(target.wires); refresh(); break;
-      case "cableReset": checkpoint(); target.pa = null; target.pb = null; refresh(); break;
+      case "cableReset": checkpoint(); resetLayout(target); refresh(); break;
       case "fitRail": fitRail(target); break;
     }
   });
@@ -3339,6 +4488,14 @@
     else if (act === "busCancel") cancelBus();
     else if (act === "busAlt0") alternateBus(0);
     else if (act === "busAlt1") alternateBus(1);
+    else if (act === "coreSkip") skipCore();
+    else if (act === "landSkip") skipLanding();
+  });
+  $("modeBar").addEventListener("change", (e) => {
+    if (!("nextCore" in e.target.dataset) || !busEdit) return;
+    busEdit.next = parseInt(e.target.value, 10);
+    renderModeBar();
+    renderProps();
   });
 
   $("titleInput").addEventListener("focus", () => { editCheckpointed = false; });
@@ -3369,6 +4526,7 @@
     $("profRows").innerHTML = doc.wireProfiles.map((p) => {
       const n = doc.connections.filter((c) => c.profile === p.id).length;
       return `<tr data-pid="${esc(p.id)}">
+        <td>${favBtn(p, "wire")}</td>
         <td><input data-f="name" type="text" value="${esc(p.name)}"></td>
         <td>${colorChip(p.color, p.stripe)}<select data-f="color">${colorOpts(p.color)}</select> <input data-f="color" type="color" value="${esc(p.color === "gy" ? "#2e9b3c" : p.color)}" title="Custom colour"></td>
         <td>${stripeSelect("", p.stripe, p.color === "gy").replace('data-k=""', 'data-f="stripe"')}</td>
@@ -3377,11 +4535,12 @@
         <td>${n}</td>
         <td><button class="icon-btn danger" data-pdel title="Delete profile">${ic("x", "sm")}</button></td>
       </tr>`;
-    }).join("") || '<tr><td colspan="7" class="muted" style="padding:10px">No profiles. Add one below.</td></tr>';
+    }).join("") || '<tr><td colspan="8" class="muted" style="padding:10px">No profiles. Add one below.</td></tr>';
     $("cprofRows").innerHTML = doc.cableProfiles.map((p) => {
       const n = doc.cables.filter((cb) => cb.profile === p.id).length;
       const ks = p.cores || [];
       return `<tr data-cpid="${esc(p.id)}">
+        <td>${favBtn(p, "cable")}</td>
         <td><input data-f="name" type="text" value="${esc(p.name)}"></td>
         <td>${colorChip(p.color)}<select data-f="color">${colorOpts(p.color)}</select> <input data-f="color" type="color" value="${esc(p.color === "gy" ? "#2e9b3c" : p.color)}" title="Custom colour"></td>
         <td><input data-f="desc" type="text" value="${esc(p.desc || "")}" placeholder="e.g. Cat6 S/FTP"></td>
@@ -3391,9 +4550,104 @@
         <td><button class="small${coresOpen.has(p.id) ? " on" : ""}" data-cores-toggle title="The cores this cable contains">${ks.length ? plural(ks.length, "core") : "Cores…"}</button></td>
         <td>${n}</td>
         <td><button class="icon-btn danger" data-cpdel title="Delete cable profile">${ic("x", "sm")}</button></td>
-      </tr>${coresOpen.has(p.id) ? `<tr class="cores-row" data-cores="${esc(p.id)}"><td colspan="9">${profileCoresTable(p, colorOpts)}</td></tr>` : ""}`;
-    }).join("") || '<tr><td colspan="9" class="muted" style="padding:10px">No cable profiles. Add one below.</td></tr>';
+      </tr>${coresOpen.has(p.id) ? `<tr class="cores-row" data-cores="${esc(p.id)}"><td colspan="10">${profileCoresTable(p, colorOpts)}</td></tr>` : ""}`;
+    }).join("") || '<tr><td colspan="10" class="muted" style="padding:10px">No cable profiles. Add one below.</td></tr>';
   }
+
+  // ---------- favourite profiles ----------
+  // Drop-downs and right-click menus offer only the favourite profiles (fav); the star beside a profile in
+  // the profiles dialog, the lists and the chooser makes it one or not.
+  function favBtn(p, kind) {
+    return `<button class="icon-btn star${p.fav ? " on" : ""}" data-fav="${kind}" data-favid="${esc(p.id)}" aria-pressed="${!!p.fav}" title="${p.fav
+      ? "A favourite: offered in the drop-downs and right-click menus. Click to take it off"
+      : "Make it a favourite, offered in the drop-downs and right-click menus"}">${ic("star", "sm")}</button>`;
+  }
+
+  function toggleFav(b) {
+    const p = b.dataset.fav === "cable" ? cableProfileById(b.dataset.favid) : profileById(b.dataset.favid);
+    if (!p) return;
+    checkpoint();
+    p.fav = !p.fav;
+    refresh();
+    if (!$("profModal").hidden) renderProfiles();
+    if (!$("profPick").hidden) renderProfPick();
+  }
+
+  // Picking from all of a drawing's profiles: "All wire profiles…" or "All cable profiles…" in a drop-down
+  // or right-click menu opens this for the wires or cables (pickFor: their kind and ids) it was opened for.
+  let pickFor = null;
+
+  function openProfPick(kind, ids) {
+    pickFor = { kind, ids };
+    $("profPickSearch").value = "";
+    renderProfPick();
+    $("profPick").hidden = false;
+    $("profPickSearch").focus();
+  }
+
+  const pickTargets = () => pickFor.ids.map(pickFor.kind === "cable" ? cableById : connById).filter(Boolean);
+
+  function renderProfPick() {
+    const cable = pickFor.kind === "cable";
+    const list = cable ? doc.cableProfiles : doc.wireProfiles;
+    const targets = pickTargets();
+    const cur = new Set(targets.map((x) => x.profile || ""));
+    const q = $("profPickSearch").value.trim().toLowerCase();
+    const noun = cable ? "cable" : "wire";
+    const who = targets.length === 1 ? `${noun} ${(cable ? targets[0].label : targets[0].wire) || ""}`.trim() : plural(targets.length, noun);
+    $("profPickTitle").textContent = cable ? "Cable profiles" : "Wire profiles";
+    $("profPickFor").innerHTML = `Picking a profile for <b>${esc(who)}</b>. The drop-downs and right-click menus offer only the favourites: click a star to add or remove one.`;
+    $("profPickLib").hidden = !cable;
+    const facts = (p) => cable
+      ? [p.desc, (p.cores || []).length && plural(p.cores.length, "core"), p.shield && "shielded", p.twisted && "twisted pairs"].filter(Boolean).join(" · ")
+      : [wireLookName(p.color, p.stripe), p.gauge, p.conductor].filter(Boolean).join(", ");
+    const match = list.filter((p) => !q || [p.name, facts(p), p.notes || ""].join(" ").toLowerCase().includes(q));
+    let s = "";
+    for (const [head, ps] of [["Favourites", match.filter((p) => p.fav)], ["Others", match.filter((p) => !p.fav)]]) {
+      if (!ps.length) continue;
+      s += `<h3 class="cable-lib-cat">${head}</h3>`;
+      for (const p of ps) {
+        const n = (cable ? doc.cables : doc.connections).filter((x) => x.profile === p.id).length;
+        const status = [cur.has(p.id) && (cur.size === 1 ? "Its profile now" : "Some of them have it"), n && `used by ${plural(n, noun)}`].filter(Boolean).join(" · ");
+        s += `<div class="lib-offer prof-offer${cur.has(p.id) ? " loaded" : ""}" data-ppid="${esc(p.id)}">
+          ${favBtn(p, pickFor.kind)}
+          <div class="meta">
+            <div class="name">${colorChip(p.color, cable ? "" : p.stripe)}${esc(p.name)}</div>
+            ${facts(p) ? `<div class="size">${esc(facts(p))}</div>` : ""}
+            ${status ? `<div class="status">${esc(status.charAt(0).toUpperCase() + status.slice(1))}</div>` : ""}
+          </div>
+          <div class="actions"><button class="small primary" data-puse title="Give it to the ${targets.length === 1 ? noun : noun + "s"}">Use</button></div>
+        </div>`;
+      }
+    }
+    $("profPickList").innerHTML = s || `<p class="muted">${list.length ? "No profiles match." : `This drawing has no ${noun} profiles yet.`}</p>`;
+  }
+
+  function useProfPick(id) {
+    const targets = pickTargets();
+    checkpoint();
+    if (pickFor.kind === "cable") {
+      const p = cableProfileById(id);
+      for (const cb of targets) { applyCableProfile(cb, p); applyCableCores(cb, "all"); }
+    } else assignProfile(targets, id);
+    $("profPick").hidden = true;
+    refresh();
+  }
+
+  $("profPickSearch").addEventListener("input", renderProfPick);
+  $("profPickSearch").addEventListener("keydown", (e) => {
+    // Enter uses the one profile the search leaves.
+    const rows = $("profPickList").querySelectorAll("[data-ppid]");
+    if (e.key === "Enter" && rows.length === 1) useProfPick(rows[0].dataset.ppid);
+  });
+  $("profPickList").addEventListener("click", (e) => {
+    const fb = e.target.closest("[data-fav]");
+    if (fb) { toggleFav(fb); return; }
+    const b = e.target.closest("[data-puse]");
+    if (b) useProfPick(b.closest("[data-ppid]").dataset.ppid);
+  });
+  $("profPickEdit").addEventListener("click", () => { $("profPick").hidden = true; openProfiles(pickFor.kind === "cable"); });
+  $("profPickLib").addEventListener("click", () => { $("profPick").hidden = true; openCableLib(pickFor.ids); });
 
   // The cores a cable profile lists, unfolded under its row in the dialog.
   const coresOpen = new Set();
@@ -3470,6 +4724,8 @@
     if (f === "color") renderProfiles();
   });
   $("cprofRows").addEventListener("click", (e) => {
+    const fb = e.target.closest("[data-fav]");
+    if (fb) { toggleFav(fb); return; }
     const tog = e.target.closest("[data-cores-toggle]");
     if (tog) {
       const id = tog.closest("tr").dataset.cpid;
@@ -3511,7 +4767,7 @@
   });
   $("cprofAdd").addEventListener("click", () => {
     checkpoint();
-    doc.cableProfiles.push({ id: uid("cp"), name: "New cable profile", color: "#1f1f1f", desc: "", shield: false, twisted: false, notes: "", cores: [] });
+    doc.cableProfiles.push({ id: uid("cp"), name: "New cable profile", color: "#1f1f1f", desc: "", shield: false, twisted: false, notes: "", cores: [], fav: true });
     renderProfiles();
     refresh();
     const inputs = $("cprofRows").querySelectorAll('[data-f="name"]');
@@ -3534,6 +4790,12 @@
     return p;
   }
 
+  // A profile replacing one in the drawing stays a favourite or not as that was; a new one is a favourite
+  // unless it says otherwise (one from a library file can).
+  function keepFav(p, old) {
+    p.fav = old ? !!old.fav : p.fav !== false;
+  }
+
   // Whether two cable profiles describe the same cable (ids aside).
   function sameCable(p, q) {
     const txt = (x, f) => x[f] || "";
@@ -3547,6 +4809,7 @@
   // Put a cable profile into the drawing, replacing the one with its id, and pass it on to its cables.
   function mergeCableProfile(p) {
     const i = doc.cableProfiles.findIndex((x) => x.id === p.id);
+    keepFav(p, doc.cableProfiles[i]);
     if (i >= 0) doc.cableProfiles[i] = p; else doc.cableProfiles.push(p);
     for (const cb of doc.cables) if (cb.profile === p.id) { applyCableProfile(cb, p); applyCableCores(cb); }
     return p;
@@ -3647,6 +4910,8 @@
     if (f === "color" || f === "stripe") renderProfiles(); // refresh the chip and colour name
   });
   $("profRows").addEventListener("click", (e) => {
+    const fb = e.target.closest("[data-fav]");
+    if (fb) { toggleFav(fb); return; }
     const b = e.target.closest("[data-pdel]");
     if (!b) return;
     const p = profileById(b.closest("tr").dataset.pid);
@@ -3660,7 +4925,7 @@
   });
   $("profAdd").addEventListener("click", () => {
     checkpoint();
-    doc.wireProfiles.push({ id: uid("wp"), name: "New profile", color: "#1f1f1f", gauge: convertGauge("18 AWG", doc.settings.wireStd), conductor: "Stranded" });
+    doc.wireProfiles.push({ id: uid("wp"), name: "New profile", color: "#1f1f1f", gauge: convertGauge("18 AWG", doc.settings.wireStd), conductor: "Stranded", fav: true });
     renderProfiles();
     refresh();
     const inputs = $("profRows").querySelectorAll('[data-f="name"]');
@@ -3698,6 +4963,7 @@
           ${field("Named circuits' labels show", sel_("settings.labelName", s.labelName, [["dest", "Where each wire goes"], ["circuit", "Circuit name"]]))}
         </div>
         ${chk("settings.labelWire", s.labelWire, "Wire names in labels (W3 → TB101-1)")}
+        ${chk("settings.labelPage", s.labelPage !== false, "Page names in labels for ends on another page (TB101-1 (Door))")}
         <div class="row2">
           ${field("Tag text height (mm)", num("settings.tagSize", s.tagSize, 0.1, 'min="0.5"'))}
           ${field("Label text height (mm)", num("settings.labelSize", s.labelSize, 0.1, 'min="0.5"'))}
@@ -3711,8 +4977,8 @@
           ${field("Wire standard", sel_("settings.wireStd", s.wireStd, Object.entries(WIRE_STANDARDS).map(([id, w]) => [id, w.name])))}
           ${field("Terminal reference", sel_("settings.termSep", s.termSep, [["-", "TB101-1"], [":", "TB101:1"], [".", "TB101.1"], ["/", "TB101/1"], [" ", "TB101 1"]]))}
         </div>
-        <p class="hint-text">Changing the wire standard converts existing wires and profiles to the nearest size, and line / neutral / earth wires to the new colours.</p>
-        <div class="btn-row"><button class="small" data-sact="profiles">${ic("edit", "sm")} Edit wire profiles…</button></div>
+        <p class="hint-text">Changing the wire standard converts existing wires and profiles to the nearest size, and line / neutral / earth wires to the new colours. It also switches the print paper between American (Letter, Tabloid…, margins in inches) and metric (A4, A3…, margins in mm).</p>
+        <div class="btn-row"><button class="small" data-sact="profiles">${ic("edit", "sm")} Edit wire profiles…</button><button class="small" data-sact="print">${ic("file", "sm")} Print settings…</button></div>
       </div>
       <div class="set-group">
         <h4>Building strips</h4>
@@ -3733,7 +4999,7 @@
     if (typing) { if (!setCheckpointed) { checkpoint(); setCheckpointed = true; } } else checkpoint();
     if (k === "settings.wireStd") {
       setWireStd(v);
-      toast(v === "us" ? "Wires switched to AWG and US colours" : "Wires switched to mm² and IEC colours");
+      toast(v === "us" ? "Wires switched to AWG and US colours, paper to Letter sizes" : "Wires switched to mm² and IEC colours, paper to A sizes");
     } else setPath(doc, k, v);
     refresh();
   }
@@ -3750,6 +5016,7 @@
     const b = e.target.closest("[data-act='dir'], [data-sact]");
     if (!b) return;
     if (b.dataset.sact === "profiles") { $("settingsModal").hidden = true; openProfiles(); return; }
+    if (b.dataset.sact === "print") { $("settingsModal").hidden = true; openPrint(); return; }
     checkpoint();
     doc.settings.direction = b.dataset.dir;
     refresh();
@@ -3761,9 +5028,9 @@
     return doc.connections.slice().sort((a, b) => natural(a.wire, b.wire));
   }
 
-  function partsSummary() {
+  function partsSummary(items = doc.items) {
     const groups = new Map();
-    for (const it of doc.items) {
+    for (const it of items) {
       if (it.kind !== "part") continue;
       const t = tplOf(it);
       if (!t) continue;
@@ -3807,64 +5074,68 @@
     $("btnListProfiles").hidden = drawerTab !== "profiles" && drawerTab !== "cprofiles";
     $("btnListCableLib").hidden = drawerTab !== "cprofiles";
     if ($("drawer").classList.contains("collapsed")) return; // filled in when it's opened
+    // With more than one page, the wires, cables, bus bars and parts lists say which page each is on.
+    const multi = doc.pages.length > 1;
+    const pageTh = multi ? "<th>Page</th>" : "";
+    const pageTd = (id) => (multi ? `<td>${esc(pagesText(id))}</td>` : "");
     if (drawerTab === "wires") {
       const rows = wireRows();
       const circ = circuitOf(doc, [...sel].filter((id) => isConn(id) || busById(id)));
       const names = circuitNames(doc);
-      body.innerHTML = `<table class="data-table"><thead><tr><th>Wire</th><th>From</th><th>To</th><th>Circuit</th><th>Colour</th><th>Size</th><th>Conductor</th><th>Profile</th><th>Cable</th><th>Notes</th></tr></thead><tbody>
+      body.innerHTML = `<table class="data-table"><thead><tr><th>Wire</th><th>From</th><th>To</th>${pageTh}<th>Circuit</th><th>Colour</th><th>Size</th><th>Conductor</th><th>Profile</th><th>Cable</th><th>Notes</th></tr></thead><tbody>
         ${rows.map((c) => `<tr data-sel="${esc(c.id)}" class="${sel.has(c.id) ? "sel" : circ.conns.has(c.id) ? "net" : ""}">
-          <td><b>${esc(c.wire)}</b></td><td>${esc(refOf(c.a))}</td><td>${esc(refOf(c.b))}</td><td>${esc(names.conn.get(c.id) || "")}</td>
+          <td><b>${esc(c.wire)}</b></td><td>${esc(refOf(c.a))}</td><td>${esc(refOf(c.b))}</td>${pageTd(c.id)}<td>${esc(names.conn.get(c.id) || "")}</td>
           <td>${colorChip(c.color, c.stripe)}${esc(wireLookName(c.color, c.stripe))}</td><td>${esc(c.gauge)}</td><td>${esc(c.conductor || "")}</td><td>${esc(profileById(c.profile)?.name || "")}</td><td>${esc(cableOf(c.id)?.label || "")}</td><td>${esc(c.notes)}</td></tr>`).join("")
-        || '<tr><td colspan="10" class="empty">No wires yet. Drag from one terminal to another to add one.</td></tr>'}
+        || `<tr><td colspan="${multi ? 11 : 10}" class="empty">No wires yet. Drag from one terminal to another to add one.</td></tr>`}
       </tbody></table>`;
     } else if (drawerTab === "cables") {
-      body.innerHTML = `<table class="data-table"><thead><tr><th>Cable</th><th>Type</th><th>Profile</th><th>From</th><th>To</th><th>Cores</th><th>Notes</th></tr></thead><tbody>
+      body.innerHTML = `<table class="data-table"><thead><tr><th>Cable</th><th>Type</th><th>Profile</th><th>From</th><th>To</th>${pageTh}<th>Cores</th><th>Notes</th></tr></thead><tbody>
         ${cableRows().map((cb) => {
           const [a, b] = cableEnds(cb);
           const type = [cb.desc, cb.shield && "shielded", cb.twisted && "twisted pairs"].filter(Boolean).join(", ");
           return `<tr data-sel="${esc(cb.id)}" class="${sel.has(cb.id) ? "sel" : ""}">
-          <td>${colorChip(cb.color)}<b>${esc(cb.label)}</b></td><td>${esc(type)}</td><td>${esc(cableProfileById(cb.profile)?.name || "")}</td><td>${esc(a)}</td><td>${esc(b)}</td><td>${esc(cableCores(cb).join(", "))}</td><td>${esc(cb.notes || "")}</td></tr>`;
+          <td>${colorChip(cb.color)}<b>${esc(cb.label)}</b></td><td>${esc(type)}</td><td>${esc(cableProfileById(cb.profile)?.name || "")}</td><td>${esc(a)}</td><td>${esc(b)}</td>${pageTd(cb.id)}<td>${esc(cableCores(cb).join(", "))}</td><td>${esc(cb.notes || "")}</td></tr>`;
         }).join("")
-        || '<tr><td colspan="7" class="empty">No cables yet. Select some wires and choose “Bundle into a cable”, right-click a terminal and choose “Cable from here…”, or drag from a cable connector to another connector or to a terminal.</td></tr>'}
+        || `<tr><td colspan="${multi ? 8 : 7}" class="empty">No cables yet. Select some wires and choose “Bundle into a cable”, right-click a terminal and choose “Cable from here…”, or drag from a cable connector to another connector or to a terminal.</td></tr>`}
       </tbody></table>`;
     } else if (drawerTab === "buses") {
       const circ = circuitOf(doc, [...sel].filter((id) => isConn(id) || busById(id)));
       const names = circuitNames(doc);
-      body.innerHTML = `<table class="data-table"><thead><tr><th>Bus bar</th><th>Terminals</th><th>Circuit</th><th>Colour</th><th>Notes</th></tr></thead><tbody>
+      body.innerHTML = `<table class="data-table"><thead><tr><th>Bus bar</th><th>Terminals</th>${pageTh}<th>Circuit</th><th>Colour</th><th>Notes</th></tr></thead><tbody>
         ${busRows().map((b) => `<tr data-sel="${esc(b.id)}" class="${sel.has(b.id) ? "sel" : circ.buses.has(b.id) ? "net" : ""}">
-          <td><b>${esc(b.label)}</b></td><td>${esc(busRefs(b).join(", "))}</td><td>${esc(names.bus.get(b.id) || "")}</td>
+          <td><b>${esc(b.label)}</b></td><td>${esc(busRefs(b).join(", "))}</td>${pageTd(b.id)}<td>${esc(names.bus.get(b.id) || "")}</td>
           <td>${colorChip(b.color)}${esc(wireColorName(b.color))}</td><td>${esc(b.notes)}</td></tr>`).join("")
-        || '<tr><td colspan="5" class="empty">No bus bars yet. Right-click empty space on the drawing, choose “Bus bar…”, then click the terminals to bridge.</td></tr>'}
+        || `<tr><td colspan="${multi ? 6 : 5}" class="empty">No bus bars yet. Right-click empty space on the drawing, choose “Bus bar…”, then click the terminals to bridge.</td></tr>`}
       </tbody></table>`;
     } else if (drawerTab === "profiles") {
       const picked = new Set(doc.connections.filter((c) => sel.has(c.id)).map((c) => c.profile));
-      body.innerHTML = `<table class="data-table"><thead><tr><th>Profile</th><th>Colour</th><th>Size</th><th>Conductor</th><th>Wires</th></tr></thead><tbody>
+      body.innerHTML = `<table class="data-table"><thead><tr><th class="fav-col" title="Favourites: offered in the drop-downs and right-click menus">★</th><th>Profile</th><th>Colour</th><th>Size</th><th>Conductor</th><th>Wires</th></tr></thead><tbody>
         ${doc.wireProfiles.map((p) => `<tr data-prof="${esc(p.id)}" class="${picked.has(p.id) ? "net" : ""}" title="Select the wires with this profile">
-          <td><b>${esc(p.name)}</b></td><td>${colorChip(p.color, p.stripe)}${esc(wireLookName(p.color, p.stripe))}</td><td>${esc(p.gauge)}</td><td>${esc(p.conductor || "")}</td>
+          <td class="fav-col">${favBtn(p, "wire")}</td><td><b>${esc(p.name)}</b></td><td>${colorChip(p.color, p.stripe)}${esc(wireLookName(p.color, p.stripe))}</td><td>${esc(p.gauge)}</td><td>${esc(p.conductor || "")}</td>
           <td>${doc.connections.filter((c) => c.profile === p.id).length}</td></tr>`).join("")
-        || '<tr><td colspan="5" class="empty">No wire profiles yet. Click Edit… to add one.</td></tr>'}
+        || '<tr><td colspan="6" class="empty">No wire profiles yet. Click Edit… to add one.</td></tr>'}
       </tbody></table>`;
     } else if (drawerTab === "cprofiles") {
       const picked = new Set(doc.cables.filter((cb) => sel.has(cb.id)).map((cb) => cb.profile));
-      body.innerHTML = `<table class="data-table"><thead><tr><th>Profile</th><th>Type</th><th>Sheath</th><th>Cores</th><th>Cables</th><th>Notes</th></tr></thead><tbody>
+      body.innerHTML = `<table class="data-table"><thead><tr><th class="fav-col" title="Favourites: offered in the drop-downs and right-click menus">★</th><th>Profile</th><th>Type</th><th>Sheath</th><th>Cores</th><th>Cables</th><th>Notes</th></tr></thead><tbody>
         ${doc.cableProfiles.map((p) => `<tr data-cprof="${esc(p.id)}" class="${picked.has(p.id) ? "net" : ""}" title="Select the cables with this profile">
-          <td><b>${esc(p.name)}</b></td><td>${esc([p.desc, p.shield && "shielded", p.twisted && "twisted pairs"].filter(Boolean).join(", "))}</td>
+          <td class="fav-col">${favBtn(p, "cable")}</td><td><b>${esc(p.name)}</b></td><td>${esc([p.desc, p.shield && "shielded", p.twisted && "twisted pairs"].filter(Boolean).join(", "))}</td>
           <td>${colorChip(p.color)}${esc(wireColorName(p.color))}</td><td>${(p.cores || []).length || ""}</td>
           <td>${doc.cables.filter((cb) => cb.profile === p.id).length}</td><td>${esc(p.notes || "")}</td></tr>`).join("")
-        || '<tr><td colspan="6" class="empty">No cable profiles yet. Add the cables this drawing uses from the cable library.</td></tr>'}
+        || '<tr><td colspan="7" class="empty">No cable profiles yet. Add the cables this drawing uses from the cable library.</td></tr>'}
       </tbody></table>`;
     } else {
       const parts = doc.items.filter((i) => i.kind === "part" && tplOf(i)).sort((a, b) => natural(a.tag || "~", b.tag || "~"));
       const summary = partsSummary().map((g) => `${g.tags.length} × ${esc(g.tpl.name)}`).join(" · ");
-      body.innerHTML = `<table class="data-table"><thead><tr><th>Tag</th><th>Type</th><th>Description</th><th>Size (mm)</th><th>Wired terminals</th></tr></thead><tbody>
+      body.innerHTML = `<table class="data-table"><thead><tr><th>Tag</th><th>Type</th><th>Description</th>${pageTh}<th>Size (mm)</th><th>Wired terminals</th></tr></thead><tbody>
         ${parts.map((it) => {
           const t = tplOf(it);
           const used = new Set();
           for (const c of doc.connections) for (const e of [c.a, c.b]) if (e.item === it.id) used.add(e.term);
           for (const b of doc.buses) for (const e of b.terms) if (e.item === it.id) used.add(e.term);
-          return `<tr data-sel="${esc(it.id)}" class="${sel.has(it.id) ? "sel" : ""}"><td><b>${esc(it.tag || "—")}</b></td><td>${esc(t.name)}</td><td>${esc(it.desc)}</td><td>${r3(t.w)} × ${r3(t.h)}</td><td>${used.size} / ${t.terminals.length}</td></tr>`;
-        }).join("") || '<tr><td colspan="5" class="empty">No parts yet. Click an object in the library to add one.</td></tr>'}
-        ${summary ? `<tr class="summary"><td colspan="5">${summary}</td></tr>` : ""}
+          return `<tr data-sel="${esc(it.id)}" class="${sel.has(it.id) ? "sel" : ""}"><td><b>${esc(it.tag || "—")}</b></td><td>${esc(t.name)}</td><td>${esc(it.desc)}</td>${pageTd(it.id)}<td>${r3(t.w)} × ${r3(t.h)}</td><td>${used.size} / ${t.terminals.length}</td></tr>`;
+        }).join("") || `<tr><td colspan="${multi ? 6 : 5}" class="empty">No parts yet. Click an object in the library to add one.</td></tr>`}
+        ${summary ? `<tr class="summary"><td colspan="${multi ? 6 : 5}">${summary}</td></tr>` : ""}
       </tbody></table>`;
     }
     filterDrawer();
@@ -3906,12 +5177,20 @@
     if (e.target.closest("#btnDrawerToggle")) { setDrawerClosed(!$("drawer").classList.contains("collapsed")); return; }
     if (e.target.closest("#btnListProfiles")) { openProfiles(drawerTab === "cprofiles"); return; }
     if (e.target.closest("#btnListCableLib")) { openCableLib(); return; }
+    const fb = e.target.closest("[data-fav]");
+    if (fb) { toggleFav(fb); return; }
     const prof = e.target.closest("[data-prof]");
     if (prof) { sel = new Set(doc.connections.filter((c) => c.profile === prof.dataset.prof).map((c) => c.id)); refresh(); return; }
     const cprof = e.target.closest("[data-cprof]");
     if (cprof) { sel = new Set(doc.cables.filter((cb) => cb.profile === cprof.dataset.cprof).map((cb) => cb.id)); refresh(); return; }
     const row = e.target.closest("[data-sel]");
-    if (row) { sel = new Set([row.dataset.sel]); refresh(); }
+    if (row) {
+      // Something on another page opens that page.
+      const pgs = pagesOf(row.dataset.sel);
+      if (pgs.length && !pgs.includes(doc.page)) doc.page = pgs[0];
+      sel = new Set([row.dataset.sel]);
+      refresh();
+    }
   });
   $("drawer").querySelector(".drawer-bar").addEventListener("dblclick", (e) => {
     if (!e.target.closest("button, input")) setDrawerClosed(!$("drawer").classList.contains("collapsed"));
@@ -3946,6 +5225,28 @@
   // ---------- files & export ----------
   function saveFile() {
     download(slug(doc.meta.title) + ".json", JSON.stringify(doc, null, 2), "application/json");
+  }
+
+  // Save with a name and folder of your choosing, where the browser allows it (Chrome, Edge); elsewhere it
+  // asks for a file name and downloads it as Save does.
+  async function saveFileAs() {
+    const data = JSON.stringify(doc, null, 2), name = slug(doc.meta.title) + ".json";
+    if (window.showSaveFilePicker) {
+      try {
+        const h = await window.showSaveFilePicker({ suggestedName: name, types: [{ description: "DIN Stack diagram", accept: { "application/json": [".json"] } }] });
+        const w = await h.createWritable();
+        await w.write(data);
+        await w.close();
+        toast("Saved " + h.name);
+      } catch (err) {
+        if (err.name !== "AbortError") alert("The diagram couldn't be saved: " + err.message);
+      }
+      return;
+    }
+    let as = prompt("Save as", name);
+    if (!as || !as.trim()) return;
+    as = as.trim();
+    download(/\.json$/i.test(as) ? as : as + ".json", data, "application/json");
   }
 
   function readJSONFile(file, cb) {
@@ -4004,6 +5305,7 @@
     for (const p of Array.isArray(d.wireProfiles) ? d.wireProfiles : []) {
       if (!p || !p.id || !p.name) continue;
       const i = doc.wireProfiles.findIndex((x) => x.id === p.id);
+      keepFav(p, doc.wireProfiles[i]);
       if (i >= 0) doc.wireProfiles[i] = p; else doc.wireProfiles.push(p);
       for (const c of doc.connections) if (c.profile === p.id) applyProfile(c, p);
       profiles++;
@@ -4192,8 +5494,11 @@
     renderLibManager();
   }
 
-  function exportSVGString(pxPerMm) {
-    const inner = renderDiagram(doc, { interactive: false });
+  // One page of the drawing (the open one unless given) as an SVG, with the title block at the top. With
+  // more than one page, the title is followed by the page's name.
+  // titled false leaves out the title block at the top (the printout has a heading of its own instead).
+  function exportSVGString(pxPerMm, page = doc.page, titled = true) {
+    const inner = renderDiagram(doc, { interactive: false, page });
     const tmp = document.createElementNS(SVGNS, "svg");
     tmp.setAttribute("style", "position:absolute;left:-9999px;top:0;visibility:hidden");
     tmp.innerHTML = `<g>${inner}</g>`;
@@ -4201,17 +5506,17 @@
     let bb = tmp.firstChild.getBBox();
     tmp.remove();
     if (!bb.width || !bb.height) bb = { x: 0, y: 0, width: 100, height: 50 };
-    const m = 8, titleH = 16;
+    const m = 8, titleH = titled ? 16 : 0;
     const x0 = bb.x - m, y0 = bb.y - m - titleH;
     const W = bb.width + m * 2, H = bb.height + m * 2 + titleH;
     const meta = [doc.meta.revision && "Rev " + doc.meta.revision, doc.meta.date, doc.meta.author].filter(Boolean).join("  ·  ");
-    const head = `<text x="${x0 + m}" y="${y0 + m + 4}" font-family="${FONT}" font-size="5" font-weight="bold" fill="#1d2126">${esc(doc.meta.title)}</text>`
+    const title = doc.meta.title + (doc.pages.length > 1 ? " — " + pageName(doc, page) : "");
+    const head = !titled ? "" : `<text x="${x0 + m}" y="${y0 + m + 4}" font-family="${FONT}" font-size="5" font-weight="bold" fill="#1d2126">${esc(title)}</text>`
       + (meta ? `<text x="${x0 + m}" y="${y0 + m + 10}" font-family="${FONT}" font-size="3" fill="#555">${esc(meta)}</text>` : "");
     const size = pxPerMm ? `width="${Math.round(W * pxPerMm)}" height="${Math.round(H * pxPerMm)}"` : `width="${r3(W)}mm" height="${r3(H)}mm"`;
-    return {
-      svg: `<svg xmlns="${SVGNS}" ${size} viewBox="${r3(x0)} ${r3(y0)} ${r3(W)} ${r3(H)}"><rect x="${r3(x0)}" y="${r3(y0)}" width="${r3(W)}" height="${r3(H)}" fill="#ffffff"/>${head}${inner}</svg>`,
-      W, H,
-    };
+    const body = `<rect x="${r3(x0)}" y="${r3(y0)}" width="${r3(W)}" height="${r3(H)}" fill="#ffffff"/>${head}${inner}`;
+    // body, x0, y0, W and H: the contents and the area they cover, for printing a part of it per sheet.
+    return { svg: `<svg xmlns="${SVGNS}" ${size} viewBox="${r3(x0)} ${r3(y0)} ${r3(W)} ${r3(H)}">${body}</svg>`, W, H, x0, y0, body };
   }
 
   function exportPNG() {
@@ -4226,10 +5531,15 @@
       ctx.fillStyle = "#fff";
       ctx.fillRect(0, 0, c.width, c.height);
       ctx.drawImage(img, 0, 0, c.width, c.height);
-      c.toBlob((b) => download(slug(doc.meta.title) + ".png", b), "image/png");
+      c.toBlob((b) => download(pageFileName() + ".png", b), "image/png");
     };
     img.onerror = () => alert("Sorry, the PNG could not be created in this browser. Try SVG instead.");
     img.src = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(s);
+  }
+
+  // Exported images are of the page open, so with more than one page the file name says which.
+  function pageFileName() {
+    return slug(doc.meta.title) + (doc.pages.length > 1 ? "-" + slug(pageName(doc, doc.page)) : "");
   }
 
   function csvCell(v) {
@@ -4239,46 +5549,204 @@
 
   function exportCSV() {
     const names = circuitNames(doc);
-    const rows = [["Wire", "From", "To", "Circuit", "Colour", "Size", "Conductor", "Profile", "Cable", "Notes"]];
-    for (const c of wireRows()) rows.push([c.wire, refOf(c.a), refOf(c.b), names.conn.get(c.id) || "", wireLookName(c.color, c.stripe), c.gauge, c.conductor || "", profileById(c.profile)?.name || "", cableOf(c.id)?.label || "", c.notes]);
+    const multi = doc.pages.length > 1;
+    const rows = [["Wire", "From", "To", ...(multi ? ["Page"] : []), "Circuit", "Colour", "Size", "Conductor", "Profile", "Cable", "Notes"]];
+    for (const c of wireRows()) rows.push([c.wire, refOf(c.a), refOf(c.b), ...(multi ? [pagesText(c.id)] : []), names.conn.get(c.id) || "", wireLookName(c.color, c.stripe), c.gauge, c.conductor || "", profileById(c.profile)?.name || "", cableOf(c.id)?.label || "", c.notes]);
     download(slug(doc.meta.title) + "-wires.csv", "﻿" + rows.map((r) => r.map(csvCell).join(",")).join("\r\n"), "text/csv");
   }
 
-  function printDoc() {
+  // ---------- printing ----------
+  // The heading at the top of every printed sheet, the same size and in the same place on each: the title
+  // (with the page's name when there's more than one), and the revision line with which sheet it is when a
+  // page takes several. One line each, so it's always the same height.
+  function printHead(page, sheet = "") {
     const m = doc.meta;
     const meta = [m.revision && "Revision " + m.revision, m.date, m.author].filter(Boolean).join(" · ");
+    const title = m.title + (page && doc.pages.length > 1 ? " — " + page.name : "");
+    return `<div class="phead"><h1>${esc(title)}</h1><div class="pmeta"><span>${esc(meta)}</span><span>${esc(sheet)}</span></div></div>`;
+  }
+  // The diagram's notes, under the heading on the first sheet.
+  const printNotes = () => (doc.meta.notes ? `<div class="pnotes">${esc(doc.meta.notes)}</div>` : "");
+
+  // How tall some of the printout's text comes out, in mm, on paper pw mm wide.
+  function printHeight(html, pw) {
+    if (!html) return 0;
+    const el = document.createElement("div");
+    el.className = "print-area";
+    el.style.cssText = `display:flow-root;position:absolute;left:-9999px;top:0;visibility:hidden;width:${pw}mm`;
+    el.innerHTML = html;
+    document.body.appendChild(el);
+    const h = (el.getBoundingClientRect().height * 25.4) / 96;
+    el.remove();
+    return h;
+  }
+
+  // How the drawing goes onto paper: which way round the paper is, and for each page printed its scale
+  // and the grid of sheets it takes. Only the drawing is scaled: it fills the room under the heading
+  // (room, in mm), and a page that doesn't fit one sheet at its scale is cut into tiles, one per sheet.
+  // The notes go under the heading on the first sheet, so the first page's tiles are that much shorter.
+  function printLayout(pr = doc.settings.print) {
+    const paper = PAPERS[pr.paper] || PAPERS.a4;
+    const pages = pr.pages === "none" ? []
+      : pr.pages === "current" ? doc.pages.filter((p) => p.id === doc.page)
+      : doc.pages.filter((p) => doc.pages.length === 1 || doc.items.some((it) => pageOf(doc, it) === p.id));
+    const drawings = pages.map((p) => ({ page: p, ...exportSVGString(undefined, p.id, false) }));
+    const plan = (landscape) => {
+      const pw = (landscape ? paper.h : paper.w) - 2 * pr.margin;
+      const ph = (landscape ? paper.w : paper.h) - 2 * pr.margin - 1; // 1 mm to spare
+      const head = pr.head ? printHeight(printHead(), pw) : 0, notes = pr.head ? printHeight(printNotes(), pw) : 0;
+      const out = drawings.map((d, i) => {
+        const room = ph - head - (i ? 0 : notes);
+        const fit = Math.min(pw / d.W, room / d.H);
+        const s = pr.scale === "fit" ? fit : pr.scale === "shrink" ? Math.min(1, fit) : pr.scale === "width" ? pw / d.W : Math.max(1, +pr.percent || 100) / 100;
+        const tw = pw / s, th = room / s;
+        const cols = Math.max(1, Math.ceil(d.W / tw - 1e-6)), rows = Math.max(1, Math.ceil(d.H / th - 1e-6));
+        return { ...d, s, tw, th, cols, rows, sheets: cols * rows, pw, room };
+      });
+      return { paper, landscape, ph, drawings: out, sheets: out.reduce((t, d) => t + d.sheets, 0), size: out.reduce((t, d) => t + d.s, 0) };
+    };
+    if (pr.orient !== "auto") return plan(pr.orient === "landscape");
+    const a = plan(false), b = plan(true);
+    return b.sheets < a.sheets || (b.sheets === a.sheets && b.size > a.size + 1e-9) ? b : a;
+  }
+
+  const scaleText = (s) => `${+(s * 100).toFixed(s < 0.1 ? 2 : 1)}%${Math.abs(s - 1) < 1e-9 ? " (real size)" : ""}`;
+
+  // A line under the print settings saying what will come out.
+  function printSummary() {
+    const pr = doc.settings.print, L = printLayout(pr);
+    const parts = [`${L.paper.name.replace(/ \(.*/, "")}, ${L.landscape ? "landscape" : "portrait"}`];
+    for (const d of L.drawings) {
+      const name = doc.pages.length > 1 ? d.page.name : "Drawing";
+      parts.push(`${name}: ${plural(d.sheets, "sheet")}${d.sheets > 1 ? ` (${d.cols} across × ${d.rows} down)` : ""} at ${scaleText(d.s)}`);
+    }
+    if (pr.wires || pr.cables || pr.buses || pr.parts) parts.push("then the lists, on a new sheet");
+    return parts.join(" · ");
+  }
+
+  let printCheckpointed = false;
+  function openPrint() {
+    printCheckpointed = false;
+    renderPrint();
+    $("printModal").hidden = false;
+  }
+
+  function renderPrint() {
+    const pr = doc.settings.print, std = doc.settings.wireStd;
+    const opt = (k, v, label) => `<option value="${esc(v)}"${String(pr[k]) === String(v) ? " selected" : ""}>${esc(label)}</option>`;
+    const select = (k, opts) => `<select data-pk="${k}">${opts.map(([v, label]) => opt(k, v, label)).join("")}</select>`;
+    const check = (k, label) => `<label class="check"><input type="checkbox" data-pk="${k}"${pr[k] ? " checked" : ""}> ${label}</label>`;
+    // The diagram's own standard's sizes come first.
+    const groups = std === "us" ? [["us", "American"], ["metric", "Metric (ISO)"]] : [["metric", "Metric (ISO)"], ["us", "American"]];
+    const paper = `<select data-pk="paper">${groups.map(([g, label]) => `<optgroup label="${label}">${Object.entries(PAPERS).filter(([, p]) => p.std === g).map(([id, p]) => opt("paper", id, p.name)).join("")}</optgroup>`).join("")}</select>`;
+    const marginText = (mm) => (std === "us" ? `${+(mm / 25.4).toFixed(2)} in` : `${+mm.toFixed(1)} mm`);
+    const margins = [...new Set([...PRINT_MARGINS[std === "us" ? "us" : "metric"], pr.margin])].sort((a, b) => a - b);
+    $("printBody").innerHTML = `
+      <div class="set-group">
+        <h4>Paper</h4>
+        ${field("Paper size", paper)}
+        <div class="row2">
+          ${field("Orientation", select("orient", [["auto", "Automatic"], ["portrait", "Portrait"], ["landscape", "Landscape"]]))}
+          ${field("Margins", select("margin", margins.map((m) => [m, marginText(m)])))}
+        </div>
+        <p class="hint-text">Paper sizes and margins follow the wire standard in Settings: American (Letter, inches) or metric (A4, mm). Pick the same paper in the print window.</p>
+      </div>
+      <div class="set-group">
+        <h4>Scaling</h4>
+        ${field("Size of the drawing", select("scale", [["fit", "Fit each page on one sheet"], ["shrink", "Real size, shrunk to fit one sheet if too big"], ["width", "Fit to the paper's width"], ["scale", "Set scale"]]))}
+        ${pr.scale === "scale" ? field("Scale (% of real size)", `<input type="number" data-pk="percent" min="1" max="1000" step="5" value="${esc(pr.percent)}">`) : ""}
+        <p class="hint-text">${pr.scale === "scale" ? "100% prints at real size (1:1). " : ""}${pr.scale === "width" || pr.scale === "scale" ? "A page that doesn't fit one sheet goes on over more, each sheet labelled with its row and column so they can be put together." : "Each drawing page gets a sheet of its own."}</p>
+      </div>
+      <div class="set-group">
+        <h4>Print</h4>
+        ${field("Drawing", select("pages", [["all", doc.pages.length > 1 ? "All pages" : "The drawing"], ["current", doc.pages.length > 1 ? `This page only (${pageName(doc, doc.page)})` : "The drawing"], ["none", "None, only the lists"]].filter((o, i) => doc.pages.length > 1 || i !== 1)))}
+        ${check("head", "Heading on every sheet (title, page, revision), with the notes on the first")}
+        <div class="row2">${check("wires", "Wire list")}${check("cables", "Cable list")}</div>
+        <div class="row2">${check("buses", "Bus bar list")}${check("parts", "Parts list")}</div>
+        ${doc.pages.length > 1 ? '<p class="hint-text">With one page printed, the lists only have what\'s on it.</p>' : ""}
+      </div>`;
+    $("printSummary").textContent = printSummary();
+  }
+
+  function setPrintOption(el, redraw) {
+    const k = el.dataset.pk;
+    if (!k) return;
+    let v = el.type === "checkbox" ? el.checked : el.value;
+    if (k === "margin") v = parseFloat(v);
+    if (k === "percent") { v = parseFloat(v); if (!(v > 0)) return; }
+    if (!printCheckpointed) { checkpoint(); printCheckpointed = true; }
+    doc.settings.print[k] = v;
+    scheduleSave();
+    updateToolbar();
+    if (redraw) renderPrint(); else $("printSummary").textContent = printSummary();
+  }
+
+  $("printBody").addEventListener("change", (e) => setPrintOption(e.target, true));
+  $("printBody").addEventListener("input", (e) => { if (e.target.type === "number") setPrintOption(e.target, false); });
+
+  // Print with the print settings: the drawing pages, each sheet on a page of the paper to itself, then
+  // the lists starting on a new one.
+  function printDoc() {
+    const pr = doc.settings.print;
+    const L = printLayout(pr);
     const wires = wireRows();
-    const groups = partsSummary();
     const names = circuitNames(doc);
-    let s = `<h1>${esc(m.title)}</h1>${meta ? `<div class="pmeta">${esc(meta)}</div>` : ""}${m.notes ? `<div class="pnotes">${esc(m.notes)}</div>` : ""}`;
-    s += exportSVGString().svg.replace(/width="[^"]*mm" height="[^"]*mm"/, "");
-    if (wires.length) {
-      s += `<h2>Wire list</h2><table><thead><tr><th>Wire</th><th>From</th><th>To</th><th>Circuit</th><th>Colour</th><th>Size</th><th>Conductor</th><th>Profile</th><th>Cable</th><th>Notes</th></tr></thead><tbody>`;
-      s += wires.map((c) => `<tr><td>${esc(c.wire)}</td><td>${esc(refOf(c.a))}</td><td>${esc(refOf(c.b))}</td><td>${esc(names.conn.get(c.id) || "")}</td><td>${esc(wireLookName(c.color, c.stripe))}</td><td>${esc(c.gauge)}</td><td>${esc(c.conductor || "")}</td><td>${esc(profileById(c.profile)?.name || "")}</td><td>${esc(cableOf(c.id)?.label || "")}</td><td>${esc(c.notes)}</td></tr>`).join("");
-      s += "</tbody></table>";
+    const multi = doc.pages.length > 1;
+    // With one page printed, the lists have only what's on it.
+    const shown = (id) => pr.pages !== "current" || pagesOf(id).includes(doc.page);
+    const pageTh = multi ? "<th>Page</th>" : "";
+    const pageTd = (id) => (multi ? `<td>${esc(pagesText(id))}</td>` : "");
+    const W = L.landscape ? L.paper.h : L.paper.w, H = L.landscape ? L.paper.w : L.paper.h;
+    $("printPage").textContent = `@page { size: ${r3(W)}mm ${r3(H)}mm; margin: ${r3(pr.margin)}mm; }`;
+    // Each sheet is the paper's printable height: the heading, the notes on the first, then the drawing
+    // filling the rest. The drawing is centred on the sheet, or for a page over several sheets, on the
+    // sheets put together; every sheet shows the same-sized piece, so they line up.
+    let notes = pr.head ? printNotes() : "";
+    let s = "";
+    for (const d of L.drawings) {
+      const gx = d.x0 - (d.cols * d.tw - d.W) / 2, gy = d.y0 - (d.rows * d.th - d.H) / 2;
+      for (let r = 0; r < d.rows; r++) {
+        for (let c = 0; c < d.cols; c++) {
+          const where = d.sheets > 1 ? `Sheet ${r * d.cols + c + 1} of ${d.sheets} · row ${r + 1}, column ${c + 1}` : "";
+          s += `<div class="psheet" style="height:${r3(L.ph)}mm">${pr.head ? printHead(d.page, where) : ""}${notes}`
+            + `<svg xmlns="${SVGNS}" width="${r3(d.pw)}mm" height="${r3(d.room)}mm" viewBox="${r3(gx + c * d.tw)} ${r3(gy + r * d.th)} ${r3(d.tw)} ${r3(d.th)}">${d.body}</svg></div>`;
+          notes = "";
+        }
+      }
     }
-    if (doc.cables.length) {
-      s += `<h2>Cables</h2><table><thead><tr><th>Cable</th><th>Description</th><th>Cores</th><th>Notes</th></tr></thead><tbody>`;
-      s += cableRows().map((cb) => `<tr><td>${esc(cb.label)}</td><td>${esc([cb.desc, cb.to && "→ " + cb.to].filter(Boolean).join(" "))}</td><td>${esc(cableCores(cb).join(", "))}</td><td>${esc(cb.notes || "")}</td></tr>`).join("");
-      s += "</tbody></table>";
+    // The lists' first page has the heading too, and the notes if no drawing had them.
+    const head = pr.head ? printHead() + notes : "";
+    let lists = "";
+    if (pr.wires && wires.some((c) => shown(c.id))) {
+      lists += `<h2>Wire list</h2><table><thead><tr><th>Wire</th><th>From</th><th>To</th>${pageTh}<th>Circuit</th><th>Colour</th><th>Size</th><th>Conductor</th><th>Profile</th><th>Cable</th><th>Notes</th></tr></thead><tbody>`;
+      lists += wires.filter((c) => shown(c.id)).map((c) => `<tr><td>${esc(c.wire)}</td><td>${esc(refOf(c.a))}</td><td>${esc(refOf(c.b))}</td>${pageTd(c.id)}<td>${esc(names.conn.get(c.id) || "")}</td><td>${esc(wireLookName(c.color, c.stripe))}</td><td>${esc(c.gauge)}</td><td>${esc(c.conductor || "")}</td><td>${esc(profileById(c.profile)?.name || "")}</td><td>${esc(cableOf(c.id)?.label || "")}</td><td>${esc(c.notes)}</td></tr>`).join("");
+      lists += "</tbody></table>";
     }
-    if (doc.buses.length) {
-      s += `<h2>Bus bars</h2><table><thead><tr><th>Bus bar</th><th>Terminals</th><th>Circuit</th><th>Colour</th><th>Notes</th></tr></thead><tbody>`;
-      s += busRows().map((b) => `<tr><td>${esc(b.label)}</td><td>${esc(busRefs(b).join(", "))}</td><td>${esc(names.bus.get(b.id) || "")}</td><td>${esc(wireColorName(b.color))}</td><td>${esc(b.notes)}</td></tr>`).join("");
-      s += "</tbody></table>";
+    if (pr.cables && doc.cables.some((cb) => shown(cb.id))) {
+      lists += `<h2>Cables</h2><table><thead><tr><th>Cable</th><th>Description</th>${pageTh}<th>Cores</th><th>Notes</th></tr></thead><tbody>`;
+      lists += cableRows().filter((cb) => shown(cb.id)).map((cb) => `<tr><td>${esc(cb.label)}</td><td>${esc([cb.desc, cb.to && "→ " + cb.to].filter(Boolean).join(" "))}</td>${pageTd(cb.id)}<td>${esc(cableCores(cb).join(", "))}</td><td>${esc(cb.notes || "")}</td></tr>`).join("");
+      lists += "</tbody></table>";
     }
-    if (groups.length) {
-      s += `<h2>Parts list</h2><table><thead><tr><th>Qty</th><th>Type</th><th>Size (mm)</th><th>Tags</th></tr></thead><tbody>`;
-      s += groups.map((g) => `<tr><td>${g.tags.length}</td><td>${esc(g.tpl.name)}</td><td>${r3(g.tpl.w)} × ${r3(g.tpl.h)}</td><td>${esc(g.tags.filter(Boolean).sort(natural).join(", "))}</td></tr>`).join("");
-      s += "</tbody></table>";
+    if (pr.buses && doc.buses.some((b) => shown(b.id))) {
+      lists += `<h2>Bus bars</h2><table><thead><tr><th>Bus bar</th><th>Terminals</th>${pageTh}<th>Circuit</th><th>Colour</th><th>Notes</th></tr></thead><tbody>`;
+      lists += busRows().filter((b) => shown(b.id)).map((b) => `<tr><td>${esc(b.label)}</td><td>${esc(busRefs(b).join(", "))}</td>${pageTd(b.id)}<td>${esc(names.bus.get(b.id) || "")}</td><td>${esc(wireColorName(b.color))}</td><td>${esc(b.notes)}</td></tr>`).join("");
+      lists += "</tbody></table>";
     }
+    const groups = partsSummary(pr.pages === "current" ? pageItems() : doc.items);
+    if (pr.parts && groups.length) {
+      lists += `<h2>Parts list</h2><table><thead><tr><th>Qty</th><th>Type</th><th>Size (mm)</th><th>Tags</th></tr></thead><tbody>`;
+      lists += groups.map((g) => `<tr><td>${g.tags.length}</td><td>${esc(g.tpl.name)}</td><td>${r3(g.tpl.w)} × ${r3(g.tpl.h)}</td><td>${esc(g.tags.filter(Boolean).sort(natural).join(", "))}</td></tr>`).join("");
+      lists += "</tbody></table>";
+    }
+    // The lists get a page only when there are some (or, with no drawing printed, for the heading and notes).
+    if (lists || (head && !L.drawings.length)) s += `<div class="plists">${head}${lists}</div>`;
     $("printArea").innerHTML = s;
     window.print();
   }
 
   // ---------- commands: toolbar, menus and dialog buttons ----------
   // Dialogs that Esc and a click on the backdrop close (the designer handles its own).
-  const DIALOGS = ["helpModal", "profModal", "libChooser", "settingsModal", "welcomeModal", "cableLib"];
+  const DIALOGS = ["helpModal", "historyModal", "profModal", "profPick", "libChooser", "settingsModal", "welcomeModal", "cableLib", "printModal"];
 
   // keepLibs false starts from just the built-in library, as it comes.
   function newDiagram(ask = true, keepLibs = true) {
@@ -4400,9 +5868,20 @@
     new: newDiagram,
     open: () => $("fileInput").click(),
     save: saveFile,
+    saveAs: saveFileAs,
+    cut: cutSelection,
+    copy: copySelection,
+    paste,
+    duplicate: duplicateSelection,
+    delete: deleteSelection,
+    selectAll: () => { sel = new Set(selectableAll()); refresh(); },
+    selectNone: () => { sel.clear(); refresh(); },
+    find: findInLists,
     example: loadExample,
-    print: printDoc,
-    exportSvg: () => download(slug(doc.meta.title) + ".svg", exportSVGString().svg, "image/svg+xml"),
+    print: openPrint,
+    doPrint: () => { $("printModal").hidden = true; printDoc(); },
+    exportSvg: () => download(pageFileName() + ".svg", exportSVGString().svg, "image/svg+xml"),
+    addPage,
     exportPng: exportPNG,
     exportCsv: exportCSV,
     undo, redo,
@@ -4434,6 +5913,7 @@
     if (mb) {
       const list = $(mb.dataset.menu);
       const show = list.hidden;
+      if (show && list.id === "editMenu") updateEditMenu();
       closeMenus();
       list.hidden = !show;
       mb.setAttribute("aria-expanded", String(show));
@@ -4621,6 +6101,102 @@
   window.addEventListener("beforeunload", () => {
     try { localStorage.setItem(LS_KEY, JSON.stringify(doc)); } catch (e) { /* ignore */ }
   });
+
+  // ---------- version history ----------
+  // The release notes (RELEASE_NOTES.md), shown by clicking the version in the corner. Like the library
+  // list they're fetched, so a copy opened straight from index.html points to them on GitHub instead.
+  const REPO = "https://github.com/mmmlinux/DIN-Stack";
+
+  // The Markdown the release notes use: **bold**, *italic*, `code` and links (relative ones go to GitHub).
+  function mdInline(t) {
+    return esc(t)
+      .replace(/`([^`]+)`/g, "<code>$1</code>")
+      .replace(/\[([^\]]+)\]\(([^)\s]+)\)/g, (m, txt, url) => `<a href="${/^https?:/.test(url) ? url : REPO + "/blob/main/" + url}" target="_blank" rel="noopener">${txt}</a>`)
+      .replace(/\*\*([^*]+)\*\*/g, "<b>$1</b>")
+      .replace(/\*([^*]+)\*/g, "<i>$1</i>");
+  }
+
+  // Paragraphs and lists ("- " or "1. "), nested two spaces a level. The "# " title is the dialog's own.
+  function mdBlocks(md) {
+    let h = "";
+    const open = []; // the lists open, innermost last: "ul" or "ol"
+    const close = (to) => { while (open.length > to) h += `</li></${open.pop()}>`; };
+    for (const line of md.split(/\r?\n/)) {
+      const item = line.match(/^( *)(-|\d+\.) (.*)/);
+      if (item) {
+        const d = Math.floor(item[1].length / 2) + 1, tag = item[2] === "-" ? "ul" : "ol";
+        close(d);
+        if (open.length === d && open[d - 1] !== tag) close(d - 1);
+        if (open.length === d) h += "</li><li>";
+        else while (open.length < d) { open.push(tag); h += `<${tag}><li>`; }
+        h += mdInline(item[3]);
+      } else if (open.length && /^ +\S/.test(line)) {
+        // Text running on in the item its indent belongs to.
+        close(Math.max(1, Math.floor(line.match(/^ */)[0].length / 2)));
+        h += " " + mdInline(line.trim());
+      } else {
+        close(0);
+        if (line.trim() && !/^# /.test(line)) h += `<p>${mdInline(line)}</p>`;
+      }
+    }
+    close(0);
+    return h;
+  }
+
+  // The release notes, one section per minor version (1.10 holds 1.10.1 to 1.10.28), newest first. Each
+  // version's points are under "### " category headings, gathered here across the minor version.
+  const HISTORY_CATS = ["New features", "Improvements", "Bug fixes"];
+
+  function historyHtml(md) {
+    const entries = md.split(/^## /m).slice(1); // the file's own introduction isn't shown
+    const groups = new Map();
+    for (const e of entries) {
+      const nl = e.indexOf("\n");
+      const [ver, date = ""] = (nl < 0 ? e : e.slice(0, nl)).split(" — ").map((x) => x.trim());
+      const minor = ver.split(".").slice(0, 2).join(".");
+      if (!groups.has(minor)) groups.set(minor, { vers: [], dates: [], cats: new Map(), notes: [] });
+      const g = groups.get(minor);
+      g.vers.push(ver);
+      if (date) g.dates.push(date);
+      // Text before an entry's first category is a note about that version, e.g. how it was numbered.
+      const [pre, ...secs] = (nl < 0 ? "" : e.slice(nl + 1)).split(/^### /m);
+      const add = (cat, text) => { if (!g.cats.has(cat)) g.cats.set(cat, []); g.cats.get(cat).push(text); };
+      if (!secs.length) add("Changes", pre.trim());
+      else if (pre.trim()) g.notes.push(`${ver}: ${pre.trim().replace(/\s*\n\s*/g, " ")}`);
+      for (const s of secs) {
+        const i = s.indexOf("\n");
+        add((i < 0 ? s : s.slice(0, i)).trim(), i < 0 ? "" : s.slice(i + 1).trim());
+      }
+    }
+    // Oldest to newest, from a newest-first list.
+    const span = (xs) => (xs.length > 1 && xs[0] !== xs[xs.length - 1] ? `${xs[xs.length - 1]} to ${xs[0]}` : xs[0] || "");
+    let h = "";
+    for (const g of groups.values()) {
+      // Headed by its latest version, with the first one it started from.
+      const first = g.vers[g.vers.length - 1];
+      const range = [g.vers.length > 1 && `from ${first}`, span(g.dates)].filter(Boolean).join(" · ");
+      const cats = [...HISTORY_CATS.filter((c) => g.cats.has(c)), ...[...g.cats.keys()].filter((c) => !HISTORY_CATS.includes(c))];
+      h += `<h3>${esc(g.vers[0])}${g.vers.includes(APP_VERSION) ? '<span class="now">This version</span>' : ""}<span class="range">${esc(range)}</span></h3>`
+        + cats.map((c) => `<h4>${esc(c)}</h4>${mdBlocks(g.cats.get(c).join("\n"))}`).join("")
+        + (g.notes.length ? `<div class="history-notes">${g.notes.map((n) => `<p>${mdInline(n)}</p>`).join("")}</div>` : "");
+    }
+    return h;
+  }
+
+  async function openHistory() {
+    const body = $("historyBody");
+    body.innerHTML = '<p class="muted">Loading…</p>';
+    $("historyModal").hidden = false;
+    body.scrollTop = 0;
+    try {
+      const res = await fetch("RELEASE_NOTES.md", { cache: "no-cache" });
+      if (!res.ok) throw new Error(res.status);
+      body.innerHTML = historyHtml(await res.text());
+    } catch (e) {
+      body.innerHTML = `<p>This is DIN Stack <b>${esc(APP_VERSION)}</b>.</p><p class="muted">The version history couldn't be loaded. It needs the online version (or an installed copy that has been online); a copy opened straight from <code>index.html</code> can't read it. The <a href="${REPO}/blob/main/RELEASE_NOTES.md" target="_blank" rel="noopener">release notes are on GitHub</a>, and in <code>RELEASE_NOTES.md</code> next to <code>index.html</code>.</p>`;
+    }
+  }
+  $("versionLabel").addEventListener("click", openHistory);
 
   // ---------- start ----------
   $("versionLabel").textContent = "v" + APP_VERSION;
