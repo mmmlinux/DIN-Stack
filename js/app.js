@@ -4947,47 +4947,55 @@
 
   function renderSettings() {
     const s = doc.settings;
+    // Two columns: the standards and how wires and cables are drawn (as in the menus at the bottom right),
+    // then the labels and text they share, placing parts, and starting up.
     $("settingsBody").innerHTML = `
-      <div class="set-group">
-        <h4>Drawing</h4>
-        <div class="row2">
-          ${field("Snap grid", sel_("settings.grid", s.grid, [[0, "Off"], [0.5, "0.5 mm"], [1, "1 mm"], [2.5, "2.5 mm"], [5, "5 mm"]]))}
-          ${field("Wires drawn as", sel_("settings.lines", s.lines, [["off", "Stubs at the terminals"], ["straight", "Straight lines"], ["curved", "Curved lines"]]))}
+      <div class="set-col">
+        <div class="set-group">
+          <h4>Standards</h4>
+          <div class="row2 wide-first">
+            ${field("Wire standard", sel_("settings.wireStd", s.wireStd, Object.entries(WIRE_STANDARDS).map(([id, w]) => [id, w.name])))}
+            ${field("Terminal reference", sel_("settings.termSep", s.termSep, [["-", "TB101-1"], [":", "TB101:1"], [".", "TB101.1"], ["/", "TB101/1"], [" ", "TB101 1"]]))}
+          </div>
+          <p class="hint-text">Changing the wire standard converts existing wires and profiles to the nearest size and the line / neutral / earth colours, and switches the print paper between American (Letter…, inches) and metric (A4…, mm).</p>
+          <div class="btn-row"><button class="small" data-sact="profiles">${ic("edit", "sm")} Wire profiles…</button><button class="small" data-sact="print">${ic("file", "sm")} Print settings…</button></div>
         </div>
-        <div class="row2">
-          ${field("Cables drawn", sel_("settings.cables", s.cables, [["full", "Full length"], ["break", "Broken: a tail at each end"]]))}
+        <div class="set-group">
+          <h4>Wires</h4>
+          <div class="row2">
+            ${field("Drawn as", sel_("settings.lines", s.lines, [["off", "Stubs at the terminals"], ["straight", "Straight lines"], ["curved", "Curved lines"]]))}
+            ${field("Named circuits' labels show", sel_("settings.labelName", s.labelName, [["dest", "Where each wire goes"], ["circuit", "Circuit name"]]))}
+          </div>
+          ${chk("settings.wireLabels", s.wireLabels !== false, "Labels: where each wire goes (TB101-1)")}
+          ${chk("settings.labelWire", s.labelWire, "Wire names in labels (W3 → TB101-1)")}
+        </div>
+        <div class="set-group">
+          <h4>Cables</h4>
+          ${field("Drawn", sel_("settings.cables", s.cables, [["full", "Full length"], ["break", "Broken: a tail at each end"]]))}
           ${chk("settings.labelCable", s.labelCable, "Cable names in labels (C1 → K1)")}
         </div>
-        <div class="row2">
-          ${chk("settings.wireLabels", s.wireLabels !== false, "Labels: where each wire goes")}
-          ${field("Named circuits' labels show", sel_("settings.labelName", s.labelName, [["dest", "Where each wire goes"], ["circuit", "Circuit name"]]))}
-        </div>
-        ${chk("settings.labelWire", s.labelWire, "Wire names in labels (W3 → TB101-1)")}
-        ${chk("settings.labelPage", s.labelPage !== false, "Page names in labels for ends on another page (TB101-1 (Door))")}
-        <div class="row2">
-          ${field("Tag text height (mm)", num("settings.tagSize", s.tagSize, 0.1, 'min="0.5"'))}
-          ${field("Label text height (mm)", num("settings.labelSize", s.labelSize, 0.1, 'min="0.5"'))}
-        </div>
-        ${chk("settings.snapEdges", s.snapEdges, "Snap to neighbours and rails")}
-        ${chk("settings.showTermNames", s.showTermNames, "Show terminal names")}
       </div>
-      <div class="set-group">
-        <h4>Wiring</h4>
-        <div class="row2">
-          ${field("Wire standard", sel_("settings.wireStd", s.wireStd, Object.entries(WIRE_STANDARDS).map(([id, w]) => [id, w.name])))}
-          ${field("Terminal reference", sel_("settings.termSep", s.termSep, [["-", "TB101-1"], [":", "TB101:1"], [".", "TB101.1"], ["/", "TB101/1"], [" ", "TB101 1"]]))}
+      <div class="set-col">
+        <div class="set-group">
+          <h4>Labels and text</h4>
+          ${chk("settings.labelPage", s.labelPage !== false, "Page names for ends on another page (TB101-1 (Door))")}
+          ${chk("settings.showTermNames", s.showTermNames, "Show terminal names")}
+          <div class="row2">
+            ${field("Tag text height (mm)", num("settings.tagSize", s.tagSize, 0.1, 'min="0.5"'))}
+            ${field("Label text height (mm)", num("settings.labelSize", s.labelSize, 0.1, 'min="0.5"'))}
+          </div>
         </div>
-        <p class="hint-text">Changing the wire standard converts existing wires and profiles to the nearest size, and line / neutral / earth wires to the new colours. It also switches the print paper between American (Letter, Tabloid…, margins in inches) and metric (A4, A3…, margins in mm).</p>
-        <div class="btn-row"><button class="small" data-sact="profiles">${ic("edit", "sm")} Edit wire profiles…</button><button class="small" data-sact="print">${ic("file", "sm")} Print settings…</button></div>
-      </div>
-      <div class="set-group">
-        <h4>Building strips</h4>
-        <div class="field"><span>Build direction: where new parts beside a selected one, repeats and packing go</span>${dirToggle()}</div>
-      </div>
-      <div class="set-group">
-        <h4>Starting up</h4>
-        <label class="check"><input data-ui="startScreen" type="checkbox"${ui.startScreen ? " checked" : ""}> Show the start screen when DIN Stack opens</label>
-        <p class="hint-text">Saved in this browser rather than with the diagram. When it's off, DIN Stack opens straight to the diagram you were working on.</p>
+        <div class="set-group">
+          <h4>Placing parts</h4>
+          ${field("Snap grid", sel_("settings.grid", s.grid, [[0, "Off"], [0.5, "0.5 mm"], [1, "1 mm"], [2.5, "2.5 mm"], [5, "5 mm"]]))}
+          ${chk("settings.snapEdges", s.snapEdges, "Snap to neighbours and rails")}
+          <div class="field"><span>Build direction: where new parts beside a selected one, repeats and packing go</span>${dirToggle()}</div>
+        </div>
+        <div class="set-group">
+          <h4>Starting up</h4>
+          <label class="check"><input data-ui="startScreen" type="checkbox"${ui.startScreen ? " checked" : ""}> Show the start screen when DIN Stack opens</label>
+          <p class="hint-text">Saved in this browser rather than with the diagram. When it's off, DIN Stack opens straight to the diagram you were working on.</p>
+        </div>
       </div>`;
   }
 

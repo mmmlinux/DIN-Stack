@@ -7,6 +7,13 @@ Changes to the ready-made libraries are listed separately: each library's folder
 ### Improvements
 
 - A group note's bracket can be dragged: grab its long line and move it closer to or further from the items. The note stays put and its line follows; the distance shows while dragging and in the note's panel.
+- **Settings is easier to find your way around.** It's wider, in two columns, and grouped the same way as the wires and cables buttons at the bottom right:
+  - **Standards:** wire standard and terminal reference, with the **Wire profiles…** and **Print settings…** buttons.
+  - **Wires** and **Cables:** how each is drawn and what their labels show.
+  - **Labels and text:** page names (for both wires and cables), terminal names and text heights.
+  - **Placing parts:** snap grid, snapping to neighbours and rails, and build direction, now together.
+  - **Starting up:** the start screen.
+- Tick boxes no longer sit beside drop-downs in Settings, so everything lines up.
 
 ## 1.10.37 — 2026-10-28
 
