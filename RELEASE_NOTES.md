@@ -2,6 +2,22 @@
 
 Changes to the ready-made libraries are listed separately: each library's folder in [`libraries/`](libraries/README.md) has its own release notes.
 
+## 1.11.12 — 2026-10-29
+
+Numbered by hand to stay in the 1.11 series. These changes were first published as 1.12.1, which is no longer used.
+
+### Improvements
+
+- **The example shows off more of DIN Stack.** The 24 V control panel example (*Load the example*) now has:
+  - two pages, *Cabinet* and *Door*, with the pilot light H1 on the door wired through cable C3, whose labels say which page the other end is on;
+  - wire ducts D1–D5 round and between the rails, so wire lengths are worked out along them and each duct shows how full it is. The mains cable C1 is routed up the side duct D4, away from the 24 V wiring;
+  - a back plate under everything, and enclosure and cable gland lines typed into the bill of materials;
+  - named terminal strips X1, X2 and X3 for the Terminals tab, and a group note bracketing the 24 V distribution blocks;
+  - ring lugs on the battery wires, a cable length typed in for C3, and the drawing frame for printing.
+- In the example, the enclosure connectors are now J1 and J2, so they don't clash with the strip names.
+- The Mechatronics example (`#mechatronics`) now has the [AACC Mechatronics](libraries/aacc-mechatronics/RELEASE_NOTES.md) library at 1.1.2, so its parts have makers and order numbers in the bill of materials and its TE terminal blocks show in the Terminals tab. Its wiring is unchanged.
+- The Mechatronics example's terminal blocks are renumbered in order along their strips: TB2–TB11 on the lower rail and TB12–TB17 on the upper. Before, two pairs of blocks were both tagged TB6 and TB7.
+
 ## 1.11.11 — 2026-10-29
 
 ### New features

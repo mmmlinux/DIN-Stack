@@ -1241,7 +1241,15 @@
           "link": "1",
           "kind": "bus"
         }
-      ]
+      ],
+      "maker": "TE Connectivity (Entrelec)",
+      "orders": [
+        {
+          "no": "1SNK705010R0000",
+          "desc": ""
+        }
+      ],
+      "stripRole": "block"
     },
     {
       "id": "aacc-te-zk2-5-4p",
@@ -1310,7 +1318,15 @@
           "link": "1",
           "kind": "bus"
         }
-      ]
+      ],
+      "maker": "TE Connectivity (Entrelec)",
+      "orders": [
+        {
+          "no": "1SNK705012R0000",
+          "desc": ""
+        }
+      ],
+      "stripRole": "block"
     },
     {
       "id": "aacc-te-ek2-5",
@@ -1324,7 +1340,15 @@
       "fill": "#5f6368",
       "radius": 0.5,
       "showName": false,
-      "terminals": []
+      "terminals": [],
+      "maker": "TE Connectivity (Entrelec)",
+      "orders": [
+        {
+          "no": "1SNK705910R0000",
+          "desc": ""
+        }
+      ],
+      "stripRole": "divider"
     },
     {
       "id": "aacc-te-ek2-5-4p",
@@ -1338,7 +1362,15 @@
       "fill": "#5f6368",
       "radius": 0.5,
       "showName": false,
-      "terminals": []
+      "terminals": [],
+      "maker": "TE Connectivity (Entrelec)",
+      "orders": [
+        {
+          "no": "1SNK705912R0000",
+          "desc": ""
+        }
+      ],
+      "stripRole": "divider"
     },
     {
       "id": "aacc-tb-2503",
@@ -1701,6 +1733,13 @@
           "link": "",
           "kind": "port"
         }
+      ],
+      "maker": "Allen-Bradley",
+      "orders": [
+        {
+          "no": "1763-L16AWA",
+          "desc": ""
+        }
       ]
     },
     {
@@ -2013,6 +2052,13 @@
           "link": "",
           "kind": "port"
         }
+      ],
+      "maker": "Allen-Bradley",
+      "orders": [
+        {
+          "no": "1763-L16BWA",
+          "desc": ""
+        }
       ]
     },
     {
@@ -2288,6 +2334,13 @@
           "side": "left",
           "link": "",
           "kind": "port"
+        }
+      ],
+      "maker": "Allen-Bradley",
+      "orders": [
+        {
+          "no": "1763-L16BBB",
+          "desc": ""
         }
       ]
     },
@@ -2583,6 +2636,13 @@
           "link": "",
           "kind": "port"
         }
+      ],
+      "maker": "Allen-Bradley",
+      "orders": [
+        {
+          "no": "1763-L16DWD",
+          "desc": ""
+        }
       ]
     },
     {
@@ -2660,6 +2720,13 @@
           "side": "bottom",
           "link": "",
           "kind": "port"
+        }
+      ],
+      "maker": "Siemens",
+      "orders": [
+        {
+          "no": "6GK7277-1AA10-0AA0",
+          "desc": ""
         }
       ]
     },
@@ -2739,6 +2806,13 @@
           "link": "M",
           "kind": "wire"
         }
+      ],
+      "maker": "Siemens",
+      "orders": [
+        {
+          "no": "6EP1332-1SH71",
+          "desc": ""
+        }
       ]
     },
     {
@@ -2798,6 +2872,13 @@
           "side": "bottom",
           "link": "",
           "kind": "wire"
+        }
+      ],
+      "maker": "AutomationDirect",
+      "orders": [
+        {
+          "no": "PSP05-020S",
+          "desc": ""
         }
       ]
     }
@@ -2921,7 +3002,7 @@
       "id": "iu27yzrn",
       "kind": "part",
       "tpl": "aacc-te-zk2-5",
-      "tag": "TB6",
+      "tag": "TB8",
       "desc": "",
       "x": 180.8,
       "y": 142.05,
@@ -2931,7 +3012,7 @@
       "id": "ivc5w2pp",
       "kind": "part",
       "tpl": "aacc-te-zk2-5",
-      "tag": "TB7",
+      "tag": "TB9",
       "desc": "",
       "x": 175.6,
       "y": 142.05,
@@ -2941,7 +3022,7 @@
       "id": "idx3iyj8",
       "kind": "part",
       "tpl": "aacc-te-zk2-5",
-      "tag": "TB8",
+      "tag": "TB10",
       "desc": "",
       "x": 170.4,
       "y": 142.05,
@@ -2951,7 +3032,7 @@
       "id": "ihws4dky",
       "kind": "part",
       "tpl": "aacc-te-zk2-5",
-      "tag": "TB9",
+      "tag": "TB11",
       "desc": "",
       "x": 165.2,
       "y": 142.05,
@@ -2961,7 +3042,7 @@
       "id": "i6p61xgm",
       "kind": "part",
       "tpl": "aacc-te-zk2-5",
-      "tag": "TB10",
+      "tag": "TB12",
       "desc": "",
       "x": 175,
       "y": -87.95,
@@ -2971,7 +3052,7 @@
       "id": "i17cigzv",
       "kind": "part",
       "tpl": "aacc-te-zk2-5",
-      "tag": "TB11",
+      "tag": "TB13",
       "desc": "",
       "x": 169.8,
       "y": -87.95,
@@ -2981,7 +3062,7 @@
       "id": "iri4qkt2",
       "kind": "part",
       "tpl": "aacc-te-zk2-5",
-      "tag": "TB12",
+      "tag": "TB14",
       "desc": "",
       "x": 164.6,
       "y": -87.95,
@@ -2991,7 +3072,7 @@
       "id": "io7ajqdg",
       "kind": "part",
       "tpl": "aacc-te-zk2-5",
-      "tag": "TB13",
+      "tag": "TB15",
       "desc": "",
       "x": 159.4,
       "y": -87.95,
@@ -3001,7 +3082,7 @@
       "id": "iamng7bu",
       "kind": "part",
       "tpl": "aacc-te-zk2-5",
-      "tag": "TB14",
+      "tag": "TB16",
       "desc": "",
       "x": 154.2,
       "y": -87.95,
@@ -3011,7 +3092,7 @@
       "id": "iklir3qc",
       "kind": "part",
       "tpl": "aacc-te-zk2-5",
-      "tag": "TB15",
+      "tag": "TB17",
       "desc": "",
       "x": 149,
       "y": -87.95,
@@ -4010,6 +4091,6 @@
   ],
   "circuitLabels": {},
   "libVersions": {
-    "AACC Mechatronics": "1.0.1"
+    "AACC Mechatronics": "1.1.2"
   }
 }

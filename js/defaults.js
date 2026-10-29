@@ -440,41 +440,66 @@ function newProject(templates) {
 function exampleProject() {
   const p = newProject();
   p.meta.title = "Example: 24 V control panel with UPS";
-  p.meta.notes = "Mains comes in on X1 through F1 to the power supply PS1. The DC UPS UPS1 and battery GB1 keep 24 V up during a mains cut, and its alarm contact drives K1, which lights the beacon H1 on the door.";
+  p.meta.notes = "Mains comes in on J1 through F1 to the power supply PS1. The DC UPS UPS1 and battery GB1 keep 24 V up during a mains cut, and its alarm contact drives K1, which lights H1 on the door (page Door) through cable C3. Wires run in the ducts D1–D5; the BOM and Terminals tabs, and File → Export…, show what's worked out from the drawing.";
+  // Two pages: the back plate inside the cabinet, and the door.
+  p.pages = [{ id: "p1", name: "Cabinet", location: "CAB1" }, { id: "p2", name: "Door", location: "DOOR" }];
+  p.page = "p1";
+  // A project type: the door's pilot light isn't one of the built-in types.
+  p.templates.push({
+    id: "pilot22", name: "Pilot light, 22 mm", category: "Pilot lights", prefix: "H", mount: "free", library: PROJECT_LIBRARY,
+    w: 30, h: 30, fill: "#f0c000", radius: 15, showName: false,
+    terminals: [{ ...T("x1", "X1", 9, 6), side: "top" }, { ...T("x2", "X2", 21, 6), side: "top" }],
+  });
+  p.settings.print = { ...printDefaults(p.settings.wireStd), head: false, frame: true, scale: "shrink" };
   const part = (id, tpl, tag, x, y, desc = "") => ({ id, kind: "part", tpl, tag, desc, x, y, rot: 0 });
   const onRail = (railY, h) => railY + 17.5 - h / 2; // top of a part h mm tall, centred on a 35 mm rail
-  const A = 40, B = 170; // the two rails
+  const A = 95, B = 290; // the two rails
+  const duct = (id, label, x, y, length, vertical = false) => ({ id, kind: "duct", label, x, y, length, width: 40, depth: 60, vertical });
+  const strip = (it, name) => Object.assign(it, { strip: name });
   p.items = [
-    { id: "r1", kind: "rail", x: 10, y: A, length: 270, height: 35 },
-    { id: "r2", kind: "rail", x: 10, y: B, length: 110, height: 35 },
-    // Rail 1: mains terminals, breaker, power supply, UPS and the 24 V distribution strip.
-    part("es1", "endstop", "", 14, onRail(A, 50)),
-    part("x1", "tb2", "TB1", 23.5, onRail(A, 45), "L"),
-    part("x2", "tb2blue", "TB2", 28.7, onRail(A, 45), "N"),
-    part("x3", "tbpe", "TB3", 33.9, onRail(A, 45), "PE"),
-    part("x4", "tbpe", "TB4", 39.1, onRail(A, 45), "PE"),
-    part("f1", "cb2", "F1", 44.3, onRail(A, 85), "Mains"),
-    part("ps1", "psu", "PS1", 84, onRail(A, 90), "24 V DC 5 A"),
-    part("ups1", "ups", "UPS1", 136, onRail(A, 90), "24 V DC UPS"),
-    part("f2", "cb1", "F2", 192, onRail(A, 85), "24 V out"),
-    part("es2", "endstop", "", 210, onRail(A, 50)),
-    // Rail 2: network switch, alarm relay and the terminals for the cable to the door.
-    part("sw1", "ethsw5", "SW1", 14, onRail(B, 90), "Unmanaged"),
-    part("k1", "relay", "K1", 66, onRail(B, 90), "UPS alarm"),
-    part("es4", "endstop", "", 82, onRail(B, 50)),
-    part("x13", "tb2", "TB13", 91.5, onRail(B, 45)),
-    part("x14", "tb2blue", "TB14", 96.7, onRail(B, 45)),
-    part("es5", "endstop", "", 101.9, onRail(B, 50)),
-    // Loose parts: the battery, and connectors on the enclosure.
-    part("gb1", "battery", "GB1", 130, 150, "12 V 7 Ah ×2"),
-    part("xm", "plug3", "X1", 60, 268, "Mains in"),
-    part("xn", "rj45ft", "X2", 22, 262, "Service port"),
-    { id: "t1", kind: "text", x: 219.5, y: 104, text: "24 V distribution\n+24 V on the grey blocks (bus bar BB1)\n0 V on the blue blocks (bus bar BB2)", size: 2.5 },
-    { id: "t2", kind: "text", x: 130, y: 222, text: "K1 picks up when UPS1 is running on battery\nand lights the beacon H1 on the door.", size: 2.5 },
+    // The back plate goes first, so it's drawn under everything, then the ducts and rails.
+    { id: "bp1", kind: "plate", name: "Back plate", x: 0, y: -10, w: 400, h: 435 },
+    duct("d1", "D1", 50, 0, 300),
+    duct("d2", "D2", 50, 195, 300),
+    duct("d3", "D3", 50, 375, 300),
+    duct("d4", "D4", 10, 0, 415, true),
+    duct("d5", "D5", 350, 0, 415, true),
+    { id: "r1", kind: "rail", x: 60, y: A, length: 270, height: 35 },
+    { id: "r2", kind: "rail", x: 60, y: B, length: 110, height: 35 },
+    // Rail 1: mains terminals (strip X1), breaker, power supply, UPS and the 24 V distribution strip (X2).
+    strip(part("es1", "endstop", "", 64, onRail(A, 50)), "X1"),
+    strip(part("x1", "tb2", "TB1", 73.5, onRail(A, 45), "L"), "X1"),
+    strip(part("x2", "tb2blue", "TB2", 78.7, onRail(A, 45), "N"), "X1"),
+    strip(part("x3", "tbpe", "TB3", 83.9, onRail(A, 45), "PE"), "X1"),
+    strip(part("x4", "tbpe", "TB4", 89.1, onRail(A, 45), "PE"), "X1"),
+    part("f1", "cb2", "F1", 94.3, onRail(A, 85), "Mains"),
+    part("ps1", "psu", "PS1", 134, onRail(A, 90), "24 V DC 5 A"),
+    part("ups1", "ups", "UPS1", 186, onRail(A, 90), "24 V DC UPS"),
+    part("f2", "cb1", "F2", 242, onRail(A, 85), "24 V out"),
+    strip(part("es2", "endstop", "", 260, onRail(A, 50)), "X2"),
+    // Rail 2: network switch, alarm relay and the terminals for the cable to the door (strip X3).
+    part("sw1", "ethsw5", "SW1", 64, onRail(B, 90), "Unmanaged"),
+    part("k1", "relay", "K1", 116, onRail(B, 90), "UPS alarm"),
+    strip(part("es4", "endstop", "", 132, onRail(B, 50)), "X3"),
+    strip(part("x13", "tb2", "TB13", 141.5, onRail(B, 45)), "X3"),
+    strip(part("x14", "tb2blue", "TB14", 146.7, onRail(B, 45)), "X3"),
+    strip(part("es5", "endstop", "", 151.9, onRail(B, 50)), "X3"),
+    // Loose parts: the battery on the back plate, and connectors on the bottom of the enclosure.
+    part("gb1", "battery", "GB1", 180, 275, "12 V 7 Ah ×2"),
+    part("xm", "plug3", "J1", 110, 440, "Mains in"),
+    part("xn", "rj45ft", "J2", 62, 435, "Service port"),
+    { id: "t2", kind: "text", x: 180, y: 348, text: "K1 picks up when UPS1 is running on battery\nand lights H1 on the door.", size: 2.5 },
+    // The door: the pilot light, wired from strip X3 through cable C3.
+    { ...part("h1", "pilot22", "H1", 60, 40, "UPS on battery"), page: "p2" },
+    { id: "t3", kind: "text", x: 45, y: 78, text: "Inside of the door", size: 3.5, bold: true, page: "p2" },
+    { id: "t4", kind: "text", x: 45, y: 85, text: "H1 lights while the UPS runs on battery.\nCable C3 comes from strip X3 on the Cabinet page;\nthe labels say which page the other ends are on.", size: 2.5, page: "p2" },
   ];
   // The distribution strip: +24 V and 0 V blocks in turn, between end stops.
-  for (let i = 0; i < 8; i++) p.items.push(part("x" + (i + 5), i % 2 ? "tb2blue" : "tb2", "TB" + (i + 5), 219.5 + i * 5.2, onRail(A, 45)));
-  p.items.push(part("es3", "endstop", "", 219.5 + 8 * 5.2, onRail(A, 50)));
+  for (let i = 0; i < 8; i++) p.items.push(strip(part("x" + (i + 5), i % 2 ? "tb2blue" : "tb2", "TB" + (i + 5), 269.5 + i * 5.2, onRail(A, 45)), "X2"));
+  p.items.push(strip(part("es3", "endstop", "", 269.5 + 8 * 5.2, onRail(A, 50)), "X2"));
+  // A group note: a bracket under the distribution strip's blocks, with a line to the note.
+  p.items.push({ id: "t1", kind: "text", x: 268, y: 165, text: "24 V distribution, strip X2\n+24 V on the grey blocks (bus bar BB1)\n0 V on the blue blocks (bus bar BB2)", size: 2.5,
+    links: ["x5", "x6", "x7", "x8", "x9", "x10", "x11", "x12"], gap: 22 });
 
   const prof = (id) => p.wireProfiles.find((x) => x.id === id);
   let n = 0;
@@ -499,9 +524,9 @@ function exampleProject() {
     // Power supply to UPS.
     w("ps1", "v1", "ups1", "ip", "wp_24v"),
     w("ps1", "g1", "ups1", "in", "wp_0v"),
-    // Battery: heavier wires, drawn as lines.
-    w("gb1", "p", "ups1", "bp", { color: "#d32f2f", gauge: "14 AWG" }, { draw: "line" }),
-    w("gb1", "n", "ups1", "bn", { color: "#1f1f1f", gauge: "14 AWG" }, { draw: "line" }),
+    // Battery: heavier wires, drawn as lines, with ring lugs on the battery's posts.
+    w("gb1", "p", "ups1", "bp", { color: "#d32f2f", gauge: "14 AWG" }, { draw: "straight", endA: "ring", stripA: 8 }),
+    w("gb1", "n", "ups1", "bn", { color: "#1f1f1f", gauge: "14 AWG" }, { draw: "straight", endA: "ring", stripA: 8 }),
     // UPS output, through F2, to the distribution strip.
     w("ups1", "op", "f2", "a", "wp_24v", { circuit: "+24V" }),
     w("f2", "b", "x5", "a", "wp_24v"),
@@ -520,9 +545,9 @@ function exampleProject() {
   ];
   const byWire = (...ids) => ids.map((k) => "c" + k);
 
-  // The beacon cable's cores: each runs from a terminal to its core number on the cable.
-  const core = (item, term, i) => ({ id: "c" + ++n, a: { item, term }, b: { item: "cab3", term: String(i) }, wire: "W" + n, notes: "" });
-  const beacon = [core("x13", "b", 1), core("x14", "b", 2)];
+  // The pilot light's cable, from strip X3 to H1 on the door page.
+  const core = (item, term, to) => ({ id: "c" + ++n, a: { item, term }, b: { item: "h1", term: to }, wire: "W" + n, notes: "" });
+  const beacon = [core("x13", "b", "x1"), core("x14", "b", "x2")];
   p.connections.push(...beacon);
 
   // Cable types from the cable library. A cable's cores take the looks its type lists, core 1 first,
@@ -543,12 +568,18 @@ function exampleProject() {
     return cb;
   };
   p.cables = [
-    // Mains cable from the plug, drawn broken: a tail at each end says where the other end goes.
-    cable("cab1", "C1", "cp_mains", { wires: byWire(1, 2, 3), draw: "break" }),
+    // Mains cable from the plug, drawn broken: a tail at each end says where the other end goes. It's routed
+    // up the side duct D4, away from the 24 V wiring.
+    cable("cab1", "C1", "cp_mains", { wires: byWire(1, 2, 3), draw: "break", via: ["d4"] }),
     // Patch lead from switch port 1 to the service port on the enclosure.
     cable("cab2", "C2", "cp_cat6", { open: true, portA: { item: "sw1", term: "p1" }, portB: { item: "xn", term: "in" } }),
-    // Two cores to the beacon on the door; only this end is drawn.
-    cable("cab3", "C3", "cp_dc2", { open: true, wires: beacon.map((c) => c.id), to: "H1 beacon (door)" }),
+    // Two cores to the pilot light on the door. Its ends are on different pages, so its length is typed in (m).
+    cable("cab3", "C3", "cp_dc2", { wires: beacon.map((c) => c.id), length: 1.5 }),
+  ];
+  // Bill of materials lines for what isn't drawn.
+  p.bomExtra = [
+    { qty: 1, maker: "", no: "", desc: "Enclosure, 16 × 20 × 8 in, with back plate" },
+    { qty: 1, maker: "", no: "", desc: "Cable gland, ½ in NPT, for C1" },
   ];
 
   // Bus bars along the strips, named for their circuits.
