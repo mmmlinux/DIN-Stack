@@ -14,6 +14,8 @@ const FILES = [
   "js/defaults.js",
   "js/cables.js",
   "js/render.js",
+  "js/reports.js",
+  "js/routing.js",
   "js/tpl-editor.js",
   "js/app.js",
   "icons/icon.svg",

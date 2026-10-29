@@ -1,7 +1,7 @@
 {
   "type": "dinstack-library",
-  "app": "1.2.2",
-  "version": "1.0.0",
+  "app": "1.11.6",
+  "version": "1.1.2",
   "name": "Phoenix Contact UT terminal blocks",
   "templates": [
     {
@@ -53,7 +53,15 @@
           "link": "1",
           "kind": "bus"
         }
-      ]
+      ],
+      "maker": "Phoenix Contact",
+      "orders": [
+        {
+          "no": "1452265",
+          "desc": ""
+        }
+      ],
+      "stripRole": "block"
     },
     {
       "id": "pxc-ut-2-5",
@@ -104,7 +112,15 @@
           "link": "1",
           "kind": "bus"
         }
-      ]
+      ],
+      "maker": "Phoenix Contact",
+      "orders": [
+        {
+          "no": "3044076",
+          "desc": ""
+        }
+      ],
+      "stripRole": "block"
     },
     {
       "id": "pxc-ut-2-5-bu",
@@ -155,7 +171,15 @@
           "link": "1",
           "kind": "bus"
         }
-      ]
+      ],
+      "maker": "Phoenix Contact",
+      "orders": [
+        {
+          "no": "3044089",
+          "desc": ""
+        }
+      ],
+      "stripRole": "block"
     },
     {
       "id": "pxc-ut-2-5-pe",
@@ -206,7 +230,15 @@
           "link": "1",
           "kind": "bus"
         }
-      ]
+      ],
+      "maker": "Phoenix Contact",
+      "orders": [
+        {
+          "no": "3044092",
+          "desc": ""
+        }
+      ],
+      "stripRole": "block"
     },
     {
       "id": "pxc-ut-4",
@@ -257,7 +289,15 @@
           "link": "1",
           "kind": "bus"
         }
-      ]
+      ],
+      "maker": "Phoenix Contact",
+      "orders": [
+        {
+          "no": "3044102",
+          "desc": ""
+        }
+      ],
+      "stripRole": "block"
     },
     {
       "id": "pxc-ut-4-bu",
@@ -308,7 +348,15 @@
           "link": "1",
           "kind": "bus"
         }
-      ]
+      ],
+      "maker": "Phoenix Contact",
+      "orders": [
+        {
+          "no": "3044115",
+          "desc": ""
+        }
+      ],
+      "stripRole": "block"
     },
     {
       "id": "pxc-ut-4-pe",
@@ -359,7 +407,15 @@
           "link": "1",
           "kind": "bus"
         }
-      ]
+      ],
+      "maker": "Phoenix Contact",
+      "orders": [
+        {
+          "no": "3044128",
+          "desc": ""
+        }
+      ],
+      "stripRole": "block"
     },
     {
       "id": "pxc-ut-6",
@@ -410,7 +466,15 @@
           "link": "1",
           "kind": "bus"
         }
-      ]
+      ],
+      "maker": "Phoenix Contact",
+      "orders": [
+        {
+          "no": "3044131",
+          "desc": ""
+        }
+      ],
+      "stripRole": "block"
     },
     {
       "id": "pxc-ut-6-bu",
@@ -461,7 +525,15 @@
           "link": "1",
           "kind": "bus"
         }
-      ]
+      ],
+      "maker": "Phoenix Contact",
+      "orders": [
+        {
+          "no": "3044144",
+          "desc": ""
+        }
+      ],
+      "stripRole": "block"
     },
     {
       "id": "pxc-ut-6-pe",
@@ -512,7 +584,15 @@
           "link": "1",
           "kind": "bus"
         }
-      ]
+      ],
+      "maker": "Phoenix Contact",
+      "orders": [
+        {
+          "no": "3044157",
+          "desc": ""
+        }
+      ],
+      "stripRole": "block"
     },
     {
       "id": "pxc-ut-10",
@@ -563,7 +643,15 @@
           "link": "1",
           "kind": "bus"
         }
-      ]
+      ],
+      "maker": "Phoenix Contact",
+      "orders": [
+        {
+          "no": "3044160",
+          "desc": ""
+        }
+      ],
+      "stripRole": "block"
     },
     {
       "id": "pxc-ut-10-bu",
@@ -614,7 +702,15 @@
           "link": "1",
           "kind": "bus"
         }
-      ]
+      ],
+      "maker": "Phoenix Contact",
+      "orders": [
+        {
+          "no": "3044188",
+          "desc": ""
+        }
+      ],
+      "stripRole": "block"
     },
     {
       "id": "pxc-ut-10-pe",
@@ -665,7 +761,15 @@
           "link": "1",
           "kind": "bus"
         }
-      ]
+      ],
+      "maker": "Phoenix Contact",
+      "orders": [
+        {
+          "no": "3044173",
+          "desc": ""
+        }
+      ],
+      "stripRole": "block"
     },
     {
       "id": "pxc-ut-16",
@@ -716,7 +820,15 @@
           "link": "1",
           "kind": "bus"
         }
-      ]
+      ],
+      "maker": "Phoenix Contact",
+      "orders": [
+        {
+          "no": "3044199",
+          "desc": ""
+        }
+      ],
+      "stripRole": "block"
     },
     {
       "id": "pxc-ut-16-bu",
@@ -767,7 +879,15 @@
           "link": "1",
           "kind": "bus"
         }
-      ]
+      ],
+      "maker": "Phoenix Contact",
+      "orders": [
+        {
+          "no": "3044209",
+          "desc": ""
+        }
+      ],
+      "stripRole": "block"
     },
     {
       "id": "pxc-ut-16-pe",
@@ -818,7 +938,15 @@
           "link": "1",
           "kind": "bus"
         }
-      ]
+      ],
+      "maker": "Phoenix Contact",
+      "orders": [
+        {
+          "no": "3044212",
+          "desc": ""
+        }
+      ],
+      "stripRole": "block"
     },
     {
       "id": "pxc-ut-35",
@@ -869,7 +997,15 @@
           "link": "1",
           "kind": "bus"
         }
-      ]
+      ],
+      "maker": "Phoenix Contact",
+      "orders": [
+        {
+          "no": "3044225",
+          "desc": ""
+        }
+      ],
+      "stripRole": "block"
     },
     {
       "id": "pxc-ut-35-bu",
@@ -920,7 +1056,15 @@
           "link": "1",
           "kind": "bus"
         }
-      ]
+      ],
+      "maker": "Phoenix Contact",
+      "orders": [
+        {
+          "no": "3044238",
+          "desc": ""
+        }
+      ],
+      "stripRole": "block"
     },
     {
       "id": "pxc-ut-35-pe",
@@ -971,7 +1115,15 @@
           "link": "1",
           "kind": "bus"
         }
-      ]
+      ],
+      "maker": "Phoenix Contact",
+      "orders": [
+        {
+          "no": "3044241",
+          "desc": ""
+        }
+      ],
+      "stripRole": "block"
     },
     {
       "id": "pxc-ut-2-5-twin",
@@ -1031,7 +1183,15 @@
           "link": "1",
           "kind": "bus"
         }
-      ]
+      ],
+      "maker": "Phoenix Contact",
+      "orders": [
+        {
+          "no": "3044513",
+          "desc": ""
+        }
+      ],
+      "stripRole": "block"
     },
     {
       "id": "pxc-ut-2-5-twin-bu",
@@ -1091,7 +1251,15 @@
           "link": "1",
           "kind": "bus"
         }
-      ]
+      ],
+      "maker": "Phoenix Contact",
+      "orders": [
+        {
+          "no": "3044526",
+          "desc": ""
+        }
+      ],
+      "stripRole": "block"
     },
     {
       "id": "pxc-ut-2-5-twin-pe",
@@ -1151,7 +1319,15 @@
           "link": "1",
           "kind": "bus"
         }
-      ]
+      ],
+      "maker": "Phoenix Contact",
+      "orders": [
+        {
+          "no": "3044539",
+          "desc": ""
+        }
+      ],
+      "stripRole": "block"
     },
     {
       "id": "pxc-ut-2-5-quattro",
@@ -1220,7 +1396,15 @@
           "link": "1",
           "kind": "bus"
         }
-      ]
+      ],
+      "maker": "Phoenix Contact",
+      "orders": [
+        {
+          "no": "3044542",
+          "desc": ""
+        }
+      ],
+      "stripRole": "block"
     },
     {
       "id": "pxc-ut-2-5-quattro-bu",
@@ -1289,7 +1473,15 @@
           "link": "1",
           "kind": "bus"
         }
-      ]
+      ],
+      "maker": "Phoenix Contact",
+      "orders": [
+        {
+          "no": "3044555",
+          "desc": ""
+        }
+      ],
+      "stripRole": "block"
     },
     {
       "id": "pxc-ut-2-5-quattro-pe",
@@ -1358,7 +1550,15 @@
           "link": "1",
           "kind": "bus"
         }
-      ]
+      ],
+      "maker": "Phoenix Contact",
+      "orders": [
+        {
+          "no": "3044568",
+          "desc": ""
+        }
+      ],
+      "stripRole": "block"
     },
     {
       "id": "pxc-ut-4-twin",
@@ -1418,7 +1618,15 @@
           "link": "1",
           "kind": "bus"
         }
-      ]
+      ],
+      "maker": "Phoenix Contact",
+      "orders": [
+        {
+          "no": "3044364",
+          "desc": ""
+        }
+      ],
+      "stripRole": "block"
     },
     {
       "id": "pxc-ut-4-twin-bu",
@@ -1478,7 +1686,15 @@
           "link": "1",
           "kind": "bus"
         }
-      ]
+      ],
+      "maker": "Phoenix Contact",
+      "orders": [
+        {
+          "no": "3044500",
+          "desc": ""
+        }
+      ],
+      "stripRole": "block"
     },
     {
       "id": "pxc-ut-4-twin-pe",
@@ -1538,7 +1754,15 @@
           "link": "1",
           "kind": "bus"
         }
-      ]
+      ],
+      "maker": "Phoenix Contact",
+      "orders": [
+        {
+          "no": "3044380",
+          "desc": ""
+        }
+      ],
+      "stripRole": "block"
     },
     {
       "id": "pxc-ut-4-quattro",
@@ -1607,7 +1831,15 @@
           "link": "1",
           "kind": "bus"
         }
-      ]
+      ],
+      "maker": "Phoenix Contact",
+      "orders": [
+        {
+          "no": "3044571",
+          "desc": ""
+        }
+      ],
+      "stripRole": "block"
     },
     {
       "id": "pxc-ut-4-quattro-bu",
@@ -1676,7 +1908,15 @@
           "link": "1",
           "kind": "bus"
         }
-      ]
+      ],
+      "maker": "Phoenix Contact",
+      "orders": [
+        {
+          "no": "3044584",
+          "desc": ""
+        }
+      ],
+      "stripRole": "block"
     },
     {
       "id": "pxc-ut-4-quattro-pe",
@@ -1745,7 +1985,15 @@
           "link": "1",
           "kind": "bus"
         }
-      ]
+      ],
+      "maker": "Phoenix Contact",
+      "orders": [
+        {
+          "no": "3044597",
+          "desc": ""
+        }
+      ],
+      "stripRole": "block"
     },
     {
       "id": "pxc-uttb-2-5",
@@ -1814,7 +2062,15 @@
           "link": "2",
           "kind": "bus"
         }
-      ]
+      ],
+      "maker": "Phoenix Contact",
+      "orders": [
+        {
+          "no": "3044636",
+          "desc": ""
+        }
+      ],
+      "stripRole": "block"
     },
     {
       "id": "pxc-uttb-2-5-bu",
@@ -1883,7 +2139,15 @@
           "link": "2",
           "kind": "bus"
         }
-      ]
+      ],
+      "maker": "Phoenix Contact",
+      "orders": [
+        {
+          "no": "3044649",
+          "desc": ""
+        }
+      ],
+      "stripRole": "block"
     },
     {
       "id": "pxc-uttb-2-5-pe",
@@ -1952,7 +2216,15 @@
           "link": "2",
           "kind": "bus"
         }
-      ]
+      ],
+      "maker": "Phoenix Contact",
+      "orders": [
+        {
+          "no": "3044665",
+          "desc": ""
+        }
+      ],
+      "stripRole": "block"
     },
     {
       "id": "pxc-uttb-4",
@@ -2021,7 +2293,15 @@
           "link": "2",
           "kind": "bus"
         }
-      ]
+      ],
+      "maker": "Phoenix Contact",
+      "orders": [
+        {
+          "no": "3044814",
+          "desc": ""
+        }
+      ],
+      "stripRole": "block"
     },
     {
       "id": "pxc-uttb-4-bu",
@@ -2090,7 +2370,15 @@
           "link": "2",
           "kind": "bus"
         }
-      ]
+      ],
+      "maker": "Phoenix Contact",
+      "orders": [
+        {
+          "no": "3044791",
+          "desc": ""
+        }
+      ],
+      "stripRole": "block"
     },
     {
       "id": "pxc-uttb-4-pe",
@@ -2159,7 +2447,15 @@
           "link": "2",
           "kind": "bus"
         }
-      ]
+      ],
+      "maker": "Phoenix Contact",
+      "orders": [
+        {
+          "no": "3044759",
+          "desc": ""
+        }
+      ],
+      "stripRole": "block"
     },
     {
       "id": "pxc-ut-2-5-3l",
@@ -2228,7 +2524,15 @@
           "link": "3",
           "kind": "wire"
         }
-      ]
+      ],
+      "maker": "Phoenix Contact",
+      "orders": [
+        {
+          "no": "3214259",
+          "desc": ""
+        }
+      ],
+      "stripRole": "block"
     },
     {
       "id": "pxc-ut-2-5-pe-l-n",
@@ -2297,7 +2601,15 @@
           "link": "3",
           "kind": "wire"
         }
-      ]
+      ],
+      "maker": "Phoenix Contact",
+      "orders": [
+        {
+          "no": "3214291",
+          "desc": ""
+        }
+      ],
+      "stripRole": "block"
     },
     {
       "id": "pxc-ut-2-5-pe-l-l",
@@ -2366,7 +2678,15 @@
           "link": "3",
           "kind": "wire"
         }
-      ]
+      ],
+      "maker": "Phoenix Contact",
+      "orders": [
+        {
+          "no": "3214301",
+          "desc": ""
+        }
+      ],
+      "stripRole": "block"
     },
     {
       "id": "pxc-ut-2-5-3pe",
@@ -2435,7 +2755,15 @@
           "link": "3",
           "kind": "wire"
         }
-      ]
+      ],
+      "maker": "Phoenix Contact",
+      "orders": [
+        {
+          "no": "3214275",
+          "desc": ""
+        }
+      ],
+      "stripRole": "block"
     },
     {
       "id": "pxc-ut-4-hesi",
@@ -2486,7 +2814,15 @@
           "link": "2",
           "kind": "bus"
         }
-      ]
+      ],
+      "maker": "Phoenix Contact",
+      "orders": [
+        {
+          "no": "3046032",
+          "desc": ""
+        }
+      ],
+      "stripRole": "block"
     },
     {
       "id": "pxc-ut-6-hesi",
@@ -2537,7 +2873,15 @@
           "link": "2",
           "kind": "bus"
         }
-      ]
+      ],
+      "maker": "Phoenix Contact",
+      "orders": [
+        {
+          "no": "3046401",
+          "desc": ""
+        }
+      ],
+      "stripRole": "block"
     },
     {
       "id": "pxc-ut-4-hedi",
@@ -2588,7 +2932,15 @@
           "link": "2",
           "kind": "bus"
         }
-      ]
+      ],
+      "maker": "Phoenix Contact",
+      "orders": [
+        {
+          "no": "3046249",
+          "desc": ""
+        }
+      ],
+      "stripRole": "block"
     },
     {
       "id": "pxc-ut-2-5-mt",
@@ -2639,7 +2991,15 @@
           "link": "2",
           "kind": "bus"
         }
-      ]
+      ],
+      "maker": "Phoenix Contact",
+      "orders": [
+        {
+          "no": "3046362",
+          "desc": ""
+        }
+      ],
+      "stripRole": "block"
     },
     {
       "id": "pxc-ut-4-mt",
@@ -2690,7 +3050,15 @@
           "link": "2",
           "kind": "bus"
         }
-      ]
+      ],
+      "maker": "Phoenix Contact",
+      "orders": [
+        {
+          "no": "3046139",
+          "desc": ""
+        }
+      ],
+      "stripRole": "block"
     },
     {
       "id": "pxc-ut-2-5-mtd",
@@ -2741,7 +3109,15 @@
           "link": "2",
           "kind": "bus"
         }
-      ]
+      ],
+      "maker": "Phoenix Contact",
+      "orders": [
+        {
+          "no": "3064085",
+          "desc": ""
+        }
+      ],
+      "stripRole": "block"
     },
     {
       "id": "pxc-ut-4-mtd",
@@ -2792,7 +3168,15 @@
           "link": "2",
           "kind": "bus"
         }
-      ]
+      ],
+      "maker": "Phoenix Contact",
+      "orders": [
+        {
+          "no": "3046184",
+          "desc": ""
+        }
+      ],
+      "stripRole": "block"
     },
     {
       "id": "pxc-d-ut-2-5-10",
@@ -2806,7 +3190,15 @@
       "fill": "#d7dadd",
       "radius": 0.5,
       "showName": false,
-      "terminals": []
+      "terminals": [],
+      "maker": "Phoenix Contact",
+      "orders": [
+        {
+          "no": "3047028",
+          "desc": ""
+        }
+      ],
+      "stripRole": "divider"
     },
     {
       "id": "pxc-d-ut-16",
@@ -2820,7 +3212,15 @@
       "fill": "#d7dadd",
       "radius": 0.5,
       "showName": false,
-      "terminals": []
+      "terminals": [],
+      "maker": "Phoenix Contact",
+      "orders": [
+        {
+          "no": "3047206",
+          "desc": ""
+        }
+      ],
+      "stripRole": "divider"
     },
     {
       "id": "pxc-d-ut-2-5-4-twin",
@@ -2834,7 +3234,15 @@
       "fill": "#d7dadd",
       "radius": 0.5,
       "showName": false,
-      "terminals": []
+      "terminals": [],
+      "maker": "Phoenix Contact",
+      "orders": [
+        {
+          "no": "3047141",
+          "desc": ""
+        }
+      ],
+      "stripRole": "divider"
     },
     {
       "id": "pxc-d-ut-2-5-4-quattro",
@@ -2848,7 +3256,15 @@
       "fill": "#d7dadd",
       "radius": 0.5,
       "showName": false,
-      "terminals": []
+      "terminals": [],
+      "maker": "Phoenix Contact",
+      "orders": [
+        {
+          "no": "3047170",
+          "desc": ""
+        }
+      ],
+      "stripRole": "divider"
     },
     {
       "id": "pxc-d-uttb-2-5-4",
@@ -2862,7 +3278,15 @@
       "fill": "#d7dadd",
       "radius": 0.5,
       "showName": false,
-      "terminals": []
+      "terminals": [],
+      "maker": "Phoenix Contact",
+      "orders": [
+        {
+          "no": "3047293",
+          "desc": ""
+        }
+      ],
+      "stripRole": "divider"
     },
     {
       "id": "pxc-d-ut-2-5-3l",
@@ -2876,7 +3300,15 @@
       "fill": "#d7dadd",
       "radius": 0.5,
       "showName": false,
-      "terminals": []
+      "terminals": [],
+      "maker": "Phoenix Contact",
+      "orders": [
+        {
+          "no": "3214314",
+          "desc": ""
+        }
+      ],
+      "stripRole": "divider"
     },
     {
       "id": "pxc-atp-ut",
@@ -2890,7 +3322,15 @@
       "fill": "#d7dadd",
       "radius": 0.5,
       "showName": false,
-      "terminals": []
+      "terminals": [],
+      "maker": "Phoenix Contact",
+      "orders": [
+        {
+          "no": "3047167",
+          "desc": ""
+        }
+      ],
+      "stripRole": "divider"
     },
     {
       "id": "pxc-atp-ut-twin",
@@ -2904,7 +3344,15 @@
       "fill": "#d7dadd",
       "radius": 0.5,
       "showName": false,
-      "terminals": []
+      "terminals": [],
+      "maker": "Phoenix Contact",
+      "orders": [
+        {
+          "no": "3047183",
+          "desc": ""
+        }
+      ],
+      "stripRole": "divider"
     },
     {
       "id": "pxc-atp-ut-quattro",
@@ -2918,7 +3366,15 @@
       "fill": "#d7dadd",
       "radius": 0.5,
       "showName": false,
-      "terminals": []
+      "terminals": [],
+      "maker": "Phoenix Contact",
+      "orders": [
+        {
+          "no": "3047196",
+          "desc": ""
+        }
+      ],
+      "stripRole": "divider"
     },
     {
       "id": "pxc-atp-uttb-2-5-4",
@@ -2932,7 +3388,15 @@
       "fill": "#d7dadd",
       "radius": 0.5,
       "showName": false,
-      "terminals": []
+      "terminals": [],
+      "maker": "Phoenix Contact",
+      "orders": [
+        {
+          "no": "3047316",
+          "desc": ""
+        }
+      ],
+      "stripRole": "divider"
     },
     {
       "id": "pxc-tp-uk",
@@ -2946,7 +3410,15 @@
       "fill": "#d7dadd",
       "radius": 0.5,
       "showName": false,
-      "terminals": []
+      "terminals": [],
+      "maker": "Phoenix Contact",
+      "orders": [
+        {
+          "no": "3003046",
+          "desc": ""
+        }
+      ],
+      "stripRole": "divider"
     },
     {
       "id": "pxc-dp-uttb-2-5-4",
@@ -2960,7 +3432,15 @@
       "fill": "#d7dadd",
       "radius": 0.5,
       "showName": false,
-      "terminals": []
+      "terminals": [],
+      "maker": "Phoenix Contact",
+      "orders": [
+        {
+          "no": "3047303",
+          "desc": ""
+        }
+      ],
+      "stripRole": "divider"
     },
     {
       "id": "pxc-clipfix-35-5",
@@ -2974,7 +3454,15 @@
       "fill": "#8d939a",
       "radius": 0.5,
       "showName": false,
-      "terminals": []
+      "terminals": [],
+      "maker": "Phoenix Contact",
+      "orders": [
+        {
+          "no": "3022276",
+          "desc": ""
+        }
+      ],
+      "stripRole": "divider"
     },
     {
       "id": "pxc-clipfix-35",
@@ -2988,7 +3476,15 @@
       "fill": "#8d939a",
       "radius": 0.5,
       "showName": false,
-      "terminals": []
+      "terminals": [],
+      "maker": "Phoenix Contact",
+      "orders": [
+        {
+          "no": "3022218",
+          "desc": ""
+        }
+      ],
+      "stripRole": "divider"
     },
     {
       "id": "pxc-e-uk",
@@ -3002,7 +3498,15 @@
       "fill": "#8d939a",
       "radius": 0.5,
       "showName": false,
-      "terminals": []
+      "terminals": [],
+      "maker": "Phoenix Contact",
+      "orders": [
+        {
+          "no": "1201442",
+          "desc": ""
+        }
+      ],
+      "stripRole": "divider"
     },
     {
       "id": "pxc-e-ns-35-n",
@@ -3016,7 +3520,15 @@
       "fill": "#8d939a",
       "radius": 0.5,
       "showName": false,
-      "terminals": []
+      "terminals": [],
+      "maker": "Phoenix Contact",
+      "orders": [
+        {
+          "no": "0800886",
+          "desc": ""
+        }
+      ],
+      "stripRole": "divider"
     }
   ]
 }

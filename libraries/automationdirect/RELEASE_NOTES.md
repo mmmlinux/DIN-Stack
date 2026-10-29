@@ -8,6 +8,10 @@ To get a newer version into a diagram, click **+** beside the library drop-down 
 
 File: [`automationdirect-din-relays.json`](automationdirect-din-relays.json)
 
+### 1.1.1 — 2026-10-29
+
+- Makers and order numbers filled in for DIN Stack's bill of materials. Each type lists the part numbers it covers, the first being the default, and a part can pick another. Sockets use their own part number. The Gefran GRSH types have their maker only, as their names give part number patterns rather than numbers. Needs DIN Stack 1.11.1 or later.
+
 ### 1.0.1 — 2026-10-23
 
 - **MIRO 12.4 relay DPDT** (Murrelektronik 52102, 52103, 52111, 52130, 52140): the terminal layout now matches the real relay. A1 and A2 are on their own at the top end, and all six contact terminals are at the bottom end in two columns: 11, 12, 14 on the left and 21, 22, 24 on the right. Before, 11 and 21 were at the top with the coil terminals. Parts already in a diagram keep their wires; the wires follow the terminals to their new places.
@@ -24,6 +28,12 @@ The library as first published in DIN Stack 1.1.2, before libraries had version 
 ## AutomationDirect pushbuttons & pilot lights
 
 File: [`automationdirect-pushbuttons.json`](automationdirect-pushbuttons.json)
+
+### 1.1.1 — 2026-10-29
+
+- Makers and order numbers filled in for DIN Stack's bill of materials, where the type's name gives whole part numbers: GCX, Fuji and Eaton devices, the Schmersal EF contact blocks and the joysticks. Types whose names only give families (such as GCX119x) have their maker only.
+- Schmersal whole-device types list their EF contact blocks as accessories, ordered with each device. The operator (NDT.., EDL.. and so on) is chosen from a range, so it isn't listed.
+- Needs DIN Stack 1.11.1 or later.
 
 ### 1.0.2 — 2026-10-23
 

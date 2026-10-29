@@ -93,11 +93,15 @@
     return m[1] + num;
   }
 
+  // With IEC designations, tags only need to be unique within a function and location: the parts on
+  // pages with the same ones as the page open.
+  const sameAspects = (it) => !iecRefs(doc) || aspectPrefix(doc, pageOf(doc, it)) === aspectPrefix(doc, doc.page);
+
   function autoTag(prefix) {
     if (!prefix) return "";
     const re = new RegExp("^" + prefix.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + "(\\d+)$");
     let max = 0;
-    for (const it of doc.items) {
+    for (const it of doc.items.filter(sameAspects)) {
       const m = it.kind === "part" && re.exec(it.tag || "");
       if (m) max = Math.max(max, parseInt(m[1], 10));
     }
@@ -122,7 +126,7 @@
   function refOf(end) {
     const it = itemById(end.item);
     if (!it && cableById(end.item)) return (cableById(end.item).label || "Cable") + doc.settings.termSep + end.term; // one-ended cable core
-    return endRef(it, it && tplOf(it), end.term, doc.settings.termSep);
+    return endRef(it, it && tplOf(it), end.term, doc.settings.termSep, it && partRef(doc, it, tplOf(it)));
   }
 
   // What's attached to a terminal: its wires, the bus bars through it and a cable plugged into it.
@@ -244,6 +248,9 @@
     if (d.settings.lines === "none") Object.assign(d.settings, { lines: "off", wireLabels: false, labelName: "dest", labelWire: false });
     d.templates = Array.isArray(d.templates) ? d.templates : [];
     d.items = Array.isArray(d.items) ? d.items : [];
+    // Ducts are labelled D1, D2… so wires and cables can name the ones they go through.
+    { const used = new Set(d.items.map((i) => i.kind === "duct" && i.label).filter(Boolean)); let n = 1;
+      for (const i of d.items) if (i.kind === "duct" && !i.label) { while (used.has("D" + n)) n++; i.label = "D" + n; used.add(i.label); } }
     // Pages (1.10.16): each item is on one page, and doc.page is the page open. Diagrams from before
     // have everything on one page.
     d.pages = (Array.isArray(d.pages) ? d.pages : []).filter((p) => p && p.id);
@@ -255,6 +262,8 @@
     // A wire drawn as a line on its own (draw "line", before 1.10.23) is now a straight or curved one, as it looked.
     for (const c of d.connections) if (c && c.draw === "line") c.draw = d.settings.lines === "curved" ? "curved" : "straight";
     d.buses = Array.isArray(d.buses) ? d.buses : [];
+    // Lines of the bill of materials typed in by hand (1.11.1).
+    d.bomExtra = (Array.isArray(d.bomExtra) ? d.bomExtra : []).filter((x) => x && typeof x === "object");
     d.cables = Array.isArray(d.cables) ? d.cables : [];
     // The starter profiles are American; older diagrams without profiles get them in their own standard.
     if (!Array.isArray(d.wireProfiles)) {
@@ -423,8 +432,8 @@
 
   // ---------- selection filter ----------
   // Which kinds of thing clicks and selection boxes may pick: null for anything, or a Set of "part",
-  // "wire", "cable", "bus", "rail" and "text". A view setting like zoom: not saved, and undo leaves it alone.
-  const SEL_KINDS = { part: "parts", wire: "wires", cable: "cables", bus: "bus bars", rail: "DIN rails", text: "text notes" };
+  // "wire", "cable", "bus", "rail", "duct", "plate" and "text". A view setting like zoom: not saved, and undo leaves it alone.
+  const SEL_KINDS = { part: "parts", wire: "wires", cable: "cables", bus: "bus bars", rail: "DIN rails", duct: "wire ducts", plate: "back plates", text: "text notes" };
   let selFilter = null;
   // The tool: "wire" (clicking or dragging from a terminal adds a wire), "select" (clicking a terminal
   // selects what's attached to it) or "measure" (dragging measures the drawing). Select and Wire are
@@ -668,6 +677,7 @@
       $("gaugeList").innerHTML = wireGauges(gaugeListStd).map((g) => `<option value="${esc(g)}">`).join("");
     }
     $("netList").innerHTML = allNetNames().map((v) => `<option value="${esc(v)}">`).join("");
+    $("makerList").innerHTML = makers().map((v) => `<option value="${esc(v)}">`).join("");
     const unseen = syncPage();
     renderPages();
     renderCanvas();
@@ -679,7 +689,9 @@
   }
 
   function renderCanvas() {
-    content.innerHTML = renderDiagram(doc, { interactive: true, sel, pending, busEdit, hideWires: hiddenWires, page: doc.page });
+    // Ducts show their fill, red when over the limit.
+    const ductFill = pageItems().some((i) => i.kind === "duct") ? ductContents() : null;
+    content.innerHTML = renderDiagram(doc, { interactive: true, sel, pending, busEdit, hideWires: hiddenWires, page: doc.page, ductFill });
     svg.classList.toggle("wiring", !!pending || !!busEdit);
     svg.classList.toggle("filtering", !!selFilter && !busEdit);
     renderOverlay();
@@ -923,6 +935,13 @@
     return [...new Set(list.map((t) => t.category))];
   }
 
+  // Every maker named in the diagram: on object types, their accessories, rails, bus bars and profiles.
+  function makers() {
+    const all = [...doc.templates.flatMap((t) => [t.maker, ...(t.accessories || []).map((a) => a.maker)]),
+      ...doc.items.map((i) => i.maker), ...doc.buses.map((b) => b.maker), ...doc.wireProfiles.map((p) => p.maker), ...doc.cableProfiles.map((p) => p.maker)];
+    return [...new Set(all.map((m) => String(m || "").trim()).filter(Boolean))].sort(natural);
+  }
+
   function lostConnections(tpl) {
     const ids = new Set(tpl.terminals.map((t) => t.id));
     const parts = new Set(doc.items.filter((i) => i.kind === "part" && i.tpl === tpl.id).map((i) => i.id));
@@ -938,6 +957,7 @@
       isNew,
       categories: categories(),
       libraries: libraries(),
+      makers: makers(),
       lostCheck: isNew ? null : lostConnections,
       note: copies ? `Saving puts an edited copy in “${PROJECT_LIBRARY}”, and this diagram's parts use it. “${tpl.library}” keeps the original.` : "",
       onSave(t) {
@@ -1041,6 +1061,46 @@
     doc.items.unshift(it); // rails sit behind everything
     sel = new Set([it.id]);
     refresh();
+  }
+
+  // A wire duct, 40 mm wide, lying across (or upright with vertical) and centred where it's added.
+  function addDuct(at, vertical = false) {
+    checkpoint();
+    const c = at && "x" in at ? at : viewCenter();
+    const g = doc.settings.grid || 1;
+    const len = 300, wd = 40;
+    const it = { id: uid(), kind: "duct", label: nextDuctLabel(), x: 0, y: 0, length: len, width: wd, depth: 60, vertical, page: doc.page };
+    const b = boxOf(it);
+    it.x = Math.round((c.x - b.w / 2) / g) * g;
+    it.y = Math.round((c.y - b.h / 2) / g) * g;
+    doc.items.unshift(it); // ducts sit behind the parts, with the rails
+    sel = new Set([it.id]);
+    refresh();
+  }
+
+  // A back plate round everything on the page, 20 mm clear of it, or 600 × 400 mm if the page is empty.
+  function addPlate() {
+    const its = pageItems().filter((i) => i.kind !== "plate");
+    const bs = its.map(boxOf);
+    const x1 = bs.length ? Math.min(...bs.map((b) => b.x)) - 20 : viewCenter().x - 300, y1 = bs.length ? Math.min(...bs.map((b) => b.y)) - 20 : viewCenter().y - 200;
+    const x2 = bs.length ? Math.max(...bs.map((b) => b.x + b.w)) + 20 : x1 + 600, y2 = bs.length ? Math.max(...bs.map((b) => b.y + b.h)) + 20 : y1 + 400;
+    checkpoint();
+    const g = doc.settings.grid || 1;
+    const it = { id: uid(), kind: "plate", name: "Back plate", x: Math.floor(x1 / g) * g, y: Math.floor(y1 / g) * g, w: 0, h: 0, page: doc.page };
+    it.w = Math.ceil((x2 - it.x) / g) * g;
+    it.h = Math.ceil((y2 - it.y) / g) * g;
+    doc.items.unshift(it);
+    sel = new Set([it.id]);
+    refresh();
+  }
+
+  // Turn a duct between lying across and upright, about its middle.
+  function turnDuct(it) {
+    const b = boxOf(it);
+    it.vertical = !it.vertical;
+    const nb = boxOf(it);
+    it.x = r3(b.x + (b.w - nb.w) / 2);
+    it.y = r3(b.y + (b.h - nb.h) / 2);
   }
 
   function addText(at) {
@@ -2013,7 +2073,7 @@
     const tol = 0.5; // how close counts as touching, in mm
     const span = (id, q) => {
       const it = itemById(id);
-      if (!it || it.kind === "rail") return null; // rails stay put; the parts on them are what moves
+      if (!it || it.kind === "rail" || it.kind === "plate") return null; // rails stay put (the parts on them are what moves), as do back plates
       const b = itemBox({ ...it, x: q.x, y: q.y }, it.kind === "part" ? tplOf(it) : null);
       return axis === "x" ? { lo: b.x, hi: b.x + b.w, plo: b.y, phi: b.y + b.h } : { lo: b.y, hi: b.y + b.h, plo: b.x, phi: b.x + b.w };
     };
@@ -2079,7 +2139,7 @@
     const side = (b1, b2, a) => lo(b1, perp(a)) < hi(b2, perp(a)) - 0.01 && lo(b2, perp(a)) < hi(b1, perp(a)) - 0.01;
     const rails = pageItems().filter((o) => o.kind === "rail");
     const railed = new Set(rails.flatMap(mountedOn));
-    const boxes = new Map(pageItems().filter((o) => o !== it && o.kind !== "rail").map((o) => [o, boxOf(o)]));
+    const boxes = new Map(pageItems().filter((o) => o !== it && o.kind !== "rail" && o.kind !== "plate").map((o) => [o, boxOf(o)]));
     const movable = (a) => [...boxes.keys()].filter((o) => a === "x" || !railed.has(o));
     const flush = (b, a, s) => movable(a).filter((o) => {
       const q = boxes.get(o);
@@ -2154,10 +2214,11 @@
 
   // A quarter turn for the selected parts and text notes. A note turns about its middle, so stays put.
   function rotateSelection(dir = 1) {
-    const items = [...sel].map(itemById).filter((i) => i && (i.kind === "part" || i.kind === "text"));
+    const items = [...sel].map(itemById).filter((i) => i && (i.kind === "part" || i.kind === "text" || i.kind === "duct"));
     if (!items.length) return;
     checkpoint();
     for (const it of items) {
+      if (it.kind === "duct") { turnDuct(it); continue; }
       const b = boxOf(it);
       it.rot = ((((+it.rot || 0) + 90 * dir) % 360) + 360) % 360;
       if (it.kind === "text") continue;
@@ -2229,7 +2290,8 @@
 
   // Copy the given items (and wires between them) offset by dx, dy, onto the page open.
   function cloneItems(src, dx, dy) {
-    const usedTags = new Set(doc.items.map((i) => i.tag).filter(Boolean));
+    const usedTags = new Set(doc.items.filter(sameAspects).map((i) => i.tag).filter(Boolean));
+    const ductLabels = new Set(doc.items.filter((i) => i.kind === "duct").map((i) => i.label));
     const idMap = new Map();
     const out = [];
     for (const it of src.items) {
@@ -2237,6 +2299,7 @@
       c.id = uid();
       c.page = doc.page;
       c.x = r3(c.x + dx); c.y = r3(c.y + dy);
+      if (c.kind === "duct") { let n = 1; while (ductLabels.has("D" + n)) n++; c.label = "D" + n; ductLabels.add(c.label); }
       if (c.kind === "part" && c.tag) {
         let t = c.tag, guard = 0;
         while (usedTags.has(t) && guard++ < 999) {
@@ -2252,6 +2315,8 @@
     // A copied group note is linked to the copies of its items; with none of them copied, to nothing.
     for (const c of out) if (c.links) { c.links = c.links.map((id) => idMap.get(id)).filter(Boolean); if (!c.links.length) delete c.links; }
     doc.items.push(...out);
+    // A copied wire or cable goes through the copies of its picked ducts, or none if they weren't copied.
+    const viaCopy = (x) => (x.via ? { via: x.via.map((id) => idMap.get(id)).filter(Boolean) } : {});
     const connMap = new Map();
     for (const c of src.connections) {
       if (!idMap.has(c.a.item) || !idMap.has(c.b.item)) continue;
@@ -2259,7 +2324,7 @@
       connMap.set(c.id, id);
       doc.connections.push({
         ...JSON.parse(JSON.stringify(c)), id, wire: nextWire(),
-        a: { item: idMap.get(c.a.item), term: c.a.term }, b: { item: idMap.get(c.b.item), term: c.b.term },
+        a: { item: idMap.get(c.a.item), term: c.a.term }, b: { item: idMap.get(c.b.item), term: c.b.term }, ...viaCopy(c),
       });
     }
     for (const cb of src.cables || []) {
@@ -2267,7 +2332,7 @@
       if (cablePlugs(cb).some((e) => !idMap.has(e.item))) continue; // plugged into a part that wasn't copied
       const shift = (p) => p && { x: r3(p.x + dx), y: r3(p.y + dy) };
       const port = (e) => e && { item: idMap.get(e.item), term: e.term };
-      doc.cables.push({ ...JSON.parse(JSON.stringify(cb)), id: uid("k"), label: nextCable(), wires: cb.wires.map((w) => connMap.get(w)), pa: shift(cb.pa), pb: shift(cb.pb), ta: shift(cb.ta), tb: shift(cb.tb), portA: port(cb.portA), portB: port(cb.portB), plugsA: (cb.plugsA || []).map(port), plugsB: (cb.plugsB || []).map(port) });
+      doc.cables.push({ ...JSON.parse(JSON.stringify(cb)), id: uid("k"), label: nextCable(), wires: cb.wires.map((w) => connMap.get(w)), pa: shift(cb.pa), pb: shift(cb.pb), ta: shift(cb.ta), tb: shift(cb.tb), portA: port(cb.portA), portB: port(cb.portB), plugsA: (cb.plugsA || []).map(port), plugsB: (cb.plugsB || []).map(port), ...viaCopy(cb) });
     }
     for (const b of src.buses || []) {
       if (!b.terms.every((e) => idMap.has(e.item))) continue;
@@ -2696,7 +2761,7 @@
     const tryY = (v) => { const d = Math.abs(v - ny); if (d < thr && (!by || d < by.d)) by = { d, v }; };
     if (doc.settings.snapEdges && it.kind !== "text") {
       for (const o of pageItems()) {
-        if (exclude.has(o.id) || o.kind === "text") continue;
+        if (exclude.has(o.id) || o.kind === "text" || o.kind === "plate") continue;
         const ob = boxOf(o);
         const vOver = ny < ob.y + ob.h && ny + h > ob.y;
         const hOver = nx < ob.x + ob.w && nx + w > ob.x;
@@ -2730,6 +2795,28 @@
       const b = boxOf(o);
       return b.y <= cy && b.y + b.h >= cy && b.x >= rb.x - 0.01 && b.x + b.w <= rb.x + rb.w + 0.01;
     });
+  }
+
+  // The rail a part sits on, if any.
+  const railOf = (it) => pageItems().find((r) => r.kind === "rail" && mountedOn(r).includes(it)) || null;
+
+  // Shift+click: the parts on one rail from the part last clicked (selAnchor) to this one, in place of the
+  // selection, or added to it with Ctrl held too. Off a rail, or with the last part clicked on another
+  // rail, it adds just this one.
+  let selAnchor = null;
+  function rangeSelect(id, add) {
+    const it = itemById(id), from = itemById(selAnchor);
+    const rail = it && it.kind === "part" ? railOf(it) : null;
+    if (!rail || !from || from === it || railOf(from) !== rail) {
+      if (it) { sel.add(id); selAnchor = id; }
+      refresh();
+      return;
+    }
+    const mid = (x) => { const b = boxOf(x); return b.x + b.w / 2; };
+    const lo = Math.min(mid(from), mid(it)) - 0.01, hi = Math.max(mid(from), mid(it)) + 0.01;
+    const run = mountedOn(rail).filter((p) => mid(p) >= lo && mid(p) <= hi).map((p) => p.id);
+    sel = new Set([...(add ? sel : []), ...run]);
+    refresh();
   }
 
   // ---------- canvas pointer handling ----------
@@ -2802,6 +2889,9 @@
 
     // With a selection filter, a click picks only the kinds allowed (terminals don't start wires), and
     // dragging from anywhere else draws a selection box.
+    // Ctrl (Cmd on a Mac) adds single things to the selection, or takes them out; Shift selects a run of
+    // parts along a rail, and a Shift-drag always draws a selection box.
+    const mod = e.ctrlKey || e.metaKey;
     let filtered = false;
     if (selFilter && !(spaceDown || e.button !== 0)) {
       const kind = connEl ? "wire" : busEl ? "bus" : cableEl ? "cable" : itemEl ? itemById(itemEl.dataset.item)?.kind : null;
@@ -2817,7 +2907,7 @@
     if (termEl && !filtered && tool === "select" && !pending) {
       const ids = attachedTo(termKeyParts(termEl.dataset.term));
       if (ids.length) {
-        if (e.shiftKey) for (const id of ids) sel.add(id); else sel = new Set(ids);
+        if (e.shiftKey || mod) for (const id of ids) sel.add(id); else sel = new Set(ids);
         refresh();
         return;
       }
@@ -2841,19 +2931,29 @@
 
     if (connEl || busEl || cableEl) {
       const id = connEl ? connEl.dataset.conn : busEl ? busEl.dataset.bus : cableEl.dataset.cable;
-      if (e.shiftKey) { sel.has(id) ? sel.delete(id) : sel.add(id); } else sel = new Set([id]);
+      if (e.shiftKey || mod) { sel.has(id) ? sel.delete(id) : sel.add(id); } else sel = new Set([id]);
       refresh();
+      return;
+    }
+
+    if (itemEl && e.shiftKey) {
+      // A click selects a run of parts (rangeSelect, on release); a drag draws a selection box, even from on
+      // top of a part or rail, so the rail isn't picked up and moved.
+      drag = { type: "marquee", start: w, cur: w, base: new Set(sel), sx: e.clientX, sy: e.clientY, clicked: itemEl.dataset.item, add: mod };
+      svg.setPointerCapture(e.pointerId);
       return;
     }
 
     if (itemEl) {
       const id = itemEl.dataset.item;
-      let clickedSelected = false;
-      if (e.shiftKey) {
-        if (sel.has(id)) { sel.delete(id); refresh(); return; }
-        sel.add(id);
+      let clickedSelected = false, unpick = false;
+      if (mod) {
+        // Ctrl: add it, or take it out again if it was selected and isn't dragged (dragging the selection
+        // with Ctrl held pushes what's beside it along).
+        if (sel.has(id)) unpick = true; else sel.add(id);
       } else if (!sel.has(id)) sel = new Set([id]);
       else clickedSelected = true;
+      selAnchor = id;
       let moving = new Set([...sel].filter((s) => itemById(s)));
       for (const s of [...moving]) {
         const it = itemById(s);
@@ -2864,13 +2964,13 @@
       for (const s of moving) { const it = itemById(s); orig.set(s, { x: it.x, y: it.y }); }
       // Everything's starting position, for pushing neighbours along with Ctrl held.
       const all = new Map(pageItems().map((it) => [it.id, { x: it.x, y: it.y }]));
-      drag = { type: "move", primary: id, start: w, sx: e.clientX, sy: e.clientY, orig, all, moving, moved: false, clickedSelected, cables: cableAnchors() };
+      drag = { type: "move", primary: id, start: w, sx: e.clientX, sy: e.clientY, orig, all, moving, moved: false, clickedSelected, unpick, cables: cableAnchors() };
       svg.setPointerCapture(e.pointerId);
       refresh();
       return;
     }
 
-    if (e.shiftKey) drag = { type: "marquee", start: w, cur: w, base: new Set(sel) };
+    if (e.shiftKey || mod) drag = { type: "marquee", start: w, cur: w, base: new Set(sel) };
     else drag = { type: "pan", sx: e.clientX, sy: e.clientY, vx: view.x, vy: view.y, moved: false };
     svg.setPointerCapture(e.pointerId);
   });
@@ -3002,6 +3102,7 @@
     } else if (d.type === "move") {
       setHint("");
       if (d.moved) refresh();
+      else if (d.unpick) { sel.delete(d.primary); refresh(); }
       else if (d.clickedSelected && sel.size > 1) { sel = new Set([d.primary]); refresh(); }
     } else if (d.type === "wire") {
       const el = document.elementFromPoint(e.clientX, e.clientY);
@@ -3014,13 +3115,18 @@
       } else setHint("");
       renderCanvas();
     } else if (d.type === "marquee") {
+      // A Shift-click on a part, without dragging, selects a run of parts along its rail.
+      if (d.clicked && Math.hypot(e.clientX - d.sx, e.clientY - d.sy) < 3) { rangeSelect(d.clicked, d.add); renderOverlay(); return; }
       const x1 = Math.min(d.start.x, d.cur.x), x2 = Math.max(d.start.x, d.cur.x);
       const y1 = Math.min(d.start.y, d.cur.y), y2 = Math.max(d.start.y, d.cur.y);
       sel = new Set(d.base);
       for (const it of pageItems()) {
         if (!allows(it.kind)) continue;
         const b = boxOf(it);
-        if (b.x < x2 && b.x + b.w > x1 && b.y < y2 && b.y + b.h > y1) sel.add(it.id);
+        // A rail, duct or back plate only when the box takes in all of it, so boxing the parts on a rail (or
+        // beside a duct, or on the plate) doesn't pick it up too.
+        const hit = ["rail", "duct", "plate"].includes(it.kind) ? b.x >= x1 && b.x + b.w <= x2 && b.y >= y1 && b.y + b.h <= y2 : b.x < x2 && b.x + b.w > x1 && b.y < y2 && b.y + b.h > y1;
+        if (hit) sel.add(it.id);
       }
       if (selFilter) {
         // Filtered boxes also pick wires, bus bars and cables with an end in the box.
@@ -3301,6 +3407,8 @@
       return [
         { heading: "Add" },
         { label: "DIN rail here", run: () => addRail(at) },
+        { label: "Wire duct here", sub: [{ label: "Across", run: () => addDuct(at) }, { label: "Upright", run: () => addDuct(at, true) }] },
+        { label: pageItems().some((i) => i.kind === "plate") ? "Another back plate" : "Back plate round the drawing", run: addPlate },
         { label: "Text note here", run: () => addText(at) },
         { label: "Bus bar…", run: () => startBus(null) },
         { label: "Cable…", run: () => startCable(null) },
@@ -3337,6 +3445,9 @@
             { label: "Align tops", run: () => alignSelection("top") }, { label: "Align bottoms", run: () => alignSelection("bottom") }] });
         }
       }
+      if (items.filter((i) => i.kind === "part" && stripRole(tplOf(i)) === "block").length > 1) out.push({ label: "Make one terminal strip", run: makeStrip });
+      { const ducts = items.filter((i) => i.kind === "duct");
+        if (ducts.length && (wires.length || cbs.length)) out.push({ label: `Route through ${ducts.map((d) => d.label).join(", ")}`, run: () => routeVia(ducts) }); }
       if (items.length) out.push(...moveToPageEntries());
       if (wires.length || bars.length) out.push("-", ...circuitMenu([...wires, ...bars].map((x) => x.id)));
       if (wires.length || cbs.length) out.push({ label: "Show only these wires", run: () => showOnlyWires(selectedWireIds()) });
@@ -3423,6 +3534,26 @@
         { label: "Delete rail", hint: "Del", danger: true, run: deleteSelection },
       ];
     }
+    if (it.kind === "duct") {
+      return [
+        { heading: "Wire duct" },
+        { label: it.vertical ? "Turn to lie across" : "Turn upright", hint: "R", run: () => rotateSelection(1) },
+        { label: "Duplicate", hint: mod + "D", run: duplicateSelection },
+        { label: "Copy", hint: mod + "C", run: copySelection },
+        ...moveToPageEntries(),
+        "-",
+        { label: "Delete duct", hint: "Del", danger: true, run: deleteSelection },
+      ];
+    }
+    if (it.kind === "plate") {
+      return [
+        { heading: it.name || "Back plate" },
+        { label: "Fit round the drawing", run: () => fitPlate(it) },
+        ...moveToPageEntries(),
+        "-",
+        { label: "Delete back plate", hint: "Del", danger: true, run: deleteSelection },
+      ];
+    }
     if (it.kind === "text") {
       return [
         { heading: "Text note" },
@@ -3479,6 +3610,7 @@
     if (mod && e.key.toLowerCase() === "s") { e.preventDefault(); if (e.shiftKey) saveFileAs(); else saveFile(); return; }
     if (mod && e.key.toLowerCase() === "o") { e.preventDefault(); $("fileInput").click(); return; }
     if (mod && e.key.toLowerCase() === "p") { e.preventDefault(); openPrint(); return; }
+    if (mod && e.key.toLowerCase() === "e") { e.preventDefault(); openExport(); return; }
     if (mod && e.key.toLowerCase() === "f") { e.preventDefault(); findInLists(); return; }
     if (inField) return;
     const k = e.key;
@@ -3591,6 +3723,8 @@
       else if (cb) { propsCtx = { type: "cable", id: cb.id }; h = cableProps(cb); }
       else if (it.kind === "part") { propsCtx = { type: "item", id: it.id }; h = partProps(it); }
       else if (it.kind === "rail") { propsCtx = { type: "item", id: it.id }; h = railProps(it); }
+      else if (it.kind === "duct") { propsCtx = { type: "item", id: it.id }; h = ductProps(it); }
+      else if (it.kind === "plate") { propsCtx = { type: "item", id: it.id }; h = plateProps(it); }
       else { propsCtx = { type: "item", id: it.id }; h = textProps(it); }
     } else {
       propsCtx = { type: "multi" };
@@ -3709,6 +3843,7 @@
         ${field("Notes", area("notes", b.notes))}
         <div class="field"><span>Terminals</span><p class="ref-list">${esc(refs.join(", "))}</p></div>
         <div class="btn-row"><button class="small" data-act="busEdit">${ic("edit", "sm")} Edit terminals…</button></div>`)
+      + section("bus.order", "Ordering", orderFields([b]))
       + circuitBlock(b.id));
   }
 
@@ -3719,8 +3854,19 @@
       + body(section("diag.title", "Title block", `
         <div class="row2">${field("Revision", inp("meta.revision", m.revision))}${field("Date", inp("meta.date", m.date, "date"))}</div>
         ${field("Author", inp("meta.author", m.author))}
+        ${iecRefs(doc) ? `<div class="row2">${field("Function (=)", inp("meta.func", m.func, "text", 'placeholder="e.g. PUMP"'))}${field("Location (+)", inp("meta.location", m.location, "text", 'placeholder="e.g. CAB1"'))}</div>` : ""}
         ${field("Notes", area("meta.notes", m.notes, 3))}
-        <p class="hint-text">Shown on the printout and at the top of exported images. The title is at the top of the window.</p>`));
+        <p class="hint-text">Shown on the printout and at the top of exported images. The title is at the top of the window.${iecRefs(doc) ? " The function and location apply to pages that don't set their own." : ""}</p>`)
+      + (iecRefs(doc) ? pageAspectSection() : ""));
+  }
+
+  // The page open's function and location, for IEC designations.
+  function pageAspectSection() {
+    const i = doc.pages.findIndex((p) => p.id === doc.page), p = doc.pages[i], m = doc.meta;
+    const pre = aspectPrefix(doc, p.id);
+    return section("diag.page", `Page · ${esc(p.name)}`, `
+      <div class="row2">${field("Function (=)", inp(`pages.${i}.func`, p.func, "text", `placeholder="${esc(aspectText(m.func) || "e.g. PUMP")}"`))}${field("Location (+)", inp(`pages.${i}.location`, p.location, "text", `placeholder="${esc(aspectText(m.location) || "e.g. DOOR")}"`))}</div>
+      <p class="hint-text">${pre ? `Parts on this page are ${esc(pre)}-K1 and so on. ` : ""}Blank uses the title block's. Parts on pages with the same function and location share one set of tags.</p>`);
   }
 
   // Object types to swap a part to, grouped by library.
@@ -3752,14 +3898,16 @@
     const sub = `${esc(tpl.name)} · ${r3(b.w)} × ${r3(b.h)} mm${it.rot ? ` · rotated ${it.rot}°` : ""}${isLoose(tpl) ? " · loose" : ""}`;
     const acts = actBtn("rotL", "rot-l", "Rotate left (Shift+R)") + actBtn("rotR", "rot-r", "Rotate right (R)") + actBtn("dup", "copy", "Duplicate (Ctrl+D)")
       + actBtn("editTpl", "edit", `Edit the object type “${tpl.name}”`) + sepEl + actBtn("delete", "trash", "Delete (Del)");
-    return head("Part", esc(it.tag || tpl.name), sub, acts) + body(
+    return head("Part", esc(partRef(doc, it, tpl)), sub, acts) + body(
       section("part.main", "Part", `
         <div class="row2">${field("Tag", inp("tag", it.tag, "text", 'placeholder="e.g. TB101"'))}
           ${field("Colour", `<div class="inline-row">${inp("color", it.color || tpl.fill, "color")}${it.color ? `<button class="icon-btn" data-act="resetColor" title="Use the type’s colour">${ic("rot-l", "sm")}</button>` : ""}</div>`)}</div>
         ${field("Type", typeSelect(it.tpl))}
         ${field("Description", inp("desc", it.desc, "text", 'placeholder="Shown on the part"'))}
         <div class="row2">${field("X (mm)", num("x", it.x))}${field("Y (mm)", num("y", it.y))}</div>`)
+      + section("part.order", "Ordering", partOrderFields([it]))
       + section("part.strip", "Strip", `
+        ${stripRole(tpl) !== "none" ? stripField([it]) : ""}
         <div class="field"><span>Repeat ${rtl() ? "to the left" : "to the right"} (tags count up)</span>
           <div class="inline-row"><input id="repeatCount" type="number" min="1" max="200" value="5" style="flex:0 0 72px"><button data-act="repeat">Add copies</button></div></div>
         <div class="field"><span>Build direction</span>${dirToggle()}</div>
@@ -3771,13 +3919,152 @@
       + section("part.terms", "Terminals", tpl.terminals.length ? `<table class="term-list">${rows}</table>` : '<p class="muted">This type has no terminals.</p>', tpl.terminals.length));
   }
 
+  // A part's order number: the type's numbers to pick from, or any other typed in. With nothing picked, the
+  // part is ordered by its type's first number. Several parts share the list of the first one's type.
+  function partOrderFields(parts) {
+    const tpl = tplOf(parts[0]);
+    const types = new Set(parts.map((p) => p.tpl));
+    const orders = (tpl.orders || []).filter((o) => o.no);
+    const def = types.size === 1 ? orders[0]?.no || "" : "";
+    const maker = types.size === 1 ? tpl.maker || "" : "";
+    const acc = types.size === 1 ? (tpl.accessories || []).length : 0;
+    const v = same(parts, (p) => p.orderNo || "");
+    return `<datalist id="partOrderList">${types.size === 1 ? orders.map((o) => `<option value="${esc(o.no)}">${esc(o.desc || "")}</option>`).join("") : ""}</datalist>
+      ${field("Order no.", inp("orderNo", v, "text", `list="partOrderList" placeholder="${esc(def ? def + " (the type's)" : "e.g. 3044076")}"`))}
+      <p class="hint-text">${types.size > 1 ? "These parts are of different types. " : ""}${maker ? `Made by ${esc(maker)}. ` : ""}${acc ? `${plural(acc, "accessory", "accessories")} ordered with each. ` : ""}The maker, order numbers and accessories are set in the object type, under Ordering.</p>`;
+  }
+
+  // The strip name of terminal blocks or dividers, with the strip they're in now as its placeholder. With
+  // several blocks selected, a button puts them in one strip.
+  function stripField(parts) {
+    const strips = terminalStrips(doc);
+    const now = [...new Set(parts.map((p) => strips.find((s) => s.parts.includes(p))).filter(Boolean))];
+    const own = parts.every((p) => String(p.strip || "").trim());
+    const ph = now.length > 1 ? "Several strips" : !now.length ? "e.g. X1" : now[0].name + (!now[0].named ? " (side by side)" : own ? "" : " (from the blocks beside it)");
+    const box = inp("strip", same(parts, (p) => p.strip || ""), "text", `list="stripList" placeholder="${esc(ph)}"`);
+    const blocks = parts.filter((p) => stripRole(tplOf(p)) === "block").length;
+    return `<datalist id="stripList">${[...new Set(strips.filter((s) => s.named).map((s) => s.name))].map((n) => `<option value="${esc(n)}">`).join("")}</datalist>
+      ${blocks > 1
+        ? `<div class="field"><span>Terminal strip</span><div class="inline-row">${box}<button class="small" data-act="makeStrip" title="Give the selected blocks one strip name, so they're one strip wherever they are">Make one strip</button></div></div>`
+        : field("Terminal strip", box)}
+      <p class="hint-text">Blocks with the same strip name are one strip, wherever they are. Without a name, a block is in the strip of the blocks beside it.</p>`;
+  }
+
+  // Put the selected terminal blocks and dividers in one strip: under the name one of them has, or else the
+  // next free X number.
+  function makeStrip() {
+    const parts = selectedParts().filter((it) => stripRole(tplOf(it)) !== "none");
+    if (!parts.length) return;
+    const had = [...new Set(parts.map((p) => String(p.strip || "").trim()).filter(Boolean))];
+    let name = had[0];
+    if (!name) {
+      const used = new Set(doc.items.map((i) => String(i.strip || "").trim().toLowerCase()));
+      let i = 1;
+      while (used.has("x" + i)) i++;
+      name = "X" + i;
+    }
+    checkpoint();
+    for (const p of parts) p.strip = name;
+    refresh();
+    toast(`${plural(parts.length, "part")} are now in strip ${name}${had.length > 1 ? ` (they were in ${had.join(", ")})` : ""}. Rename it in the panel on the right.`);
+  }
+
+  // Maker and order number of a rail or bus bar.
+  const orderFields = (list) => `<div class="row2">${field("Maker", inp("maker", same(list, (x) => x.maker || ""), "text", 'list="makerList"'))}${field("Order no.", inp("orderNo", same(list, (x) => x.orderNo || "")))}</div>`;
+
   function railProps(it) {
     return head("DIN rail", `${esc(it.height)} mm rail`, `${r3(it.length)} mm long · parts sitting on it move with it`,
       actBtn("fitRail", "fit", "Fit the length to the parts on it") + actBtn("dup", "copy", "Duplicate (Ctrl+D)") + sepEl + actBtn("delete", "trash", "Delete (Del)"))
       + body(section("rail.main", "Rail", `
         <div class="row2">${field("Length (mm)", num("length", it.length, 1, 'min="10"'))}${field("Profile", sel_("height", it.height, [[35, "35 mm"], [15, "15 mm"]]))}</div>
         <div class="row2">${field("X (mm)", num("x", it.x))}${field("Y (mm)", num("y", it.y))}</div>
-        <div class="btn-row"><button class="small" data-act="fitRail">${ic("fit", "sm")} Fit length to parts</button></div>`));
+        <div class="btn-row"><button class="small" data-act="fitRail">${ic("fit", "sm")} Fit length to parts</button></div>`)
+        + section("rail.order", "Ordering", orderFields([it])));
+  }
+
+  // A duct's size: its width across, and its depth (how far it stands off the plate), for ordering.
+  const ductSize = (list) => `<div class="row3">${field("Length (mm)", num("length", same(list, "length"), 1, 'min="10"'))}${field("Width (mm)", inp("width", same(list, "width"), "number", 'min="5" step="5" list="ductWidths"'))}${field("Depth (mm)", inp("depth", same(list, "depth"), "number", 'min="5" step="5" list="ductWidths"'))}</div>
+    <datalist id="ductWidths">${[25, 30, 40, 50, 60, 80, 100, 120].map((v) => `<option value="${v}">`).join("")}</datalist>`;
+
+  function ductProps(it) {
+    const x = ductContents().get(it.id);
+    return head("Wire duct", esc(it.label || "Wire duct"), `${r3(it.width)} × ${r3(it.depth || 0)} mm, ${r3(it.length)} mm long, ${it.vertical ? "upright" : "lying across"}`,
+      actBtn("rotR", "rot-r", it.vertical ? "Turn to lie across (R)" : "Turn upright (R)") + actBtn("dup", "copy", "Duplicate (Ctrl+D)") + sepEl + actBtn("delete", "trash", "Delete (Del)"))
+      + body(section("duct.fill", `In this duct · ${Math.round(x.pct)} % full`, ductFillBlock(x))
+      + section("duct.main", "Duct", `
+        ${field("Label", inp("label", it.label, "text", 'placeholder="e.g. D1"'))}
+        ${ductSize([it])}
+        <div class="row2">${field("X (mm)", num("x", it.x))}${field("Y (mm)", num("y", it.y))}</div>
+        <p class="hint-text">Ducts that touch or overlap are joined, so wires can go from one to the next.</p>`)
+        + section("duct.order", "Ordering", orderFields([it])));
+  }
+
+  // What runs through a duct (from ductContents), and how full it is against the limit.
+  function ductFillBlock(x) {
+    const limit = +doc.settings.ductFill || 0, n = x.wires.length + x.cables.length;
+    const links = [...x.wires.slice().sort((a, b) => natural(a.wire, b.wire)).map((c) => `<a data-conn-link="${esc(c.id)}">${esc(c.wire || "Wire")}</a>`),
+      ...x.cables.map((cb) => `<a data-conn-link="${esc(cb.id)}">${esc(cb.label || "Cable")}</a>`)];
+    return `<p class="fill-line"><b>${Math.round(x.pct)} % full</b>${limit ? ` <span class="muted">· fill up to ${limit} % (Settings)</span>` : ""}${x.over ? ' <span class="warn-text">Over the limit</span>' : ""}</p>
+      <div class="fill-bar${x.over ? " over" : ""}"><span style="width:${Math.min(100, x.pct).toFixed(1)}%"></span>${limit ? `<i style="left:${Math.min(100, limit)}%"></i>` : ""}</div>
+      ${n ? `<p class="ref-list">${plural(x.wires.length, "wire")}${x.cables.length ? ", " + plural(x.cables.length, "cable") : ""}: ${links.join(", ")}</p>
+      <div class="btn-row"><button class="small" data-act="ductSelect">Select them</button><button class="small" data-act="ductShow" title="Hide every other wire on the drawing until you choose Show all">Show only these wires</button></div>`
+        : '<p class="hint-text">No wires or cables run through it.</p>'}
+      <p class="hint-text">Wires and cables run the shortest way, or through ducts picked for them. Fill counts their typical outside diameters against the duct's width × depth; give a cable profile its Ø for a closer figure.</p>`;
+  }
+
+  // The wires and cables routed through the selected duct, and every wire among them (with cables' cores).
+  function ductRouted(it) {
+    const x = ductContents().get(it.id);
+    return { ids: [...x.wires, ...x.cables].map((o) => o.id), wires: [...x.wires.map((c) => c.id), ...x.cables.flatMap((cb) => cb.wires)] };
+  }
+
+  // Send the selected wires and cables through the selected ducts (wires in a selected cable go with it),
+  // or (ducts empty) back to the shortest way.
+  function routeVia(ducts) {
+    const cbs = [...sel].map(cableById).filter(Boolean);
+    const inCbs = new Set(cbs.flatMap((cb) => cb.wires));
+    const ws = [...sel].map(connById).filter((c) => c && !inCbs.has(c.id) && !cableOf(c.id));
+    const list = [...ws, ...cbs];
+    if (!list.length) return;
+    checkpoint();
+    for (const x of list) { if (ducts.length) x.via = ducts.map((d) => d.id); else delete x.via; }
+    refresh();
+    const what = plural(list.length, cbs.length ? (ws.length ? "wire or cable" : "cable") : "wire", cbs.length ? (ws.length ? "wires and cables" : "cables") : "wires");
+    toast(ducts.length ? `Routed ${what} through ${ducts.map((d) => d.label).join(", ")}` : `${what} back to the shortest way`);
+  }
+
+  // A wire's or cable's way through the ducts, for its panel: through which ducts, picked or the shortest way.
+  function routeLine(x, l) {
+    const label = (id) => itemById(id)?.label || "?";
+    const ducts = (l && l.ducts) || [];
+    const how = x.via?.length ? `Through ${esc(ducts.map(label).join(", "))}, picked <button class="small" data-act="clearVia" title="Let it take the shortest way again">Shortest way</button>`
+      : ducts.length ? `Through ${esc(ducts.map(label).join(", "))}, the shortest way` : "Not through any duct";
+    return `<div class="field"><span>Route</span><p class="ref-list">${how}</p></div>`;
+  }
+
+  function plateProps(it) {
+    return head("Back plate", esc(it.name || "Back plate"), `${r3(it.w)} × ${r3(it.h)} mm · drawn under everything; drag it by its edge`,
+      actBtn("fitPlate", "fit", "Fit round the drawing") + sepEl + actBtn("delete", "trash", "Delete (Del)"))
+      + body(section("plate.main", "Plate", `
+        ${field("Name", inp("name", it.name, "text", 'placeholder="e.g. Back plate, or the enclosure"'))}
+        <div class="row2">${field("Width (mm)", num("w", it.w, 1, 'min="10"'))}${field("Height (mm)", num("h", it.h, 1, 'min="10"'))}</div>
+        <div class="row2">${field("X (mm)", num("x", it.x))}${field("Y (mm)", num("y", it.y))}</div>
+        <div class="btn-row"><button class="small" data-act="fitPlate">${ic("fit", "sm")} Fit round the drawing</button></div>`)
+        + section("plate.order", "Ordering", orderFields([it])));
+  }
+
+  // Resize a back plate to go round everything else on its page, 20 mm clear.
+  function fitPlate(it) {
+    const bs = pageItems().filter((i) => i.kind !== "plate").map(boxOf);
+    if (!bs.length) { toast("There's nothing on this page to fit round"); return; }
+    checkpoint();
+    const g = doc.settings.grid || 1;
+    const x1 = Math.min(...bs.map((b) => b.x)) - 20, y1 = Math.min(...bs.map((b) => b.y)) - 20;
+    it.x = Math.floor(x1 / g) * g;
+    it.y = Math.floor(y1 / g) * g;
+    it.w = Math.ceil((Math.max(...bs.map((b) => b.x + b.w)) + 20 - it.x) / g) * g;
+    it.h = Math.ceil((Math.max(...bs.map((b) => b.y + b.h)) + 20 - it.y) / g) * g;
+    refresh();
   }
 
   function textProps(it) {
@@ -3803,7 +4090,7 @@
          ${cb.open ? '<p class="hint-text">This wire is a core of a cable whose other end isn’t fanned out. To draw it end to end, select the cable and use <i>Fan out to terminals…</i> on its other end.</p>'
            : cableSide(c, cb) ? '<p class="hint-text"><span class="nc">Not connected through</span>: this core is connected at one end of the cable only.</p><div class="btn-row"><button class="small" data-act="coreConnect" title="Pick the terminal it goes to at the end it isn\'t connected at">Connect through…</button><button class="small" data-act="cableRemove">Remove core</button></div>'
            : '<div class="btn-row"><button class="small" data-act="cableRemove">Take out of cable</button></div>'}`
-      : `<p class="hint-text">Not in a cable. To bundle several wires together, Shift-click them and use <i>Bundle into a cable</i>.</p>
+      : `<p class="hint-text">Not in a cable. To bundle several wires together, Ctrl+click them and use <i>Bundle into a cable</i>.</p>
          <div class="btn-row"><button class="small" data-act="cableNew" title="Draw this wire as a cable">${ic("cable", "sm")} Bundle into a cable</button></div>`;
     return head("Wire", esc(c.wire || "Wire"), `${esc(refOf(c.a))} ↔ ${esc(refOf(c.b))}`, acts) + body(
       section("wire.main", "Wire", `
@@ -3819,7 +4106,27 @@
         ${cb ? "" : field("Draw as", sel_("draw", c.draw || "", drawOpts("wire")))}
         ${field("Notes", area("notes", c.notes, 3))}`)
       + section("wire.cable", "Cable", cable)
+      + section("wire.ends", "Length and ends", wireEndsFields(c))
       + circuitBlock(c.id));
+  }
+
+  // A wire's length (its own, or the estimate as the placeholder) and how each end on a terminal is
+  // finished: the end's own choice, or what it gets from its profile or the drawing.
+  function wireEndsFields(c) {
+    const l = lengthsFor(doc).wire({ ...c, length: 0 }), ends = wireEnds(doc, c);
+    const whyText = { profile: "its profile's", drawing: "the drawing's", shared: "two wires here" };
+    const rows = ends.map((x, i) => {
+      if (!itemById(x.e.item)) return "";
+      const S = i ? "B" : "A", own = c["end" + S] || "";
+      const auto = WIRE_ENDS[own ? wireEnds(doc, { ...c, ["end" + S]: "" })[i].end : x.end];
+      const opts = [["", `${auto} (${whyText[own ? wireEnds(doc, { ...c, ["end" + S]: "" })[i].why : x.why]})`], ...Object.entries(WIRE_ENDS)];
+      return `<tr><td>${esc(refOf(x.e))}</td><td>${sel_("end" + S, own, opts)}</td><td>${inp("strip" + S, c["strip" + S] || "", "text", `inputmode="decimal" placeholder="${x.strip || ""}" title="Strip length in mm"`)}</td></tr>`;
+    }).join("");
+    const inCable = !!cableOf(c.id);
+    return `${field("Length (mm)", inp("length", +c.length > 0 ? c.length : "", "text", `inputmode="decimal" placeholder="${l ? "≈ " + Math.round(l.mm) + " (estimated)" : "Can't be estimated"}"`))}
+      <p class="hint-text">${l ? `Estimated along the wire ducts, with ${doc.settings.slack} mm spare at each end (Settings). Type a length to use your own.` : "Its ends aren't on the same page, so there's no estimate. Type its length."}</p>
+      ${l && !inCable ? routeLine(c, l) + '<p class="hint-text">To send it through particular ducts, Ctrl+click them along with the wire, then <i>Route through these ducts</i>.</p>' : ""}
+      ${rows ? `<table class="term-list ends-table"><thead><tr><th>End</th><th>Finish</th><th>Strip (mm)</th></tr></thead><tbody>${rows}</tbody></table>` : ""}`;
   }
 
   // Tracer stripe picker: none, or any wire colour other than the base. Green/yellow has its own banding.
@@ -3944,6 +4251,7 @@
         ${field("Type", inp("desc", cb.desc, "text", `placeholder="e.g. ${cb.open ? "Cat6 S/FTP, 4x0.75 LiYY" : "3G1.5 H07RN-F"}"`))}
         <div class="row2">${chk("shield", cb.shield, "Shielded")}${chk("twisted", cb.twisted, "Twisted pairs")}</div>
         ${cb.open && !cb.portB ? field("Goes to", inp("to", cb.to || "", "text", 'placeholder="e.g. Pump P1, field sensor B3"')) : ""}
+        ${(() => { const l = cableLength({ ...cb, length: 0 }); return (l ? routeLine(cb, l) : "") + field("Length (m)", inp("length", +cb.length > 0 ? cb.length : "", "text", `inputmode="decimal" placeholder="${l ? "≈ " + Math.round(l.mm / 100) / 10 + " (estimated)" : "e.g. 5"}" title="${l ? "Estimated along the wire ducts. Type a length to use your own." : "With an end off the drawing, it can't be estimated."}"`)); })()}
         ${colorField(`Sheath colour · ${esc(wireColorName(cb.color))}`, cb.color)}
         ${breakable(cb) ? field("Draw", sel_("draw", cb.draw || "", drawOpts("cable"))) : ""}
         ${field("Notes", area("notes", cb.notes))}`)
@@ -3956,7 +4264,7 @@
         ${defs.length && defs.length !== ws.length ? `<p class="hint-text">Its profile lists ${plural(defs.length, "core")}; ${plural(ws.length, cb.open ? "core is" : "wire is", cb.open ? "cores are" : "wires are")} drawn.</p>` : ""}
         <p class="hint-text">${cb.open
           ? "Each core is a wire: click one to set its colour, size or profile. Fan out the other end too and they join up end to end. Drag the orange dots to move where the cores fan out and where the cable ends."
-          : `To add wires, Shift-click them along with the cable, then use <i>Add to ${esc(cb.label || "cable")}</i>. Drag the orange dots at the sheath ends to move where the cores fan out.`}</p>
+          : `To add wires, Ctrl+click them along with the cable, then use <i>Add to ${esc(cb.label || "cable")}</i>. Drag the orange dots at the sheath ends to move where the cores fan out.`}</p>
         <div class="btn-row">
           ${reset}
           ${cb.open ? "" : '<button class="small" data-act="cableUnbundle" title="Remove the cable but keep its wires">Unbundle (keep wires)</button>'}
@@ -3969,6 +4277,7 @@
     const ws = ids.map(connById).filter(Boolean), bs = ids.map(busById).filter(Boolean), cbs = ids.map(cableById).filter(Boolean);
     const items = ids.map(itemById).filter(Boolean);
     const parts = items.filter((i) => i.kind === "part"), rails = items.filter((i) => i.kind === "rail"), notes = items.filter((i) => i.kind === "text");
+    const ducts = items.filter((i) => i.kind === "duct");
     const grp = (k, html) => `<div data-grp="${k}">${html}</div>`;
     const colorName = (list, name) => { const v = same(list, name); return v === MIXED ? "mixed" : esc(v); };
     let s = "";
@@ -3985,6 +4294,7 @@
         </div>
         ${followBoxes(ws)}
         ${ws.some((c) => !cableOf(c.id)) ? field("Draw as", sel_("draw", same(ws, "draw"), drawOpts("wire"))) : ""}
+        ${field("Ends finished with", sel_("ends", same(ws, (c) => (c.endA || "") === (c.endB || "") ? c.endA || "" : MIXED), [["", "As their profile or the drawing says"], ...Object.entries(WIRE_ENDS)]))}
         ${labelShowField(ws)}
         ${field("Notes", area("notes", same(ws, "notes"), 2))}`), ws.length);
     }
@@ -3992,6 +4302,7 @@
       s += section("multi.buses", "Bus bars", grp("bus", `
         ${colorField(`Colour · ${colorName(bs, (b) => wireColorName(b.color))}`, same(bs, "color"), "#b87333")}
         ${followBoxes(bs)}
+        ${orderFields(bs)}
         ${field("Notes", area("notes", same(bs, "notes"), 2))}`), bs.length);
     }
     if (cbs.length) {
@@ -4008,12 +4319,16 @@
       s += section("multi.parts", "Parts", grp("part", `
         ${field("Type", typeSelect(same(parts, "tpl")))}
         ${field("Colour", `<div class="inline-row">${inp("color", fill === MIXED ? parts[0].color || tplOf(parts[0]).fill : fill, "color")}${parts.some((it) => it.color) ? `<button class="icon-btn" data-act="resetColor" title="Use each type’s colour">${ic("rot-l", "sm")}</button>` : ""}</div>`)}
-        ${field("Description", inp("desc", same(parts, "desc"), "text", 'placeholder="Shown on the part"'))}`), parts.length);
+        ${field("Description", inp("desc", same(parts, "desc"), "text", 'placeholder="Shown on the part"'))}
+        ${partOrderFields(parts)}
+        ${parts.some((it) => stripRole(tplOf(it)) !== "none") ? stripField(parts.filter((it) => stripRole(tplOf(it)) !== "none")) : ""}`), parts.length);
     }
     if (rails.length) {
       s += section("multi.rails", "DIN rails", grp("rail", `
-        <div class="row2">${field("Length (mm)", num("length", same(rails, "length"), 1, 'min="10"'))}${field("Profile", sel_("height", same(rails, "height"), [[35, "35 mm"], [15, "15 mm"]]))}</div>`), rails.length);
+        <div class="row2">${field("Length (mm)", num("length", same(rails, "length"), 1, 'min="10"'))}${field("Profile", sel_("height", same(rails, "height"), [[35, "35 mm"], [15, "15 mm"]]))}</div>
+        ${orderFields(rails)}`), rails.length);
     }
+    if (ducts.length) s += section("multi.ducts", "Wire ducts", grp("duct", `${ductSize(ducts)}${orderFields(ducts)}`), ducts.length);
     if (notes.length) {
       const ink = same(notes, (it) => it.color || "#1d2126");
       s += section("multi.notes", "Text notes", grp("text", `
@@ -4054,6 +4369,16 @@
           <button class="small" data-act="align" data-mode="left">Align lefts</button>
         </div>
         <div class="field"><span>Build direction</span>${dirToggle()}</div>`);
+    }
+    {
+      const ducts = ids.map(itemById).filter((i) => i && i.kind === "duct");
+      const routed = [...ids.map(connById).filter((c) => c && !cableOf(c.id)), ...cbs];
+      if (routed.length && ducts.length) {
+        s += section("multi.route", "Route", `<div class="btn-row"><button class="small primary" data-act="routeVia">Route through ${esc(ducts.map((d) => d.label).join(", "))}</button>${routed.some((x) => x.via?.length) ? '<button class="small" data-act="clearVia">Shortest way</button>' : ""}</div>
+          <p class="hint-text">The selected wires and cables go through these ducts, nearest first, instead of the shortest way. Their lengths follow.</p>`);
+      } else if (routed.some((x) => x.via?.length)) {
+        s += section("multi.route", "Route", '<div class="btn-row"><button class="small" data-act="clearVia">Back to the shortest way</button></div><p class="hint-text">Some of these go through ducts picked for them.</p>');
+      }
     }
     s += renumberBlock(ids.map(itemById).filter((i) => i && i.kind === "part"));
     return head("Selection", `${ids.length} selected`, sub, acts) + body(s || '<p class="insp-note muted">Use the buttons above, or right-click the selection for more.</p>');
@@ -4258,9 +4583,13 @@
     // Swapping parts' type: fit each new part where the old one was, and let cables follow what moved.
     const anchors = k === "tpl" ? cableAnchors() : null;
     for (const target of list) {
+      if (k === "strip" && stripRole(tplOf(target)) === "none") continue; // only terminal blocks and dividers
+      if (k === "ends") { target.endA = target.endB = v; continue; } // both ends of each wire
       const swapped = k === "tpl" && target.kind === "part" && target.tpl !== v ? boxOf(target) : null;
       setPath(target, k, v);
       if (swapped) fitSwapped(target, swapped);
+      // An order number picked from the old type's list doesn't belong to the new type.
+      if (swapped && target.orderNo && !(tplOf(target).orders || []).some((o) => o.no === target.orderNo)) delete target.orderNo;
       if (kind === "bus" && k === "color") handEdited(target);
       if (kind === "conn" && /^(color|stripe|gauge|conductor)$/.test(k)) {
         lastWire[k] = v;
@@ -4463,6 +4792,7 @@
       case "busAlt0": alternateBus(0); break;
       case "busAlt1": alternateBus(1); break;
       case "selType": selectSameType(target); break;
+      case "makeStrip": makeStrip(); break;
       case "selPrefix": selectSamePrefix(target); break;
       case "dir": checkpoint(); doc.settings.direction = b.dataset.dir; refresh(); break;
       case "repeat": repeatSideways(target.id, Math.min(200, parseInt($("repeatCount").value, 10) || 0)); break;
@@ -4478,6 +4808,11 @@
       case "cableSelect": sel = new Set(target.wires); refresh(); break;
       case "cableReset": checkpoint(); resetLayout(target); refresh(); break;
       case "fitRail": fitRail(target); break;
+      case "fitPlate": fitPlate(target); break;
+      case "ductSelect": sel = new Set(ductRouted(target).ids); refresh(); break;
+      case "ductShow": showOnlyWires(ductRouted(target).wires); break;
+      case "routeVia": routeVia([...sel].map(itemById).filter((i) => i && i.kind === "duct")); break;
+      case "clearVia": if (target && (isConn(target.id) || cableById(target.id))) { checkpoint(); delete target.via; refresh(); } else routeVia([]); break;
     }
   });
 
@@ -4532,10 +4867,13 @@
         <td>${stripeSelect("", p.stripe, p.color === "gy").replace('data-k=""', 'data-f="stripe"')}</td>
         <td><input data-f="gauge" type="text" list="gaugeList" value="${esc(p.gauge)}"></td>
         <td><select data-f="conductor">${[["", "—"], ...CONDUCTORS.map((x) => [x, x])].map(([v, l]) => `<option value="${v}"${(p.conductor || "") === v ? " selected" : ""}>${l}</option>`).join("")}</select></td>
+        <td><select data-f="end" title="How its wires' ends are finished">${[["", `As the drawing (${WIRE_ENDS[doc.settings.wireEnd] || "Ferrule"})`], ...Object.entries(WIRE_ENDS)].map(([v, l]) => `<option value="${v}"${(p.end || "") === v ? " selected" : ""}>${esc(l)}</option>`).join("")}</select></td>
+        <td><input data-f="strip" type="text" inputmode="decimal" value="${esc(p.strip || "")}" placeholder="${esc(doc.settings.strip)}" title="Strip length in mm"></td>
+        ${orderCells(p)}
         <td>${n}</td>
         <td><button class="icon-btn danger" data-pdel title="Delete profile">${ic("x", "sm")}</button></td>
       </tr>`;
-    }).join("") || '<tr><td colspan="8" class="muted" style="padding:10px">No profiles. Add one below.</td></tr>';
+    }).join("") || '<tr><td colspan="12" class="muted" style="padding:10px">No profiles. Add one below.</td></tr>';
     $("cprofRows").innerHTML = doc.cableProfiles.map((p) => {
       const n = doc.cables.filter((cb) => cb.profile === p.id).length;
       const ks = p.cores || [];
@@ -4547,12 +4885,18 @@
         <td class="c"><input data-f="shield" type="checkbox"${p.shield ? " checked" : ""} title="Shielded"></td>
         <td class="c"><input data-f="twisted" type="checkbox"${p.twisted ? " checked" : ""} title="Twisted pairs"></td>
         <td><input data-f="notes" type="text" value="${esc(p.notes || "")}" placeholder="e.g. drain wire, max length"></td>
+        <td><input data-f="od" type="text" inputmode="decimal" value="${esc(p.od || "")}" placeholder="${cableOD(0, ks.map((k) => k.gauge)).toFixed(1)}" title="Outside diameter in mm, for duct fill. Left empty, it's worked out from the cores."></td>
+        ${orderCells(p)}
         <td><button class="small${coresOpen.has(p.id) ? " on" : ""}" data-cores-toggle title="The cores this cable contains">${ks.length ? plural(ks.length, "core") : "Cores…"}</button></td>
         <td>${n}</td>
         <td><button class="icon-btn danger" data-cpdel title="Delete cable profile">${ic("x", "sm")}</button></td>
-      </tr>${coresOpen.has(p.id) ? `<tr class="cores-row" data-cores="${esc(p.id)}"><td colspan="10">${profileCoresTable(p, colorOpts)}</td></tr>` : ""}`;
-    }).join("") || '<tr><td colspan="10" class="muted" style="padding:10px">No cable profiles. Add one below.</td></tr>';
+      </tr>${coresOpen.has(p.id) ? `<tr class="cores-row" data-cores="${esc(p.id)}"><td colspan="13">${profileCoresTable(p, colorOpts)}</td></tr>` : ""}`;
+    }).join("") || '<tr><td colspan="13" class="muted" style="padding:10px">No cable profiles. Add one below.</td></tr>';
   }
+
+  // A profile's maker and order number, for the bill of materials.
+  const orderCells = (p) => `<td><input data-f="maker" type="text" list="makerList" value="${esc(p.maker || "")}"></td>
+        <td><input data-f="orderNo" type="text" value="${esc(p.orderNo || "")}"></td>`;
 
   // ---------- favourite profiles ----------
   // Drop-downs and right-click menus offer only the favourite profiles (fav); the star beside a profile in
@@ -4792,8 +5136,11 @@
 
   // A profile replacing one in the drawing stays a favourite or not as that was; a new one is a favourite
   // unless it says otherwise (one from a library file can).
+  // A profile coming in from a library keeps whether it's a favourite here, and the maker and order number
+  // given here unless it brings its own.
   function keepFav(p, old) {
     p.fav = old ? !!old.fav : p.fav !== false;
+    for (const k of ["maker", "orderNo"]) if (old && old[k] && !p[k]) p[k] = old[k];
   }
 
   // Whether two cable profiles describe the same cable (ids aside).
@@ -4900,7 +5247,7 @@
     const row = e.target.closest("tr[data-pid]");
     const f = e.target.dataset.f;
     if (!row || !f || e.target.tagName === "SELECT") return;
-    editProfile(row, f, f === "name" || f === "gauge" ? e.target.value : e.target.value.toLowerCase());
+    editProfile(row, f, f === "color" ? e.target.value.toLowerCase() : e.target.value);
   });
   $("profRows").addEventListener("change", (e) => {
     const row = e.target.closest("tr[data-pid]");
@@ -4948,16 +5295,18 @@
   function renderSettings() {
     const s = doc.settings;
     // Two columns: the standards and how wires and cables are drawn (as in the menus at the bottom right),
-    // then the labels and text they share, placing parts, and starting up.
+    // then the labels and text they share, wire lengths and ends, placing parts, and starting up.
     $("settingsBody").innerHTML = `
       <div class="set-col">
         <div class="set-group">
           <h4>Standards</h4>
-          <div class="row2 wide-first">
-            ${field("Wire standard", sel_("settings.wireStd", s.wireStd, Object.entries(WIRE_STANDARDS).map(([id, w]) => [id, w.name])))}
-            ${field("Terminal reference", sel_("settings.termSep", s.termSep, [["-", "TB101-1"], [":", "TB101:1"], [".", "TB101.1"], ["/", "TB101/1"], [" ", "TB101 1"]]))}
-          </div>
+          ${field("Wire standard", sel_("settings.wireStd", s.wireStd, Object.entries(WIRE_STANDARDS).map(([id, w]) => [id, w.name])))}
           <p class="hint-text">Changing the wire standard converts existing wires and profiles to the nearest size and the line / neutral / earth colours, and switches the print paper between American (Letter…, inches) and metric (A4…, mm).</p>
+          <div class="row2 wide-first">
+            ${field("Reference designations", sel_("settings.refStyle", s.refStyle, [["simple", "Tags (K1, TB101-1)"], ["iec", "IEC 81346 (=PUMP+CAB1-K1:13)"]]))}
+            ${field("Terminal reference", sel_("settings.termSep", s.termSep, [["-", "TB101-1"], [":", "TB101:1"], [".", "TB101.1"], ["/", "TB101/1"], [" ", "TB101 1"]].map(([v, l]) => [v, iecRefs(doc) ? "-" + l : l])))}
+          </div>
+          ${iecRefs(doc) ? '<p class="hint-text">Each page’s function (=) and location (+) are set in the panel on the right with nothing selected.</p>' : ""}
           <div class="btn-row"><button class="small" data-sact="profiles">${ic("edit", "sm")} Wire profiles…</button><button class="small" data-sact="print">${ic("file", "sm")} Print settings…</button></div>
         </div>
         <div class="set-group">
@@ -4986,6 +5335,16 @@
           </div>
         </div>
         <div class="set-group">
+          <h4>Lengths and wire ends</h4>
+          <div class="row3">
+            ${field("Spare at each end (mm)", num("settings.slack", s.slack, 10, 'min="0"'))}
+            ${field("Ends finished with", sel_("settings.wireEnd", s.wireEnd, Object.entries(WIRE_ENDS)))}
+            ${field("Strip length (mm)", num("settings.strip", s.strip, 1, 'min="0"'))}
+          </div>
+          ${field("Fill wire ducts up to (%)", num("settings.ductFill", s.ductFill, 5, 'min="0" max="100"'))}
+          <p class="hint-text">Wire lengths are estimated along the wire ducts, plus the spare. A duct fuller than the limit is outlined in red. Wire profiles and single wire ends can be finished differently; a ferrule on a terminal two wires share becomes a twin ferrule.</p>
+        </div>
+        <div class="set-group">
           <h4>Placing parts</h4>
           ${field("Snap grid", sel_("settings.grid", s.grid, [[0, "Off"], [0.5, "0.5 mm"], [1, "1 mm"], [2.5, "2.5 mm"], [5, "5 mm"]]))}
           ${chk("settings.snapEdges", s.snapEdges, "Snap to neighbours and rails")}
@@ -4994,7 +5353,8 @@
         <div class="set-group">
           <h4>Starting up</h4>
           <label class="check"><input data-ui="startScreen" type="checkbox"${ui.startScreen ? " checked" : ""}> Show the start screen when DIN Stack opens</label>
-          <p class="hint-text">Saved in this browser rather than with the diagram. When it's off, DIN Stack opens straight to the diagram you were working on.</p>
+          <label class="check"><input data-ui="libCheck" type="checkbox"${ui.libCheck !== false ? " checked" : ""}> Offer library updates when a diagram is opened</label>
+          <p class="hint-text">Both are saved in this browser rather than with the diagram. Without the start screen, DIN Stack opens straight to the diagram you were working on.</p>
         </div>
       </div>`;
   }
@@ -5009,6 +5369,9 @@
       setWireStd(v);
       toast(v === "us" ? "Wires switched to AWG and US colours, paper to Letter sizes" : "Wires switched to mm² and IEC colours, paper to A sizes");
     } else setPath(doc, k, v);
+    // IEC designations lead tags with "-", so terminals are joined with ":" there (-K1:13), and back.
+    if (k === "settings.refStyle" && v === "iec" && doc.settings.termSep === "-") { doc.settings.termSep = ":"; toast("Terminals are now joined with “:”, as in -K1:13"); }
+    if (k === "settings.refStyle" && v === "simple" && doc.settings.termSep === ":") { doc.settings.termSep = "-"; toast("Terminals are now joined with “-”, as in K1-13"); }
     refresh();
   }
 
@@ -5042,8 +5405,9 @@
       if (it.kind !== "part") continue;
       const t = tplOf(it);
       if (!t) continue;
-      if (!groups.has(t.id)) groups.set(t.id, { tpl: t, tags: [] });
-      groups.get(t.id).tags.push(it.tag);
+      if (!groups.has(t.id)) groups.set(t.id, { tpl: t, tags: [], items: [] });
+      groups.get(t.id).tags.push(it.tag ? partRef(doc, it, t) : "");
+      groups.get(t.id).items.push(it);
     }
     return [...groups.values()].sort((a, b) => natural(a.tpl.category + a.tpl.name, b.tpl.category + b.tpl.name));
   }
@@ -5075,12 +5439,13 @@
 
   function renderDrawer() {
     const body = $("drawerBody");
-    const counts = { wires: doc.connections.length, cables: doc.cables.length, buses: doc.buses.length, parts: doc.items.filter((i) => i.kind === "part").length, profiles: doc.wireProfiles.length, cprofiles: doc.cableProfiles.length };
+    const bom = bomOf(), strips = terminalStrips(doc);
+    const counts = { wires: doc.connections.length, cables: doc.cables.length, buses: doc.buses.length, parts: doc.items.filter((i) => i.kind === "part").length, profiles: doc.wireProfiles.length + doc.cableProfiles.length, terminals: strips.length, bom: bom.length };
     for (const el of document.querySelectorAll("[data-count]")) el.textContent = counts[el.dataset.count];
     for (const b of document.querySelectorAll(".drawer-tabs [data-tab]")) b.classList.toggle("active", b.dataset.tab === drawerTab);
-    $("btnListCsv").hidden = drawerTab !== "wires";
-    $("btnListProfiles").hidden = drawerTab !== "profiles" && drawerTab !== "cprofiles";
-    $("btnListCableLib").hidden = drawerTab !== "cprofiles";
+    $("btnListCsv").hidden = !["wires", "cables", "bom", "terminals"].includes(drawerTab);
+    $("btnListCsv").title = { cables: "Download the cable list as a CSV file", bom: "Download the bill of materials as a CSV file", terminals: "Download the terminal strip shown (or all of them) as a CSV file" }[drawerTab] || "Download the wire list as a CSV file";
+    $("btnBomAdd").hidden = drawerTab !== "bom";
     if ($("drawer").classList.contains("collapsed")) return; // filled in when it's opened
     // With more than one page, the wires, cables, bus bars and parts lists say which page each is on.
     const multi = doc.pages.length > 1;
@@ -5089,22 +5454,23 @@
     if (drawerTab === "wires") {
       const rows = wireRows();
       const circ = circuitOf(doc, [...sel].filter((id) => isConn(id) || busById(id)));
-      const names = circuitNames(doc);
-      body.innerHTML = `<table class="data-table"><thead><tr><th>Wire</th><th>From</th><th>To</th>${pageTh}<th>Circuit</th><th>Colour</th><th>Size</th><th>Conductor</th><th>Profile</th><th>Cable</th><th>Notes</th></tr></thead><tbody>
+      const names = circuitNames(doc), lens = lengthsFor(doc);
+      body.innerHTML = `<table class="data-table"><thead><tr><th>Wire</th><th>From</th><th>To</th>${pageTh}<th>Circuit</th><th>Colour</th><th>Size</th><th>Conductor</th><th title="≈: estimated along the wire ducts">Length</th><th>Profile</th><th>Cable</th><th>Notes</th></tr></thead><tbody>
         ${rows.map((c) => `<tr data-sel="${esc(c.id)}" class="${sel.has(c.id) ? "sel" : circ.conns.has(c.id) ? "net" : ""}">
           <td><b>${esc(c.wire)}</b></td><td>${esc(refOf(c.a))}</td><td>${esc(refOf(c.b))}</td>${pageTd(c.id)}<td>${esc(names.conn.get(c.id) || "")}</td>
-          <td>${colorChip(c.color, c.stripe)}${esc(wireLookName(c.color, c.stripe))}</td><td>${esc(c.gauge)}</td><td>${esc(c.conductor || "")}</td><td>${esc(profileById(c.profile)?.name || "")}</td><td>${esc(cableOf(c.id)?.label || "")}</td><td>${esc(c.notes)}</td></tr>`).join("")
-        || `<tr><td colspan="${multi ? 11 : 10}" class="empty">No wires yet. Drag from one terminal to another to add one.</td></tr>`}
+          <td>${colorChip(c.color, c.stripe)}${esc(wireLookName(c.color, c.stripe))}</td><td>${esc(c.gauge)}</td><td>${esc(c.conductor || "")}</td><td>${esc(lengthText(lens.wire(c)))}</td><td>${esc(profileById(c.profile)?.name || "")}</td><td>${esc(cableOf(c.id)?.label || "")}</td><td>${esc(c.notes)}</td></tr>`).join("")
+        || `<tr><td colspan="${multi ? 12 : 11}" class="empty">No wires yet. Drag from one terminal to another to add one.</td></tr>`}
       </tbody></table>`;
     } else if (drawerTab === "cables") {
-      body.innerHTML = `<table class="data-table"><thead><tr><th>Cable</th><th>Type</th><th>Profile</th><th>From</th><th>To</th>${pageTh}<th>Cores</th><th>Notes</th></tr></thead><tbody>
+      const lens = lengthsFor(doc);
+      body.innerHTML = `<table class="data-table"><thead><tr><th>Cable</th><th>Type</th><th>Profile</th><th>From</th><th>To</th>${pageTh}<th title="≈: estimated along the wire ducts">Length</th><th>Cores</th><th>Notes</th></tr></thead><tbody>
         ${cableRows().map((cb) => {
           const [a, b] = cableEnds(cb);
           const type = [cb.desc, cb.shield && "shielded", cb.twisted && "twisted pairs"].filter(Boolean).join(", ");
           return `<tr data-sel="${esc(cb.id)}" class="${sel.has(cb.id) ? "sel" : ""}">
-          <td>${colorChip(cb.color)}<b>${esc(cb.label)}</b></td><td>${esc(type)}</td><td>${esc(cableProfileById(cb.profile)?.name || "")}</td><td>${esc(a)}</td><td>${esc(b)}</td>${pageTd(cb.id)}<td>${esc(cableCores(cb).join(", "))}</td><td>${esc(cb.notes || "")}</td></tr>`;
+          <td>${colorChip(cb.color)}<b>${esc(cb.label)}</b></td><td>${esc(type)}</td><td>${esc(cableProfileById(cb.profile)?.name || "")}</td><td>${esc(a)}</td><td>${esc(b)}</td>${pageTd(cb.id)}<td>${esc(lengthText(cableLength(cb, lens)))}</td><td>${esc(cableCores(cb).join(", "))}</td><td>${esc(cb.notes || "")}</td></tr>`;
         }).join("")
-        || `<tr><td colspan="${multi ? 8 : 7}" class="empty">No cables yet. Select some wires and choose “Bundle into a cable”, right-click a terminal and choose “Cable from here…”, or drag from a cable connector to another connector or to a terminal.</td></tr>`}
+        || `<tr><td colspan="${multi ? 9 : 8}" class="empty">No cables yet. Select some wires and choose “Bundle into a cable”, right-click a terminal and choose “Cable from here…”, or drag from a cable connector to another connector or to a terminal.</td></tr>`}
       </tbody></table>`;
     } else if (drawerTab === "buses") {
       const circ = circuitOf(doc, [...sel].filter((id) => isConn(id) || busById(id)));
@@ -5116,22 +5482,34 @@
         || `<tr><td colspan="${multi ? 6 : 5}" class="empty">No bus bars yet. Right-click empty space on the drawing, choose “Bus bar…”, then click the terminals to bridge.</td></tr>`}
       </tbody></table>`;
     } else if (drawerTab === "profiles") {
-      const picked = new Set(doc.connections.filter((c) => sel.has(c.id)).map((c) => c.profile));
-      body.innerHTML = `<table class="data-table"><thead><tr><th class="fav-col" title="Favourites: offered in the drop-downs and right-click menus">★</th><th>Profile</th><th>Colour</th><th>Size</th><th>Conductor</th><th>Wires</th></tr></thead><tbody>
-        ${doc.wireProfiles.map((p) => `<tr data-prof="${esc(p.id)}" class="${picked.has(p.id) ? "net" : ""}" title="Select the wires with this profile">
+      // Wire profiles, then cable profiles, each under a heading with its buttons.
+      const wPicked = new Set(doc.connections.filter((c) => sel.has(c.id)).map((c) => c.profile));
+      const cPicked = new Set(doc.cables.filter((cb) => sel.has(cb.id)).map((cb) => cb.profile));
+      const favTh = '<th class="fav-col" title="Favourites: offered in the drop-downs and right-click menus">★</th>';
+      body.innerHTML = `<div class="list-head"><b>Wire profiles</b><button class="small" data-lact="profiles" title="Create and edit wire profiles">${ic("edit", "sm")} Edit…</button></div>
+      <table class="data-table"><thead><tr>${favTh}<th>Profile</th><th>Colour</th><th>Size</th><th>Conductor</th><th>Wires</th></tr></thead><tbody>
+        ${doc.wireProfiles.map((p) => `<tr data-prof="${esc(p.id)}" class="${wPicked.has(p.id) ? "net" : ""}" title="Select the wires with this profile">
           <td class="fav-col">${favBtn(p, "wire")}</td><td><b>${esc(p.name)}</b></td><td>${colorChip(p.color, p.stripe)}${esc(wireLookName(p.color, p.stripe))}</td><td>${esc(p.gauge)}</td><td>${esc(p.conductor || "")}</td>
           <td>${doc.connections.filter((c) => c.profile === p.id).length}</td></tr>`).join("")
         || '<tr><td colspan="6" class="empty">No wire profiles yet. Click Edit… to add one.</td></tr>'}
-      </tbody></table>`;
-    } else if (drawerTab === "cprofiles") {
-      const picked = new Set(doc.cables.filter((cb) => sel.has(cb.id)).map((cb) => cb.profile));
-      body.innerHTML = `<table class="data-table"><thead><tr><th class="fav-col" title="Favourites: offered in the drop-downs and right-click menus">★</th><th>Profile</th><th>Type</th><th>Sheath</th><th>Cores</th><th>Cables</th><th>Notes</th></tr></thead><tbody>
-        ${doc.cableProfiles.map((p) => `<tr data-cprof="${esc(p.id)}" class="${picked.has(p.id) ? "net" : ""}" title="Select the cables with this profile">
+      </tbody></table>
+      <div class="list-head"><b>Cable profiles</b><button class="small" data-lact="cableLib" title="Ready-made cable types to add to this drawing">${ic("plus", "sm")} Cable library…</button><button class="small" data-lact="cprofiles" title="Create and edit cable profiles">${ic("edit", "sm")} Edit…</button></div>
+      <table class="data-table"><thead><tr>${favTh}<th>Profile</th><th>Type</th><th>Sheath</th><th>Cores</th><th>Cables</th><th>Notes</th></tr></thead><tbody>
+        ${doc.cableProfiles.map((p) => `<tr data-cprof="${esc(p.id)}" class="${cPicked.has(p.id) ? "net" : ""}" title="Select the cables with this profile">
           <td class="fav-col">${favBtn(p, "cable")}</td><td><b>${esc(p.name)}</b></td><td>${esc([p.desc, p.shield && "shielded", p.twisted && "twisted pairs"].filter(Boolean).join(", "))}</td>
           <td>${colorChip(p.color)}${esc(wireColorName(p.color))}</td><td>${(p.cores || []).length || ""}</td>
           <td>${doc.cables.filter((cb) => cb.profile === p.id).length}</td><td>${esc(p.notes || "")}</td></tr>`).join("")
         || '<tr><td colspan="7" class="empty">No cable profiles yet. Add the cables this drawing uses from the cable library.</td></tr>'}
       </tbody></table>`;
+    } else if (drawerTab === "terminals") {
+      // With several strips, a bar above them picks one to show (and download).
+      const picked = strips.some((s) => s.key === ui.strip) ? ui.strip : "";
+      const bar = strips.length < 2 ? "" : `<div class="list-head"><label class="strip-pick">Show <select id="stripPick" title="Which terminal strip to show and download">
+          <option value="">All ${strips.length} strips</option>${strips.map((s) => `<option value="${esc(s.key)}"${s.key === picked ? " selected" : ""}>${esc(s.name)}</option>`).join("")}</select></label>
+        <span class="muted">Click a strip’s heading to select its blocks.</span></div>`;
+      body.innerHTML = bar + stripTable(shownStrips(), true);
+    } else if (drawerTab === "bom") {
+      body.innerHTML = bomTable(bom);
     } else {
       const parts = doc.items.filter((i) => i.kind === "part" && tplOf(i)).sort((a, b) => natural(a.tag || "~", b.tag || "~"));
       const summary = partsSummary().map((g) => `${g.tags.length} × ${esc(g.tpl.name)}`).join(" · ");
@@ -5141,7 +5519,7 @@
           const used = new Set();
           for (const c of doc.connections) for (const e of [c.a, c.b]) if (e.item === it.id) used.add(e.term);
           for (const b of doc.buses) for (const e of b.terms) if (e.item === it.id) used.add(e.term);
-          return `<tr data-sel="${esc(it.id)}" class="${sel.has(it.id) ? "sel" : ""}"><td><b>${esc(it.tag || "—")}</b></td><td>${esc(t.name)}</td><td>${esc(it.desc)}</td>${pageTd(it.id)}<td>${r3(t.w)} × ${r3(t.h)}</td><td>${used.size} / ${t.terminals.length}</td></tr>`;
+          return `<tr data-sel="${esc(it.id)}" class="${sel.has(it.id) ? "sel" : ""}"><td><b>${esc(it.tag ? partRef(doc, it, t) : "—")}</b></td><td>${esc(t.name)}</td><td>${esc(it.desc)}</td>${pageTd(it.id)}<td>${r3(t.w)} × ${r3(t.h)}</td><td>${used.size} / ${t.terminals.length}</td></tr>`;
         }).join("") || `<tr><td colspan="${multi ? 6 : 5}" class="empty">No parts yet. Click an object in the library to add one.</td></tr>`}
         ${summary ? `<tr class="summary"><td colspan="${multi ? 6 : 5}">${summary}</td></tr>` : ""}
       </tbody></table>`;
@@ -5149,10 +5527,51 @@
     filterDrawer();
   }
 
+  // The bill of materials, in sections. Lines typed in by hand (Other) are edited in place.
+  function bomTable(lines) {
+    let s = "", sec = "";
+    lines.forEach((l, i) => {
+      if (l.sec !== sec) { sec = l.sec; s += `<tr class="group"><td colspan="5">${esc(sec)}</td></tr>`; }
+      if (l.extra !== undefined) {
+        const x = (f, v, extra = "") => `<input data-x="${f}" value="${esc(v ?? "")}" ${extra}>`;
+        s += `<tr data-extra="${l.extra}" class="extra"><td>${x("qty", l.qty, 'type="number" min="0" step="1"')}</td><td>${x("maker", l.maker, 'list="makerList" placeholder="Maker"')}</td>
+          <td>${x("no", l.no, 'placeholder="Order no."')}</td><td colspan="2"><div class="inline-row">${x("desc", l.desc, 'placeholder="What it is, e.g. enclosure 600 × 400 × 200"')}<button class="icon-btn danger" data-xdel title="Remove this line">${ic("x", "sm")}</button></div></td></tr>`;
+        return;
+      }
+      const picked = l.ids.length && l.ids.every((id) => sel.has(id));
+      s += `<tr data-bom="${i}" class="${picked ? "sel" : ""}"><td><b>${esc(bomQty(l))}</b></td><td>${esc(l.maker)}</td>
+        <td>${l.no ? esc(l.no) : '<span class="muted" title="No order number: set one in the object type (Ordering), the part, rail or bus bar, or the profile">—</span>'}</td>
+        <td>${esc(l.desc)}</td><td class="wrap">${esc(l.used.join(", "))}</td></tr>`;
+    });
+    if (!lines.some((l) => l.extra !== undefined)) s += `<tr class="group"><td colspan="5">Other</td></tr><tr><td colspan="5" class="empty">Add a line for anything that isn't drawn, such as the enclosure, screws or cable glands.</td></tr>`;
+    return `<table class="data-table bom-table"><thead><tr><th>Qty</th><th>Maker</th><th>Order no.</th><th>Description</th><th>Used by</th></tr></thead><tbody>${s}</tbody></table>`;
+  }
+
+  // Terminal strips as one table: a heading row for each strip, then a row for each level of its blocks
+  // and one for each divider. In the drawer (live) the rows select their part; printed, the headings are
+  // the print's group rows.
+  function stripTable(strips, live) {
+    const multi = doc.pages.length > 1, cols = multi ? 7 : 6;
+    const list = (xs) => xs.map(esc).join("<br>");
+    let s = "";
+    for (const st of strips) {
+      s += `<tr class="${live ? "group" : "pgroup"}"${live ? ` data-strip="${esc(st.key)}" title="Select this strip’s blocks"` : ""}><td colspan="${cols}">${esc(st.name)} <span class="muted">· ${plural(st.blocks, "block")}${st.named ? "" : " side by side"}</span></td></tr>`;
+      for (const r of stripRows(doc, st, stripHelp)) {
+        const at = live ? ` data-sel="${esc(r.it.id)}"` : "";
+        const cls = [r.kind === "divider" && "divider", r.spare && "spare", live && sel.has(r.it.id) && "sel"].filter(Boolean).join(" ");
+        if (r.kind === "divider") { s += `<tr${at} class="${cls}"><td colspan="${cols}">${esc(r.name)}</td></tr>`; continue; }
+        s += `<tr${at} class="${cls}"><td><b>${esc(r.tag)}</b></td><td>${esc(r.terms)}</td><td>${list(r.top)}</td><td>${list(r.bottom)}</td><td>${esc(r.bridges.join(", "))}</td>
+          <td>${esc(r.circuit)}${r.spare ? '<span class="muted">spare</span>' : ""}</td>${multi ? `<td>${esc(r.page)}</td>` : ""}</tr>`;
+      }
+    }
+    if (!strips.length) s = `<tr><td colspan="${cols}" class="empty">No terminal strips yet. Terminal blocks side by side on a rail make a strip, and so do blocks given the same strip name in the panel on the right, wherever they are.</td></tr>`;
+    return `<table class="${live ? "data-table " : ""}strip-table"><thead><tr><th>Block</th><th>Terminals</th><th>Top</th><th>Bottom</th><th>Bus bars</th><th>Circuit</th>${multi ? "<th>Page</th>" : ""}</tr></thead><tbody>${s}</tbody></table>`;
+  }
+
   // Hide list rows that don't contain the filter text.
   function filterDrawer() {
     const q = $("listFilter").value.trim().toLowerCase();
-    const rows = [...$("drawerBody").querySelectorAll("tbody tr[data-sel], tbody tr[data-prof], tbody tr[data-cprof]")];
+    const rows = [...$("drawerBody").querySelectorAll("tbody tr[data-sel], tbody tr[data-prof], tbody tr[data-cprof], tbody tr[data-bom]")];
     let shown = 0;
     for (const r of rows) {
       const on = !q || r.textContent.toLowerCase().includes(q);
@@ -5183,20 +5602,53 @@
     const tab = e.target.closest("[data-tab]");
     if (tab) { showDrawerTab(tab.dataset.tab); return; }
     if (e.target.closest("#btnDrawerToggle")) { setDrawerClosed(!$("drawer").classList.contains("collapsed")); return; }
-    if (e.target.closest("#btnListProfiles")) { openProfiles(drawerTab === "cprofiles"); return; }
-    if (e.target.closest("#btnListCableLib")) { openCableLib(); return; }
+    const lact = e.target.closest("[data-lact]")?.dataset.lact;
+    if (lact) { if (lact === "cableLib") openCableLib(); else openProfiles(lact === "cprofiles"); return; }
     const fb = e.target.closest("[data-fav]");
     if (fb) { toggleFav(fb); return; }
     const prof = e.target.closest("[data-prof]");
     if (prof) { sel = new Set(doc.connections.filter((c) => c.profile === prof.dataset.prof).map((c) => c.id)); refresh(); return; }
     const cprof = e.target.closest("[data-cprof]");
     if (cprof) { sel = new Set(doc.cables.filter((cb) => cb.profile === cprof.dataset.cprof).map((cb) => cb.id)); refresh(); return; }
+    if (e.target.closest("#btnListCsv")) { ({ bom: exportBOM, terminals: () => exportStrips(shownStrips()), cables: exportCablesCSV }[drawerTab] || exportCSV)(); return; }
+    if (e.target.closest("#btnBomAdd")) {
+      checkpoint();
+      doc.bomExtra.push({ qty: 1, maker: "", no: "", desc: "" });
+      refresh();
+      const ins = $("drawerBody").querySelectorAll('[data-x="desc"]');
+      ins[ins.length - 1]?.focus();
+      return;
+    }
+    const xdel = e.target.closest("[data-xdel]");
+    if (xdel) { checkpoint(); doc.bomExtra.splice(+xdel.closest("[data-extra]").dataset.extra, 1); refresh(); return; }
+    // A line of the bill of materials selects what it counts, going to its page if none is on this one.
+    const bl = e.target.closest("[data-bom]");
+    if (bl) {
+      const ids = bomOf()[+bl.dataset.bom]?.ids || [];
+      if (!ids.length) return;
+      const pgs = [...new Set(ids.flatMap(pagesOf))];
+      if (pgs.length && !pgs.includes(doc.page)) doc.page = pgs[0];
+      sel = new Set(ids);
+      refresh();
+      return;
+    }
+    // A strip's heading selects its blocks and dividers, on the page of its first one if none is on this one.
+    const sh = e.target.closest("[data-strip]");
+    if (sh) {
+      const st = terminalStrips(doc).find((s) => s.key === sh.dataset.strip);
+      if (!st) return;
+      if (!st.parts.some(onPage)) doc.page = pageOf(doc, st.parts[0]);
+      sel = new Set(st.parts.map((it) => it.id));
+      refresh();
+      return;
+    }
     const row = e.target.closest("[data-sel]");
     if (row) {
       // Something on another page opens that page.
       const pgs = pagesOf(row.dataset.sel);
       if (pgs.length && !pgs.includes(doc.page)) doc.page = pgs[0];
       sel = new Set([row.dataset.sel]);
+      selAnchor = row.dataset.sel; // so a Shift+click on the drawing can select a run from it
       refresh();
     }
   });
@@ -5204,6 +5656,20 @@
     if (!e.target.closest("button, input")) setDrawerClosed(!$("drawer").classList.contains("collapsed"));
   });
   $("listFilter").addEventListener("input", filterDrawer);
+  $("drawerBody").addEventListener("change", (e) => {
+    if (e.target.id === "stripPick") { ui.strip = e.target.value; saveUi(); renderDrawer(); }
+  });
+  // Lines of the bill of materials typed in by hand: one undo step per box visited.
+  let extraCheckpointed = false;
+  $("drawerBody").addEventListener("focusin", (e) => { if (e.target.dataset.x) extraCheckpointed = false; });
+  $("drawerBody").addEventListener("input", (e) => {
+    const f = e.target.dataset.x, row = e.target.closest("[data-extra]");
+    const x = row && doc.bomExtra[+row.dataset.extra];
+    if (!f || !x) return;
+    if (!extraCheckpointed) { checkpoint(); extraCheckpointed = true; }
+    x[f] = f === "qty" ? Math.max(0, parseFloat(e.target.value) || 0) : e.target.value;
+    scheduleSave();
+  });
 
   // Drag the top edge of the lists to make them taller or shorter.
   (() => {
@@ -5278,25 +5744,19 @@
       afterLoad();
       requestAnimationFrame(fit);
       toast("Opened " + f.name);
+      checkLibUpdates();
     });
-  });
-
-  $("libFileInput").addEventListener("change", (e) => {
-    const f = e.target.files[0];
-    e.target.value = "";
-    if (!f) return;
-    readJSONFile(f, (d) => importLibrary(d, f.name));
   });
 
   // Merge a library file into the diagram. Types without a library of their own join one named
   // after the file: its "name", the name given by the caller, or the file name.
   // opts.refresh: reloading a library already in the diagram, so the library shown stays as it
   // is and the library's types that the file no longer has are removed, unless parts use them.
-  // opts.quiet: no toast (the caller reports).
+  // opts.quiet: no toast (the caller reports). opts.noCheckpoint: the caller has made the undo step.
   function importLibrary(d, fileName, name, opts = {}) {
     const list = d && Array.isArray(d.templates) ? d.templates : null;
     if (!list) { alert("No object types found in that file."); return; }
-    checkpoint();
+    if (!opts.noCheckpoint) checkpoint();
     const fileLib = (typeof d.name === "string" && d.name.trim()) || name || fileName.replace(/\.json$/i, "").replace(/[-_]+/g, " ").trim() || "Imported";
     const libs = new Set();
     let added = 0, updated = 0;
@@ -5339,7 +5799,10 @@
     refresh();
     if (opts.quiet) return;
     const into = names.length === 1 ? ` into “${names[0]}”` : names.length > 1 ? ` into ${names.length} libraries` : "";
-    toast(`Imported ${added} new and ${updated} updated object type${added + updated === 1 ? "" : "s"}${into}${profiles ? ` and ${profiles} profile${profiles === 1 ? "" : "s"}` : ""}${dropped ? `, and removed ${dropped} no longer in it` : ""}`);
+    const what = [];
+    if (added + updated || !profiles) what.push(`${added} new and ${updated} updated object type${added + updated === 1 ? "" : "s"}${into}`);
+    if (profiles) what.push(`${profiles} profile${profiles === 1 ? "" : "s"}`);
+    toast(`Imported ${what.join(" and ")}${dropped ? `, and removed ${dropped} no longer in it` : ""}`);
   }
 
   // Remove a library's types from the diagram, and the parts that use them.
@@ -5412,6 +5875,19 @@
     return catalog.filter((l) => have.has(l.name));
   }
 
+  // Whether the diagram's copy of a catalog library is older than the catalog's. A library added before it
+  // had a version number counts as older than any version.
+  const outdated = (l) => !!l.version && (!doc.libVersions[l.name] || compareVersions(doc.libVersions[l.name], l.version) < 0);
+
+  // Fetch the catalog of included libraries (throws if it can't be read).
+  async function fetchCatalog() {
+    const res = await fetch(CATALOG, { cache: "no-cache" });
+    if (!res.ok) throw new Error(res.status);
+    const cat = await res.json();
+    catalog = (Array.isArray(cat && cat.libraries) ? cat.libraries : []).filter((l) => l && l.file && l.name);
+    return catalog;
+  }
+
   function renderLibManager() {
     const have = new Set(libraries());
     const partsUsing = (name) => {
@@ -5420,8 +5896,7 @@
     };
     $("libChooserList").innerHTML = catalog.map((l, i) => {
       const inDoc = have.has(l.name), mine = doc.libVersions[l.name], parts = inDoc ? partsUsing(l.name) : 0, open = libDescOpen.has(l.file);
-      // A library added before it had a version number counts as older than any version.
-      const newer = inDoc && l.version && (!mine || compareVersions(mine, l.version) < 0);
+      const newer = inDoc && outdated(l);
       const facts = [l.types && `${l.types} object types`, l.version && `version ${esc(l.version)}`].filter(Boolean).join(" · ");
       const status = !inDoc ? "Not loaded"
         : (newer ? `<b>Update available</b>: this diagram has ${mine ? "version " + esc(mine) : "an older version"}` : "Loaded")
@@ -5471,16 +5946,18 @@
     renderLibManager();
   });
 
-  async function refreshAllLibraries() {
-    const loaded = loadedCatalog(), failed = [];
+  // Load these catalog libraries again (by default every one in the diagram), as one undo step.
+  async function refreshLibraries(list = loadedCatalog()) {
+    const failed = [];
     $("libRefreshAll").disabled = true;
-    for (const l of loaded) {
-      try { importLibrary(await fetchLibrary(l), l.file, l.name, { refresh: true, quiet: true }); }
+    checkpoint();
+    for (const l of list) {
+      try { importLibrary(await fetchLibrary(l), l.file, l.name, { refresh: true, quiet: true, noCheckpoint: true }); }
       catch (err) { failed.push(l.name); }
     }
     $("libRefreshAll").disabled = false;
     renderLibManager();
-    const done = loaded.length - failed.length;
+    const done = list.length - failed.length;
     toast(`Refreshed ${done} librar${done === 1 ? "y" : "ies"}${failed.length ? `. Couldn't load ${failed.map((n) => `“${n}”`).join(", ")}` : ""}`);
   }
 
@@ -5488,19 +5965,41 @@
     $("libChooser").hidden = false;
     $("libRefreshAll").hidden = true;
     libChooserMsg("Loading…");
-    let cat;
-    try {
-      const res = await fetch(CATALOG, { cache: "no-cache" });
-      if (!res.ok) throw new Error(res.status);
-      cat = await res.json();
-    } catch (e) {
+    try { await fetchCatalog(); } catch (e) {
       libChooserMsg(`The list of libraries couldn't be loaded. It needs the online version (or an installed copy that has been online); a copy opened straight from <code>index.html</code> can't read it. You can still download a file from the <a href="https://github.com/mmmlinux/DIN-Stack/tree/main/libraries" target="_blank" rel="noopener">libraries folder</a> and use <b>Import a library file…</b>.`);
       return;
     }
-    catalog = (Array.isArray(cat && cat.libraries) ? cat.libraries : []).filter((l) => l && l.file && l.name);
     if (!catalog.length) { libChooserMsg("No ready-made libraries are available yet."); return; }
     renderLibManager();
   }
+
+  // When a diagram is opened or carried on with, offer to update any of its included libraries that have
+  // a newer version out. Quietly does nothing offline. Updates turned down aren't offered again this session
+  // (until there's a newer one still), and the check can be turned off (ui.libCheck).
+  let libUpdates = [];
+  const declinedUpdates = new Set();
+  const updateKey = (l) => l.name + "@" + l.version;
+  async function checkLibUpdates() {
+    if (ui.libCheck === false || !/^https?:$/.test(location.protocol)) return;
+    try { await fetchCatalog(); } catch (e) { return; }
+    libUpdates = loadedCatalog().filter(outdated);
+    if (!libUpdates.length || libUpdates.every((l) => declinedUpdates.has(updateKey(l)))) return;
+    $("libUpdateList").innerHTML = libUpdates.map((l) => `<li><b>${esc(l.name)}</b>
+      <span class="muted">${doc.libVersions[l.name] ? esc(doc.libVersions[l.name]) : "older"} → ${esc(l.version)}</span>
+      · <a href="${esc(libNotesLink(l))}" target="_blank" rel="noopener" title="What changed in each version of this library">What's new</a></li>`).join("");
+    $("libUpdateAll").textContent = libUpdates.length > 1 ? `Update all ${libUpdates.length}` : "Update";
+    $("libUpdateCheck").checked = true;
+    $("libUpdateModal").hidden = false;
+    $("libUpdateAll").focus();
+  }
+  $("libUpdateModal").addEventListener("click", (e) => {
+    const act = e.target.closest("[data-lu]")?.dataset.lu;
+    if (!act) return;
+    $("libUpdateModal").hidden = true;
+    if (act === "all") refreshLibraries(libUpdates);
+    else for (const l of libUpdates) declinedUpdates.add(updateKey(l));
+  });
+  $("libUpdateCheck").addEventListener("change", (e) => { ui.libCheck = e.target.checked; saveUi(); });
 
   // One page of the drawing (the open one unless given) as an SVG, with the title block at the top. With
   // more than one page, the title is followed by the page's name.
@@ -5555,12 +6054,270 @@
     return /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
   }
 
+  function exportBOM() {
+    csvDownload(slug(doc.meta.title) + "-bill-of-materials.csv", bomCsvRows(bomOf()));
+  }
+
+  // A cable's length: its own (cb.length, in metres), or an estimate between the first terminal or connector at
+  // each end. { mm, est, ducts (the ducts it runs through) } or null.
+  function cableLength(cb, lens = lengthsFor(doc)) {
+    const first = cableEndInfo(cb).map((e) => (e.kind === "plug" ? e.port : e.kind === "fan" ? e.terms[0] || e.extra?.[0] : null));
+    const r = first[0] && first[1] ? lens.between(first[0], first[1], cb.via) : null;
+    if (+cb.length > 0) return { mm: +cb.length * 1000, est: false, ducts: r ? r.ducts : [] };
+    return r && { ...r, est: true };
+  }
+
+  // What runs through each duct and how full it is: Map duct id -> { wires, cables, pct, over }. Wires in a
+  // cable count as the cable. Fill is the wires' and cables' cross-sections against the duct's width × depth.
+  function ductContents(lens = lengthsFor(doc)) {
+    const out = new Map(doc.items.filter((i) => i.kind === "duct").map((d) => [d.id, { duct: d, wires: [], cables: [], ods: [] }]));
+    if (!out.size) return out;
+    const cores = new Set(doc.cables.flatMap((cb) => cb.wires));
+    for (const c of doc.connections) {
+      if (cores.has(c.id)) continue;
+      for (const id of lens.wire(c)?.ducts || []) { const x = out.get(id); if (x) { x.wires.push(c); x.ods.push(wireOD(c.gauge)); } }
+    }
+    for (const cb of doc.cables) {
+      const ducts = cableLength(cb, lens)?.ducts || [];
+      if (!ducts.length) continue;
+      const p = cableProfileById(cb.profile);
+      const gauges = (p?.cores?.length ? p.cores : cb.wires.map(connById).filter(Boolean)).map((k) => k.gauge);
+      const od = cableOD(p?.od, gauges);
+      for (const id of ducts) { const x = out.get(id); if (x) { x.cables.push(cb); x.ods.push(od); } }
+    }
+    const limit = +doc.settings.ductFill || 0;
+    for (const x of out.values()) { x.pct = ductFillPct(x.duct, x.ods); x.over = limit > 0 && x.pct > limit; }
+    return out;
+  }
+
+  // The next free duct label: D1, D2…
+  function nextDuctLabel() {
+    const used = new Set(doc.items.filter((i) => i.kind === "duct").map((i) => i.label));
+    let n = 1;
+    while (used.has("D" + n)) n++;
+    return "D" + n;
+  }
+  // The bill of materials, with cables bought by the metre where their lengths are known.
+  const bomOf = (items = doc.items) => { const lens = lengthsFor(doc); return bomLines(doc, items, (cb) => cableLength(cb, lens)?.mm); };
+
+  // What the terminal strip report needs from the app: references to a wire's far end, and its cable and core.
+  const stripHelp = {
+    ref: refOf,
+    cable: (id) => { const cb = cableOf(id); return cb ? `${cb.label || "Cable"}/${coreNumbers(cb).get(id)}` : ""; },
+  };
+  // The strips the Terminals tab shows: the one picked, or all of them.
+  function shownStrips() {
+    const all = terminalStrips(doc);
+    const one = all.find((s) => s.key === ui.strip);
+    return one ? [one] : all;
+  }
+
+  function exportStrips(strips) {
+    if (!strips.length) { toast("There are no terminal strips to export"); return; }
+    const name = strips.length === 1 ? "-strip-" + slug(strips[0].name) : "-terminal-strips";
+    csvDownload(slug(doc.meta.title) + name + ".csv", stripCsvRows(doc, strips, stripHelp));
+  }
+
+  function exportCablesCSV() {
+    const multi = doc.pages.length > 1;
+    const lens = lengthsFor(doc);
+    const rows = [["Cable", "Type", "Profile", "From", "To", ...(multi ? ["Page"] : []), "Length (m)", "Cores", "Notes"]];
+    for (const cb of cableRows()) {
+      const [a, b] = cableEnds(cb);
+      const type = [cb.desc, cb.shield && "shielded", cb.twisted && "twisted pairs"].filter(Boolean).join(", ");
+      const l = cableLength(cb, lens);
+      rows.push([cb.label, type, cableProfileById(cb.profile)?.name || "", a, b, ...(multi ? [pagesText(cb.id)] : []), l ? Math.round(l.mm / 100) / 10 : "", cableCores(cb).join(", "), cb.notes || ""]);
+    }
+    csvDownload(slug(doc.meta.title) + "-cables.csv", rows);
+  }
+
+  function exportProcessing() {
+    csvDownload(slug(doc.meta.title) + "-wire-processing.csv", processingCsvRows(doc, stripHelp));
+  }
+
+  // ---------- labels ----------
+  // The kinds of label File → Export… makes: [key, name, what each row is].
+  const LABEL_KINDS = [
+    ["terminals", "Terminal markers", "One per terminal block"],
+    ["wires", "Wire markers", "One per end of each wire not in a cable"],
+    ["cables", "Cable labels", "One per cable end"],
+    ["cores", "Core markers", "One per end of each cable core"],
+    ["devices", "Device labels", "Tagged parts on rails, other than terminal blocks"],
+    ["connectors", "Connector labels", "Tagged loose parts, such as panel connectors"],
+  ];
+  // The choices, remembered in this browser. levels: a terminal marker for each level of a block; dest: wire
+  // markers say where the other end goes; full: IEC designations in full rather than as on the drawing;
+  // sort: "tag" or "position"; split: a file per kind rather than one with a Kind column.
+  const labelOpts = () => Object.assign({ terminals: true, wires: true, cables: true, cores: false, devices: true, connectors: true,
+    levels: false, dest: true, full: false, page: false, sort: "tag", split: false }, ui.labels || {});
+
+  // Every label of the kinds picked (all of them with all), in order: { kind, text, detail, at, page }.
+  // text is the label itself; detail a second line (where a wire goes, a cable's type, a part's description);
+  // at where it goes (the terminal, the cable end or the strip).
+  function labelRows(o = labelOpts(), all = false) {
+    const pageIx = new Map(doc.pages.map((p, i) => [p.id, i]));
+    const rows = [];
+    // A part as a label names it: as on the drawing (without the function and location its page gives) or in full.
+    const who = (it, ctx) => partRef(doc, it, tplOf(it), o.full ? undefined : ctx);
+    const ref = (e, ctx) => { const it = itemById(e.item); return it ? endRef(it, tplOf(it), e.term, doc.settings.termSep, who(it, ctx)) : refOf(e); };
+    const add = (kind, it, x, y, text, detail, at) => {
+      const pg = pageOf(doc, it);
+      rows.push({ kind, text: String(text || ""), detail: detail || "", at: at || "", page: pageName(doc, pg), pos: [pageIx.get(pg) ?? 0, y, x], pg });
+    };
+    const want = (k) => all || o[k];
+    if (want("terminals")) {
+      for (const st of terminalStrips(doc)) {
+        for (const r of stripRows(doc, st, stripHelp)) {
+          if (r.kind !== "level" || !r.it.tag || (!r.tag && !o.levels)) continue; // r.tag: only on a block's first level
+          const b = boxOf(r.it);
+          add("terminals", r.it, b.x + b.w / 2, b.y, who(r.it, pageOf(doc, r.it)), o.levels ? r.terms : "", st.name);
+        }
+      }
+    }
+    if (want("wires")) {
+      for (const c of doc.connections) {
+        if (cableOf(c.id)) continue;
+        for (const [here, there] of [[c.a, c.b], [c.b, c.a]]) {
+          const it = itemById(here.item), p = termPoint(here);
+          if (!it || !p) continue;
+          const ctx = pageOf(doc, it);
+          add("wires", it, p.x, p.y, c.wire, o.dest ? "→ " + ref(there, ctx) : "", ref(here, ctx));
+        }
+      }
+    }
+    if (want("cables") || want("cores")) {
+      for (const cb of doc.cables) {
+        const type = cb.desc || cableProfileById(cb.profile)?.name || "";
+        if (want("cables")) {
+          for (const e of cableEndInfo(cb)) {
+            const first = e.kind === "plug" ? e.port : e.terms?.[0] || e.extra?.[0];
+            const it = first && itemById(first.item), p = first && termPoint(first);
+            if (it && p) add("cables", it, p.x, p.y, cb.label, type, endText(e, cb));
+          }
+        }
+        if (want("cores")) {
+          const num = coreNumbers(cb);
+          for (const c of cb.wires.map(connById).filter(Boolean)) {
+            for (const e of [c.a, c.b]) {
+              const it = itemById(e.item), p = termPoint(e);
+              if (it && p) add("cores", it, p.x, p.y, c.mark || num.get(c.id), cb.label, ref(e, pageOf(doc, it)));
+            }
+          }
+        }
+      }
+    }
+    if (want("devices") || want("connectors")) {
+      for (const it of doc.items) {
+        const tpl = it.kind === "part" && it.tag && tplOf(it);
+        if (!tpl || stripRole(tpl) !== "none") continue;
+        const kind = isLoose(tpl) ? "connectors" : "devices";
+        if (!want(kind)) continue;
+        const b = boxOf(it);
+        add(kind, it, b.x + b.w / 2, b.y + b.h / 2, who(it, pageOf(doc, it)), it.desc || "", "");
+      }
+    }
+    // Kind by kind, then by name or by where they are (page, then down, then across).
+    const order = LABEL_KINDS.map((k) => k[0]);
+    const byPos = (a, b) => a.pos[0] - b.pos[0] || (Math.abs(a.pos[1] - b.pos[1]) > 2 ? a.pos[1] - b.pos[1] : a.pos[2] - b.pos[2]);
+    return rows.sort((a, b) => order.indexOf(a.kind) - order.indexOf(b.kind)
+      || (o.sort === "position" ? byPos(a, b) : natural(a.text, b.text) || natural(a.at, b.at) || byPos(a, b)));
+  }
+
+  // The labels as CSV: one file with a Kind column, or a file per kind.
+  function exportLabels() {
+    const o = labelOpts(), rows = labelRows(o);
+    if (!rows.length) { toast("There are no labels of the kinds picked"); return; }
+    const head = ["Text", "Detail", "At", ...(o.page ? ["Page"] : [])];
+    const line = (r) => [r.text, r.detail, r.at, ...(o.page ? [r.page] : [])];
+    const name = LABEL_KINDS.reduce((m, [k, n]) => ({ ...m, [k]: n }), {});
+    if (!o.split) {
+      csvDownload(slug(doc.meta.title) + "-labels.csv", [["Kind", ...head], ...rows.map((r) => [name[r.kind], ...line(r)])]);
+      return;
+    }
+    for (const [k, n] of LABEL_KINDS) {
+      const of = rows.filter((r) => r.kind === k);
+      if (of.length) csvDownload(`${slug(doc.meta.title)}-${slug(n)}.csv`, [head, ...of.map(line)]);
+    }
+  }
+
+  // ---------- the Export window ----------
+  // Images of the drawing, the lists as CSV, and labels with their choices and a preview.
+  function openExport() {
+    renderExport();
+    $("exportModal").hidden = false;
+  }
+
+  function renderExport() {
+    const o = labelOpts(), every = labelRows(o, true), rows = labelRows(o);
+    const n = (k) => every.filter((r) => r.kind === k).length;
+    const opt = (k, opts) => `<select data-lo="${k}">${opts.map(([v, l]) => `<option value="${v}"${String(o[k]) === String(v) ? " selected" : ""}>${l}</option>`).join("")}</select>`;
+    const box = (k, label) => `<label class="check"><input data-lo="${k}" type="checkbox"${o[k] ? " checked" : ""}> ${label}</label>`;
+    const name = LABEL_KINDS.reduce((m, [k, nm]) => ({ ...m, [k]: nm }), {});
+    const preview = rows.slice(0, 5).map((r) => `<tr><td>${esc(name[r.kind])}</td><td><b>${esc(r.text)}</b></td><td>${esc(r.detail)}</td><td>${esc(r.at)}</td>${o.page ? `<td>${esc(r.page)}</td>` : ""}</tr>`).join("");
+    $("exportBody").innerHTML = `
+      <div class="set-group">
+        <h4>Drawing</h4>
+        <div class="btn-row"><button data-ex="svg">${ic("download", "sm")} SVG image (true scale)</button><button data-ex="png">${ic("download", "sm")} PNG image</button></div>
+        <p class="hint-text">Of the page you're on${doc.pages.length > 1 ? ` (${esc(pageName(doc, doc.page))})` : ""}. The SVG is at real size, for printing at 1:1 or using in other drawings.</p>
+      </div>
+      <div class="set-group">
+        <h4>Lists (CSV)</h4>
+        <div class="btn-row"><button data-ex="wires">${ic("download", "sm")} Wire list</button><button data-ex="cables">${ic("download", "sm")} Cable list</button><button data-ex="bom">${ic("download", "sm")} Bill of materials</button><button data-ex="strips">${ic("download", "sm")} Terminal strips</button><button data-ex="processing" title="Each wire and core with its length, and how each end is finished: ferrule, lug, strip length">${ic("download", "sm")} Wire processing</button></div>
+      </div>
+      <div class="set-group">
+        <h4>Labels (CSV)</h4>
+        <div class="label-kinds">${LABEL_KINDS.map(([k, nm, what]) => `<label class="check${n(k) ? "" : " off"}"><input data-lo="${k}" type="checkbox"${o[k] ? " checked" : ""}> <span>${nm} <span class="muted">(${n(k)})</span><small>${what}</small></span></label>`).join("")}</div>
+        <div class="row2">
+          ${field("Terminal markers", opt("levels", [[false, "One per block (TB101)"], [true, "One per level, with its terminals"]]))}
+          ${field("Wire markers", opt("dest", [[true, "Number and where the other end goes"], [false, "Number only"]]))}
+        </div>
+        <div class="row2">
+          ${field("Order", opt("sort", [["tag", "By name"], ["position", "By position: page, then down, then across"]]))}
+          ${field("Files", opt("split", [[false, "One file, with a Kind column"], [true, "A file for each kind"]]))}
+        </div>
+        ${box("page", "Page column")}
+        ${iecRefs(doc) ? box("full", "Designations in full (=PUMP+CAB1-K1), not as on the drawing (-K1)") : ""}
+        ${rows.length ? `<table class="label-preview"><thead><tr><th>Kind</th><th>Text</th><th>Detail</th><th>At</th>${o.page ? "<th>Page</th>" : ""}</tr></thead><tbody>${preview}</tbody></table>
+          ${rows.length > 5 ? `<p class="hint-text">… and ${rows.length - 5} more.</p>` : ""}` : '<p class="hint-text">No labels of the kinds ticked.</p>'}
+        <div class="btn-row"><button class="primary" data-ex="labels"${rows.length ? "" : " disabled"}>${ic("download", "sm")} Download ${plural(rows.length, "label")}</button></div>
+        ${o.split ? '<p class="hint-text">Each kind downloads as its own file; the browser may ask whether to allow several downloads.</p>' : ""}
+      </div>`;
+  }
+
+  $("exportBody").addEventListener("change", (e) => {
+    const k = e.target.dataset.lo;
+    if (!k) return;
+    ui.labels = { ...labelOpts(), [k]: e.target.type === "checkbox" ? e.target.checked : e.target.value === "true" ? true : e.target.value === "false" ? false : e.target.value };
+    saveUi();
+    renderExport();
+  });
+  $("exportBody").addEventListener("click", (e) => {
+    const b = e.target.closest("[data-ex]");
+    if (!b) return;
+    ({
+      svg: () => download(pageFileName() + ".svg", exportSVGString().svg, "image/svg+xml"),
+      png: exportPNG,
+      wires: exportCSV,
+      cables: exportCablesCSV,
+      bom: exportBOM,
+      strips: () => exportStrips(terminalStrips(doc)),
+      processing: exportProcessing,
+      labels: exportLabels,
+    })[b.dataset.ex]();
+  });
+
+  // Download rows as a CSV file that Excel opens as UTF-8.
+  function csvDownload(name, rows) {
+    download(name, "\ufeff" + rows.map((r) => r.map(csvCell).join(",")).join("\r\n"), "text/csv");
+  }
+
   function exportCSV() {
     const names = circuitNames(doc);
     const multi = doc.pages.length > 1;
-    const rows = [["Wire", "From", "To", ...(multi ? ["Page"] : []), "Circuit", "Colour", "Size", "Conductor", "Profile", "Cable", "Notes"]];
-    for (const c of wireRows()) rows.push([c.wire, refOf(c.a), refOf(c.b), ...(multi ? [pagesText(c.id)] : []), names.conn.get(c.id) || "", wireLookName(c.color, c.stripe), c.gauge, c.conductor || "", profileById(c.profile)?.name || "", cableOf(c.id)?.label || "", c.notes]);
-    download(slug(doc.meta.title) + "-wires.csv", "﻿" + rows.map((r) => r.map(csvCell).join(",")).join("\r\n"), "text/csv");
+    const lens = lengthsFor(doc);
+    const rows = [["Wire", "From", "To", ...(multi ? ["Page"] : []), "Circuit", "Colour", "Size", "Conductor", "Length (mm)", "Profile", "Cable", "Notes"]];
+    for (const c of wireRows()) rows.push([c.wire, refOf(c.a), refOf(c.b), ...(multi ? [pagesText(c.id)] : []), names.conn.get(c.id) || "", wireLookName(c.color, c.stripe), c.gauge, c.conductor || "", Math.round(lens.wire(c)?.mm || 0) || "", profileById(c.profile)?.name || "", cableOf(c.id)?.label || "", c.notes]);
+    csvDownload(slug(doc.meta.title) + "-wires.csv", rows);
   }
 
   // ---------- printing ----------
@@ -5602,20 +6359,98 @@
     const plan = (landscape) => {
       const pw = (landscape ? paper.h : paper.w) - 2 * pr.margin;
       const ph = (landscape ? paper.w : paper.h) - 2 * pr.margin - 1; // 1 mm to spare
-      const head = pr.head ? printHeight(printHead(), pw) : 0, notes = pr.head ? printHeight(printNotes(), pw) : 0;
+      const head = pr.head && !pr.frame ? printHeight(printHead(), pw) : 0, notes = pr.head && !pr.frame ? printHeight(printNotes(), pw) : 0;
+      const dw = pr.frame ? pw - 2 * FRAME.band : pw;
       const out = drawings.map((d, i) => {
-        const room = ph - head - (i ? 0 : notes);
-        const fit = Math.min(pw / d.W, room / d.H);
-        const s = pr.scale === "fit" ? fit : pr.scale === "shrink" ? Math.min(1, fit) : pr.scale === "width" ? pw / d.W : Math.max(1, +pr.percent || 100) / 100;
-        const tw = pw / s, th = room / s;
+        const room = pr.frame ? ph - FRAME.title - 2 * FRAME.band : ph - head - (i ? 0 : notes);
+        const fit = Math.min(dw / d.W, room / d.H);
+        const s = pr.scale === "fit" ? fit : pr.scale === "shrink" ? Math.min(1, fit) : pr.scale === "width" ? dw / d.W : Math.max(1, +pr.percent || 100) / 100;
+        const tw = dw / s, th = room / s;
         const cols = Math.max(1, Math.ceil(d.W / tw - 1e-6)), rows = Math.max(1, Math.ceil(d.H / th - 1e-6));
-        return { ...d, s, tw, th, cols, rows, sheets: cols * rows, pw, room };
+        // The sheets put together, centred on the drawing, and the frame's zones across them: about
+        // FRAME.zone mm square on paper, numbered across (1, 2…) and lettered down (A, B…).
+        const gx = d.x0 - (cols * tw - d.W) / 2, gy = d.y0 - (rows * th - d.H) / 2;
+        const nc = Math.max(1, Math.round((cols * tw * s) / FRAME.zone)), nr = Math.max(1, Math.min(ZONE_ROWS.length, Math.round((rows * th * s) / FRAME.zone)));
+        return { ...d, s, tw, th, cols, rows, sheets: cols * rows, pw: dw, room, gx, gy, zones: { nc, nr, zw: (cols * tw) / nc, zh: (rows * th) / nr } };
       });
-      return { paper, landscape, ph, drawings: out, sheets: out.reduce((t, d) => t + d.sheets, 0), size: out.reduce((t, d) => t + d.s, 0) };
+      return { paper, landscape, ph, pw, drawings: out, sheets: out.reduce((t, d) => t + d.sheets, 0), size: out.reduce((t, d) => t + d.s, 0) };
     };
     if (pr.orient !== "auto") return plan(pr.orient === "landscape");
     const a = plan(false), b = plan(true);
     return b.sheets < a.sheets || (b.sheets === a.sheets && b.size > a.size + 1e-9) ? b : a;
+  }
+
+  // The drawing frame: zone bands (mm) around the drawing, the title strip under it, and the zones' size
+  // on paper. Zone rows are lettered without I and O.
+  const FRAME = { band: 5, title: 13, zone: 45 };
+  const ZONE_ROWS = "ABCDEFGHJKLMNPQRSTUVWXYZ";
+
+  // The zone of a point on a printed drawing page: "B3", or "2/B3" (page 2) with more than one page.
+  function zoneAt(d, x, y) {
+    const z = d.zones, clamp = (v, n) => Math.max(0, Math.min(n - 1, v));
+    const col = clamp(Math.floor((x - d.gx) / z.zw), z.nc) + 1, row = ZONE_ROWS[clamp(Math.floor((y - d.gy) / z.zh), z.nr)];
+    const pageNo = doc.pages.findIndex((p) => p.id === d.page.id) + 1;
+    return (doc.pages.length > 1 ? pageNo + "/" : "") + row + col;
+  }
+
+  // Which zone an item's middle is in, on the printout laid out as L ("" when its page isn't printed).
+  function zoneFinder(L) {
+    const byPage = new Map(L.drawings.map((d) => [d.page.id, d]));
+    return (it) => {
+      const d = byPage.get(pageOf(doc, it));
+      if (!d) return "";
+      const b = boxOf(it);
+      return zoneAt(d, b.x + b.w / 2, b.y + b.h / 2);
+    };
+  }
+
+  // One sheet of a drawing page in the frame: the piece of the drawing at tile, inside a border whose
+  // bands carry the zone numbers and letters, over the title strip.
+  function frameSheet(L, d, tile, sheetNo, part) {
+    const B = FRAME.band, T = FRAME.title, W = L.pw, H = L.ph, z = d.zones;
+    const iw = W - 2 * B, ih = H - T - 2 * B; // the drawing's room, at (B, B)
+    const line = (x1, y1, x2, y2, w = 0.25) => `<line x1="${r3(x1)}" y1="${r3(y1)}" x2="${r3(x2)}" y2="${r3(y2)}" stroke="#000" stroke-width="${w}"/>`;
+    const text = (x, y, t, size, extra = "", fill = "#000") => `<text x="${r3(x)}" y="${r3(y)}" font-family="${FONT}" font-size="${size}" fill="${fill}" ${extra}>${esc(t)}</text>`;
+    let s = `<rect x="0.25" y="0.25" width="${r3(W - 0.5)}" height="${r3(H - 0.5)}" fill="none" stroke="#000" stroke-width="0.5"/>`;
+    s += `<rect x="${B}" y="${B}" width="${r3(iw)}" height="${r3(ih)}" fill="none" stroke="#000" stroke-width="0.35"/>`;
+    // Zone bands: a tick at each zone boundary on this sheet, and the zone's number or letter in the middle
+    // of the part of it that's on this sheet.
+    const toX = (x) => B + (x - tile.x) * d.s, toY = (y) => B + (y - tile.y) * d.s;
+    for (let k = 0; k < z.nc; k++) {
+      const a = Math.max(toX(d.gx + k * z.zw), B), b = Math.min(toX(d.gx + (k + 1) * z.zw), B + iw);
+      if (b - a < 0.5) continue;
+      if (a > B + 0.01) for (const [y1, y2] of [[0, B], [B + ih, 2 * B + ih]]) s += line(a, y1, a, y2);
+      for (const y of [B * 0.68, B + ih + B * 0.68]) s += text((a + b) / 2, y, String(k + 1), 2.6, 'text-anchor="middle"');
+    }
+    for (let k = 0; k < z.nr; k++) {
+      const a = Math.max(toY(d.gy + k * z.zh), B), b = Math.min(toY(d.gy + (k + 1) * z.zh), B + ih);
+      if (b - a < 0.5) continue;
+      if (a > B + 0.01) for (const [x1, x2] of [[0, B], [B + iw, W]]) s += line(x1, a, x2, a);
+      for (const x of [B / 2, B + iw + B / 2]) s += text(x, (a + b) / 2 + 0.9, ZONE_ROWS[k], 2.6, 'text-anchor="middle"');
+    }
+    // The title strip: title, page (with its function and location), revision, date, author and sheet.
+    const m = doc.meta, y0 = H - T;
+    const pre = iecRefs(doc) ? aspectPrefix(doc, d.page.id) : "";
+    const cells = [
+      ["Title", m.title || "", 0.36],
+      ["Page", [doc.pages.length > 1 || pre ? d.page.name : "", pre].filter(Boolean).join("  ") || "—", 0.2],
+      ["Revision", m.revision || "", 0.09],
+      ["Date", m.date || "", 0.11],
+      ["Author", m.author || "", 0.12],
+      ["Sheet", `${sheetNo} of ${L.sheets}`, 0.12],
+    ];
+    s += line(0, y0, W, y0, 0.5);
+    let x = 0;
+    cells.forEach(([cap, val, f], i) => {
+      const w = W * f;
+      if (i) s += line(x, y0, x, H, 0.25);
+      s += text(x + 1.5, y0 + 3, cap, 1.9, "", "#555");
+      s += text(x + 1.5, y0 + 8.2, val, fitText(val, i ? 3 : 4, w - 3), i ? "" : 'font-weight="bold"');
+      if (cap === "Sheet" && part) s += text(x + 1.5, y0 + 11.6, part, 1.8, "", "#555");
+      x += w;
+    });
+    return `<svg xmlns="${SVGNS}" width="${r3(W)}mm" height="${r3(H)}mm" viewBox="0 0 ${r3(W)} ${r3(H)}">${s}`
+      + `<svg x="${B}" y="${B}" width="${r3(iw)}" height="${r3(ih)}" viewBox="${r3(tile.x)} ${r3(tile.y)} ${r3(d.tw)} ${r3(d.th)}">${d.body}</svg></svg>`;
   }
 
   const scaleText = (s) => `${+(s * 100).toFixed(s < 0.1 ? 2 : 1)}%${Math.abs(s - 1) < 1e-9 ? " (real size)" : ""}`;
@@ -5628,7 +6463,7 @@
       const name = doc.pages.length > 1 ? d.page.name : "Drawing";
       parts.push(`${name}: ${plural(d.sheets, "sheet")}${d.sheets > 1 ? ` (${d.cols} across × ${d.rows} down)` : ""} at ${scaleText(d.s)}`);
     }
-    if (pr.wires || pr.cables || pr.buses || pr.parts) parts.push("then the lists, on a new sheet");
+    if (pr.wires || pr.cables || pr.buses || pr.parts || pr.strips || pr.bom) parts.push("then the lists, on a new sheet");
     return parts.join(" · ");
   }
 
@@ -5668,9 +6503,12 @@
       <div class="set-group">
         <h4>Print</h4>
         ${field("Drawing", select("pages", [["all", doc.pages.length > 1 ? "All pages" : "The drawing"], ["current", doc.pages.length > 1 ? `This page only (${pageName(doc, doc.page)})` : "The drawing"], ["none", "None, only the lists"]].filter((o, i) => doc.pages.length > 1 || i !== 1)))}
-        ${check("head", "Heading on every sheet (title, page, revision), with the notes on the first")}
+        ${field("Around the drawing", `<select data-pk="around">${[["head", "A heading on every sheet (title, page, revision)"], ["frame", "A frame with zones and a title strip"], ["none", "Nothing"]]
+          .map(([v, l]) => `<option value="${v}"${(pr.frame ? "frame" : pr.head ? "head" : "none") === v ? " selected" : ""}>${l}</option>`).join("")}</select>`)}
+        <p class="hint-text">${pr.frame ? "The frame's zones are numbered across and lettered down, and the printed parts list says which zone each part is in. The notes print with the lists." : pr.head ? "The notes go under the heading on the first sheet." : ""}</p>
         <div class="row2">${check("wires", "Wire list")}${check("cables", "Cable list")}</div>
         <div class="row2">${check("buses", "Bus bar list")}${check("parts", "Parts list")}</div>
+        <div class="row2">${check("strips", "Terminal strips")}${check("bom", "Bill of materials")}</div>
         ${doc.pages.length > 1 ? '<p class="hint-text">With one page printed, the lists only have what\'s on it.</p>' : ""}
       </div>`;
     $("printSummary").textContent = printSummary();
@@ -5683,7 +6521,8 @@
     if (k === "margin") v = parseFloat(v);
     if (k === "percent") { v = parseFloat(v); if (!(v > 0)) return; }
     if (!printCheckpointed) { checkpoint(); printCheckpointed = true; }
-    doc.settings.print[k] = v;
+    if (k === "around") Object.assign(doc.settings.print, { head: v === "head", frame: v === "frame" });
+    else doc.settings.print[k] = v;
     scheduleSave();
     updateToolbar();
     if (redraw) renderPrint(); else $("printSummary").textContent = printSummary();
@@ -5709,30 +6548,38 @@
     // Each sheet is the paper's printable height: the heading, the notes on the first, then the drawing
     // filling the rest. The drawing is centred on the sheet, or for a page over several sheets, on the
     // sheets put together; every sheet shows the same-sized piece, so they line up.
-    let notes = pr.head ? printNotes() : "";
-    let s = "";
+    // With the frame, the notes go with the lists instead.
+    let notes = pr.head || pr.frame ? printNotes() : "";
+    let s = "", sheetNo = 0;
     for (const d of L.drawings) {
-      const gx = d.x0 - (d.cols * d.tw - d.W) / 2, gy = d.y0 - (d.rows * d.th - d.H) / 2;
+      const { gx, gy } = d;
       for (let r = 0; r < d.rows; r++) {
         for (let c = 0; c < d.cols; c++) {
           const where = d.sheets > 1 ? `Sheet ${r * d.cols + c + 1} of ${d.sheets} · row ${r + 1}, column ${c + 1}` : "";
+          const tile = { x: gx + c * d.tw, y: gy + r * d.th };
+          sheetNo++;
+          if (pr.frame) {
+            s += `<div class="psheet" style="height:${r3(L.ph)}mm">${frameSheet(L, d, tile, sheetNo, d.sheets > 1 ? `row ${r + 1}, column ${c + 1}` : "")}</div>`;
+            continue;
+          }
           s += `<div class="psheet" style="height:${r3(L.ph)}mm">${pr.head ? printHead(d.page, where) : ""}${notes}`
-            + `<svg xmlns="${SVGNS}" width="${r3(d.pw)}mm" height="${r3(d.room)}mm" viewBox="${r3(gx + c * d.tw)} ${r3(gy + r * d.th)} ${r3(d.tw)} ${r3(d.th)}">${d.body}</svg></div>`;
+            + `<svg xmlns="${SVGNS}" width="${r3(d.pw)}mm" height="${r3(d.room)}mm" viewBox="${r3(tile.x)} ${r3(tile.y)} ${r3(d.tw)} ${r3(d.th)}">${d.body}</svg></div>`;
           notes = "";
         }
       }
     }
     // The lists' first page has the heading too, and the notes if no drawing had them.
-    const head = pr.head ? printHead() + notes : "";
+    const head = pr.head || pr.frame ? printHead() + notes : "";
     let lists = "";
+    const plens = lengthsFor(doc);
     if (pr.wires && wires.some((c) => shown(c.id))) {
-      lists += `<h2>Wire list</h2><table><thead><tr><th>Wire</th><th>From</th><th>To</th>${pageTh}<th>Circuit</th><th>Colour</th><th>Size</th><th>Conductor</th><th>Profile</th><th>Cable</th><th>Notes</th></tr></thead><tbody>`;
-      lists += wires.filter((c) => shown(c.id)).map((c) => `<tr><td>${esc(c.wire)}</td><td>${esc(refOf(c.a))}</td><td>${esc(refOf(c.b))}</td>${pageTd(c.id)}<td>${esc(names.conn.get(c.id) || "")}</td><td>${esc(wireLookName(c.color, c.stripe))}</td><td>${esc(c.gauge)}</td><td>${esc(c.conductor || "")}</td><td>${esc(profileById(c.profile)?.name || "")}</td><td>${esc(cableOf(c.id)?.label || "")}</td><td>${esc(c.notes)}</td></tr>`).join("");
+      lists += `<h2>Wire list</h2><table><thead><tr><th>Wire</th><th>From</th><th>To</th>${pageTh}<th>Circuit</th><th>Colour</th><th>Size</th><th>Conductor</th><th>Length</th><th>Profile</th><th>Cable</th><th>Notes</th></tr></thead><tbody>`;
+      lists += wires.filter((c) => shown(c.id)).map((c) => `<tr><td>${esc(c.wire)}</td><td>${esc(refOf(c.a))}</td><td>${esc(refOf(c.b))}</td>${pageTd(c.id)}<td>${esc(names.conn.get(c.id) || "")}</td><td>${esc(wireLookName(c.color, c.stripe))}</td><td>${esc(c.gauge)}</td><td>${esc(c.conductor || "")}</td><td>${esc(lengthText(plens.wire(c)))}</td><td>${esc(profileById(c.profile)?.name || "")}</td><td>${esc(cableOf(c.id)?.label || "")}</td><td>${esc(c.notes)}</td></tr>`).join("");
       lists += "</tbody></table>";
     }
     if (pr.cables && doc.cables.some((cb) => shown(cb.id))) {
-      lists += `<h2>Cables</h2><table><thead><tr><th>Cable</th><th>Description</th>${pageTh}<th>Cores</th><th>Notes</th></tr></thead><tbody>`;
-      lists += cableRows().filter((cb) => shown(cb.id)).map((cb) => `<tr><td>${esc(cb.label)}</td><td>${esc([cb.desc, cb.to && "→ " + cb.to].filter(Boolean).join(" "))}</td>${pageTd(cb.id)}<td>${esc(cableCores(cb).join(", "))}</td><td>${esc(cb.notes || "")}</td></tr>`).join("");
+      lists += `<h2>Cables</h2><table><thead><tr><th>Cable</th><th>Description</th>${pageTh}<th>Length</th><th>Cores</th><th>Notes</th></tr></thead><tbody>`;
+      lists += cableRows().filter((cb) => shown(cb.id)).map((cb) => `<tr><td>${esc(cb.label)}</td><td>${esc([cb.desc, cb.to && "→ " + cb.to].filter(Boolean).join(" "))}</td>${pageTd(cb.id)}<td>${esc(lengthText(cableLength(cb, plens)))}</td><td>${esc(cableCores(cb).join(", "))}</td><td>${esc(cb.notes || "")}</td></tr>`).join("");
       lists += "</tbody></table>";
     }
     if (pr.buses && doc.buses.some((b) => shown(b.id))) {
@@ -5743,33 +6590,167 @@
     const groups = partsSummary(pr.pages === "current" ? pageItems() : doc.items);
     if (pr.parts && groups.length) {
       lists += `<h2>Parts list</h2><table><thead><tr><th>Qty</th><th>Type</th><th>Size (mm)</th><th>Tags</th></tr></thead><tbody>`;
-      lists += groups.map((g) => `<tr><td>${g.tags.length}</td><td>${esc(g.tpl.name)}</td><td>${r3(g.tpl.w)} × ${r3(g.tpl.h)}</td><td>${esc(g.tags.filter(Boolean).sort(natural).join(", "))}</td></tr>`).join("");
+      const zone = pr.frame ? zoneFinder(L) : () => "";
+      const tagList = (g) => g.items.filter((it) => it.tag).sort((a, b) => natural(a.tag, b.tag)).map((it) => partRef(doc, it, g.tpl) + (zone(it) ? ` (${zone(it)})` : "")).join(", ");
+      lists += groups.map((g) => `<tr><td>${g.tags.length}</td><td>${esc(g.tpl.name)}</td><td>${r3(g.tpl.w)} × ${r3(g.tpl.h)}</td><td>${esc(tagList(g))}</td></tr>`).join("");
+      lists += "</tbody></table>";
+    }
+    const strips = terminalStrips(doc).filter((st) => pr.pages !== "current" || st.parts.some(onPage));
+    if (pr.strips && strips.length) lists += `<h2>Terminal strips</h2>${stripTable(strips, false)}`;
+    const bom = bomOf(pr.pages === "current" ? pageItems() : doc.items);
+    if (pr.bom && bom.length) {
+      lists += `<h2>Bill of materials</h2><table><thead><tr><th>Qty</th><th>Maker</th><th>Order no.</th><th>Description</th><th>Used by</th></tr></thead><tbody>`;
+      let sec = "";
+      for (const l of bom) {
+        if (l.sec !== sec) { sec = l.sec; lists += `<tr class="pgroup"><td colspan="5">${esc(sec)}</td></tr>`; }
+        lists += `<tr><td>${esc(bomQty(l))}</td><td>${esc(l.maker)}</td><td>${esc(l.no)}</td><td>${esc(l.desc)}</td><td>${esc(l.used.join(", "))}</td></tr>`;
+      }
       lists += "</tbody></table>";
     }
     // The lists get a page only when there are some (or, with no drawing printed, for the heading and notes).
-    if (lists || (head && !L.drawings.length)) s += `<div class="plists">${head}${lists}</div>`;
+    if (lists || (head && (!L.drawings.length || (pr.frame && doc.meta.notes)))) s += `<div class="plists">${head}${lists}</div>`;
     $("printArea").innerHTML = s;
     window.print();
   }
 
   // ---------- commands: toolbar, menus and dialog buttons ----------
   // Dialogs that Esc and a click on the backdrop close (the designer handles its own).
-  const DIALOGS = ["helpModal", "historyModal", "profModal", "profPick", "libChooser", "settingsModal", "welcomeModal", "cableLib", "printModal"];
+  const DIALOGS = ["helpModal", "historyModal", "profModal", "profPick", "libChooser", "settingsModal", "welcomeModal", "cableLib", "printModal", "newModal", "importModal", "libUpdateModal", "exportModal"];
 
-  // keepLibs false starts from just the built-in library, as it comes.
-  function newDiagram(ask = true, keepLibs = true) {
-    if (ask && !confirm("Start a new, empty diagram? Your object library is kept. (You can undo this.)")) return;
-    checkpoint();
-    {
-      const std = doc.settings.wireStd, libVersions = keepLibs ? doc.libVersions : {};
-      doc = normalize(newProject(keepLibs ? doc.templates : undefined));
-      doc.libVersions = libVersions;
-      setWireStd(std);
+  // A tick box with a line of detail under it, for the New diagram and Import dialogs. It's ticked unless
+  // on is false, and greyed out when there's nothing (n is 0) to bring.
+  const choiceBox = (id, on, n, label, sub) => `<label class="check${n ? "" : " off"}"><input id="${id}" type="checkbox"${n && on !== false ? " checked" : ""}${n ? "" : " disabled"}> <span>${label}<small>${sub}</small></span></label>`;
+  // "6: +24 V DC · 0 V DC · Ground (PE) · AC hot (line)…"
+  const nameList = (list) => `${list.length}: ${list.slice(0, 4).map((p) => p.name).join(" · ")}${list.length > 4 ? "…" : ""}`;
+
+  // The New diagram dialog: the new diagram's standards (starting from this one's), and which of this
+  // diagram's libraries and profiles to bring over. The tick boxes are remembered in this browser.
+  function openNew() {
+    const s = doc.settings, keep = ui.newKeep || { libs: ui.keepLibs }; // keepLibs: the start screen's old tick box
+    const extra = libraries().filter((l) => l !== BUILTIN_LIBRARY);
+    const types = doc.templates.filter((t) => t.library !== BUILTIN_LIBRARY).length;
+    const pick = (id, v, opts) => `<select id="${id}">${opts.map(([val, lab]) => `<option value="${esc(val)}"${val === v ? " selected" : ""}>${esc(lab)}</option>`).join("")}</select>`;
+    $("newBody").innerHTML = `
+      ${field("Title", `<input id="newTitle" type="text" placeholder="Untitled diagram">`)}
+      <div class="set-group">
+        <h4>Standards</h4>
+        ${field("Wire standard", pick("newWireStd", s.wireStd, Object.entries(WIRE_STANDARDS).map(([id, w]) => [id, w.name])))}
+        <p class="hint-text">Sizes, line / neutral / earth colours, and paper: American is AWG and Letter, metric is mm² and A4.</p>
+        ${field("Reference designations", pick("newRefStyle", s.refStyle, [["simple", "Tags (K1, TB101-1)"], ["iec", "IEC 81346 (=PUMP+CAB1-K1:13)"]]))}
+      </div>
+      <div class="set-group">
+        <h4>Bring from ${esc(doc.meta.title || "this diagram")}</h4>
+        ${choiceBox("newLibs", keep.libs, extra.length, "Libraries", extra.length ? `${esc(extra.join(", "))}: ${types} type${types === 1 ? "" : "s"}` : "Only the built-in library is loaded")}
+        ${choiceBox("newWires", keep.wires, doc.wireProfiles.length, "Wire profiles", doc.wireProfiles.length ? esc(nameList(doc.wireProfiles)) : "None in this diagram")}
+        ${choiceBox("newCables", keep.cables, doc.cableProfiles.length, "Cable profiles", doc.cableProfiles.length ? esc(nameList(doc.cableProfiles)) : "None in this diagram")}
+        <p class="hint-text">Left unticked, the new diagram starts with the built-in library and the standard wire profiles.</p>
+      </div>`;
+    $("newModal").hidden = false;
+    $("newTitle").focus();
+  }
+
+  function createNew() {
+    // Remember what was ticked; a box that couldn't be ticked keeps its last choice.
+    const prev = ui.newKeep || {}, keep = {};
+    ui.newKeep = {};
+    for (const [k, id] of [["libs", "newLibs"], ["wires", "newWires"], ["cables", "newCables"]]) {
+      keep[k] = !$(id).disabled && $(id).checked;
+      ui.newKeep[k] = $(id).disabled ? prev[k] : keep[k];
     }
+    saveUi();
+    const title = $("newTitle").value.trim(), std = $("newWireStd").value, refStyle = $("newRefStyle").value;
+    $("newModal").hidden = true;
+    checkpoint();
+    const old = doc;
+    doc = normalize(newProject(keep.libs ? old.templates : undefined));
+    if (keep.libs) doc.libVersions = { ...old.libVersions };
+    // The starting profiles come in American sizes: bring them to the old diagram's standard so they sit
+    // with any kept ones, then convert everything to the standard picked.
+    setWireStd(old.settings.wireStd);
+    if (keep.wires) doc.wireProfiles = JSON.parse(JSON.stringify(old.wireProfiles));
+    if (keep.cables) doc.cableProfiles = JSON.parse(JSON.stringify(old.cableProfiles));
+    setWireStd(std);
+    doc.settings.refStyle = refStyle;
+    // Terminals join as before, unless the style changed: IEC tags lead with "-", so it's ":" there.
+    doc.settings.termSep = refStyle === old.settings.refStyle ? old.settings.termSep : refStyle === "iec" ? ":" : "-";
+    if (title) doc.meta.title = title;
     sel.clear();
     hiddenWires = null;
     afterLoad();
     requestAnimationFrame(fit);
+  }
+  $("newBody").addEventListener("keydown", (e) => { if (e.key === "Enter" && e.target.tagName === "INPUT") createNew(); });
+
+  // The Import dialog: File → Import libraries and profiles… and the library's Import a library file…
+  // open a diagram or library file, then pick which of its libraries and profiles to bring in. The
+  // built-in library isn't offered: it comes with DIN Stack.
+  let importing = null;
+
+  $("libFileInput").addEventListener("change", (e) => {
+    const f = e.target.files[0];
+    e.target.value = "";
+    if (!f) return;
+    readJSONFile(f, (d) => openImport(d, f.name));
+  });
+
+  function openImport(d, fileName) {
+    if (!d || typeof d !== "object") { alert("That doesn’t look like a DIN Stack diagram or library file."); return; }
+    const isLib = !Array.isArray(d.items);
+    // A library file's types without a library of their own join one named after the file.
+    const fileLib = (typeof d.name === "string" && d.name.trim()) || fileName.replace(/\.json$/i, "").replace(/[-_]+/g, " ").trim() || "Imported";
+    const tpls = (Array.isArray(d.templates) ? d.templates : []).filter((t) => t && t.id && t.w > 0 && t.h > 0);
+    for (const t of tpls) {
+      t.terminals = t.terminals || [];
+      if (isLib && !String(t.library || "").trim() && !isBuiltinId(t.id)) t.library = fileLib;
+      upgradeTemplate(t);
+    }
+    const libs = [...new Set(tpls.map((t) => t.library))].filter((l) => l !== BUILTIN_LIBRARY);
+    const wp = (Array.isArray(d.wireProfiles) ? d.wireProfiles : []).filter((p) => p && p.id && p.name);
+    const cp = (Array.isArray(d.cableProfiles) ? d.cableProfiles : []).filter((p) => p && p.id && p.name);
+    if (!libs.length && !wp.length && !cp.length) { alert(`There are no libraries or profiles in ${fileName} to import.`); return; }
+    // A diagram says which wire standard its profiles are in (older ones were all metric).
+    const std = isLib ? null : (d.settings && d.settings.wireStd) || "metric";
+    importing = { d, fileName, isLib, tpls, libs, wp, cp, std };
+    const have = new Set(libraries());
+    const libLine = (l) => {
+      const n = tpls.filter((t) => t.library === l).length, v = isLib ? libs.length === 1 && d.version : d.libVersions && d.libVersions[l];
+      return `${n} type${n === 1 ? "" : "s"}${typeof v === "string" && v ? ` · version ${esc(v)}` : ""}${have.has(l) ? " · already here, so its types are updated" : ""}`;
+    };
+    const conv = std && std !== doc.settings.wireStd;
+    $("importTitle").textContent = "Import from " + fileName;
+    $("importBody").innerHTML = `
+      <div class="set-group">
+        <h4>Libraries</h4>
+        ${libs.length ? libs.map((l, i) => choiceBox("impLib" + i, true, 1, esc(l), libLine(l))).join("") : '<p class="hint-text">None but the built-in library.</p>'}
+      </div>
+      <div class="set-group">
+        <h4>Profiles</h4>
+        ${choiceBox("impWires", true, wp.length, "Wire profiles", wp.length ? esc(nameList(wp)) : "None in this file")}
+        ${choiceBox("impCables", true, cp.length, "Cable profiles", cp.length ? esc(nameList(cp)) : "None in this file")}
+        <p class="hint-text">Profiles this diagram already has, such as the starting wire profiles, are updated from the file’s.${conv ? ` The file’s profiles are ${std === "us" ? "American, so they’re converted to metric" : "metric, so they’re converted to American"} sizes and colours.` : ""}</p>
+      </div>`;
+    $("importModal").hidden = false;
+    $("importDo").focus();
+  }
+
+  function doImport() {
+    const { d, fileName, isLib, tpls, libs, wp, cp, std } = importing;
+    const chosen = new Set(libs.filter((l, i) => $("impLib" + i).checked));
+    const wires = $("impWires").checked && !$("impWires").disabled, cables = $("impCables").checked && !$("impCables").disabled;
+    $("importModal").hidden = true;
+    importing = null;
+    if (!chosen.size && !wires && !cables) return;
+    const to = doc.settings.wireStd, conv = std && std !== to;
+    if (conv && wires) for (const p of wp) convertWire(p, profileRole(p), std, to);
+    if (conv && cables) for (const p of cp) for (const k of p.cores || []) k.gauge = convertGauge(k.gauge, to);
+    importLibrary({
+      templates: tpls.filter((t) => chosen.has(t.library)),
+      wireProfiles: wires ? wp : [],
+      cableProfiles: cables ? cp : [],
+      version: isLib && chosen.size === 1 ? d.version : undefined,
+    }, fileName);
+    // A diagram keeps the version of each ready-made library it loaded.
+    if (!isLib && d.libVersions) for (const l of chosen) if (typeof d.libVersions[l] === "string") doc.libVersions[l] = d.libVersions[l];
   }
 
   // The workspace's example is fetched, so like the library list it needs the app served over http(s).
@@ -5794,6 +6775,7 @@
     hiddenWires = null;
     afterLoad();
     requestAnimationFrame(fit);
+    checkLibUpdates();
   }
 
   function exportLibrary() {
@@ -5835,12 +6817,6 @@
     const main = m.querySelector(`[data-wel="${fresh || doc.items.length ? "continue" : workspace ? "example" : "blank"}"]`);
     main.classList.add("primary");
     $("welStartup").checked = ui.startScreen;
-    // Only worth asking about libraries when there's more than the built-in one.
-    const extra = libraries().filter((l) => l !== BUILTIN_LIBRARY);
-    $("welBlankCell").classList.toggle("has-opt", extra.length > 0);
-    $("welKeepLibsRow").hidden = !extra.length;
-    $("welKeepLibsRow").title = "Start the new diagram with " + (extra.length ? extra.join(", ") + " as well as the built-in library" : "the built-in library") + ". Untick to start with just the built-in library.";
-    $("welKeepLibs").checked = ui.keepLibs !== false;
     ui.welcomed = true;
     saveUi();
     m.hidden = false;
@@ -5858,22 +6834,33 @@
     }
   }
 
+  // Closing the start screen any way but starting afresh, opening a file or loading the example (which check
+  // for themselves) carries on with the diagram: the time to offer library updates.
+  let welChoice = "";
+  new MutationObserver(() => {
+    if (!$("welcomeModal").hidden) return;
+    if (!["blank", "open", "example"].includes(welChoice)) checkLibUpdates();
+    welChoice = "";
+  }).observe($("welcomeModal"), { attributes: true, attributeFilter: ["hidden"] });
   $("welcomeModal").addEventListener("click", (e) => {
     const act = e.target.closest("[data-wel]")?.dataset.wel;
     if (!act) return;
+    welChoice = act;
     stopCountdown();
     $("welcomeModal").hidden = true;
-    if (act === "blank") newDiagram(false, $("welKeepLibsRow").hidden || $("welKeepLibs").checked);
+    if (act === "blank") openNew();
     if (act === "example") loadExample(false);
     if (act === "open") $("fileInput").click();
     if (act === "help") openHelp();
   });
   for (const ev of ["pointerdown", "keydown"]) $("welcomeModal").addEventListener(ev, stopCountdown);
   $("welStartup").addEventListener("change", (e) => { ui.startScreen = e.target.checked; saveUi(); });
-  $("welKeepLibs").addEventListener("change", (e) => { ui.keepLibs = e.target.checked; saveUi(); });
 
   const commands = {
-    new: newDiagram,
+    new: openNew,
+    newCreate: createNew,
+    importFrom: () => $("libFileInput").click(),
+    importDo: doImport,
     open: () => $("fileInput").click(),
     save: saveFile,
     saveAs: saveFileAs,
@@ -5888,10 +6875,8 @@
     example: loadExample,
     print: openPrint,
     doPrint: () => { $("printModal").hidden = true; printDoc(); },
-    exportSvg: () => download(pageFileName() + ".svg", exportSVGString().svg, "image/svg+xml"),
     addPage,
-    exportPng: exportPNG,
-    exportCsv: exportCSV,
+    exportOpen: openExport,
     undo, redo,
     settings: openSettings,
     help: openHelp,
@@ -5902,7 +6887,7 @@
     fit,
     newType: newTemplate,
     libManage: openLibManager,
-    libRefreshAll: refreshAllLibraries,
+    libRefreshAll: () => refreshLibraries(),
     libImport: () => { $("libChooser").hidden = true; $("libFileInput").click(); },
     libExport: exportLibrary,
     // With cables selected, the library can give them the type picked.
@@ -5929,12 +6914,14 @@
     }
     const cb = e.target.closest("[data-cmd]");
     if (cb && !cb.disabled) { closeMenus(); commands[cb.dataset.cmd]?.(); }
-    // Tabs inside dialogs: [data-pane-btn] shows the [data-pane] with the same name in its [data-tabs].
+    // Tabs inside dialogs: [data-pane-btn] shows the [data-pane] with the same name in its [data-tabs]
+    // (and not in tabs inside that one).
     const tb = e.target.closest("[data-pane-btn]");
     if (tb) {
       const box = tb.closest("[data-tabs]");
-      for (const b of box.querySelectorAll("[data-pane-btn]")) b.classList.toggle("on", b === tb);
-      for (const p of box.querySelectorAll("[data-pane]")) p.hidden = p.dataset.pane !== tb.dataset.paneBtn;
+      const own = (el) => el.parentElement.closest("[data-tabs]") === box;
+      for (const b of box.querySelectorAll("[data-pane-btn]")) if (own(b)) b.classList.toggle("on", b === tb);
+      for (const p of box.querySelectorAll("[data-pane]")) if (own(p)) p.hidden = p.dataset.pane !== tb.dataset.paneBtn;
     }
   });
   // Pressing anywhere outside an open menu closes it. (Pointer down rather than click: the drawing
@@ -6214,13 +7201,15 @@
   }
   hadSaved = (() => { try { return !!localStorage.getItem(LS_KEY); } catch (e) { return false; } })();
   doc = loadInitial();
-  drawerTab = ["wires", "cables", "buses", "parts", "profiles", "cprofiles"].includes(ui.drawerTab) ? ui.drawerTab : "wires";
+  if (ui.drawerTab === "cprofiles") ui.drawerTab = "profiles"; // wire and cable profiles shared a tab from 1.11.6
+  drawerTab = ["wires", "cables", "buses", "profiles", "parts", "terminals", "bom"].includes(ui.drawerTab) ? ui.drawerTab : "wires";
   $("drawer").classList.toggle("collapsed", !!ui.drawerClosed);
   renderLibrary();
   applyView();
   refresh();
   requestAnimationFrame(fit);
   if (ui.startScreen) openWelcome(true);
+  else if (!workspace || hadSaved) checkLibUpdates();
   // A new workspace starts as its example, fetched once nothing is saved for it yet.
   if (workspace && !hadSaved) {
     fetchExample().then((d) => {
@@ -6228,6 +7217,7 @@
       sel.clear();
       afterLoad();
       requestAnimationFrame(fit);
+      if ($("welcomeModal").hidden) checkLibUpdates();
     }).catch((err) => toast("The " + workspace + " example couldn't be loaded: " + err.message));
   }
   // Switching to or from a workspace link loads that workspace's diagram.

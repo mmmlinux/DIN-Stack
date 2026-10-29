@@ -1,7 +1,7 @@
 {
   "type": "dinstack-library",
-  "app": "1.4.23",
-  "version": "1.0.2",
+  "app": "1.11.1",
+  "version": "1.1.1",
   "name": "AutomationDirect pushbuttons & pilot lights",
   "templates": [
     {
@@ -35,6 +35,45 @@
           "link": "",
           "kind": "wire"
         }
+      ],
+      "maker": "AutomationDirect",
+      "orders": [
+        {
+          "no": "GCX3100",
+          "desc": ""
+        },
+        {
+          "no": "GCX3102",
+          "desc": ""
+        },
+        {
+          "no": "GCX3103",
+          "desc": ""
+        },
+        {
+          "no": "GCX3104",
+          "desc": ""
+        },
+        {
+          "no": "GCX3105",
+          "desc": ""
+        },
+        {
+          "no": "GCX3107",
+          "desc": ""
+        },
+        {
+          "no": "GCX1100",
+          "desc": ""
+        },
+        {
+          "no": "GCX1105",
+          "desc": ""
+        },
+        {
+          "no": "GCX1107",
+          "desc": ""
+        }
       ]
     },
     {
@@ -67,6 +106,25 @@
           "side": "auto",
           "link": "",
           "kind": "wire"
+        }
+      ],
+      "maker": "AutomationDirect",
+      "orders": [
+        {
+          "no": "GCX3101",
+          "desc": ""
+        },
+        {
+          "no": "GCX3106",
+          "desc": ""
+        },
+        {
+          "no": "GCX1101",
+          "desc": ""
+        },
+        {
+          "no": "GCX1106",
+          "desc": ""
         }
       ]
     },
@@ -119,6 +177,25 @@
           "link": "",
           "kind": "wire"
         }
+      ],
+      "maker": "AutomationDirect",
+      "orders": [
+        {
+          "no": "GCX3150",
+          "desc": ""
+        },
+        {
+          "no": "GCX3152",
+          "desc": ""
+        },
+        {
+          "no": "GCX1150",
+          "desc": ""
+        },
+        {
+          "no": "GCX1152",
+          "desc": ""
+        }
       ]
     },
     {
@@ -170,7 +247,8 @@
           "link": "",
           "kind": "wire"
         }
-      ]
+      ],
+      "maker": "AutomationDirect"
     },
     {
       "id": "ad-gcx22-1nc2nc",
@@ -221,7 +299,8 @@
           "link": "",
           "kind": "wire"
         }
-      ]
+      ],
+      "maker": "AutomationDirect"
     },
     {
       "id": "ad-gcx22-1no-lit",
@@ -272,7 +351,8 @@
           "link": "",
           "kind": "wire"
         }
-      ]
+      ],
+      "maker": "AutomationDirect"
     },
     {
       "id": "ad-gcx22-1nc-lit",
@@ -322,6 +402,17 @@
           "side": "auto",
           "link": "",
           "kind": "wire"
+        }
+      ],
+      "maker": "AutomationDirect",
+      "orders": [
+        {
+          "no": "GCX1221",
+          "desc": ""
+        },
+        {
+          "no": "GCX3221",
+          "desc": ""
         }
       ]
     },
@@ -392,7 +483,8 @@
           "link": "",
           "kind": "wire"
         }
-      ]
+      ],
+      "maker": "AutomationDirect"
     },
     {
       "id": "ad-gcx22-1no2no-lit",
@@ -461,7 +553,8 @@
           "link": "",
           "kind": "wire"
         }
-      ]
+      ],
+      "maker": "AutomationDirect"
     },
     {
       "id": "ad-gcx22-pl",
@@ -494,7 +587,8 @@
           "link": "",
           "kind": "wire"
         }
-      ]
+      ],
+      "maker": "AutomationDirect"
     },
     {
       "id": "ad-fuji-ar30-1no",
@@ -527,7 +621,8 @@
           "link": "",
           "kind": "wire"
         }
-      ]
+      ],
+      "maker": "Fuji Electric"
     },
     {
       "id": "ad-fuji-ar30-1nc",
@@ -559,6 +654,25 @@
           "side": "auto",
           "link": "",
           "kind": "wire"
+        }
+      ],
+      "maker": "Fuji Electric",
+      "orders": [
+        {
+          "no": "AR30B0R-01R",
+          "desc": ""
+        },
+        {
+          "no": "AR30Q2R-01RZC",
+          "desc": ""
+        },
+        {
+          "no": "AR30V0R-01RZC",
+          "desc": ""
+        },
+        {
+          "no": "AR30VPR-01R",
+          "desc": ""
         }
       ]
     },
@@ -610,6 +724,13 @@
           "side": "auto",
           "link": "",
           "kind": "wire"
+        }
+      ],
+      "maker": "Fuji Electric",
+      "orders": [
+        {
+          "no": "AR30Q2R-11RZC",
+          "desc": ""
         }
       ]
     },
@@ -680,6 +801,13 @@
           "link": "",
           "kind": "wire"
         }
+      ],
+      "maker": "Fuji Electric",
+      "orders": [
+        {
+          "no": "AR30VPR-12R",
+          "desc": ""
+        }
       ]
     },
     {
@@ -731,7 +859,8 @@
           "link": "",
           "kind": "wire"
         }
-      ]
+      ],
+      "maker": "Fuji Electric"
     },
     {
       "id": "ad-fuji-ar30-1nc-lit",
@@ -781,6 +910,25 @@
           "side": "auto",
           "link": "",
           "kind": "wire"
+        }
+      ],
+      "maker": "Fuji Electric",
+      "orders": [
+        {
+          "no": "AR30E0L-01E3RZC",
+          "desc": ""
+        },
+        {
+          "no": "AR30G2L-01E3RZC",
+          "desc": ""
+        },
+        {
+          "no": "AR30V0L-01E3RZC",
+          "desc": ""
+        },
+        {
+          "no": "AR30VPL-01E3R",
+          "desc": ""
         }
       ]
     },
@@ -851,7 +999,8 @@
           "link": "",
           "kind": "wire"
         }
-      ]
+      ],
+      "maker": "Fuji Electric"
     },
     {
       "id": "ad-fuji-ar30-pl",
@@ -884,7 +1033,8 @@
           "link": "",
           "kind": "wire"
         }
-      ]
+      ],
+      "maker": "Fuji Electric"
     },
     {
       "id": "ad-ht800-1no",
@@ -917,7 +1067,8 @@
           "link": "",
           "kind": "wire"
         }
-      ]
+      ],
+      "maker": "Eaton"
     },
     {
       "id": "ad-ht800-1nc",
@@ -950,7 +1101,8 @@
           "link": "",
           "kind": "wire"
         }
-      ]
+      ],
+      "maker": "Eaton"
     },
     {
       "id": "ad-ht800-1no2nc",
@@ -1000,6 +1152,13 @@
           "side": "auto",
           "link": "",
           "kind": "wire"
+        }
+      ],
+      "maker": "Eaton",
+      "orders": [
+        {
+          "no": "HT8ABHAB",
+          "desc": ""
         }
       ]
     },
@@ -1052,7 +1211,8 @@
           "link": "",
           "kind": "wire"
         }
-      ]
+      ],
+      "maker": "Eaton"
     },
     {
       "id": "ad-ht800-1no2nc-lit",
@@ -1121,7 +1281,8 @@
           "link": "",
           "kind": "wire"
         }
-      ]
+      ],
+      "maker": "Eaton"
     },
     {
       "id": "ad-ht800-pl",
@@ -1154,7 +1315,8 @@
           "link": "",
           "kind": "wire"
         }
-      ]
+      ],
+      "maker": "Eaton"
     },
     {
       "id": "ad-sch-1no",
@@ -1186,6 +1348,15 @@
           "side": "auto",
           "link": "",
           "kind": "wire"
+        }
+      ],
+      "maker": "Schmersal",
+      "accessories": [
+        {
+          "qty": 1,
+          "maker": "",
+          "no": "EF03.1",
+          "desc": ""
         }
       ]
     },
@@ -1219,6 +1390,15 @@
           "side": "auto",
           "link": "",
           "kind": "wire"
+        }
+      ],
+      "maker": "Schmersal",
+      "accessories": [
+        {
+          "qty": 1,
+          "maker": "",
+          "no": "EF10.1",
+          "desc": ""
         }
       ]
     },
@@ -1271,6 +1451,21 @@
           "link": "",
           "kind": "wire"
         }
+      ],
+      "maker": "Schmersal",
+      "accessories": [
+        {
+          "qty": 1,
+          "maker": "",
+          "no": "EF03.1",
+          "desc": ""
+        },
+        {
+          "qty": 1,
+          "maker": "",
+          "no": "EF10.2",
+          "desc": ""
+        }
       ]
     },
     {
@@ -1321,6 +1516,21 @@
           "side": "auto",
           "link": "",
           "kind": "wire"
+        }
+      ],
+      "maker": "Schmersal",
+      "accessories": [
+        {
+          "qty": 1,
+          "maker": "",
+          "no": "EF03.1",
+          "desc": ""
+        },
+        {
+          "qty": 1,
+          "maker": "",
+          "no": "EF03.2",
+          "desc": ""
         }
       ]
     },
@@ -1373,6 +1583,21 @@
           "link": "",
           "kind": "wire"
         }
+      ],
+      "maker": "Schmersal",
+      "accessories": [
+        {
+          "qty": 1,
+          "maker": "",
+          "no": "EF10.1",
+          "desc": ""
+        },
+        {
+          "qty": 1,
+          "maker": "",
+          "no": "EF10.2",
+          "desc": ""
+        }
       ]
     },
     {
@@ -1423,6 +1648,15 @@
           "side": "auto",
           "link": "",
           "kind": "wire"
+        }
+      ],
+      "maker": "Schmersal",
+      "accessories": [
+        {
+          "qty": 1,
+          "maker": "",
+          "no": "EF220.1",
+          "desc": ""
         }
       ]
     },
@@ -1475,6 +1709,15 @@
           "link": "",
           "kind": "wire"
         }
+      ],
+      "maker": "Schmersal",
+      "accessories": [
+        {
+          "qty": 1,
+          "maker": "",
+          "no": "EF303.1",
+          "desc": ""
+        }
       ]
     },
     {
@@ -1525,6 +1768,15 @@
           "side": "auto",
           "link": "",
           "kind": "wire"
+        }
+      ],
+      "maker": "Schmersal",
+      "accessories": [
+        {
+          "qty": 1,
+          "maker": "",
+          "no": "EF03.1",
+          "desc": ""
         }
       ]
     },
@@ -1595,6 +1847,21 @@
           "link": "",
           "kind": "wire"
         }
+      ],
+      "maker": "Schmersal",
+      "accessories": [
+        {
+          "qty": 1,
+          "maker": "",
+          "no": "EF03.1",
+          "desc": ""
+        },
+        {
+          "qty": 1,
+          "maker": "",
+          "no": "EF10.2",
+          "desc": ""
+        }
       ]
     },
     {
@@ -1628,7 +1895,8 @@
           "link": "",
           "kind": "wire"
         }
-      ]
+      ],
+      "maker": "Schmersal"
     },
     {
       "id": "ad-sch-ef-nc-1",
@@ -1660,6 +1928,13 @@
           "side": "auto",
           "link": "",
           "kind": "wire"
+        }
+      ],
+      "maker": "Schmersal",
+      "orders": [
+        {
+          "no": "EF10.1",
+          "desc": ""
         }
       ]
     },
@@ -1694,6 +1969,13 @@
           "link": "",
           "kind": "wire"
         }
+      ],
+      "maker": "Schmersal",
+      "orders": [
+        {
+          "no": "EF10.2",
+          "desc": ""
+        }
       ]
     },
     {
@@ -1726,6 +2008,13 @@
           "side": "auto",
           "link": "",
           "kind": "wire"
+        }
+      ],
+      "maker": "Schmersal",
+      "orders": [
+        {
+          "no": "EF10.3",
+          "desc": ""
         }
       ]
     },
@@ -1760,6 +2049,13 @@
           "link": "",
           "kind": "wire"
         }
+      ],
+      "maker": "Schmersal",
+      "orders": [
+        {
+          "no": "EF03.1",
+          "desc": ""
+        }
       ]
     },
     {
@@ -1793,6 +2089,13 @@
           "link": "",
           "kind": "wire"
         }
+      ],
+      "maker": "Schmersal",
+      "orders": [
+        {
+          "no": "EF03.2",
+          "desc": ""
+        }
       ]
     },
     {
@@ -1825,6 +2128,13 @@
           "side": "auto",
           "link": "",
           "kind": "wire"
+        }
+      ],
+      "maker": "Schmersal",
+      "orders": [
+        {
+          "no": "EF03.3",
+          "desc": ""
         }
       ]
     },
@@ -1877,6 +2187,17 @@
           "link": "",
           "kind": "wire"
         }
+      ],
+      "maker": "Schmersal",
+      "orders": [
+        {
+          "no": "EF110.1",
+          "desc": ""
+        },
+        {
+          "no": "EF220.1",
+          "desc": ""
+        }
       ]
     },
     {
@@ -1927,6 +2248,17 @@
           "side": "auto",
           "link": "",
           "kind": "wire"
+        }
+      ],
+      "maker": "Schmersal",
+      "orders": [
+        {
+          "no": "EF110.2",
+          "desc": ""
+        },
+        {
+          "no": "EF220.2",
+          "desc": ""
         }
       ]
     },
@@ -1979,6 +2311,17 @@
           "link": "",
           "kind": "wire"
         }
+      ],
+      "maker": "Schmersal",
+      "orders": [
+        {
+          "no": "EF110.3",
+          "desc": ""
+        },
+        {
+          "no": "EF220.3",
+          "desc": ""
+        }
       ]
     },
     {
@@ -2029,6 +2372,13 @@
           "side": "auto",
           "link": "",
           "kind": "wire"
+        }
+      ],
+      "maker": "Schmersal",
+      "orders": [
+        {
+          "no": "EF033.1",
+          "desc": ""
         }
       ]
     },
@@ -2081,6 +2431,13 @@
           "link": "",
           "kind": "wire"
         }
+      ],
+      "maker": "Schmersal",
+      "orders": [
+        {
+          "no": "EF033.2",
+          "desc": ""
+        }
       ]
     },
     {
@@ -2131,6 +2488,13 @@
           "side": "auto",
           "link": "",
           "kind": "wire"
+        }
+      ],
+      "maker": "Schmersal",
+      "orders": [
+        {
+          "no": "EF033.3",
+          "desc": ""
         }
       ]
     },
@@ -2183,6 +2547,17 @@
           "link": "",
           "kind": "wire"
         }
+      ],
+      "maker": "Schmersal",
+      "orders": [
+        {
+          "no": "EF103.1",
+          "desc": ""
+        },
+        {
+          "no": "EF303.1",
+          "desc": ""
+        }
       ]
     },
     {
@@ -2233,6 +2608,17 @@
           "side": "auto",
           "link": "",
           "kind": "wire"
+        }
+      ],
+      "maker": "Schmersal",
+      "orders": [
+        {
+          "no": "EF103.2",
+          "desc": ""
+        },
+        {
+          "no": "EF303.2",
+          "desc": ""
         }
       ]
     },
@@ -2285,6 +2671,17 @@
           "link": "",
           "kind": "wire"
         }
+      ],
+      "maker": "Schmersal",
+      "orders": [
+        {
+          "no": "EF103.3",
+          "desc": ""
+        },
+        {
+          "no": "EF303.3",
+          "desc": ""
+        }
       ]
     },
     {
@@ -2318,7 +2715,8 @@
           "link": "",
           "kind": "wire"
         }
-      ]
+      ],
+      "maker": "Schmersal"
     },
     {
       "id": "ad-sch-joy-1",
@@ -2341,6 +2739,25 @@
           "side": "auto",
           "link": "",
           "kind": "port"
+        }
+      ],
+      "maker": "Schmersal",
+      "orders": [
+        {
+          "no": "NK-T-21-1ST8-2",
+          "desc": ""
+        },
+        {
+          "no": "NK-T-41-1ST8-2",
+          "desc": ""
+        },
+        {
+          "no": "RK-T-21-1ST8-2",
+          "desc": ""
+        },
+        {
+          "no": "RK-T-41-1ST8-2",
+          "desc": ""
         }
       ]
     },
@@ -2374,6 +2791,25 @@
           "side": "auto",
           "link": "",
           "kind": "port"
+        }
+      ],
+      "maker": "Schmersal",
+      "orders": [
+        {
+          "no": "NK-T-22-2ST8-2",
+          "desc": ""
+        },
+        {
+          "no": "NK-T-42-2ST8-2",
+          "desc": ""
+        },
+        {
+          "no": "RK-T-22-2ST8-2",
+          "desc": ""
+        },
+        {
+          "no": "RK-T-42-2ST8-2",
+          "desc": ""
         }
       ]
     }

@@ -194,6 +194,9 @@ html.dev .dev-badge { display: inline-block; }
 .search-box:focus-within { border-color: var(--accent); outline: 2px solid var(--accent-soft); }
 .search-box input { border: none !important; outline: none !important; background: none !important; flex: 1; min-width: 0; padding: 4px 0; color: var(--text); }
 .search-box.compact { flex: 0 1 180px; min-width: 80px; }
+/* The lists' filter stays small until it's used, leaving room for the tabs. */
+.drawer-tools .search-box.compact { flex-basis: 110px; transition: flex-basis 0.12s; }
+.drawer-tools .search-box.compact:focus-within, .drawer-tools .search-box.compact:has(input:not(:placeholder-shown)) { flex-basis: 200px; }
 .search-box.compact input { padding: 2px 0; font-size: 12px; }
 .library { flex: 1; overflow-y: auto; overflow-x: hidden; margin: 0 -6px; padding: 0 2px; }
 .lib-cat {
@@ -399,21 +402,27 @@ body.lib-dragging, body.lib-dragging * { cursor: copy !important; user-select: n
 
 /* ---------- Lists drawer ---------- */
 .drawer { grid-column: 2; grid-row: 3; background: var(--panel); border-top: 1px solid var(--border); display: flex; flex-direction: column; position: relative; min-width: 0; container-type: inline-size; }
-@container (max-width: 640px) {
-  .drawer-tabs .count { display: none; }
-  .drawer-tabs button { padding: 7px 7px 6px; }
-}
 .drawer-grip { position: absolute; left: 0; right: 0; top: -4px; height: 8px; cursor: ns-resize; z-index: 7; }
 .drawer-grip:hover, .drawer-grip.on { background: linear-gradient(transparent 3px, var(--accent) 3px, var(--accent) 5px, transparent 5px); }
 .drawer.collapsed .drawer-grip { display: none; }
 .drawer-bar { display: flex; align-items: center; gap: 8px; padding: 0 8px; border-bottom: 1px solid var(--border); min-width: 0; }
 .drawer.collapsed .drawer-bar { border-bottom: none; }
 .drawer-tabs { display: flex; gap: 2px; overflow-x: auto; flex: 0 1 auto; min-width: 0; scrollbar-width: none; }
-.drawer-tabs button { border: none; background: none; border-bottom: 2px solid transparent; border-radius: 0; padding: 7px 10px 6px; color: var(--muted); }
+.drawer-tabs button { border: none; background: none; border-bottom: 2px solid transparent; border-radius: 0; padding: 7px 8px 6px; color: var(--muted); }
 .drawer-tabs button:hover { color: var(--text); }
 .drawer-tabs button.active { border-bottom-color: var(--accent); color: var(--text); font-weight: 600; }
 .drawer-tabs .count { font-size: 11px; font-weight: 500; background: var(--panel-3); color: var(--muted); border-radius: 9px; padding: 0 6px; min-width: 18px; }
 .drawer-tabs button.active .count { background: var(--accent-soft); color: var(--accent); }
+/* A narrower drawer: the filter is just its icon until it's clicked or has text, and the tabs sit closer
+   together; narrower still, the tabs lose their counts. (After the rules above, so these win.) */
+@container (max-width: 800px) {
+  .drawer-tools .search-box.compact { flex-basis: 28px; min-width: 28px; cursor: text; }
+  .drawer-tools .search-box.compact:not(:focus-within):has(input:placeholder-shown) input { width: 0; flex: 0; }
+  .drawer-tabs button { padding: 7px 6px 6px; }
+}
+@container (max-width: 640px) {
+  .drawer-tabs .count { display: none; }
+}
 .drawer-tools { display: flex; align-items: center; gap: 6px; margin-left: auto; }
 .drawer.collapsed .drawer-tools > :not(#btnDrawerToggle) { display: none; }
 #btnDrawerToggle .ic { transition: transform 0.12s; }
@@ -430,6 +439,30 @@ body.lib-dragging, body.lib-dragging * { cursor: copy !important; user-select: n
 .data-table tbody tr.net td:first-child { box-shadow: inset 3px 0 0 rgba(59, 130, 246, 0.45); }
 .data-table .empty { color: var(--muted); padding: 14px 10px; cursor: default; white-space: normal; }
 .data-table tr.summary td { color: var(--muted); white-space: normal; padding: 10px; }
+.drawer-tabs .tab-sep { flex: 0 0 1px; align-self: stretch; margin: 7px 4px; background: var(--border); }
+/* Bill of materials */
+.bom-table tbody tr[data-bom] { cursor: pointer; }
+.bom-table tbody tr[data-bom]:hover { background: var(--panel-2); }
+.bom-table td:first-child { width: 1px; }
+.bom-table td.wrap { white-space: normal; min-width: 160px; }
+.bom-table tr.group td { background: var(--panel-2); color: var(--muted); font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; padding-top: 6px; }
+.bom-table tr.extra td { padding: 2px 4px; }
+.bom-table tr.extra input { width: 100%; padding: 2px 4px; }
+.bom-table tr.extra td:first-child input { width: 64px; }
+/* Terminal strips: a heading row per strip, then its blocks' levels; wires on one side stack in their cell. */
+.strip-table td { vertical-align: top; }
+.strip-table tr.group td { background: var(--panel-2); font-weight: 700; padding-top: 6px; }
+.strip-table tr.group .muted { font-weight: 400; }
+.strip-table tr.divider td { color: var(--muted); font-style: italic; padding-top: 2px; padding-bottom: 2px; }
+.strip-table tr.spare td:nth-child(2) { color: var(--muted); }
+.strip-table td .muted { margin-left: 6px; }
+.strip-table tr[data-strip] { cursor: pointer; }
+.strip-table tr[data-strip]:hover td { background: var(--panel-3); }
+.strip-pick { display: flex; align-items: center; gap: 6px; }
+.strip-pick select { width: auto; max-width: 220px; padding: 2px 6px; font-size: 12px; }
+/* Profiles: wire profiles and cable profiles, one under the other */
+.list-head { display: flex; align-items: center; gap: 6px; padding: 8px 10px 6px; font-size: 12px; }
+.list-head b { margin-right: auto; }
 .chip { display: inline-block; width: 10px; height: 10px; border-radius: 50%; border: 1px solid #555; vertical-align: -1px; margin-right: 5px; }
 .chip.gy { background: repeating-linear-gradient(135deg, #2e9b3c 0 3px, #f0c000 3px 6px); }
 
@@ -503,10 +536,6 @@ body.lib-dragging, body.lib-dragging * { cursor: copy !important; user-select: n
 .start-choices button:hover { background: var(--accent-soft); }
 .start-choices button.primary { background: var(--accent-soft); color: inherit; border-color: var(--accent); box-shadow: inset 0 0 0 1px var(--accent); }
 .start-choices b { display: block; margin-bottom: 2px; }
-.start-cell { position: relative; display: grid; }
-.start-cell.has-opt button { padding-bottom: 34px; }
-.start-opt { position: absolute; left: 56px; bottom: 10px; margin: 0 !important; font-size: 12px; }
-.start-opt[hidden] { display: none !important; } /* .check would otherwise show it */
 .start-choices small { display: block; color: var(--muted); font-size: 12px; }
 .start-choices .start-count { color: var(--accent); margin-top: 4px; font-variant-numeric: tabular-nums; }
 .start-count[hidden] { display: none; }
@@ -514,6 +543,41 @@ body.lib-dragging, body.lib-dragging * { cursor: copy !important; user-select: n
 .welcome-tips summary { cursor: pointer; color: var(--muted); font-weight: 600; margin-bottom: 10px; }
 .welcome .modal-foot { flex-wrap: wrap; }
 .welcome .modal-foot .check { margin: 0 auto 0 0; }
+
+/* New diagram and Import: tick boxes with a line of detail under each */
+.choice-modal { width: min(460px, 100%); }
+.choice-modal .modal-body > .field { margin-bottom: 16px; }
+.choice-modal .check { align-items: flex-start; margin-bottom: 8px; }
+.choice-modal .check input { margin-top: 2px; }
+.choice-modal .check small { display: block; color: var(--muted); font-size: 12px; }
+.choice-modal .check.off { color: var(--muted) !important; }
+.choice-modal .modal-foot .foot-note { margin-right: auto; }
+.choice-modal .modal-foot .check { margin: 0 auto 0 0; }
+/* Export: the label kinds in two columns, each with a line under it, and a preview of the first labels */
+.export-modal { width: min(640px, 100%); }
+.export-modal .modal-foot .foot-note { margin-right: auto; }
+.label-kinds { display: grid; grid-template-columns: 1fr 1fr; gap: 2px 16px; margin-bottom: 8px; }
+.label-kinds .check { align-items: flex-start; }
+.label-kinds .check input { margin-top: 2px; }
+.label-kinds small { display: block; color: var(--muted); font-size: 12px; }
+.label-kinds .check.off { color: var(--muted) !important; }
+.label-preview { width: 100%; border-collapse: collapse; font-size: 12px; margin: 4px 0 2px; }
+.label-preview th, .label-preview td { text-align: left; padding: 3px 8px; border-bottom: 1px solid var(--border); white-space: nowrap; }
+.label-preview th { color: var(--muted); font-weight: 600; background: var(--panel-2); }
+@media (max-width: 560px) { .label-kinds { grid-template-columns: 1fr; } }
+.lib-updates { margin: 0 0 12px; padding-left: 18px; }
+/* A duct's fill: a bar with the limit marked */
+.fill-line { margin: 0 0 6px; font-size: 13px; }
+.warn-text { color: #d32f2f; font-weight: 600; }
+.fill-bar { position: relative; height: 8px; border-radius: 4px; background: var(--panel-3); margin-bottom: 10px; overflow: visible; }
+.fill-bar span { display: block; height: 100%; border-radius: 4px; background: var(--accent); }
+.fill-bar.over span { background: #d32f2f; }
+.fill-bar i { position: absolute; top: -3px; bottom: -3px; width: 2px; background: var(--text); opacity: 0.6; }
+/* A wire's ends: where, how it's finished, strip length */
+.ends-table th { text-align: left; font-weight: 600; color: var(--muted); font-size: 11px; padding: 2px 4px; }
+.ends-table td { padding: 2px 4px; vertical-align: middle; }
+.ends-table td:last-child input { width: 56px; }
+.lib-updates li { margin-bottom: 6px; }
 
 /* Library chooser */
 .lib-offer { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-top: 1px solid var(--border); }
@@ -566,6 +630,20 @@ body.lib-dragging, body.lib-dragging * { cursor: copy !important; user-select: n
 .mini-tabs { display: flex; gap: 2px; margin: -4px -4px 10px; padding: 2px; background: var(--panel-3); border-radius: 7px; }
 .mini-tabs button { flex: 1; border: none; background: none; padding: 4px 8px; border-radius: 5px; color: var(--muted); font-size: 12px; }
 .mini-tabs button.on { background: var(--panel); color: var(--text); font-weight: 600; box-shadow: var(--shadow-sm); }
+.mini-tabs.main-tabs { margin: 0; }
+.tpl-pane { display: flex; flex-direction: column; gap: 10px; }
+.tpl-pane[hidden] { display: none; }
+.tpl-pane > .hint-text { margin: 0 2px; }
+/* Order numbers and accessories in the type designer */
+.order-rows { display: flex; flex-direction: column; gap: 6px; margin-bottom: 8px; }
+.order-rows > .muted { margin: 0; font-size: 12px; }
+.order-row { display: flex; gap: 4px; align-items: center; }
+.order-row input { flex: 1; min-width: 0; padding: 3px 5px; }
+.order-row input[data-of="no"] { flex: 0 0 104px; }
+.order-row input[data-af="qty"] { flex: 0 0 52px; }
+.order-row .icon-btn { padding: 2px; }
+.order-card { display: flex; flex-direction: column; gap: 4px; padding: 6px; border: 1px solid var(--border); border-radius: 6px; }
+.order-card .order-row:last-child { padding-right: 24px; }
 [data-pane][hidden] { display: none !important; }
 .tpl-preview-col { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
 .tpl-preview-tools { display: flex; justify-content: space-between; align-items: center; gap: 10px; color: var(--muted); font-size: 12px; }
@@ -589,7 +667,9 @@ label.inline { display: inline-flex; align-items: center; gap: 6px; color: var(-
 .prof-table td:nth-child(3) { white-space: nowrap; }
 .prof-table td:nth-child(3) select { width: 130px; }
 .prof-table td:nth-child(3) input[type=color] { width: 34px; height: 26px; vertical-align: middle; }
-.prof-table td:nth-child(7) { text-align: center; color: var(--muted); }
+.prof-table td:nth-child(11) { text-align: center; color: var(--muted); }
+.prof-table td:nth-child(8) select { width: 140px; }
+.prof-table td:nth-child(9) input { width: 56px; }
 .prof-sub { margin: 18px 0 4px; font-size: 14px; }
 .cprof-table td { padding: 4px; }
 .cprof-table > tbody > tr > td:nth-child(3) { white-space: nowrap; }
@@ -597,9 +677,10 @@ label.inline { display: inline-flex; align-items: center; gap: 6px; color: var(-
 .cprof-table > tbody > tr > td:nth-child(3) input[type=color] { width: 34px; height: 26px; vertical-align: middle; }
 .cprof-table td.c { text-align: center; }
 .cprof-table td.c input { width: auto; }
-.cprof-table > tbody > tr > td:nth-child(9) { text-align: center; color: var(--muted); }
-.cprof-table > tbody > tr > td:nth-child(8) button { white-space: nowrap; }
-.cprof-table > tbody > tr > td:nth-child(8) button.on { background: var(--accent-soft); }
+.cprof-table > tbody > tr > td:nth-child(12) { text-align: center; color: var(--muted); }
+.cprof-table > tbody > tr > td:nth-child(11) button { white-space: nowrap; }
+.cprof-table > tbody > tr > td:nth-child(11) button.on { background: var(--accent-soft); }
+.cprof-table > tbody > tr > td:nth-child(8) input { width: 52px; }
 .cprof-table tr.cores-row > td { padding: 4px 4px 10px 24px; background: var(--panel-2); }
 .core-table { background: var(--panel); }
 .core-table td:first-child { width: 36px; color: var(--muted); text-align: center; }
@@ -668,4 +749,5 @@ label.inline { display: inline-flex; align-items: center; gap: 6px; color: var(-
   .print-area th, .print-area td { border: 0.3mm solid #999; padding: 1mm 2mm; text-align: left; }
   .print-area th { background: #eee; }
   .print-area tr { break-inside: avoid; }
+  .print-area tr.pgroup td { background: #f5f5f5; font-weight: bold; break-after: avoid; }
 }

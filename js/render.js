@@ -45,6 +45,8 @@ function textFrame(it) {
 // Bounding box of any diagram item in world coordinates.
 function itemBox(it, tpl) {
   if (it.kind === "rail") return { x: it.x, y: it.y, w: it.length, h: it.height };
+  if (it.kind === "duct") return { x: it.x, y: it.y, w: it.vertical ? it.width : it.length, h: it.vertical ? it.length : it.width };
+  if (it.kind === "plate") return { x: it.x, y: it.y, w: it.w, h: it.h };
   if (it.kind === "text") {
     // The box round the turned note.
     const f = textFrame(it), a = (f.rot * Math.PI) / 180;
@@ -191,13 +193,45 @@ function wirePath(d, color, width, extra = "", stripe = "") {
   return s;
 }
 
-// "TB101-1" / "PS1:+V" style reference for one end of a connection.
-function endRef(it, tpl, termId, sep = "-") {
+// "TB101-1": a part's tag (or type name) and a terminal's name. who, if given, names the part instead
+// (its reference designation, see partRef).
+function endRef(it, tpl, termId, sep = "-", who) {
   if (!it || !tpl) return "?";
   const t = tpl.terminals.find((x) => x.id === termId);
-  const who = it.tag || tpl.name;
-  return who + sep + (t ? t.name : "?");
+  return (who ?? (it.tag || tpl.name)) + sep + (t ? t.name : "?");
 }
+
+// Reference designations (IEC 81346), when settings.refStyle is "iec": a part is "-K1", led by the
+// function (=) and location (+) of its page, or else the diagram's (meta.func, meta.location).
+// Stored without their = and + signs.
+const aspectText = (v) => String(v || "").trim().replace(/^[=+]+\s*/, "");
+const iecRefs = (doc) => doc.settings.refStyle === "iec";
+function pageAspects(doc, pageId) {
+  const p = (doc.pages || []).find((x) => x.id === pageId) || {}, m = doc.meta || {};
+  return { func: aspectText(p.func) || aspectText(m.func), loc: aspectText(p.location) || aspectText(m.location) };
+}
+
+// "=PUMP+CAB1": the function and location of a page, as written before a part's tag.
+function aspectPrefix(doc, pageId) {
+  const a = pageAspects(doc, pageId);
+  return (a.func ? "=" + a.func : "") + (a.loc ? "+" + a.loc : "");
+}
+
+// How a part is named in references: its tag (or type name without one). With IEC designations it's
+// "-K1", led by its function and location, except those it shares with page ctx (the page a label is
+// drawn on); with no ctx, in full ("=PUMP+CAB1-K1").
+function partRef(doc, it, tpl, ctx) {
+  if (!it || !tpl) return "?";
+  if (!it.tag) return tpl.name;
+  if (!iecRefs(doc)) return it.tag;
+  const a = pageAspects(doc, pageOf(doc, it)), c = ctx ? pageAspects(doc, ctx) : { func: "", loc: "" };
+  const f = a.func && a.func !== c.func ? "=" + a.func : "";
+  const l = a.loc && (f || a.loc !== c.loc) ? "+" + a.loc : "";
+  return f + l + "-" + it.tag;
+}
+
+// A part's tag as shown on it: "-K1" with IEC designations.
+const shownTag = (doc, it) => (it.tag && iecRefs(doc) ? "-" + it.tag : it.tag || "");
 
 // The cable a connection end is on, if it's on a cable rather than a terminal: the far end of a one-ended
 // cable's core (off the drawing), or the end of a bundled core that isn't connected there.
@@ -206,10 +240,10 @@ function cableEndOf(doc, e) {
 }
 
 // Reference for either kind of connection end: "TB101-1" for a terminal, "C1-3" for core 3 of a
-// cable at an end where it isn't on a terminal.
-function endLabel(doc, items, tpls, e, sep = "-") {
+// cable at an end where it isn't on a terminal. ctx: the page it's written on (see partRef).
+function endLabel(doc, items, tpls, e, sep = "-", ctx) {
   const it = items.get(e.item);
-  if (it) return endRef(it, tpls.get(it.tpl), e.term, sep);
+  if (it) { const tpl = tpls.get(it.tpl); return endRef(it, tpl, e.term, sep, partRef(doc, it, tpl, ctx)); }
   const cb = cableEndOf(doc, e);
   return cb ? (cb.label || "Cable") + sep + e.term : "?";
 }
@@ -368,6 +402,38 @@ function renderRail(it, attrs) {
   return s + "</g>";
 }
 
+// Slotted wire duct, seen from the front with its cover on: the cover down the middle and the fingers along
+// both sides, a slot every 12 mm. Its label is on the cover at its start; fill ({ pct, over }), when given,
+// is added there, and a duct over its fill limit is outlined in red.
+function renderDuct(it, attrs, fill) {
+  const b = itemBox(it), v = !!it.vertical;
+  const len = v ? b.h : b.w, wd = v ? b.w : b.h;
+  // Draw it lying along x, turned upright for a vertical duct.
+  const R = (x, y, w, h, extra) => (v ? `<rect x="${n(b.x + y)}" y="${n(b.y + x)}" width="${n(h)}" height="${n(w)}" ${extra}/>` : `<rect x="${n(b.x + x)}" y="${n(b.y + y)}" width="${n(w)}" height="${n(h)}" ${extra}/>`);
+  let s = `<g ${attrs}>` + R(0, 0, len, wd, 'fill="#b9bec4" stroke="#6b7179" stroke-width="0.35"');
+  const finger = Math.min(wd * 0.28, 12), slot = 4, pitch = 12;
+  for (let x = (len % pitch) / 2 + (pitch - slot) / 2; x + slot <= len; x += pitch) {
+    s += R(x, 0, slot, finger, 'fill="#8e949b"') + R(x, wd - finger, slot, finger, 'fill="#8e949b"');
+  }
+  s += R(0, finger, len, wd - 2 * finger, 'fill="#c9cdd2" stroke="#7c828a" stroke-width="0.25"');
+  const over = fill && fill.over;
+  if (over) s += R(0, 0, len, wd, 'fill="none" stroke="#d32f2f" stroke-width="0.8"');
+  const text = [it.label, fill && (fill.pct >= 0.5 || over) ? `${Math.round(fill.pct)} %` : ""].filter(Boolean).join(" · ");
+  const size = Math.min(5, (wd - 2 * finger) * 0.6);
+  if (text) s += `<text x="${n(v ? b.x + b.w / 2 : b.x + 3)}" y="${n(v ? b.y + 3 + size : b.y + b.h / 2)}" font-family="${FONT}" font-size="${n(size)}" ${v ? 'text-anchor="middle"' : ""} dominant-baseline="${v ? "auto" : "central"}" fill="${over ? "#d32f2f" : "#4b5058"}"${over ? ' font-weight="bold"' : ""} pointer-events="none">${esc(text)}</text>`;
+  return s + "</g>";
+}
+
+// The back plate (or enclosure): an outline under everything, named at its top left. Only its edge picks
+// it up, so clicks inside it reach the drawing.
+function renderPlate(it, attrs) {
+  const { x, y, w, h } = it;
+  return `<g ${attrs}><rect x="${n(x)}" y="${n(y)}" width="${n(w)}" height="${n(h)}" rx="2" fill="#a0a8b2" fill-opacity="0.12" stroke="#8b929a" stroke-width="0.6" pointer-events="none"/>`
+    + `<rect x="${n(x)}" y="${n(y)}" width="${n(w)}" height="${n(h)}" rx="2" fill="none" stroke="transparent" stroke-width="4" pointer-events="stroke"/>`
+    + (it.name ? `<text x="${n(x + 3)}" y="${n(y + 5)}" font-family="${FONT}" font-size="3.5" fill="#6b7179" pointer-events="none">${esc(it.name)}</text>` : "")
+    + "</g>";
+}
+
 function renderText(it, attrs) {
   const lines = textLines(it);
   const size = it.size || 3;
@@ -431,11 +497,12 @@ function renderPartBody(doc, it, tpl, attrs) {
   s += "</g>";
 
   const cx = box.x + box.w / 2, cy = box.y + box.h / 2;
+  const tag = shownTag(doc, it);
   const sub = it.desc || (tpl.showName ? tpl.name : "");
   const vertical = box.w < 14 && box.h > box.w * 2;
   const tf = `font-family="${FONT}" fill="${ink}" text-anchor="middle" dominant-baseline="central" pointer-events="none"`;
   if (vertical) {
-    if (it.tag) {
+    if (tag) {
       // Put the tag in the longest stretch free of terminals and bus bar slots, e.g. between a
       // terminal block's top screw and its slots.
       const clearOf = (t) => isSlot(t) ? slotSize(tpl) / 2 + 0.5 : isPort(t) ? portSize(tpl) / 2 + 2.6 : termRadius(tpl) + 0.5 + (st.showTermNames && t.name ? 2.2 : 0);
@@ -452,17 +519,17 @@ function renderPartBody(doc, it, tpl, attrs) {
         if (gap.b - gap.a < Math.min(box.h * 0.25, 5)) gap = { a: box.y, b: box.y + box.h };
       }
       const ty = (gap.a + gap.b) / 2;
-      const size = fitText(it.tag, Math.min(st.tagSize, box.w * 0.62), Math.min(box.h * 0.6, (gap.b - gap.a) * 0.95));
-      s += `<text x="${n(cx)}" y="${n(ty)}" font-size="${n(size)}" font-weight="bold" transform="rotate(-90 ${n(cx)} ${n(ty)})" ${tf}>${esc(it.tag)}</text>`;
+      const size = fitText(tag, Math.min(st.tagSize, box.w * 0.62), Math.min(box.h * 0.6, (gap.b - gap.a) * 0.95));
+      s += `<text x="${n(cx)}" y="${n(ty)}" font-size="${n(size)}" font-weight="bold" transform="rotate(-90 ${n(cx)} ${n(ty)})" ${tf}>${esc(tag)}</text>`;
     }
   } else {
-    const tagSize = it.tag ? fitText(it.tag, Math.min(st.tagSize, box.h * 0.3), box.w * 0.9) : 0;
+    const tagSize = tag ? fitText(tag, Math.min(st.tagSize, box.h * 0.3), box.w * 0.9) : 0;
     let subSize = sub ? fitText(sub, Math.min(st.tagSize * 0.7, box.h * 0.2), box.w * 0.9) : 0;
     const height = () => tagSize + subSize + (tagSize && subSize ? 0.6 : 0);
     let ty = cy - height() / 2;
     // If terminals under the text (with their names) would cover it, move it into the tallest free band
     // between them, e.g. below the pin row of a small connector. If only the tag fits, the type name is left off.
-    const textW = Math.max(String(it.tag || "").length * tagSize, String(sub || "").length * subSize) * 0.6;
+    const textW = Math.max(tag.length * tagSize, String(sub || "").length * subSize) * 0.6;
     const r = termRadius(tpl), inside = denseTerms(tpl);
     const spans = tpl.terminals.map((t) => {
       const p = termWorld(it, tpl, t);
@@ -481,7 +548,7 @@ function renderPartBody(doc, it, tpl, attrs) {
       if (tallest && tallest.b - tallest.a >= height() + 0.4) ty = (tallest.a + tallest.b) / 2 - height() / 2;
     }
     if (tagSize) {
-      s += `<text x="${n(cx)}" y="${n(ty + tagSize / 2)}" font-size="${n(tagSize)}" font-weight="bold" ${tf}>${esc(it.tag)}</text>`;
+      s += `<text x="${n(cx)}" y="${n(ty + tagSize / 2)}" font-size="${n(tagSize)}" font-weight="bold" ${tf}>${esc(tag)}</text>`;
       ty += tagSize + (subSize ? 0.6 : 0);
     }
     if (subSize) s += `<text x="${n(cx)}" y="${n(ty + subSize / 2)}" font-size="${n(subSize)}" ${tf}>${esc(sub)}</text>`;
@@ -649,6 +716,7 @@ function renderDiagram(doc, opt = {}) {
   // opt.page: only that page's items are drawn. A wire or cable with one end on another page is drawn
   // broken at this end, labelled with the page the other end is on unless labelPage is off.
   const here = (it) => !opt.page || pageOf(doc, it) === opt.page;
+  const ctx = opt.page; // labels leave out the function and location they share with this page
   const onOther = (e) => { const it = items.get(e.item); return !!it && !here(it); };
   const pageOn = st.labelPage !== false;
   const pageNote = (e) => (pageOn && onOther(e) ? ` (${pageName(doc, pageOf(doc, items.get(e.item)))})` : "");
@@ -700,11 +768,14 @@ function renderDiagram(doc, opt = {}) {
     ].filter(Boolean).join("\n");
   };
 
-  const rails = [], bodies = [], texts = [];
+  // Back plates under everything, then rails and ducts, then parts.
+  const plates = [], rails = [], bodies = [], texts = [];
   for (const it of doc.items) {
     if (!here(it)) continue;
     const a = ia ? `data-item="${esc(it.id)}" class="item"` : "";
-    if (it.kind === "rail") rails.push(renderRail(it, a));
+    if (it.kind === "plate") plates.push(renderPlate(it, a));
+    else if (it.kind === "rail") rails.push(renderRail(it, a));
+    else if (it.kind === "duct") rails.push(renderDuct(it, a, opt.ductFill && opt.ductFill.get(it.id)));
     else if (it.kind === "text") {
       // A group note's items on its page; ones on other pages, or gone, are left out.
       const linked = (it.links || []).map((id) => items.get(id)).filter((x) => x && x.kind !== "text" && pageOf(doc, x) === pageOf(doc, it));
@@ -728,7 +799,7 @@ function renderDiagram(doc, opt = {}) {
     for (const [end, there] of [[c.a, c.b], [c.b, c.a]]) {
       const k = end.item + "|" + end.term;
       if (!atTerm.has(k)) atTerm.set(k, []);
-      atTerm.get(k).push({ c, ref: endLabel(doc, items, tpls, there, st.termSep) + pageNote(there), other: there.item + "|" + there.term });
+      atTerm.get(k).push({ c, ref: endLabel(doc, items, tpls, there, st.termSep, ctx) + pageNote(there), other: there.item + "|" + there.term });
     }
   }
 
@@ -796,7 +867,7 @@ function renderDiagram(doc, opt = {}) {
     // Roughly how far the longest wire label of the cable reaches out from its terminal.
     const clear = showLabels ? Math.max(0, ...cb.wires.map((id) => {
       const c = connMap.get(id);
-      return c ? (String(c.wire || "").length + 3 + endLabel(doc, items, tpls, c.b, st.termSep).length) * st.labelSize * 0.6 + 4 : 0;
+      return c ? (String(c.wire || "").length + 3 + endLabel(doc, items, tpls, c.b, st.termSep, ctx).length) * st.labelSize * 0.6 + 4 : 0;
     })) : 0;
     // A broken cable (cb.draw, else the drawing's cables setting) is just a short tail of sheath at each
     // end, ending in a break bar and the cable's label with where its other end goes ("C1 → K1"). It's
@@ -810,8 +881,8 @@ function renderDiagram(doc, opt = {}) {
     // Which of the cable's ends are on this page (a free end goes with end A).
     const atA = [g.plugA?.at, ...g.branchA.map((p) => p.at), ...g.cores.map((k) => k.ea)], atB = [g.plugB?.at, ...g.branchB.map((p) => p.at), ...g.cores.map((k) => k.eb)];
     const hereA = atA.some((p) => p?.here), hereB = g.free ? hereA : atB.some((p) => p?.here);
-    const tagsOf = (ps) => [...new Set(ps.filter((p) => p && p.it).map((p) => p.it.tag || p.tpl.name))].join(", ");
-    const plugName = (pl) => (pl ? endRef(pl.at.it, pl.at.tpl, pl.at.t.id, st.termSep) : "");
+    const tagsOf = (ps) => [...new Set(ps.filter((p) => p && p.it).map((p) => partRef(doc, p.it, p.tpl, ctx)))].join(", ");
+    const plugName = (pl) => (pl ? endRef(pl.at.it, pl.at.tpl, pl.at.t.id, st.termSep, partRef(doc, pl.at.it, pl.at.tpl, ctx)) : "");
     // An end's connectors and the parts its cores land on: "M1-X1" or "X1-P1, X2-P1, TB3".
     const endName = (plugs, cores) => [...new Set([...plugs.filter(Boolean).map(plugName), tagsOf(cores)])].filter(Boolean).join(", ");
     const namesA = endName([g.plugA, ...g.branchA], g.cores.map((k) => k.ea)), namesB = endName([g.plugB, ...g.branchB], g.cores.map((k) => k.eb));
@@ -1084,7 +1155,7 @@ function renderDiagram(doc, opt = {}) {
     // Mouse-over text: the terminal, what it's for (from its object type) and its connector label.
     if (ia) {
       const flag = String(p.it.termLabels?.[p.t.id] || "").trim();
-      const tip = [endRef(p.it, p.tpl, p.t.id, st.termSep), String(p.t.desc || "").trim(), flag];
+      const tip = [endRef(p.it, p.tpl, p.t.id, st.termSep, partRef(doc, p.it, p.tpl)), String(p.t.desc || "").trim(), flag];
       terms += `<title>${esc(tip.filter(Boolean).join("\n"))}</title>`;
     }
     if (ia) terms += `<circle cx="${n(p.x)}" cy="${n(p.y)}" r="${n(Math.max(r + 0.6, 2))}" fill="transparent" class="term-hit"/>`;
@@ -1134,7 +1205,7 @@ function renderDiagram(doc, opt = {}) {
     }
   }
 
-  return rails.join("") + bodies.join("") + sockets + lines + cableLayer + cableTop + stubs + slots + busLayer + labels + terms + lineLabels + texts.join("") + rings + selBoxes;
+  return plates.join("") + rails.join("") + bodies.join("") + sockets + lines + cableLayer + cableTop + stubs + slots + busLayer + labels + terms + lineLabels + texts.join("") + rings + selBoxes;
 }
 
 // Small standalone preview of an object type (used in the library and editor).

@@ -4,6 +4,14 @@ This library has its own version number (MAJOR.COMMIT.CHANGE), separate from DIN
 
 To get a newer version into a diagram, click **+** beside the library drop-down and use **Refresh** next to the library. It's highlighted when the diagram has an older version.
 
+## 1.1.2 — 2026-10-29
+
+- The fuse holders are marked as terminal blocks, for DIN Stack's terminal strip report. Needs DIN Stack 1.11.6 or later.
+
+## 1.1.1 — 2026-10-29
+
+- Every type now has its maker (American Electrical) and AEI part number filled in, for DIN Stack's bill of materials. Needs DIN Stack 1.11.1 or later.
+
 ## 1.0.1 — 2026-10-26
 
 - New library with 8 types: American Electrical (AEI) DIN-rail fuse holders for 10 × 38 mm (midget) fuses, 30 A 600 V, made by ETI as the EFD 10:

@@ -21,9 +21,9 @@ DIN Stack draws every part as a rectangle with terminals. Each kind of part is a
 The library is stored **inside each diagram**:
 
 - It's saved with the diagram, both in the browser's automatic save and in `.json` files from *Save*.
-- **New** starts an empty diagram but keeps the current library.
+- **New** starts an empty diagram. Its dialog sets the standards and asks whether to bring over the current libraries, wire profiles and cable profiles.
 - **Open** loads the library that was saved with that file.
-- To move object types between diagrams, use **Export** and **Import a library file…** in the **⋯** menu at the top of the library (see [Saving and sharing a library](#saving-and-sharing-a-library)).
+- To move object types between diagrams, use **File → Import libraries and profiles…** to bring them straight from another diagram file, or **Export** and **Import a library file…** in the **⋯** menu at the top of the library (see [Saving and sharing a library](#saving-and-sharing-a-library)).
 
 ### Several libraries
 
@@ -49,7 +49,7 @@ Click **+** beside the library drop-down (or **⋯ → Manage included libraries
 
 The window stays open, so you can load, refresh and unload several in a row. **Undo** reverses each of them. Descriptions are folded away to keep the list short; click the arrow or a library's name to show what's in it.
 
-Each ready-made library has its own version number, separate from DIN Stack's, and its own history in the `RELEASE_NOTES.md` in its folder under [`libraries/`](../libraries/README.md) (*What's new* in the list). The diagram remembers which version of each library it last loaded. When a newer one is available, or the library was added before it had a version number, the list says *Update available* and highlights **Refresh**.
+Each ready-made library has its own version number, separate from DIN Stack's, and its own history in the `RELEASE_NOTES.md` in its folder under [`libraries/`](../libraries/README.md) (*What's new* in the list). The diagram remembers which version of each library it last loaded. When a newer one is available, or the library was added before it had a version number, the list says *Update available* and highlights **Refresh**. DIN Stack also checks when you open a diagram (or carry on with yours from the start screen) and, if any of its libraries have a newer version, lists them and offers to update them all at once, as one undo step. *Not now* stops it asking about those versions until DIN Stack is next opened; the check can be turned off in Settings (*Starting up*).
 
 The list is read from `libraries/index.json`, so it needs the online version, or an installed copy that has been online. A copy opened straight from `index.html` can't read it; download the library file and use **Import a library file…** (in the same window, or the **⋯** menu) instead.
 
@@ -155,12 +155,12 @@ About the American Electrical fuse holders library:
 
 | To… | Do this |
 | --- | --- |
-| Start from scratch | Click **+ New type** above the library. |
+| Start from scratch | Click **+ New part** above the library. |
 | Start from a similar type | Hover over it in the library and click **⧉ Duplicate**. |
 | Change an existing type | Hover over it in the library and click **✎ Edit**, or select a part on the diagram and click **Edit object type**. A type from another library is saved as an edited copy in *This project* (see below). |
 | Remove a type | Hover over it in the library and click **🗑 Delete**. Parts on the diagram that use it are removed too, so you're asked first. |
 
-The designer has the type's settings on the left and a full-size preview on the right, with the terminal table below it. Click **Save** to keep your changes, or **Cancel** (or Esc) to discard them.
+The designer has the type's settings on the left, in three tabs (**Part**, **Add terminals** and **Ordering**), and a full-size preview on the right, with the terminal table below it. Click **Save** to keep your changes, or **Cancel** (or Esc) to discard them.
 
 ## Type settings
 
@@ -170,11 +170,22 @@ The designer has the type's settings on the left and a full-size preview on the 
 | **Library** | Which library the type belongs to. Pick an existing one or type a new name to start a new library. |
 | **Category** | Groups the library list, for example *Terminal blocks*, *Power*, *Control*. Type a new name to start a new group. |
 | **Mounting** | *DIN rail* parts snap onto rails and move with a rail when it's dragged. *Loose* parts, such as connectors on the enclosure wall, a panel or a cable, can be placed anywhere: they don't snap onto rails or move with them, though they still line up with neighbouring parts. Loose types show "loose" in the library. |
+| **Terminal strip** | How parts of the type show in the terminal strip report: *Terminal block* (a row for each level, that is each group of linked terminals), *Divider* (an end cover, partition plate or end clamp, listed where it sits) or *Not part of terminal strips*. *Automatic* goes by the category: types in *Terminal blocks* are blocks, or dividers if they have no terminals for wires. |
 | **Width / Height (mm)** | The part's outline as seen from the front, unrotated, at real size. |
 | **Tag prefix** | New parts are tagged with this prefix and the next free number: with `K`, the first relay is K1, then K2, and so on. Leave it empty for parts without tags, like end stops. Terminal blocks use `TB`, giving TB101-style tags through *Repeat* and *Renumber*. |
 | **Corner radius** | Rounds the corners of the outline. Drawing only. |
 | **Colour** | The body colour. Tag text switches between dark and light automatically to stay readable. |
 | **Show type name on part** | Prints the type name under the tag when the part has no description of its own. Useful for larger modules, but leave it off for narrow parts like terminal blocks. |
+
+### Ordering
+
+The designer's **Ordering** tab feeds the bill of materials.
+
+| Setting | What it does |
+| --- | --- |
+| **Manufacturer** | The maker, shown in the bill of materials. |
+| **Order numbers** | The part numbers this type covers, each with an optional description (e.g. *24 V DC coil*). The first is used unless a part picks another, so one type can cover the coil voltages or colours of the same housing. |
+| **Accessories** | Things ordered with every part of this type, such as a marker strip or the relay that plugs into a socket: how many per part, maker (the type's if blank), order number and description. An accessory with the same order number as a part on the drawing adds to that part's line. |
 
 ### Loose connectors
 
@@ -195,7 +206,7 @@ A terminal is a point where wires (or bus bars) attach. Each one has a name, a p
 | Method | How |
 | --- | --- |
 | **Click** | Click on the preview to add a terminal there. It's named after the previous one, counting up (1 → 2, IN1 → IN2). Drag a terminal to move it. **Snap** above the preview sets the grid it moves on (0.1–2.5 mm). |
-| **Add a row** | Fill in the *Add a row* tab on the left and click **Add row**. This is the quickest way to get a neat screw row. |
+| **Add a row** | Fill in *Add a row* under the **Add terminals** tab on the left and click **Add row**. This is the quickest way to get a neat screw row. |
 | **Type it in** | Edit X and Y in the table for exact positions from a dimension drawing. |
 
 Settings for **Add a row**:
@@ -211,7 +222,7 @@ Settings for **Add a row**:
 
 ### Adding a grid of terminals
 
-The **Add a grid** tab places a block of terminals in one go, such as a 2 × 16 pin header or an IC footprint.
+*Add a grid*, also under **Add terminals**, places a block of terminals in one go, such as a 2 × 16 pin header or an IC footprint.
 
 | Setting | Meaning |
 | --- | --- |
@@ -322,8 +333,8 @@ The built-in 2-wire, blue, ground and 4-wire terminal blocks have two slots each
 
 Say you have a relay module that's 45 mm wide and 90 mm tall. It has four control inputs and a common along the top, and four normally-open contacts along the bottom, each with a common (C) and a normally-open (NO) terminal.
 
-1. Click **+ New type**. Set **Name** to `Relay module, 4-channel`, **Category** to `Control`, **Width** to `45`, **Height** to `90` and **Tag prefix** to `K`. Tick **Show type name on part**.
-2. Add the input row. Set **Edge** to *Top*, **Count** to `5`, **First name** to `IN1`, **Inset** to `6` and **Pitch** to `8`. Leave **Start offset** blank and click **Add row**. That gives IN1–IN5 centred along the top. In the table, rename IN5 to `COM`.
+1. Click **+ New part**. Set **Name** to `Relay module, 4-channel`, **Category** to `Control`, **Width** to `45`, **Height** to `90` and **Tag prefix** to `K`. Tick **Show type name on part**.
+2. Open the **Add terminals** tab and add the input row. Set **Edge** to *Top*, **Count** to `5`, **First name** to `IN1`, **Inset** to `6` and **Pitch** to `8`. Leave **Start offset** blank and click **Add row**. That gives IN1–IN5 centred along the top. In the table, rename IN5 to `COM`.
 3. Add the contact commons. Set **Edge** to *Bottom*, **Count** to `4`, **First name** to `C1`, **Inset** to `6` and **Pitch** to `10`, and click **Add row** (C1–C4).
 4. Add the normally-open contacts. Keep the same settings but change **First name** to `NO1` and **Inset** to `14`, and click **Add row** (NO1–NO4, just above the commons).
 5. Leave **Link** empty everywhere. A contact is only connected when its relay is on.
@@ -346,7 +357,7 @@ If your relay's datasheet uses numbers like 13/14, 23/24 for its contacts, renam
 | Action | Result |
 | --- | --- |
 | **⋯ → Export** | Downloads the library shown, plus your wire profiles, as a file named after the library (for example `this-project.json`). With *All libraries* picked, it downloads `dinstack-library.json` with every type in the diagram. |
-| **Import a library file…** (in **⋯**, or the **+** window) | Merges a library file into the current diagram as its own library, and shows it. |
+| **File → Import libraries and profiles…**, or **Import a library file…** (in **⋯**, or the **+** window) | Opens a diagram or library file and asks which of its libraries, wire profiles and cable profiles to merge into the current diagram, then shows what was imported. |
 
 How importing merges:
 
@@ -354,7 +365,8 @@ How importing merges:
 - **New id:** the type is added.
 - **Your other types are kept.**
 - **Wire profiles** and **cable profiles** merge the same way, by id, and wires and cables using an updated profile change to match.
-- **Library name:** each imported type keeps the library it was exported from. Types without one go into a library named after the file: its `name` field if it has one, otherwise the file name (`automationdirect-din-relays.json` becomes *automationdirect din relays*). Built-in types stay in *Built-in*.
+- **Library name:** each imported type keeps the library it was exported from. Types without one go into a library named after the file: its `name` field if it has one, otherwise the file name (`automationdirect-din-relays.json` becomes *automationdirect din relays*). Built-in types aren't imported, as they come with DIN Stack.
+- **Wire standard:** profiles from a diagram in the other standard (American or metric) are converted to the nearest size, and line / neutral / earth colours.
 
 To keep a standard library for all your work, build it in one diagram, export it, and import it into each new diagram. Alternatively, keep a "template" diagram file and start new work from it with *Open* then *Save*.
 
@@ -414,6 +426,10 @@ The top-level `name` is optional: it names the library that types without their 
 | `fill` | no | Body colour as `#rrggbb`. |
 | `radius` | no | Corner radius in mm. |
 | `showName` | no | `true` to print the type name on parts. |
+| `maker` | no | The manufacturer, for the bill of materials. |
+| `orders` | no | Order numbers the type covers, as `[{ "no": "3044076", "desc": "" }]`. The first is the default. |
+| `stripRole` | no | `block`, `divider` or `none`: how parts show in the terminal strip report. Left out, it goes by the category (see *Terminal strip* above). |
+| `accessories` | no | Things ordered with each part, as `[{ "qty": 1, "maker": "", "no": "ZB 5", "desc": "Marker strip" }]`. A blank `maker` means the type's. |
 | `terminals` | no | List of terminals (below). |
 
 ### Terminal fields
@@ -437,6 +453,11 @@ The top-level `name` is optional: it names the library that types without their 
 | `stripe` | Tracer stripe colour as `#rrggbb`, or empty for none. |
 | `gauge` | Free text, e.g. `1.5 mm²` or `16 AWG`. |
 | `conductor` | `Stranded`, `Solid` or empty. |
+| `end` | How its wires' ends are finished: `ferrule`, `twin`, `ring`, `fork` or `none`. Left out, the drawing's setting. |
+| `strip` | Strip length at each end, in mm. Left out, the drawing's setting. |
+| `maker`, `orderNo` | For the bill of materials, which buys wire by the metre. |
+
+Cable profiles can also have `od`: the cable's outside diameter in mm, for duct fill. Left out, it's worked out from the sizes of its cores.
 
 Ids can be any text. The app makes short random ones, but readable ids like `relay-4ch` are fine as long as they're unique.
 

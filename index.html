@@ -66,18 +66,15 @@
         <div class="menu">
           <button data-menu="fileMenu" aria-haspopup="true">File <svg class="ic sm"><use href="#i-chev-d"/></svg></button>
           <div class="menu-list" id="fileMenu" hidden>
-            <button data-cmd="new"><span>New diagram</span></button>
+            <button data-cmd="new"><span>New diagram…</span></button>
             <button data-cmd="open"><span>Open…</span><kbd class="mod-key">Ctrl+O</kbd></button>
             <button data-cmd="example"><span>Open the example</span></button>
+            <button data-cmd="importFrom" title="Bring object types, wire profiles and cable profiles in from another diagram or library file"><span>Import libraries and profiles…</span></button>
             <div class="menu-sep"></div>
             <button data-cmd="save"><span>Save</span><kbd class="mod-key">Ctrl+S</kbd></button>
             <button data-cmd="saveAs"><span>Save as…</span><kbd class="mod-key">Ctrl+Shift+S</kbd></button>
             <div class="menu-sep"></div>
-            <div class="menu-head">Export</div>
-            <button data-cmd="exportSvg"><span>SVG image (true scale)</span></button>
-            <button data-cmd="exportPng"><span>PNG image</span></button>
-            <button data-cmd="exportCsv"><span>Wire list (CSV)</span></button>
-            <div class="menu-sep"></div>
+            <button data-cmd="exportOpen" title="Images of the drawing, the lists as CSV files, and labels for a label printer"><span>Export…</span><kbd class="mod-key">Ctrl+E</kbd></button>
             <button data-cmd="print"><span>Print / PDF…</span><kbd class="mod-key">Ctrl+P</kbd></button>
           </div>
         </div>
@@ -215,6 +212,8 @@
               <button data-selkind="cable" role="menuitemcheckbox"><span>Cables</span><svg class="ic sm check"><use href="#i-check"/></svg></button>
               <button data-selkind="bus" role="menuitemcheckbox"><span>Bus bars</span><svg class="ic sm check"><use href="#i-check"/></svg></button>
               <button data-selkind="rail" role="menuitemcheckbox"><span>DIN rails</span><svg class="ic sm check"><use href="#i-check"/></svg></button>
+              <button data-selkind="duct" role="menuitemcheckbox"><span>Wire ducts</span><svg class="ic sm check"><use href="#i-check"/></svg></button>
+              <button data-selkind="plate" role="menuitemcheckbox"><span>Back plates</span><svg class="ic sm check"><use href="#i-check"/></svg></button>
               <button data-selkind="text" role="menuitemcheckbox"><span>Text notes</span><svg class="ic sm check"><use href="#i-check"/></svg></button>
               <div class="menu-sep"></div>
               <button data-selkind="" role="menuitemradio"><span>Anything (no filter)</span><svg class="ic sm check"><use href="#i-check"/></svg></button>
@@ -244,15 +243,16 @@
           <button data-tab="wires" class="active">Wires <span class="count" data-count="wires"></span></button>
           <button data-tab="cables">Cables <span class="count" data-count="cables"></span></button>
           <button data-tab="buses">Bus bars <span class="count" data-count="buses"></span></button>
+          <button data-tab="profiles" title="Wire and cable profiles">Profiles <span class="count" data-count="profiles"></span></button>
+          <span class="tab-sep" aria-hidden="true"></span>
           <button data-tab="parts">Parts <span class="count" data-count="parts"></span></button>
-          <button data-tab="profiles">Wire profiles <span class="count" data-count="profiles"></span></button>
-          <button data-tab="cprofiles">Cable profiles <span class="count" data-count="cprofiles"></span></button>
+          <button data-tab="terminals" title="Terminal strips: each block's wiring, top and bottom">Terminals <span class="count" data-count="terminals"></span></button>
+          <button data-tab="bom" title="Bill of materials: everything to order, by maker and order number">BOM <span class="count" data-count="bom"></span></button>
         </div>
         <div class="drawer-tools">
           <label class="search-box compact"><svg class="ic sm"><use href="#i-search"/></svg><input id="listFilter" type="search" placeholder="Filter…" aria-label="Filter the list"></label>
-          <button id="btnListCsv" class="small" data-cmd="exportCsv" title="Download the wire list as a CSV file"><svg class="ic sm"><use href="#i-download"/></svg> CSV</button>
-          <button id="btnListCableLib" class="small" title="Ready-made cable types to add to this drawing"><svg class="ic sm"><use href="#i-plus"/></svg> Cable library…</button>
-          <button id="btnListProfiles" class="small" title="Create and edit profiles"><svg class="ic sm"><use href="#i-edit"/></svg> Edit…</button>
+          <button id="btnBomAdd" class="small" title="Add a line for something that isn't drawn, such as the enclosure or screws"><svg class="ic sm"><use href="#i-plus"/></svg> Line</button>
+          <button id="btnListCsv" class="small" title="Download this list as a CSV file"><svg class="ic sm"><use href="#i-download"/></svg> CSV</button>
           <button id="btnDrawerToggle" class="icon-btn" title="Show / hide the lists"><svg class="ic"><use href="#i-chev-d"/></svg></button>
         </div>
       </div>
@@ -268,7 +268,13 @@
         <button class="icon-btn" id="tplClose" title="Close"><svg class="ic"><use href="#i-x"/></svg></button>
       </div>
       <div class="modal-body tpl-editor">
-        <div class="tpl-form">
+        <div class="tpl-form" data-tabs>
+          <div class="mini-tabs main-tabs">
+            <button data-pane-btn="te-part" class="on" id="teTabPart">Part</button>
+            <button data-pane-btn="te-terms">Add terminals</button>
+            <button data-pane-btn="te-order">Ordering</button>
+          </div>
+          <div data-pane="te-part" class="tpl-pane">
           <div class="form-sec">
             <h4>About</h4>
             <label>Name <input id="teName" type="text"></label>
@@ -287,6 +293,14 @@
                 </select>
               </label>
             </div>
+            <label title="How parts of this type show in the terminal strip report">Terminal strip
+              <select id="teStrip">
+                <option value="" id="teStripAuto">Automatic</option>
+                <option value="block">Terminal block: a row for each level</option>
+                <option value="divider">Divider: end cover, plate or end clamp</option>
+                <option value="none">Not part of terminal strips</option>
+              </select>
+            </label>
           </div>
           <div class="form-sec">
             <h4>Shape</h4>
@@ -300,6 +314,8 @@
             </div>
             <label class="check"><input id="teShowName" type="checkbox"> Show type name on part</label>
           </div>
+          </div>
+          <div data-pane="te-terms" class="tpl-pane" hidden>
           <div class="form-sec" data-tabs>
             <div class="mini-tabs">
               <button data-pane-btn="row" class="on">Add a row</button>
@@ -361,6 +377,27 @@
                 <label>First name <input id="gdName" type="text" value="1" title="Trailing numbers count up. For row letters, e.g. A1 or a1."></label>
               </div>
               <button id="gdAdd" class="small primary">Add grid</button>
+            </div>
+          </div>
+          <p class="hint-text">Or click on the drawing to add terminals one at a time.</p>
+          </div>
+          <div data-pane="te-order" class="tpl-pane" hidden>
+            <div class="form-sec">
+              <h4>Maker</h4>
+              <label>Manufacturer <input id="teMaker" type="text" list="makerList" placeholder="e.g. Phoenix Contact"></label>
+              <datalist id="makerList"></datalist>
+            </div>
+            <div class="form-sec">
+              <h4>Order numbers</h4>
+              <div id="teOrders" class="order-rows"></div>
+              <button id="teOrderAdd" class="small"><svg class="ic sm"><use href="#i-plus"/></svg> Add order number</button>
+              <p class="hint-text">The first is used unless a part picks another, for types that cover several part numbers (coil voltages, colours…).</p>
+            </div>
+            <div class="form-sec">
+              <h4>Accessories</h4>
+              <div id="teAccs" class="order-rows"></div>
+              <button id="teAccAdd" class="small"><svg class="ic sm"><use href="#i-plus"/></svg> Add accessory</button>
+              <p class="hint-text">Ordered with every part of this type, such as a marker strip, or the relay for a socket. With no maker given, the type's is used.</p>
             </div>
           </div>
         </div>
@@ -437,7 +474,7 @@
           <h4>Building</h4>
           <button data-pane-btn="h-parts">Parts</button>
           <button data-pane-btn="h-strips">Terminal strips</button>
-          <button data-pane-btn="h-rails">Rails and notes</button>
+          <button data-pane-btn="h-rails">Rails, ducts and notes</button>
           <button data-pane-btn="h-pages">Pages</button>
           <button data-pane-btn="h-libs">Libraries</button>
           <h4>Wiring</h4>
@@ -447,6 +484,7 @@
           <button data-pane-btn="h-circuit">Circuits</button>
           <button data-pane-btn="h-names">Circuit names</button>
           <button data-pane-btn="h-bus">Bus bars</button>
+          <button data-pane-btn="h-len">Lengths and wire ends</button>
           <h4>Cables</h4>
           <button data-pane-btn="h-cable">Cable basics</button>
           <button data-pane-btn="h-port">Cable connectors</button>
@@ -456,6 +494,7 @@
           <button data-pane-btn="h-terms">Terminal settings</button>
           <h4>Output and reference</h4>
           <button data-pane-btn="h-lists">Lists and printing</button>
+          <button data-pane-btn="h-bom">Bill of materials</button>
           <button data-pane-btn="h-settings">Settings</button>
           <button data-pane-btn="h-keys">Keyboard and menus</button>
         </nav>
@@ -466,7 +505,7 @@
               <li><b>Library</b> (left): the object types you can place. <b>«</b> hides it for more drawing space.</li>
               <li><b>Drawing</b> (middle): your DIN rails, parts, wires and cables, at their real size in millimetres.</li>
               <li><b>Inspector</b> (right): the settings of whatever is selected. With nothing selected, it shows the diagram's title block (revision, date, author, notes).</li>
-              <li><b>Lists</b> (bottom): wires, cables, bus bars, parts, wire profiles and cable profiles. Drag the top edge to resize them, or use the arrow at the right to hide them.</li>
+              <li><b>Lists</b> (bottom): wires, cables, bus bars, wire profiles and cable profiles, then the parts and the bill of materials (BOM). Drag the top edge to resize them, or use the arrow at the right to hide them.</li>
               <li><b>Top bar:</b> the <b>File</b>, <b>Edit</b> and <b>Help</b> menus, undo and redo, and the diagram's title (click it to rename). <b>Settings…</b> is in the Edit menu.</li>
               <li><b>Bottom left of the drawing:</b> the diagram's pages, one tab each, and <b>+</b> to add one.</li>
               <li><b>Bottom right of the drawing:</b> the <b>Select</b> and <b>Wire</b> tools, buttons for how wires and cables are drawn, the selection filter, and zoom.</li>
@@ -478,7 +517,7 @@
             <ul>
               <li>Your work is <b>saved automatically</b> in this browser, and is there next time you open DIN Stack in it.</li>
               <li><b>File → Save</b> (Ctrl+S) downloads the diagram as a file, to keep a copy or open it on another computer. <b>Save as…</b> (Ctrl+Shift+S) lets you choose the file's name and folder (in browsers that can; otherwise it asks for a name). <b>File → Open…</b> (Ctrl+O) opens one.</li>
-              <li><b>File → New diagram</b> starts an empty one, keeping your libraries. <b>File → Open the example</b> loads a small 24 V control panel to explore. Both can be undone.</li>
+              <li><b>File → New diagram</b> starts an empty one. It asks for a title, the wire standard (American or metric) and the reference designations, and which of this diagram's libraries, wire profiles and cable profiles to bring over. <b>File → Open the example</b> loads a small 24 V control panel to explore. Both can be undone.</li>
               <li>The <b>start screen</b> appears when DIN Stack opens: continue, start a new diagram, open a file or load the example. If nothing is clicked within 10 seconds, it carries on with your diagram. Turn it off with its tick box or in Settings, and open it any time from <b>Help → Start screen</b>.</li>
               <li><b>Example links</b> such as <code>#mechatronics</code> open a ready-made example in its own workspace, saved separately from your usual diagram.</li>
             </ul>
@@ -491,7 +530,7 @@
             </ul>
             <h3>Selecting</h3>
             <ul>
-              <li>Click to select. With the <b>Select</b> tool (V), clicking a terminal selects the wires, bus bars and cable on it. <b>Shift-click</b> adds to the selection, and <b>Shift-drag</b> on empty space draws a selection box. Ctrl+A selects everything; Esc clears the selection.</li>
+              <li>Click to select. With the <b>Select</b> tool (V), clicking a terminal selects the wires, bus bars and cable on it. <b>Ctrl+click</b> adds a single thing to the selection, or takes it out. <b>Shift+click</b> a part to select every part on its DIN rail from the last one you clicked to this one (Ctrl+Shift+click adds that run to the selection). <b>Shift+drag</b> draws a selection box, wherever it starts, without moving anything. A box only takes in a DIN rail when it covers the whole rail. Ctrl+A selects everything; Esc clears the selection.</li>
               <li>With several things selected, the inspector has a section for each kind (wires, bus bars, cables, parts, rails, notes) with the settings they share. A change there applies to all of that kind. A setting they don't share shows as <i>Mixed</i>.</li>
               <li>The <b>selection filter</b> (the funnel at the bottom right) limits what you can pick, e.g. only wires, or wires and cables. With it on, clicks pick only those kinds, and dragging on empty space draws a box that picks them up, including wires, bus bars and cables with an end in the box. Space or Esc turns it off.</li>
               <li><b>Show only these wires</b> (right-click selected wires, or in the inspector) hides every other wire, to follow a few at a time. Click <b>Show all</b> at the bottom right to bring the rest back. Printouts and exported images always include every wire.</li>
@@ -521,7 +560,16 @@
             <ul>
               <li>Select a terminal block and use <b>Repeat</b> under <i>Strip</i> in the inspector to add numbered copies beside it.</li>
               <li><b>Build direction</b> (<i>Left → right</i> or <i>Right → left</i>) sets which way strips grow: new parts added beside the selected one, repeats, and packing.</li>
-              <li>To select a strip, use <b>All of this type</b> or <b>All “TB…”</b> under <i>Strip</i>, or Shift-click and Shift-drag.</li>
+              <li>To select a strip, use <b>All of this type</b> or <b>All “TB…”</b> under <i>Strip</i>, or click the first block and Shift+click the last to select everything between them on the rail. A strip's heading in the <b>Terminals</b> tab selects it too.</li>
+            </ul>
+            <h3>The terminal strip report</h3>
+            <ul>
+              <li>The <b>Terminals</b> tab at the bottom lists each terminal strip: a row for each level of each block (the terminals joined inside it), with the wires on its top and bottom, where they go and their cable and core, the bus bars through it and its circuit. End covers, plates and clamps show where they sit. Levels with nothing on them say <i>spare</i>.</li>
+              <li><b>What makes a strip:</b> terminal blocks sitting side by side on a rail, called by their tags (<code>TB101–TB110</code>) until you name them.</li>
+              <li><b>Naming a strip:</b> type a name such as <code>X1</code> into <b>Terminal strip</b> in a block's panel. The blocks beside it join that strip too.</li>
+              <li><b>Blocks apart from each other:</b> select them (on any rail or page) and click <b>Make one strip</b> in the panel, or right-click → <i>Make one terminal strip</i>. They're given one name, so they're listed as one strip in position order. Blocks with the same name are always one strip, wherever they are.</li>
+              <li>Click a strip's heading to select its blocks on the drawing. With several strips, <b>Show</b> above the list picks one; <b>CSV</b> downloads it (or all of them), as does <b>File → Export…</b>. <i>Terminal strips</i> in the print settings adds them to the printout.</li>
+              <li>Which types are blocks comes from their category (<i>Terminal blocks</i>) or the <b>Terminal strip</b> setting in the object type designer, which can also make a type a divider (end cover, plate or clamp) or leave it out.</li>
             </ul>
             <h3>Several parts at once</h3>
             <ul>
@@ -534,6 +582,19 @@
             <ul>
               <li>Right-click empty space → <b>DIN rail here</b>. Set its <b>Length</b> and <b>Profile</b> (35 or 15 mm) in the inspector.</li>
               <li>Parts sitting on a rail move with it. <b>Fit length to parts</b> trims or stretches the rail to the parts on it.</li>
+            </ul>
+            <h3>Wire ducts</h3>
+            <ul>
+              <li>Right-click empty space → <b>Wire duct here</b> → <i>Across</i> or <i>Upright</i>. Set its <b>Length</b>, <b>Width</b> and <b>Depth</b> in the panel; <b>R</b> turns it. Ducts snap against rails and each other.</li>
+              <li>Wire lengths are worked out along the ducts (see <i>Lengths and wire ends</i>). Ducts that touch or overlap are joined, so wires go from one to the next.</li>
+              <li>Each duct has a label (D1, D2…) on its cover. Select a duct to see what runs through it: its wires and cables, <b>Select them</b>, <b>Show only these wires</b>, and how full it is.</li>
+              <li><b>Fill</b> adds up the wires' and cables' cross-sections (typical outside diameters for their size, or a cable profile's <b>Ø</b>) against the duct's width × depth. A duct over the limit in Settings (60 % to start with) is outlined in red, with its fill on the cover.</li>
+              <li>The bill of materials lists ducts as lengths to cut, like rails.</li>
+            </ul>
+            <h3>Back plate</h3>
+            <ul>
+              <li>Right-click empty space → <b>Back plate round the drawing</b> draws the plate (or enclosure) under everything, 20 mm clear of it. Set its name and size in the panel, or <b>Fit round the drawing</b> again later.</li>
+              <li>It's picked up only by its edge, so clicking inside it still selects parts or clears the selection. It goes in the bill of materials with its maker and order number.</li>
             </ul>
             <h3>Text notes</h3>
             <ul>
@@ -558,6 +619,13 @@
               <li>Snapping, selection boxes, Ctrl+A and measuring work on the page you're on. The lists cover the whole diagram, with a <b>Page</b> column; clicking a row on another page opens that page.</li>
               <li><b>Print / PDF</b> prints each page on a sheet of its own. SVG and PNG export the page you're on.</li>
             </ul>
+            <h3>Reference designations (IEC 81346)</h3>
+            <ul>
+              <li>Set <b>Reference designations</b> in Settings to <i>IEC 81346</i> to name parts the standard way: <code>-K1</code>, led by a function (<code>=PUMP</code>) and a location (<code>+CAB1</code>), so a terminal reads <code>=PUMP+CAB1-K1:13</code>.</li>
+              <li>With nothing selected, the panel on the right sets the function and location of the page you're on, and the title block sets them for pages that don't have their own. A page is often a location, such as <code>+CAB1</code> for the back panel and <code>+DOOR</code> for the door.</li>
+              <li>Labels on the drawing leave out the function and location they share with their page, so a wire to the same cabinet reads <code>-K1:13</code> and one to the door <code>+DOOR-S1:13</code>. The lists and exports give them in full.</li>
+              <li>Tags only need to be unique within a function and location: <code>+CAB1-K1</code> and <code>+DOOR-K1</code> are different parts, and new parts are numbered within their page's.</li>
+            </ul>
           </section>
           <section data-pane="h-libs" hidden>
             <h3>Libraries</h3>
@@ -565,8 +633,10 @@
               <li>The drop-down at the top of the library picks which one is shown: <i>This project</i>, <i>Built-in</i>, each library you've loaded or imported, or <i>All libraries</i>.</li>
               <li><b>This project</b> holds the types made or changed in this diagram: new types, duplicates, and edited copies of types from other libraries.</li>
               <li><b>+</b> opens the library manager, which loads, unloads and refreshes the libraries that come with DIN Stack (e.g. Phoenix Contact, AutomationDirect), or imports a library file.</li>
+              <li>When you open a diagram or carry on with yours, DIN Stack checks whether any of its included libraries have a newer version, and if so lists them and offers to <b>Update all</b>. <i>Not now</i> doesn't ask again about those versions until DIN Stack is next opened. Turn the check off in its tick box or in Settings.</li>
               <li><b>⋯</b> exports the library shown as a file, with your wire profiles, to import into other diagrams.</li>
-              <li><b>File → New diagram</b> and the start screen's <b>New diagram</b> keep your libraries. Untick <i>Keep my libraries</i> on the start screen to start with just the built-in one.</li>
+              <li><b>File → Import libraries and profiles…</b> (or <b>Import a library file…</b> in <b>⋯</b> and the library manager) opens another diagram or a library file and asks which of its libraries, wire profiles and cable profiles to bring in. Types and profiles this diagram already has are updated; profiles are converted to this diagram's wire standard.</li>
+              <li><b>File → New diagram</b> and the start screen's <b>New diagram</b> can bring your libraries over. Untick <i>Libraries</i> there to start with just the built-in one.</li>
             </ul>
           </section>
           <section data-pane="h-wire" hidden>
@@ -602,8 +672,8 @@
             <h3>Wire profiles</h3>
             <ul>
               <li>A wire profile is a named wire type, e.g. "+24 V DC: red, 16 AWG, stranded". Pick one under <b>Profile</b> in a wire's panel, for one wire or several selected.</li>
-              <li><b>Favourites:</b> only the profiles starred ★ are offered in the <b>Profile</b> drop-down and the right-click menu's <i>Wire profile</i>, so they stay short. <i>All wire profiles…</i> there opens a window with all of them to search and pick from. Star or unstar a profile there, in <b>Edit…</b> or in the <b>Wire profiles</b> list at the bottom. New profiles start as favourites.</li>
-              <li>Editing a profile updates all its wires. Edit them with <b>Edit…</b> next to a wire's profile, or from the <b>Wire profiles</b> list at the bottom, where clicking a profile selects its wires.</li>
+              <li><b>Favourites:</b> only the profiles starred ★ are offered in the <b>Profile</b> drop-down and the right-click menu's <i>Wire profile</i>, so they stay short. <i>All wire profiles…</i> there opens a window with all of them to search and pick from. Star or unstar a profile there, in <b>Edit…</b> or in the <b>Profiles</b> tab at the bottom. New profiles start as favourites.</li>
+              <li>Editing a profile updates all its wires. Edit them with <b>Edit…</b> next to a wire's profile, or from the <b>Profiles</b> tab at the bottom, where clicking a profile selects its wires.</li>
               <li>Changing a wire's colour or size by hand makes it a custom wire again.</li>
             </ul>
             <h3>Matching the circuit</h3>
@@ -659,6 +729,22 @@
               <li><b>Edit terminals…</b> in a bus bar's panel picks its terminals again. Give it a label, colour and notes there too.</li>
             </ul>
           </section>
+          <section data-pane="h-len" hidden>
+            <h3>Wire and cable lengths</h3>
+            <ul>
+              <li>Each wire's length is estimated: from its terminal into the nearest wire duct the way the terminal faces, along the ducts by the shortest way, and out to its other end, plus some spare at each end (<b>Settings → Lengths and wire ends</b>, 100 mm to start with). Ends within 50 mm of each other and nearer each other than a duct, like a jumper between neighbouring terminals, are joined directly; with no duct, the wire goes across and down at right angles.</li>
+              <li><b>Picking the ducts:</b> Ctrl+click a wire or cable (or several) and the ducts it should go through, then <b>Route through …</b> in the panel or right-click menu. It visits them nearest first, and its length follows. The wire's or cable's panel shows its <b>Route</b>; <b>Shortest way</b> goes back to the automatic one.</li>
+              <li>The wire list shows estimates with ≈ (<code>≈ 450 mm</code>). Type a length into the wire's panel (<b>Length and ends</b>) to use your own instead. Ends on different pages have no estimate.</li>
+              <li>Cables are estimated the same way between their two ends when both are on one page; otherwise type the length in metres in the cable's panel.</li>
+              <li>The bill of materials buys wires and cables by the metre: each profile's total, rounded up.</li>
+            </ul>
+            <h3>Wire ends</h3>
+            <ul>
+              <li>Each end is finished with a <b>ferrule</b>, <b>twin ferrule</b>, <b>ring lug</b>, <b>fork lug</b> or nothing, stripped to a length in mm. The drawing's choice is in Settings; a wire profile can set its own (the <i>Ends</i> and <i>Strip</i> columns in <b>Edit…</b>), and so can each end of a wire, in its panel. With several wires selected, <b>Ends finished with</b> sets both ends of all of them.</li>
+              <li>Where two wires share a terminal, their ferrules there become a twin ferrule, unless the end says otherwise.</li>
+              <li><b>File → Export… → Wire processing</b> lists every wire and core with its length, profile, colour and size, and each end's finish and strip length, for cutting and crimping.</li>
+            </ul>
+          </section>
           <section data-pane="h-cable" hidden>
             <h3>Cable basics</h3>
             <ul>
@@ -699,7 +785,7 @@
               <li>A cable profile is a named cable type: sheath colour, type (e.g. Cat6 S/FTP), <i>Shielded</i>, <i>Twisted pairs</i>, notes, and the cores it contains.</li>
               <li>Pick one under <b>Cable profile</b> in a cable's panel. Editing a profile updates all its cables.</li>
               <li>Like wire profiles, only the favourites ★ are offered in the drop-down and right-click menu; <i>All cable profiles…</i> opens the rest.</li>
-              <li>They're listed under <b>Cable profiles</b> at the bottom: click one to select its cables, or <b>Edit…</b> to change them.</li>
+              <li>They're listed in the <b>Profiles</b> tab at the bottom, under the wire profiles: click one to select its cables, or <b>Edit…</b> to change them.</li>
             </ul>
             <h3>Cores</h3>
             <ul>
@@ -709,7 +795,7 @@
             <h3>The cable library</h3>
             <ul>
               <li>Ready-made cable types with their cores: Ethernet, PROFINET, PROFIBUS, 9-core serial, M8 and M12 sensor cables, control and D-sub 25 cables, power, motor and instrument cables.</li>
-              <li>Open it from <i>From the cable library…</i> in a cable's <b>Cable profile</b> drop-down, the cable button at the bottom right, or the <b>Cable profiles</b> list. <b>Add</b> puts a copy in this drawing; <b>Update</b> replaces a copy that differs.</li>
+              <li>Open it from <i>From the cable library…</i> in a cable's <b>Cable profile</b> drop-down, the cable button at the bottom right, or <b>Cable library…</b> in the <b>Profiles</b> tab. <b>Add</b> puts a copy in this drawing; <b>Update</b> replaces a copy that differs.</li>
               <li>New drawings start with no cable profiles. Editing a drawing's copy doesn't change the library.</li>
             </ul>
           </section>
@@ -717,7 +803,9 @@
             <h3>Designing a type</h3>
             <ul>
               <li><b>+ New part</b> opens the designer. Set the name, library, category, tag prefix and size in millimetres.</li>
-              <li>Click on the preview to add a terminal there, or add a whole row or grid at once.</li>
+              <li>Click on the preview to add a terminal there, or add a whole row or grid at once from the <b>Add terminals</b> tab.</li>
+              <li>The <b>Ordering</b> tab holds the maker, the order numbers the type covers, and any accessories ordered with each part (see <i>Bill of materials</i>).</li>
+              <li><b>Terminal strip</b> says whether parts of the type are terminal blocks (a row in the terminal strip report for each level), dividers such as end covers, or neither. <i>Automatic</i> goes by the category: types in <i>Terminal blocks</i> are blocks, or dividers if they have no terminals for wires.</li>
               <li><b>Add a grid</b> places blocks like a 2 × 16 header or an IC. Numbering can wrap by rows or columns, go around like an IC, or use row letters (A1… B1…), starting from any corner.</li>
               <li>Drag over empty space to select several terminals, then drag one to move them all. Shift+click adds to the selection, the arrow keys nudge, Ctrl+D copies, Delete removes and Ctrl+Z undoes.</li>
             </ul>
@@ -743,18 +831,41 @@
           <section data-pane="h-lists" hidden>
             <h3>The lists</h3>
             <ul>
-              <li>The tabs at the bottom list the diagram's wires, cables, bus bars, parts, wire profiles and cable profiles. Click a row to select it on the drawing.</li>
-              <li>The <b>Filter</b> box shows only the rows containing what you type.</li>
+              <li>The tabs at the bottom list the diagram's wires, cables, bus bars and profiles (wire profiles, then cable profiles), then its parts, terminal strips and bill of materials. Click a row to select it on the drawing.</li>
+              <li>The <b>Filter</b> box shows only the rows containing what you type. In a narrower window it's just a magnifying glass until you click it.</li>
               <li>The parts list ends with a count of each type.</li>
             </ul>
             <h3>Printing and exporting</h3>
             <ul>
               <li><b>File → Print / PDF…</b> (Ctrl+P) opens the print settings first: paper size, orientation (or <i>Automatic</i>) and margins, how big the drawing comes out, and what to print. Then <b>Print…</b> opens the print window; pick <i>Save as PDF</i> there for a PDF, and the same paper size as in the settings.</li>
               <li><b>Size of the drawing:</b> <i>Fit each page on one sheet</i>; <i>Real size, shrunk to fit one sheet if too big</i>; <i>Fit to the paper's width</i>; or a <i>Set scale</i>, where 100% is real size (1:1). With the last two, a page too big for one sheet goes on over several, each labelled with its row and column.</li>
-              <li>Each sheet of drawing gets a page to itself, with a heading at the top that's the same on every sheet (title, page, revision, and which sheet it is when a page takes several), and the drawing centred under it. The notes go under the heading on the first sheet. The lists start on a new page. Choose which drawing pages to print (all, the one open, or none) and which lists, and whether to print the heading.</li>
+              <li>Each sheet of drawing gets a page to itself, with a heading at the top that's the same on every sheet (title, page, revision, and which sheet it is when a page takes several), and the drawing centred under it. The notes go under the heading on the first sheet. The lists start on a new page. Choose which drawing pages to print (all, the one open, or none) and which lists.</li>
+              <li><b>Around the drawing</b> picks the heading, nothing, or a <b>drawing frame</b>: a border with zones numbered across and lettered down, and a title strip along the bottom with the title, page (and its function and location), revision, date, author and sheet number. With the frame, the printed parts list gives each part's zone, e.g. <code>K1 (B3)</code>, or <code>2/B3</code> on page 2, and the notes print with the lists.</li>
               <li>Paper sizes and margins follow the wire standard: American uses Letter, Legal, Tabloid… and inches, metric uses A4, A3… and mm. Switching the standard in Settings switches the paper to the nearest size.</li>
-              <li><b>File → SVG image</b> is true to scale, for printing at 1:1 or using in other drawings. <b>PNG image</b> is a picture of the drawing. Both are of the page you're on.</li>
-              <li><b>File → Wire list (CSV)</b>, or <b>CSV</b> above the wire list, downloads the wire list for a spreadsheet.</li>
+              <li><b>File → Export…</b> (Ctrl+E) gathers everything that downloads: an <b>SVG image</b> true to scale, for printing at 1:1 or using in other drawings, or a <b>PNG image</b>, both of the page you're on; the wire list, cable list, bill of materials, terminal strips and wire processing list as CSV files for a spreadsheet; and labels (below).</li>
+              <li><b>CSV</b> above the wire, cable, terminal strip and bill of materials lists downloads the list shown.</li>
+            </ul>
+            <h3>Labels</h3>
+            <ul>
+              <li>The <b>Labels</b> part of <b>File → Export…</b> makes a CSV file of markers and labels for label printer software (or a spreadsheet): <b>terminal markers</b> (one per block, or per level), <b>wire markers</b> (one per end of each loose wire, with where its other end goes if you like), <b>cable labels</b> (each end, with the cable's type), <b>core markers</b> (each end of each cable core), <b>device labels</b> (tagged parts on rails, with their description) and <b>connector labels</b> (tagged loose parts).</li>
+              <li>Each row has the label's <b>Text</b>, a <b>Detail</b> for a second line, and <b>At</b>, where it goes. Tick the kinds to include; each shows how many there are. Order them by name or by position, and get one file with a <i>Kind</i> column or a file per kind. A preview shows the first few.</li>
+              <li>With IEC designations, labels name parts as on the drawing (<code>-K1</code>), or in full if you tick <i>Designations in full</i>.</li>
+            </ul>
+          </section>
+          <section data-pane="h-bom" hidden>
+            <h3>Bill of materials</h3>
+            <ul>
+              <li>The <b>BOM</b> tab at the bottom lists everything to order: parts and their accessories, DIN rails (with the lengths to cut), bus bars, wires and cables. Lines are grouped by maker and order number; things without an order number are grouped by type, rail profile or wire profile.</li>
+              <li>Click a line to select what it counts on the drawing.</li>
+              <li><b>+ Line</b> adds a line for anything that isn't drawn, such as the enclosure, screws or cable glands. Type its quantity, maker, order number and description straight into the list.</li>
+              <li><b>CSV</b> above the list, or <b>File → Export…</b>, downloads it for a spreadsheet. <i>Bill of materials</i> in the print settings adds it to the printout.</li>
+            </ul>
+            <h3>Where the order numbers come from</h3>
+            <ul>
+              <li><b>Parts:</b> the object type's <b>Ordering</b> tab has its maker, the order numbers it covers (the first is the default) and its accessories. A part can pick another of the type's numbers, or any other, under <i>Ordering</i> in its panel.</li>
+              <li><b>DIN rails and bus bars:</b> <i>Ordering</i> in their panel.</li>
+              <li><b>Wires and cables:</b> the <i>Maker</i> and <i>Order no.</i> columns of their profiles (<i>Edit…</i> in the <b>Profiles</b> tab).</li>
+              <li>The ready-made libraries come with makers and order numbers filled in where they're known.</li>
             </ul>
           </section>
           <section data-pane="h-settings" hidden>
@@ -785,12 +896,16 @@
               <tr><td>Ctrl+F</td><td>Find in the lists (the filter box)</td></tr>
               <tr><td>Ctrl+O / Ctrl+S / Ctrl+Shift+S</td><td>Open / save / save as</td></tr>
               <tr><td>Ctrl+P</td><td>Print / PDF</td></tr>
+              <tr><td>Ctrl+E</td><td>Export: images, lists and labels</td></tr>
               <tr><td>V / W / M</td><td>Select tool / Wire tool / Measure tool</td></tr>
-              <tr><td>R / Shift+R</td><td>Rotate selected 90° right / left</td></tr>
+              <tr><td>R / Shift+R</td><td>Rotate selected 90° right / left (a wire duct turns between across and upright)</td></tr>
               <tr><td>Arrow keys</td><td>Nudge one grid step (Shift = ×10)</td></tr>
               <tr><td>F</td><td>Fit to window</td></tr>
               <tr><td>Space + drag</td><td>Pan</td></tr>
               <tr><td>Alt + drag</td><td>Move without snapping</td></tr>
+              <tr><td>Ctrl + click</td><td>Add to the selection, or take out</td></tr>
+              <tr><td>Shift + click</td><td>Select the parts on a rail from the last one clicked</td></tr>
+              <tr><td>Shift + drag</td><td>Selection box</td></tr>
               <tr><td>Ctrl + drag</td><td>Push the touching parts along</td></tr>
               <tr><td>Enter</td><td>Finish a bus bar or cable</td></tr>
               <tr><td>Esc</td><td>Cancel wiring / clear a measurement / clear selection</td></tr>
@@ -801,6 +916,62 @@
           </section>
         </div>
       </div>
+    </div>
+  </div>
+
+  <!-- New diagram: its standards, and what to bring over from the diagram open -->
+  <div class="modal-back" id="newModal" hidden>
+    <div class="modal narrow choice-modal">
+      <div class="modal-head">
+        <h2>New diagram</h2>
+        <button class="icon-btn" data-close="newModal" title="Close"><svg class="ic"><use href="#i-x"/></svg></button>
+      </div>
+      <div class="modal-body" id="newBody"></div>
+      <div class="modal-foot"><span class="muted foot-note">You can always change these later.</span><button data-close="newModal">Cancel</button><button data-cmd="newCreate" class="primary">Create</button></div>
+    </div>
+  </div>
+
+  <!-- Export: images of the drawing, the lists as CSV, and labels -->
+  <div class="modal-back" id="exportModal" hidden>
+    <div class="modal export-modal">
+      <div class="modal-head">
+        <h2>Export</h2>
+        <button class="icon-btn" data-close="exportModal" title="Close"><svg class="ic"><use href="#i-x"/></svg></button>
+      </div>
+      <div class="modal-body" id="exportBody"></div>
+      <div class="modal-foot"><span class="muted foot-note">CSV files are UTF-8, for Excel, LibreOffice or label printer software.</span><button data-close="exportModal">Close</button></div>
+    </div>
+  </div>
+
+  <!-- Library updates: offered when a diagram is opened whose included libraries have newer versions -->
+  <div class="modal-back" id="libUpdateModal" hidden>
+    <div class="modal narrow choice-modal">
+      <div class="modal-head">
+        <h2>Library updates</h2>
+        <button class="icon-btn" data-lu="later" title="Close"><svg class="ic"><use href="#i-x"/></svg></button>
+      </div>
+      <div class="modal-body">
+        <p style="margin-top:0">Newer versions of libraries in this diagram are out:</p>
+        <ul class="lib-updates" id="libUpdateList"></ul>
+        <p class="hint-text">Updating loads them again, so their object types match the new versions and the parts using them follow. You can undo this, and update one at a time from <b>+</b> beside the library drop-down.</p>
+      </div>
+      <div class="modal-foot">
+        <label class="check foot-note" title="Also in Settings, under Starting up"><input id="libUpdateCheck" type="checkbox" checked> Check when a diagram is opened</label>
+        <button data-lu="later">Not now</button>
+        <button data-lu="all" id="libUpdateAll" class="primary">Update all</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Import: which of another file's libraries and profiles to bring in -->
+  <div class="modal-back" id="importModal" hidden>
+    <div class="modal narrow choice-modal">
+      <div class="modal-head">
+        <h2 id="importTitle">Import</h2>
+        <button class="icon-btn" data-close="importModal" title="Close"><svg class="ic"><use href="#i-x"/></svg></button>
+      </div>
+      <div class="modal-body" id="importBody"></div>
+      <div class="modal-foot"><span class="muted foot-note">You can undo this.</span><button data-close="importModal">Cancel</button><button data-cmd="importDo" id="importDo" class="primary">Import</button></div>
     </div>
   </div>
 
@@ -817,10 +988,7 @@
       </div>
       <div class="modal-body">
         <div class="start-choices">
-          <div class="start-cell" id="welBlankCell">
-            <button data-wel="blank"><span class="step-ic"><svg class="ic"><use href="#i-plus"/></svg></span><span><b>New diagram</b><small>Start an empty diagram. You can undo this.</small></span></button>
-            <label class="check start-opt" id="welKeepLibsRow"><input id="welKeepLibs" type="checkbox" checked> Keep my libraries</label>
-          </div>
+          <button data-wel="blank"><span class="step-ic"><svg class="ic"><use href="#i-plus"/></svg></span><span><b>New diagram…</b><small>Start an empty diagram: pick its standards and what to bring from this one.</small></span></button>
           <button data-wel="continue"><span class="step-ic"><svg class="ic"><use href="#i-edit"/></svg></span><span><b id="welContinueHead">Continue</b><small id="welContinueSub"></small><small id="welCountdown" class="start-count" hidden></small></span></button>
           <button data-wel="open"><span class="step-ic"><svg class="ic"><use href="#i-file"/></svg></span><span><b>Open a file…</b><small>Load a diagram saved with File → Save.</small></span></button>
           <button data-wel="example" id="welExample"><span class="step-ic"><svg class="ic"><use href="#i-rail"/></svg></span><span><b id="welExampleHead">Load the example</b><small id="welExampleSub"></small></span></button>
@@ -871,14 +1039,14 @@
       <div class="modal-body">
         <p class="muted" style="margin-top:0">A profile is a named wire type. Wires assigned to a profile take its colour, stripe, size and conductor, and editing a profile here updates all of them. Changing a wire by hand makes it a custom wire again. Only the favourites (★) are offered in the drop-downs and right-click menus; the others are under <i>All wire profiles…</i> there.</p>
         <table class="term-table prof-table">
-          <thead><tr><th title="Favourites: offered in the drop-downs and right-click menus">★</th><th>Name</th><th>Colour</th><th>Stripe</th><th>Size</th><th>Conductor</th><th>Wires</th><th></th></tr></thead>
+          <thead><tr><th title="Favourites: offered in the drop-downs and right-click menus">★</th><th>Name</th><th>Colour</th><th>Stripe</th><th>Size</th><th>Conductor</th><th title="How the ends of its wires are finished">Ends</th><th title="Strip length at each end, in mm">Strip (mm)</th><th>Maker</th><th>Order no.</th><th>Wires</th><th></th></tr></thead>
           <tbody id="profRows"></tbody>
         </table>
         <div class="btn-row"><button id="profAdd" class="small primary"><svg class="ic sm"><use href="#i-plus"/></svg> Add profile</button></div>
         <h3 id="cprofHead" class="prof-sub">Cable profiles</h3>
         <p class="muted">A cable profile is a named cable type. Add the ones this drawing uses from the <b>cable library</b>, or make your own. Each has its sheath colour, type (e.g. Cat6 S/FTP), whether it's shielded or has twisted pairs, any notes, and the cores it contains. Cables assigned to a profile follow it, and editing it here updates all of them. Click <b>Cores</b> to list its cores in order, each with a marking, colour, stripe, size and conductor: a cable's cores then take those looks, core 1 first. With no cores listed, the wires inside a cable keep their own looks. As with wire profiles, only the favourites (★) are offered in the drop-downs and right-click menus.</p>
         <table class="term-table cprof-table">
-          <thead><tr><th title="Favourites: offered in the drop-downs and right-click menus">★</th><th>Name</th><th>Sheath</th><th>Type</th><th>Shielded</th><th>Twisted pairs</th><th>Notes</th><th>Cores</th><th>Cables</th><th></th></tr></thead>
+          <thead><tr><th title="Favourites: offered in the drop-downs and right-click menus">★</th><th>Name</th><th>Sheath</th><th>Type</th><th>Shielded</th><th>Twisted pairs</th><th>Notes</th><th title="Outside diameter, for duct fill">Ø (mm)</th><th>Maker</th><th>Order no.</th><th>Cores</th><th>Cables</th><th></th></tr></thead>
           <tbody id="cprofRows"></tbody>
         </table>
         <div class="btn-row"><button id="cprofLib" class="small primary" title="Ready-made cable types to add to this drawing"><svg class="ic sm"><use href="#i-plus"/></svg> Add from the cable library…</button><button id="cprofAdd" class="small" title="Make a cable profile of your own"><svg class="ic sm"><use href="#i-plus"/></svg> New cable profile</button></div>
@@ -966,6 +1134,8 @@
   <script src="js/defaults.js"></script>
   <script src="js/cables.js"></script>
   <script src="js/render.js"></script>
+  <script src="js/reports.js"></script>
+  <script src="js/routing.js"></script>
   <script src="js/tpl-editor.js"></script>
   <script src="js/app.js"></script>
 </body>

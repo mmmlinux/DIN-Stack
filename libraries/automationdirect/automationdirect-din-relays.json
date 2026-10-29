@@ -1,7 +1,7 @@
 {
   "type": "dinstack-library",
-  "app": "1.1.2",
-  "version": "1.0.1",
+  "app": "1.11.1",
+  "version": "1.1.1",
   "name": "AutomationDirect DIN-rail relays",
   "templates": [
     {
@@ -61,6 +61,37 @@
           "link": "",
           "kind": "wire"
         }
+      ],
+      "maker": "Murrelektronik",
+      "orders": [
+        {
+          "no": "52000",
+          "desc": ""
+        },
+        {
+          "no": "52001",
+          "desc": ""
+        },
+        {
+          "no": "52003",
+          "desc": ""
+        },
+        {
+          "no": "52010",
+          "desc": ""
+        },
+        {
+          "no": "52030",
+          "desc": ""
+        },
+        {
+          "no": "52040",
+          "desc": ""
+        },
+        {
+          "no": "52050",
+          "desc": ""
+        }
       ]
     },
     {
@@ -119,6 +150,13 @@
           "side": "auto",
           "link": "",
           "kind": "wire"
+        }
+      ],
+      "maker": "Murrelektronik",
+      "orders": [
+        {
+          "no": "52007",
+          "desc": ""
         }
       ]
     },
@@ -206,6 +244,29 @@
           "link": "",
           "kind": "wire"
         }
+      ],
+      "maker": "Murrelektronik",
+      "orders": [
+        {
+          "no": "52102",
+          "desc": ""
+        },
+        {
+          "no": "52103",
+          "desc": ""
+        },
+        {
+          "no": "52111",
+          "desc": ""
+        },
+        {
+          "no": "52130",
+          "desc": ""
+        },
+        {
+          "no": "52140",
+          "desc": ""
+        }
       ]
     },
     {
@@ -255,6 +316,13 @@
           "side": "auto",
           "link": "",
           "kind": "wire"
+        }
+      ],
+      "maker": "Murrelektronik",
+      "orders": [
+        {
+          "no": "51101",
+          "desc": ""
         }
       ]
     },
@@ -324,6 +392,13 @@
           "link": "",
           "kind": "wire"
         }
+      ],
+      "maker": "Murrelektronik",
+      "orders": [
+        {
+          "no": "51152",
+          "desc": ""
+        }
       ]
     },
     {
@@ -383,6 +458,29 @@
           "link": "",
           "kind": "wire"
         }
+      ],
+      "maker": "Klemsan",
+      "orders": [
+        {
+          "no": "KPR-SCS-12VACDC-1",
+          "desc": ""
+        },
+        {
+          "no": "KPR-SCS-24VACDC-1",
+          "desc": ""
+        },
+        {
+          "no": "KPR-SCS-230VACDC-1",
+          "desc": ""
+        },
+        {
+          "no": "KPR-SCL-115VACDC-1",
+          "desc": ""
+        },
+        {
+          "no": "KPR-SCL-230VAC-1",
+          "desc": ""
+        }
       ]
     },
     {
@@ -433,6 +531,33 @@
           "link": "",
           "kind": "wire"
         }
+      ],
+      "maker": "Murrelektronik",
+      "orders": [
+        {
+          "no": "52501",
+          "desc": ""
+        },
+        {
+          "no": "52502",
+          "desc": ""
+        },
+        {
+          "no": "52507",
+          "desc": ""
+        },
+        {
+          "no": "52511",
+          "desc": ""
+        },
+        {
+          "no": "52519",
+          "desc": ""
+        },
+        {
+          "no": "52520",
+          "desc": ""
+        }
       ]
     },
     {
@@ -482,6 +607,13 @@
           "side": "auto",
           "link": "",
           "kind": "wire"
+        }
+      ],
+      "maker": "Murrelektronik",
+      "orders": [
+        {
+          "no": "52550",
+          "desc": ""
         }
       ]
     },
@@ -542,6 +674,13 @@
           "link": "",
           "kind": "wire"
         }
+      ],
+      "maker": "Murrelektronik",
+      "orders": [
+        {
+          "no": "52510",
+          "desc": ""
+        }
       ]
     },
     {
@@ -601,7 +740,8 @@
           "link": "",
           "kind": "wire"
         }
-      ]
+      ],
+      "maker": "Gefran"
     },
     {
       "id": "ad-gefran-grsh-17-a5",
@@ -678,7 +818,8 @@
           "link": "",
           "kind": "wire"
         }
-      ]
+      ],
+      "maker": "Gefran"
     },
     {
       "id": "ad-gefran-grsh-17-d2",
@@ -773,7 +914,8 @@
           "link": "",
           "kind": "wire"
         }
-      ]
+      ],
+      "maker": "Gefran"
     },
     {
       "id": "ad-gefran-grsh-35-0",
@@ -832,7 +974,8 @@
           "link": "",
           "kind": "wire"
         }
-      ]
+      ],
+      "maker": "Gefran"
     },
     {
       "id": "ad-gefran-grsh-35-a5",
@@ -909,7 +1052,8 @@
           "link": "",
           "kind": "wire"
         }
-      ]
+      ],
+      "maker": "Gefran"
     },
     {
       "id": "ad-gefran-grsh-35-d2",
@@ -1004,7 +1148,8 @@
           "link": "",
           "kind": "wire"
         }
-      ]
+      ],
+      "maker": "Gefran"
     },
     {
       "id": "ad-gefran-grsh-70-0",
@@ -1063,7 +1208,8 @@
           "link": "",
           "kind": "wire"
         }
-      ]
+      ],
+      "maker": "Gefran"
     },
     {
       "id": "ad-gefran-grsh-70-a5",
@@ -1140,7 +1286,8 @@
           "link": "",
           "kind": "wire"
         }
-      ]
+      ],
+      "maker": "Gefran"
     },
     {
       "id": "ad-gefran-grsh-70-d2",
@@ -1235,7 +1382,8 @@
           "link": "",
           "kind": "wire"
         }
-      ]
+      ],
+      "maker": "Gefran"
     },
     {
       "id": "ad-gefran-grsh-80-0",
@@ -1294,7 +1442,8 @@
           "link": "",
           "kind": "wire"
         }
-      ]
+      ],
+      "maker": "Gefran"
     },
     {
       "id": "ad-gefran-grsh-80-a5",
@@ -1371,7 +1520,8 @@
           "link": "",
           "kind": "wire"
         }
-      ]
+      ],
+      "maker": "Gefran"
     },
     {
       "id": "ad-gefran-grsh-80-d2",
@@ -1466,7 +1616,8 @@
           "link": "",
           "kind": "wire"
         }
-      ]
+      ],
+      "maker": "Gefran"
     },
     {
       "id": "ad-dold-hc3096n",
@@ -1569,6 +1720,21 @@
           "side": "auto",
           "link": "",
           "kind": "wire"
+        }
+      ],
+      "maker": "Dold",
+      "orders": [
+        {
+          "no": "HC3096N-48-900-24",
+          "desc": ""
+        },
+        {
+          "no": "HC3096N-52-900-24",
+          "desc": ""
+        },
+        {
+          "no": "HC3096N-102-24",
+          "desc": ""
         }
       ]
     },
@@ -1709,6 +1875,29 @@
           "side": "auto",
           "link": "",
           "kind": "wire"
+        }
+      ],
+      "maker": "Dold",
+      "orders": [
+        {
+          "no": "HL3096N-18-900-24",
+          "desc": ""
+        },
+        {
+          "no": "HL3096N-50-900-24",
+          "desc": ""
+        },
+        {
+          "no": "HL3096N-54-900-24",
+          "desc": ""
+        },
+        {
+          "no": "HL3096N-60-900-24",
+          "desc": ""
+        },
+        {
+          "no": "HL3096N-102-24",
+          "desc": ""
         }
       ]
     },
@@ -1886,6 +2075,13 @@
           "link": "",
           "kind": "wire"
         }
+      ],
+      "maker": "Macromatic",
+      "orders": [
+        {
+          "no": "ISDUR4",
+          "desc": ""
+        }
       ]
     },
     {
@@ -1981,6 +2177,13 @@
           "link": "",
           "kind": "wire"
         }
+      ],
+      "maker": "Macromatic",
+      "orders": [
+        {
+          "no": "ISEUR1",
+          "desc": ""
+        }
       ]
     },
     {
@@ -2048,6 +2251,29 @@
           "side": "auto",
           "link": "",
           "kind": "wire"
+        }
+      ],
+      "maker": "Klemsan",
+      "orders": [
+        {
+          "no": "P1D-ASF-400",
+          "desc": ""
+        },
+        {
+          "no": "P1D-M1WASF-175-345",
+          "desc": ""
+        },
+        {
+          "no": "P1D-M1WASF-295-480",
+          "desc": ""
+        },
+        {
+          "no": "FP1D-ASF-400",
+          "desc": ""
+        },
+        {
+          "no": "FP1D-SF-400",
+          "desc": ""
         }
       ]
     },
@@ -2125,6 +2351,37 @@
           "side": "auto",
           "link": "",
           "kind": "wire"
+        }
+      ],
+      "maker": "Klemsan",
+      "orders": [
+        {
+          "no": "P1Y-ASF-230",
+          "desc": ""
+        },
+        {
+          "no": "P1Y-M1WASFN-100-200",
+          "desc": ""
+        },
+        {
+          "no": "P1Y-M1WASFN-170-280",
+          "desc": ""
+        },
+        {
+          "no": "FP1Y-AF-230",
+          "desc": ""
+        },
+        {
+          "no": "FP1Y-ASF-230",
+          "desc": ""
+        },
+        {
+          "no": "FP1Y-SF-230",
+          "desc": ""
+        },
+        {
+          "no": "FP1YA-ASF8-230",
+          "desc": ""
         }
       ]
     },
@@ -2211,6 +2468,21 @@
           "side": "auto",
           "link": "",
           "kind": "wire"
+        }
+      ],
+      "maker": "Klemsan",
+      "orders": [
+        {
+          "no": "P1D-M2WSP-175-345",
+          "desc": ""
+        },
+        {
+          "no": "P1D-M2WSP-295-480",
+          "desc": ""
+        },
+        {
+          "no": "FP1D-SFP-400",
+          "desc": ""
         }
       ]
     },
@@ -2307,6 +2579,21 @@
           "link": "",
           "kind": "wire"
         }
+      ],
+      "maker": "Klemsan",
+      "orders": [
+        {
+          "no": "P1Y-M2WSP-100-200",
+          "desc": ""
+        },
+        {
+          "no": "P1Y-M2WSP-170-280",
+          "desc": ""
+        },
+        {
+          "no": "FP1Y-SFP-230",
+          "desc": ""
+        }
       ]
     },
     {
@@ -2384,6 +2671,17 @@
           "link": "",
           "kind": "wire"
         }
+      ],
+      "maker": "Dold",
+      "orders": [
+        {
+          "no": "RL9877-11",
+          "desc": ""
+        },
+        {
+          "no": "RL9877-11-120",
+          "desc": ""
+        }
       ]
     },
     {
@@ -2443,6 +2741,17 @@
           "link": "",
           "kind": "wire"
         }
+      ],
+      "maker": "Dold",
+      "orders": [
+        {
+          "no": "RL9836DC24-130V",
+          "desc": ""
+        },
+        {
+          "no": "RL9836DC50-250V",
+          "desc": ""
+        }
       ]
     },
     {
@@ -2501,6 +2810,17 @@
           "side": "auto",
           "link": "",
           "kind": "wire"
+        }
+      ],
+      "maker": "Dold",
+      "orders": [
+        {
+          "no": "RL9854AC45-135V",
+          "desc": ""
+        },
+        {
+          "no": "RL9854AC100-300V",
+          "desc": ""
         }
       ]
     },
@@ -2569,6 +2889,13 @@
           "side": "auto",
           "link": "",
           "kind": "wire"
+        }
+      ],
+      "maker": "Dold",
+      "orders": [
+        {
+          "no": "RN9877-0103P3W525V",
+          "desc": ""
         }
       ]
     },
@@ -2647,6 +2974,17 @@
           "link": "",
           "kind": "wire"
         }
+      ],
+      "maker": "Dold",
+      "orders": [
+        {
+          "no": "RN9877-1203P4W525V",
+          "desc": ""
+        },
+        {
+          "no": "RN98773P4W525V",
+          "desc": ""
+        }
       ]
     },
     {
@@ -2705,6 +3043,13 @@
           "side": "auto",
           "link": "",
           "kind": "wire"
+        }
+      ],
+      "maker": "Murrelektronik",
+      "orders": [
+        {
+          "no": "52350",
+          "desc": ""
         }
       ]
     },
@@ -2801,6 +3146,13 @@
           "link": "",
           "kind": "wire"
         }
+      ],
+      "maker": "Dold",
+      "orders": [
+        {
+          "no": "RK7814-81-61",
+          "desc": ""
+        }
       ]
     },
     {
@@ -2868,6 +3220,17 @@
           "side": "auto",
           "link": "",
           "kind": "wire"
+        }
+      ],
+      "maker": "Dold",
+      "orders": [
+        {
+          "no": "RK7815-71-61",
+          "desc": ""
+        },
+        {
+          "no": "RK7816-81-61",
+          "desc": ""
         }
       ]
     },
@@ -2945,6 +3308,13 @@
           "side": "auto",
           "link": "",
           "kind": "wire"
+        }
+      ],
+      "maker": "Dold",
+      "orders": [
+        {
+          "no": "RK7817-81-61",
+          "desc": ""
         }
       ]
     },
@@ -3031,6 +3401,25 @@
           "side": "auto",
           "link": "",
           "kind": "wire"
+        }
+      ],
+      "maker": "Dold",
+      "orders": [
+        {
+          "no": "MK7854N-82-61",
+          "desc": ""
+        },
+        {
+          "no": "MK7873N-82-61-3S",
+          "desc": ""
+        },
+        {
+          "no": "MK7873N-82-61-30S",
+          "desc": ""
+        },
+        {
+          "no": "MK7873N-82-61-300S",
+          "desc": ""
         }
       ]
     },
@@ -3144,6 +3533,13 @@
           "side": "auto",
           "link": "",
           "kind": "wire"
+        }
+      ],
+      "maker": "Dold",
+      "orders": [
+        {
+          "no": "MK9962N-82-61",
+          "desc": ""
         }
       ]
     },
@@ -3267,6 +3663,13 @@
           "link": "",
           "kind": "wire"
         }
+      ],
+      "maker": "Dold",
+      "orders": [
+        {
+          "no": "MK7850N-82-200-61",
+          "desc": ""
+        }
       ]
     },
     {
@@ -3371,6 +3774,13 @@
           "link": "",
           "kind": "wire"
         }
+      ],
+      "maker": "Dold",
+      "orders": [
+        {
+          "no": "MK9906N-82-61",
+          "desc": ""
+        }
       ]
     },
     {
@@ -3429,6 +3839,37 @@
           "side": "auto",
           "link": "",
           "kind": "wire"
+        }
+      ],
+      "maker": "Klemsan",
+      "orders": [
+        {
+          "no": "Z1T-M2",
+          "desc": ""
+        },
+        {
+          "no": "Z1T-M4",
+          "desc": ""
+        },
+        {
+          "no": "Z1T-M5",
+          "desc": ""
+        },
+        {
+          "no": "Z1T-ND100S",
+          "desc": ""
+        },
+        {
+          "no": "Z1T-NDX",
+          "desc": ""
+        },
+        {
+          "no": "Z1T-NDF",
+          "desc": ""
+        },
+        {
+          "no": "Z1T-FDF",
+          "desc": ""
         }
       ]
     },
@@ -3498,6 +3939,21 @@
           "link": "",
           "kind": "wire"
         }
+      ],
+      "maker": "Klemsan",
+      "orders": [
+        {
+          "no": "Z1K-M10",
+          "desc": ""
+        },
+        {
+          "no": "Z1K-M10A",
+          "desc": ""
+        },
+        {
+          "no": "Z1K-M2A",
+          "desc": ""
+        }
       ]
     },
     {
@@ -3565,6 +4021,17 @@
           "side": "auto",
           "link": "",
           "kind": "wire"
+        }
+      ],
+      "maker": "Klemsan",
+      "orders": [
+        {
+          "no": "Z1A-ND30S",
+          "desc": ""
+        },
+        {
+          "no": "Z1A-ND100S",
+          "desc": ""
         }
       ]
     },
@@ -3652,6 +4119,13 @@
           "link": "",
           "kind": "wire"
         }
+      ],
+      "maker": "Klemsan",
+      "orders": [
+        {
+          "no": "Z1T-LR.2",
+          "desc": ""
+        }
       ]
     },
     {
@@ -3711,6 +4185,17 @@
           "link": "",
           "kind": "wire"
         }
+      ],
+      "maker": "Klemsan",
+      "orders": [
+        {
+          "no": "Z1T-SD",
+          "desc": ""
+        },
+        {
+          "no": "Z1T-SD-500",
+          "desc": ""
+        }
       ]
     },
     {
@@ -3769,6 +4254,13 @@
           "side": "auto",
           "link": "",
           "kind": "wire"
+        }
+      ],
+      "maker": "AutomationDirect",
+      "orders": [
+        {
+          "no": "781-1C-SKT",
+          "desc": ""
         }
       ]
     },
@@ -3855,6 +4347,13 @@
           "side": "auto",
           "link": "",
           "kind": "wire"
+        }
+      ],
+      "maker": "AutomationDirect",
+      "orders": [
+        {
+          "no": "782-2C-SKT",
+          "desc": ""
         }
       ]
     },
@@ -3996,6 +4495,13 @@
           "link": "",
           "kind": "wire"
         }
+      ],
+      "maker": "AutomationDirect",
+      "orders": [
+        {
+          "no": "782-4C-SKT",
+          "desc": ""
+        }
       ]
     },
     {
@@ -4108,6 +4614,13 @@
           "side": "auto",
           "link": "",
           "kind": "wire"
+        }
+      ],
+      "maker": "AutomationDirect",
+      "orders": [
+        {
+          "no": "783-3C-SKT",
+          "desc": ""
         }
       ]
     },
@@ -4249,6 +4762,13 @@
           "link": "",
           "kind": "wire"
         }
+      ],
+      "maker": "AutomationDirect",
+      "orders": [
+        {
+          "no": "784-4C-SKT-1",
+          "desc": ""
+        }
       ]
     },
     {
@@ -4334,6 +4854,13 @@
           "side": "auto",
           "link": "",
           "kind": "wire"
+        }
+      ],
+      "maker": "AutomationDirect",
+      "orders": [
+        {
+          "no": "750-2C-SKT",
+          "desc": ""
         }
       ]
     },
@@ -4448,6 +4975,13 @@
           "link": "",
           "kind": "wire"
         }
+      ],
+      "maker": "AutomationDirect",
+      "orders": [
+        {
+          "no": "750-3C-SKT",
+          "desc": ""
+        }
       ]
     },
     {
@@ -4533,6 +5067,13 @@
           "side": "auto",
           "link": "",
           "kind": "wire"
+        }
+      ],
+      "maker": "Macromatic",
+      "orders": [
+        {
+          "no": "70169-D",
+          "desc": ""
         }
       ]
     },
@@ -4647,6 +5188,13 @@
           "link": "",
           "kind": "wire"
         }
+      ],
+      "maker": "Macromatic",
+      "orders": [
+        {
+          "no": "70170-D",
+          "desc": ""
+        }
       ]
     },
     {
@@ -4732,6 +5280,13 @@
           "side": "auto",
           "link": "",
           "kind": "wire"
+        }
+      ],
+      "maker": "Fuji Electric",
+      "orders": [
+        {
+          "no": "TP48X",
+          "desc": ""
         }
       ]
     },
@@ -4846,6 +5401,13 @@
           "link": "",
           "kind": "wire"
         }
+      ],
+      "maker": "Fuji Electric",
+      "orders": [
+        {
+          "no": "TP411X",
+          "desc": ""
+        }
       ]
     },
     {
@@ -4931,6 +5493,13 @@
           "side": "auto",
           "link": "",
           "kind": "wire"
+        }
+      ],
+      "maker": "Fuji Electric",
+      "orders": [
+        {
+          "no": "TP88X2",
+          "desc": ""
         }
       ]
     }

@@ -4,6 +4,14 @@ This library has its own version number (MAJOR.COMMIT.CHANGE), separate from DIN
 
 To get a newer version into a diagram, click **+** beside the library drop-down and use **Refresh** next to the library. It's highlighted when the diagram has an older version.
 
+## 1.1.2 — 2026-10-29
+
+- The TE terminal blocks and their end sections are marked as such, for DIN Stack's terminal strip report. Needs DIN Stack 1.11.6 or later.
+
+## 1.1.1 — 2026-10-29
+
+- Makers and order numbers filled in for DIN Stack's bill of materials: TE Connectivity (Entrelec) blocks and end sections, the MicroLogix 1100 as 1763-L16AWA, -L16BWA, -L16BBB and -L16DWD, the Siemens CSM 1277 and PM1207, and the RHINO PSP05-020S. The TB-2503 barrier strip is generic and has none. Needs DIN Stack 1.11.1 or later.
+
 ## 1.0.1 — 2026-10-24
 
 - New library with 12 types for the AACC Mechatronics panel:

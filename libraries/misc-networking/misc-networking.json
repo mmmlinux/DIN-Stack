@@ -1,7 +1,7 @@
 {
   "type": "dinstack-library",
-  "app": "1.4.29",
-  "version": "1.0.2",
+  "app": "1.11.1",
+  "version": "1.1.1",
   "name": "Misc networking",
   "templates": [
     {
@@ -88,6 +88,13 @@
           "side": "left",
           "link": "",
           "kind": "port"
+        }
+      ],
+      "maker": "Tripp Lite (Eaton)",
+      "orders": [
+        {
+          "no": "NGI-U05E",
+          "desc": ""
         }
       ]
     },
@@ -185,6 +192,13 @@
           "link": "",
           "kind": "wire"
         }
+      ],
+      "maker": "Tripp Lite (Eaton)",
+      "orders": [
+        {
+          "no": "NPOEI-60W-1G",
+          "desc": ""
+        }
       ]
     },
     {
@@ -281,6 +295,13 @@
           "link": "",
           "kind": "port"
         }
+      ],
+      "maker": "StarTech",
+      "orders": [
+        {
+          "no": "IH2006-KVM-EXTENDER",
+          "desc": "kit: transmitter and receiver"
+        }
       ]
     },
     {
@@ -376,6 +397,13 @@
           "side": "bottom",
           "link": "",
           "kind": "port"
+        }
+      ],
+      "maker": "StarTech",
+      "orders": [
+        {
+          "no": "IH2006-KVM-RX",
+          "desc": "receiver on its own"
         }
       ]
     },
@@ -554,7 +582,8 @@
           "link": "",
           "kind": "port"
         }
-      ]
+      ],
+      "maker": "ASUS"
     }
   ]
 }

@@ -4,6 +4,10 @@ This library has its own version number (MAJOR.COMMIT.CHANGE), separate from DIN
 
 To get a newer version into a diagram, click **+** beside the library drop-down and use **Refresh** next to the library. It's highlighted when the diagram has an older version.
 
+## 1.1.1 — 2026-10-29
+
+- Every type now has its maker (Amphenol) and three order numbers to pick from, for DIN Stack's bill of materials: the MS3470 wall-mount (the default), MS3471 cable-connecting and MS3474 jam-nut receptacle with that insert, e.g. MS3470L14-19P. Shell class L is assumed; change the letter if you order another class. Needs DIN Stack 1.11.1 or later.
+
 ## 1.0.0
 
 The library as first published in DIN Stack 1.3.1, before libraries had version numbers.

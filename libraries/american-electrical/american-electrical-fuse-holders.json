@@ -1,7 +1,7 @@
 {
   "type": "dinstack-library",
-  "app": "1.9.17",
-  "version": "1.0.1",
+  "app": "1.11.6",
+  "version": "1.1.2",
   "name": "American Electrical fuse holders",
   "templates": [
     {
@@ -35,7 +35,15 @@
           "link": "",
           "kind": "wire"
         }
-      ]
+      ],
+      "maker": "American Electrical",
+      "orders": [
+        {
+          "no": "2540001",
+          "desc": ""
+        }
+      ],
+      "stripRole": "block"
     },
     {
       "id": "aei-2540002",
@@ -86,7 +94,15 @@
           "link": "N",
           "kind": "wire"
         }
-      ]
+      ],
+      "maker": "American Electrical",
+      "orders": [
+        {
+          "no": "2540002",
+          "desc": ""
+        }
+      ],
+      "stripRole": "block"
     },
     {
       "id": "aei-2540003",
@@ -137,7 +153,15 @@
           "link": "",
           "kind": "wire"
         }
-      ]
+      ],
+      "maker": "American Electrical",
+      "orders": [
+        {
+          "no": "2540003",
+          "desc": ""
+        }
+      ],
+      "stripRole": "block"
     },
     {
       "id": "aei-2540004",
@@ -206,7 +230,15 @@
           "link": "",
           "kind": "wire"
         }
-      ]
+      ],
+      "maker": "American Electrical",
+      "orders": [
+        {
+          "no": "2540004",
+          "desc": ""
+        }
+      ],
+      "stripRole": "block"
     },
     {
       "id": "aei-2540005",
@@ -293,7 +325,15 @@
           "link": "N",
           "kind": "wire"
         }
-      ]
+      ],
+      "maker": "American Electrical",
+      "orders": [
+        {
+          "no": "2540005",
+          "desc": ""
+        }
+      ],
+      "stripRole": "block"
     },
     {
       "id": "aei-2540011",
@@ -326,7 +366,15 @@
           "link": "",
           "kind": "wire"
         }
-      ]
+      ],
+      "maker": "American Electrical",
+      "orders": [
+        {
+          "no": "2540011",
+          "desc": ""
+        }
+      ],
+      "stripRole": "block"
     },
     {
       "id": "aei-2540013",
@@ -377,7 +425,15 @@
           "link": "",
           "kind": "wire"
         }
-      ]
+      ],
+      "maker": "American Electrical",
+      "orders": [
+        {
+          "no": "2540013",
+          "desc": ""
+        }
+      ],
+      "stripRole": "block"
     },
     {
       "id": "aei-2540014",
@@ -446,7 +502,15 @@
           "link": "",
           "kind": "wire"
         }
-      ]
+      ],
+      "maker": "American Electrical",
+      "orders": [
+        {
+          "no": "2540014",
+          "desc": ""
+        }
+      ],
+      "stripRole": "block"
     }
   ]
 }

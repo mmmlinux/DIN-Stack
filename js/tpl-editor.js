@@ -42,17 +42,52 @@ const TplEditor = (() => {
     renderAll();
   }
 
+  // "Automatic" says what it comes to for this type: it follows the category.
+  function stripAutoText() {
+    const role = stripRole({ ...ed.tpl, stripRole: undefined });
+    $("teStripAuto").textContent = "Automatic: " + { block: "terminal block (its category)", divider: "divider (its category)", none: "not in strips" }[role];
+  }
+
   function fillForm() {
     $("teName").value = ed.tpl.name;
     $("teLibrary").value = ed.tpl.library || "";
     $("teCategory").value = ed.tpl.category || "";
     $("teMount").value = isLoose(ed.tpl) ? "free" : "rail";
+    $("teStrip").value = STRIP_ROLES.includes(ed.tpl.stripRole) ? ed.tpl.stripRole : "";
+    stripAutoText();
     $("teW").value = ed.tpl.w;
     $("teH").value = ed.tpl.h;
     $("tePrefix").value = ed.tpl.prefix || "";
     $("teRadius").value = ed.tpl.radius || 0;
     $("teFill").value = ed.tpl.fill || "#e6e8eb";
     $("teShowName").checked = !!ed.tpl.showName;
+    $("teMaker").value = ed.tpl.maker || "";
+    renderOrdering();
+  }
+
+  // ---------- ordering: order numbers and accessories ----------
+  function renderOrdering() {
+    const t = ed.tpl;
+    const x = '<button class="icon-btn danger" data-odel title="Remove"><svg class="ic sm"><use href="#i-x"/></svg></button>';
+    $("teOrders").innerHTML = (t.orders || []).map((o, i) => `<div class="order-row" data-oi="${i}">
+        <input data-of="no" type="text" value="${esc(o.no || "")}" placeholder="Order no." title="${i ? "Order number" : "Order number (the default)"}">
+        <input data-of="desc" type="text" value="${esc(o.desc || "")}" placeholder="Description" title="What it is, e.g. 24 V DC coil">${x}</div>`).join("")
+      || '<p class="muted">None yet.</p>';
+    $("teAccs").innerHTML = (t.accessories || []).map((a, i) => `<div class="order-card" data-ai="${i}">
+        <div class="order-row"><input data-af="qty" type="number" min="1" step="1" value="${esc(a.qty || 1)}" title="How many per part">
+          <input data-af="no" type="text" value="${esc(a.no || "")}" placeholder="Order no.">${x}</div>
+        <div class="order-row"><input data-af="maker" type="text" list="makerList" value="${esc(a.maker || "")}" placeholder="Maker">
+          <input data-af="desc" type="text" value="${esc(a.desc || "")}" placeholder="Description"></div></div>`).join("")
+      || '<p class="muted">None.</p>';
+  }
+
+  // Leave out empty order numbers and accessories, and the lists themselves when empty.
+  function tidyOrdering(t) {
+    const txt = (v) => String(v || "").trim();
+    t.maker = txt(t.maker);
+    t.orders = (t.orders || []).map((o) => ({ no: txt(o.no), desc: txt(o.desc) })).filter((o) => o.no || o.desc);
+    t.accessories = (t.accessories || []).map((a) => ({ qty: a.qty > 0 ? a.qty : 1, maker: txt(a.maker), no: txt(a.no), desc: txt(a.desc) })).filter((a) => a.no || a.desc);
+    for (const k of ["maker", "orders", "accessories"]) if (!t[k] || !t[k].length) delete t[k];
   }
 
   function open(tpl, opts) {
@@ -61,6 +96,10 @@ const TplEditor = (() => {
     fillForm();
     $("categoryList").innerHTML = (opts.categories || []).map((c) => `<option value="${esc(c)}">`).join("");
     $("libraryList").innerHTML = (opts.libraries || []).map((c) => `<option value="${esc(c)}">`).join("");
+    $("makerList").innerHTML = (opts.makers || []).map((c) => `<option value="${esc(c)}">`).join("");
+    // Open on the part's settings.
+    for (const b of document.querySelectorAll('#tplModal .main-tabs [data-pane-btn]')) b.classList.toggle("on", b.id === "teTabPart");
+    for (const p of document.querySelectorAll("#tplModal .tpl-pane")) p.hidden = p.dataset.pane !== "te-part";
     $("tplModal").hidden = false;
     renderAll();
     setTimeout(() => $("teName").focus(), 0);
@@ -376,7 +415,11 @@ const TplEditor = (() => {
     });
     $("teName").addEventListener("input", () => { before(); ed.tpl.name = $("teName").value; });
     $("teLibrary").addEventListener("input", () => { before(); ed.tpl.library = $("teLibrary").value; });
-    $("teCategory").addEventListener("input", () => { before(); ed.tpl.category = $("teCategory").value; });
+    $("teCategory").addEventListener("input", () => { before(); ed.tpl.category = $("teCategory").value; stripAutoText(); });
+    $("teStrip").addEventListener("change", () => {
+      remember();
+      if ($("teStrip").value) ed.tpl.stripRole = $("teStrip").value; else delete ed.tpl.stripRole;
+    });
     $("teMount").addEventListener("change", () => {
       remember();
       if ($("teMount").value === "free") ed.tpl.mount = "free"; else delete ed.tpl.mount;
@@ -387,6 +430,37 @@ const TplEditor = (() => {
     bindNum("teRadius", "radius");
     $("teFill").addEventListener("input", () => { before(); ed.tpl.fill = $("teFill").value; renderPreview(); });
     $("teShowName").addEventListener("change", () => { remember(); ed.tpl.showName = $("teShowName").checked; });
+    $("teMaker").addEventListener("input", () => { before(); ed.tpl.maker = $("teMaker").value; });
+    $("teOrderAdd").addEventListener("click", () => {
+      remember();
+      ed.tpl.orders = [...(ed.tpl.orders || []), { no: "", desc: "" }];
+      renderOrdering();
+      const rows = $("teOrders").querySelectorAll('[data-of="no"]');
+      rows[rows.length - 1].focus();
+    });
+    $("teAccAdd").addEventListener("click", () => {
+      remember();
+      ed.tpl.accessories = [...(ed.tpl.accessories || []), { qty: 1, maker: "", no: "", desc: "" }];
+      renderOrdering();
+      const rows = $("teAccs").querySelectorAll('[data-af="no"]');
+      rows[rows.length - 1].focus();
+    });
+    for (const [box, list, attr, fattr] of [["teOrders", "orders", "oi", "of"], ["teAccs", "accessories", "ai", "af"]]) {
+      $(box).addEventListener("input", (e) => {
+        const row = e.target.closest(`[data-${attr}]`), f = e.target.dataset[fattr];
+        const o = row && ed.tpl[list]?.[+row.dataset[attr]];
+        if (!o || !f) return;
+        before();
+        o[f] = f === "qty" ? parseInt(e.target.value, 10) || 1 : e.target.value;
+      });
+      $(box).addEventListener("click", (e) => {
+        const row = e.target.closest(`[data-${attr}]`);
+        if (!row || !e.target.closest("[data-odel]")) return;
+        remember();
+        ed.tpl[list].splice(+row.dataset[attr], 1);
+        renderOrdering();
+      });
+    }
     $("rgAdd").addEventListener("click", addRow);
     $("gdAdd").addEventListener("click", addGrid);
     $("teLinkAll").addEventListener("click", () => { remember(); for (const t of ed.tpl.terminals) t.link = "1"; renderAll(); });
@@ -546,6 +620,7 @@ const TplEditor = (() => {
       if (!(t.w > 0 && t.h > 0)) { $("teWarn").textContent = "Width and height must be greater than zero."; return; }
       t.library = (t.library || "").trim() || PROJECT_LIBRARY;
       t.category = (t.category || "").trim() || "Custom";
+      tidyOrdering(t);
       const done = ed.opts.onSave;
       const copy = JSON.parse(JSON.stringify(t));
       close();

@@ -1,7 +1,7 @@
 {
   "type": "dinstack-library",
-  "app": "1.3.1",
-  "version": "1.0.0",
+  "app": "1.11.1",
+  "version": "1.1.1",
   "name": "Amphenol 26482 Series 2 connectors",
   "templates": [
     {
@@ -43,6 +43,21 @@
           "side": "auto",
           "link": "",
           "kind": "wire"
+        }
+      ],
+      "maker": "Amphenol",
+      "orders": [
+        {
+          "no": "MS3470L8-33P",
+          "desc": "wall-mount receptacle, class L"
+        },
+        {
+          "no": "MS3471L8-33P",
+          "desc": "cable-connecting receptacle, class L"
+        },
+        {
+          "no": "MS3474L8-33P",
+          "desc": "jam-nut receptacle, class L"
         }
       ]
     },
@@ -86,6 +101,21 @@
           "link": "",
           "kind": "wire"
         }
+      ],
+      "maker": "Amphenol",
+      "orders": [
+        {
+          "no": "MS3470L8-33S",
+          "desc": "wall-mount receptacle, class L"
+        },
+        {
+          "no": "MS3471L8-33S",
+          "desc": "cable-connecting receptacle, class L"
+        },
+        {
+          "no": "MS3474L8-33S",
+          "desc": "jam-nut receptacle, class L"
+        }
       ]
     },
     {
@@ -128,6 +158,21 @@
           "link": "",
           "kind": "wire"
         }
+      ],
+      "maker": "Amphenol",
+      "orders": [
+        {
+          "no": "MS3470L8-98P",
+          "desc": "wall-mount receptacle, class L"
+        },
+        {
+          "no": "MS3471L8-98P",
+          "desc": "cable-connecting receptacle, class L"
+        },
+        {
+          "no": "MS3474L8-98P",
+          "desc": "jam-nut receptacle, class L"
+        }
       ]
     },
     {
@@ -169,6 +214,21 @@
           "side": "auto",
           "link": "",
           "kind": "wire"
+        }
+      ],
+      "maker": "Amphenol",
+      "orders": [
+        {
+          "no": "MS3470L8-98S",
+          "desc": "wall-mount receptacle, class L"
+        },
+        {
+          "no": "MS3471L8-98S",
+          "desc": "cable-connecting receptacle, class L"
+        },
+        {
+          "no": "MS3474L8-98S",
+          "desc": "jam-nut receptacle, class L"
         }
       ]
     },
@@ -239,6 +299,21 @@
           "link": "",
           "kind": "wire"
         }
+      ],
+      "maker": "Amphenol",
+      "orders": [
+        {
+          "no": "MS3470L10-6P",
+          "desc": "wall-mount receptacle, class L"
+        },
+        {
+          "no": "MS3471L10-6P",
+          "desc": "cable-connecting receptacle, class L"
+        },
+        {
+          "no": "MS3474L10-6P",
+          "desc": "jam-nut receptacle, class L"
+        }
       ]
     },
     {
@@ -308,6 +383,21 @@
           "link": "",
           "kind": "wire"
         }
+      ],
+      "maker": "Amphenol",
+      "orders": [
+        {
+          "no": "MS3470L10-6S",
+          "desc": "wall-mount receptacle, class L"
+        },
+        {
+          "no": "MS3471L10-6S",
+          "desc": "cable-connecting receptacle, class L"
+        },
+        {
+          "no": "MS3474L10-6S",
+          "desc": "jam-nut receptacle, class L"
+        }
       ]
     },
     {
@@ -350,6 +440,21 @@
           "link": "",
           "kind": "wire"
         }
+      ],
+      "maker": "Amphenol",
+      "orders": [
+        {
+          "no": "MS3470L12-3P",
+          "desc": "wall-mount receptacle, class L"
+        },
+        {
+          "no": "MS3471L12-3P",
+          "desc": "cable-connecting receptacle, class L"
+        },
+        {
+          "no": "MS3474L12-3P",
+          "desc": "jam-nut receptacle, class L"
+        }
       ]
     },
     {
@@ -391,6 +496,21 @@
           "side": "auto",
           "link": "",
           "kind": "wire"
+        }
+      ],
+      "maker": "Amphenol",
+      "orders": [
+        {
+          "no": "MS3470L12-3S",
+          "desc": "wall-mount receptacle, class L"
+        },
+        {
+          "no": "MS3471L12-3S",
+          "desc": "cable-connecting receptacle, class L"
+        },
+        {
+          "no": "MS3474L12-3S",
+          "desc": "jam-nut receptacle, class L"
         }
       ]
     },
@@ -479,6 +599,21 @@
           "link": "",
           "kind": "wire"
         }
+      ],
+      "maker": "Amphenol",
+      "orders": [
+        {
+          "no": "MS3470L12-8P",
+          "desc": "wall-mount receptacle, class L"
+        },
+        {
+          "no": "MS3471L12-8P",
+          "desc": "cable-connecting receptacle, class L"
+        },
+        {
+          "no": "MS3474L12-8P",
+          "desc": "jam-nut receptacle, class L"
+        }
       ]
     },
     {
@@ -565,6 +700,21 @@
           "side": "auto",
           "link": "",
           "kind": "wire"
+        }
+      ],
+      "maker": "Amphenol",
+      "orders": [
+        {
+          "no": "MS3470L12-8S",
+          "desc": "wall-mount receptacle, class L"
+        },
+        {
+          "no": "MS3471L12-8S",
+          "desc": "cable-connecting receptacle, class L"
+        },
+        {
+          "no": "MS3474L12-8S",
+          "desc": "jam-nut receptacle, class L"
         }
       ]
     },
@@ -671,6 +821,21 @@
           "link": "",
           "kind": "wire"
         }
+      ],
+      "maker": "Amphenol",
+      "orders": [
+        {
+          "no": "MS3470L12-10P",
+          "desc": "wall-mount receptacle, class L"
+        },
+        {
+          "no": "MS3471L12-10P",
+          "desc": "cable-connecting receptacle, class L"
+        },
+        {
+          "no": "MS3474L12-10P",
+          "desc": "jam-nut receptacle, class L"
+        }
       ]
     },
     {
@@ -776,6 +941,21 @@
           "link": "",
           "kind": "wire"
         }
+      ],
+      "maker": "Amphenol",
+      "orders": [
+        {
+          "no": "MS3470L12-10S",
+          "desc": "wall-mount receptacle, class L"
+        },
+        {
+          "no": "MS3471L12-10S",
+          "desc": "cable-connecting receptacle, class L"
+        },
+        {
+          "no": "MS3474L12-10S",
+          "desc": "jam-nut receptacle, class L"
+        }
       ]
     },
     {
@@ -827,6 +1007,21 @@
           "link": "",
           "kind": "wire"
         }
+      ],
+      "maker": "Amphenol",
+      "orders": [
+        {
+          "no": "MS3470L14-4P",
+          "desc": "wall-mount receptacle, class L"
+        },
+        {
+          "no": "MS3471L14-4P",
+          "desc": "cable-connecting receptacle, class L"
+        },
+        {
+          "no": "MS3474L14-4P",
+          "desc": "jam-nut receptacle, class L"
+        }
       ]
     },
     {
@@ -877,6 +1072,21 @@
           "side": "auto",
           "link": "",
           "kind": "wire"
+        }
+      ],
+      "maker": "Amphenol",
+      "orders": [
+        {
+          "no": "MS3470L14-4S",
+          "desc": "wall-mount receptacle, class L"
+        },
+        {
+          "no": "MS3471L14-4S",
+          "desc": "cable-connecting receptacle, class L"
+        },
+        {
+          "no": "MS3474L14-4S",
+          "desc": "jam-nut receptacle, class L"
         }
       ]
     },
@@ -938,6 +1148,21 @@
           "link": "",
           "kind": "wire"
         }
+      ],
+      "maker": "Amphenol",
+      "orders": [
+        {
+          "no": "MS3470L14-5P",
+          "desc": "wall-mount receptacle, class L"
+        },
+        {
+          "no": "MS3471L14-5P",
+          "desc": "cable-connecting receptacle, class L"
+        },
+        {
+          "no": "MS3474L14-5P",
+          "desc": "jam-nut receptacle, class L"
+        }
       ]
     },
     {
@@ -997,6 +1222,21 @@
           "side": "auto",
           "link": "",
           "kind": "wire"
+        }
+      ],
+      "maker": "Amphenol",
+      "orders": [
+        {
+          "no": "MS3470L14-5S",
+          "desc": "wall-mount receptacle, class L"
+        },
+        {
+          "no": "MS3471L14-5S",
+          "desc": "cable-connecting receptacle, class L"
+        },
+        {
+          "no": "MS3474L14-5S",
+          "desc": "jam-nut receptacle, class L"
         }
       ]
     },
@@ -1094,6 +1334,21 @@
           "link": "",
           "kind": "wire"
         }
+      ],
+      "maker": "Amphenol",
+      "orders": [
+        {
+          "no": "MS3470L14-9P",
+          "desc": "wall-mount receptacle, class L"
+        },
+        {
+          "no": "MS3471L14-9P",
+          "desc": "cable-connecting receptacle, class L"
+        },
+        {
+          "no": "MS3474L14-9P",
+          "desc": "jam-nut receptacle, class L"
+        }
       ]
     },
     {
@@ -1189,6 +1444,21 @@
           "side": "auto",
           "link": "",
           "kind": "wire"
+        }
+      ],
+      "maker": "Amphenol",
+      "orders": [
+        {
+          "no": "MS3470L14-9S",
+          "desc": "wall-mount receptacle, class L"
+        },
+        {
+          "no": "MS3471L14-9S",
+          "desc": "cable-connecting receptacle, class L"
+        },
+        {
+          "no": "MS3474L14-9S",
+          "desc": "jam-nut receptacle, class L"
         }
       ]
     },
@@ -1313,6 +1583,21 @@
           "link": "",
           "kind": "wire"
         }
+      ],
+      "maker": "Amphenol",
+      "orders": [
+        {
+          "no": "MS3470L14-12P",
+          "desc": "wall-mount receptacle, class L"
+        },
+        {
+          "no": "MS3471L14-12P",
+          "desc": "cable-connecting receptacle, class L"
+        },
+        {
+          "no": "MS3474L14-12P",
+          "desc": "jam-nut receptacle, class L"
+        }
       ]
     },
     {
@@ -1435,6 +1720,21 @@
           "side": "auto",
           "link": "",
           "kind": "wire"
+        }
+      ],
+      "maker": "Amphenol",
+      "orders": [
+        {
+          "no": "MS3470L14-12S",
+          "desc": "wall-mount receptacle, class L"
+        },
+        {
+          "no": "MS3471L14-12S",
+          "desc": "cable-connecting receptacle, class L"
+        },
+        {
+          "no": "MS3474L14-12S",
+          "desc": "jam-nut receptacle, class L"
         }
       ]
     },
@@ -1586,6 +1886,21 @@
           "link": "",
           "kind": "wire"
         }
+      ],
+      "maker": "Amphenol",
+      "orders": [
+        {
+          "no": "MS3470L14-15P",
+          "desc": "wall-mount receptacle, class L"
+        },
+        {
+          "no": "MS3471L14-15P",
+          "desc": "cable-connecting receptacle, class L"
+        },
+        {
+          "no": "MS3474L14-15P",
+          "desc": "jam-nut receptacle, class L"
+        }
       ]
     },
     {
@@ -1735,6 +2050,21 @@
           "side": "auto",
           "link": "",
           "kind": "wire"
+        }
+      ],
+      "maker": "Amphenol",
+      "orders": [
+        {
+          "no": "MS3470L14-15S",
+          "desc": "wall-mount receptacle, class L"
+        },
+        {
+          "no": "MS3471L14-15S",
+          "desc": "cable-connecting receptacle, class L"
+        },
+        {
+          "no": "MS3474L14-15S",
+          "desc": "jam-nut receptacle, class L"
         }
       ]
     },
@@ -1913,6 +2243,21 @@
           "link": "",
           "kind": "wire"
         }
+      ],
+      "maker": "Amphenol",
+      "orders": [
+        {
+          "no": "MS3470L14-18P",
+          "desc": "wall-mount receptacle, class L"
+        },
+        {
+          "no": "MS3471L14-18P",
+          "desc": "cable-connecting receptacle, class L"
+        },
+        {
+          "no": "MS3474L14-18P",
+          "desc": "jam-nut receptacle, class L"
+        }
       ]
     },
     {
@@ -2089,6 +2434,21 @@
           "side": "auto",
           "link": "",
           "kind": "wire"
+        }
+      ],
+      "maker": "Amphenol",
+      "orders": [
+        {
+          "no": "MS3470L14-18S",
+          "desc": "wall-mount receptacle, class L"
+        },
+        {
+          "no": "MS3471L14-18S",
+          "desc": "cable-connecting receptacle, class L"
+        },
+        {
+          "no": "MS3474L14-18S",
+          "desc": "jam-nut receptacle, class L"
         }
       ]
     },
@@ -2276,6 +2636,21 @@
           "link": "",
           "kind": "wire"
         }
+      ],
+      "maker": "Amphenol",
+      "orders": [
+        {
+          "no": "MS3470L14-19P",
+          "desc": "wall-mount receptacle, class L"
+        },
+        {
+          "no": "MS3471L14-19P",
+          "desc": "cable-connecting receptacle, class L"
+        },
+        {
+          "no": "MS3474L14-19P",
+          "desc": "jam-nut receptacle, class L"
+        }
       ]
     },
     {
@@ -2462,6 +2837,21 @@
           "link": "",
           "kind": "wire"
         }
+      ],
+      "maker": "Amphenol",
+      "orders": [
+        {
+          "no": "MS3470L14-19S",
+          "desc": "wall-mount receptacle, class L"
+        },
+        {
+          "no": "MS3471L14-19S",
+          "desc": "cable-connecting receptacle, class L"
+        },
+        {
+          "no": "MS3474L14-19S",
+          "desc": "jam-nut receptacle, class L"
+        }
       ]
     },
     {
@@ -2549,6 +2939,21 @@
           "link": "",
           "kind": "wire"
         }
+      ],
+      "maker": "Amphenol",
+      "orders": [
+        {
+          "no": "MS3470L16-8P",
+          "desc": "wall-mount receptacle, class L"
+        },
+        {
+          "no": "MS3471L16-8P",
+          "desc": "cable-connecting receptacle, class L"
+        },
+        {
+          "no": "MS3474L16-8P",
+          "desc": "jam-nut receptacle, class L"
+        }
       ]
     },
     {
@@ -2635,6 +3040,21 @@
           "side": "auto",
           "link": "",
           "kind": "wire"
+        }
+      ],
+      "maker": "Amphenol",
+      "orders": [
+        {
+          "no": "MS3470L16-8S",
+          "desc": "wall-mount receptacle, class L"
+        },
+        {
+          "no": "MS3471L16-8S",
+          "desc": "cable-connecting receptacle, class L"
+        },
+        {
+          "no": "MS3474L16-8S",
+          "desc": "jam-nut receptacle, class L"
         }
       ]
     },
@@ -2858,6 +3278,21 @@
           "link": "",
           "kind": "wire"
         }
+      ],
+      "maker": "Amphenol",
+      "orders": [
+        {
+          "no": "MS3470L16-23P",
+          "desc": "wall-mount receptacle, class L"
+        },
+        {
+          "no": "MS3471L16-23P",
+          "desc": "cable-connecting receptacle, class L"
+        },
+        {
+          "no": "MS3474L16-23P",
+          "desc": "jam-nut receptacle, class L"
+        }
       ]
     },
     {
@@ -3079,6 +3514,21 @@
           "side": "auto",
           "link": "",
           "kind": "wire"
+        }
+      ],
+      "maker": "Amphenol",
+      "orders": [
+        {
+          "no": "MS3470L16-23S",
+          "desc": "wall-mount receptacle, class L"
+        },
+        {
+          "no": "MS3471L16-23S",
+          "desc": "cable-connecting receptacle, class L"
+        },
+        {
+          "no": "MS3474L16-23S",
+          "desc": "jam-nut receptacle, class L"
         }
       ]
     },
@@ -3329,6 +3779,21 @@
           "link": "",
           "kind": "wire"
         }
+      ],
+      "maker": "Amphenol",
+      "orders": [
+        {
+          "no": "MS3470L16-26P",
+          "desc": "wall-mount receptacle, class L"
+        },
+        {
+          "no": "MS3471L16-26P",
+          "desc": "cable-connecting receptacle, class L"
+        },
+        {
+          "no": "MS3474L16-26P",
+          "desc": "jam-nut receptacle, class L"
+        }
       ]
     },
     {
@@ -3578,6 +4043,21 @@
           "link": "",
           "kind": "wire"
         }
+      ],
+      "maker": "Amphenol",
+      "orders": [
+        {
+          "no": "MS3470L16-26S",
+          "desc": "wall-mount receptacle, class L"
+        },
+        {
+          "no": "MS3471L16-26S",
+          "desc": "cable-connecting receptacle, class L"
+        },
+        {
+          "no": "MS3474L16-26S",
+          "desc": "jam-nut receptacle, class L"
+        }
       ]
     },
     {
@@ -3665,6 +4145,21 @@
           "link": "",
           "kind": "wire"
         }
+      ],
+      "maker": "Amphenol",
+      "orders": [
+        {
+          "no": "MS3470L18-8P",
+          "desc": "wall-mount receptacle, class L"
+        },
+        {
+          "no": "MS3471L18-8P",
+          "desc": "cable-connecting receptacle, class L"
+        },
+        {
+          "no": "MS3474L18-8P",
+          "desc": "jam-nut receptacle, class L"
+        }
       ]
     },
     {
@@ -3751,6 +4246,21 @@
           "side": "auto",
           "link": "",
           "kind": "wire"
+        }
+      ],
+      "maker": "Amphenol",
+      "orders": [
+        {
+          "no": "MS3470L18-8S",
+          "desc": "wall-mount receptacle, class L"
+        },
+        {
+          "no": "MS3471L18-8S",
+          "desc": "cable-connecting receptacle, class L"
+        },
+        {
+          "no": "MS3474L18-8S",
+          "desc": "jam-nut receptacle, class L"
         }
       ]
     },
@@ -3866,6 +4376,21 @@
           "link": "",
           "kind": "wire"
         }
+      ],
+      "maker": "Amphenol",
+      "orders": [
+        {
+          "no": "MS3470L18-11P",
+          "desc": "wall-mount receptacle, class L"
+        },
+        {
+          "no": "MS3471L18-11P",
+          "desc": "cable-connecting receptacle, class L"
+        },
+        {
+          "no": "MS3474L18-11P",
+          "desc": "jam-nut receptacle, class L"
+        }
       ]
     },
     {
@@ -3979,6 +4504,21 @@
           "side": "auto",
           "link": "",
           "kind": "wire"
+        }
+      ],
+      "maker": "Amphenol",
+      "orders": [
+        {
+          "no": "MS3470L18-11S",
+          "desc": "wall-mount receptacle, class L"
+        },
+        {
+          "no": "MS3471L18-11S",
+          "desc": "cable-connecting receptacle, class L"
+        },
+        {
+          "no": "MS3474L18-11S",
+          "desc": "jam-nut receptacle, class L"
         }
       ]
     },
@@ -4265,6 +4805,21 @@
           "link": "",
           "kind": "wire"
         }
+      ],
+      "maker": "Amphenol",
+      "orders": [
+        {
+          "no": "MS3470L18-30P",
+          "desc": "wall-mount receptacle, class L"
+        },
+        {
+          "no": "MS3471L18-30P",
+          "desc": "cable-connecting receptacle, class L"
+        },
+        {
+          "no": "MS3474L18-30P",
+          "desc": "jam-nut receptacle, class L"
+        }
       ]
     },
     {
@@ -4549,6 +5104,21 @@
           "side": "auto",
           "link": "",
           "kind": "wire"
+        }
+      ],
+      "maker": "Amphenol",
+      "orders": [
+        {
+          "no": "MS3470L18-30S",
+          "desc": "wall-mount receptacle, class L"
+        },
+        {
+          "no": "MS3471L18-30S",
+          "desc": "cable-connecting receptacle, class L"
+        },
+        {
+          "no": "MS3474L18-30S",
+          "desc": "jam-nut receptacle, class L"
         }
       ]
     },
@@ -4853,6 +5423,21 @@
           "link": "",
           "kind": "wire"
         }
+      ],
+      "maker": "Amphenol",
+      "orders": [
+        {
+          "no": "MS3470L18-32P",
+          "desc": "wall-mount receptacle, class L"
+        },
+        {
+          "no": "MS3471L18-32P",
+          "desc": "cable-connecting receptacle, class L"
+        },
+        {
+          "no": "MS3474L18-32P",
+          "desc": "jam-nut receptacle, class L"
+        }
       ]
     },
     {
@@ -5156,6 +5741,21 @@
           "link": "",
           "kind": "wire"
         }
+      ],
+      "maker": "Amphenol",
+      "orders": [
+        {
+          "no": "MS3470L18-32S",
+          "desc": "wall-mount receptacle, class L"
+        },
+        {
+          "no": "MS3471L18-32S",
+          "desc": "cable-connecting receptacle, class L"
+        },
+        {
+          "no": "MS3474L18-32S",
+          "desc": "jam-nut receptacle, class L"
+        }
       ]
     },
     {
@@ -5315,6 +5915,21 @@
           "link": "",
           "kind": "wire"
         }
+      ],
+      "maker": "Amphenol",
+      "orders": [
+        {
+          "no": "MS3470L20-16P",
+          "desc": "wall-mount receptacle, class L"
+        },
+        {
+          "no": "MS3471L20-16P",
+          "desc": "cable-connecting receptacle, class L"
+        },
+        {
+          "no": "MS3474L20-16P",
+          "desc": "jam-nut receptacle, class L"
+        }
       ]
     },
     {
@@ -5473,6 +6088,21 @@
           "side": "auto",
           "link": "",
           "kind": "wire"
+        }
+      ],
+      "maker": "Amphenol",
+      "orders": [
+        {
+          "no": "MS3470L20-16S",
+          "desc": "wall-mount receptacle, class L"
+        },
+        {
+          "no": "MS3471L20-16S",
+          "desc": "cable-connecting receptacle, class L"
+        },
+        {
+          "no": "MS3474L20-16S",
+          "desc": "jam-nut receptacle, class L"
         }
       ]
     },
@@ -5705,6 +6335,21 @@
           "link": "",
           "kind": "wire"
         }
+      ],
+      "maker": "Amphenol",
+      "orders": [
+        {
+          "no": "MS3470L20-24P",
+          "desc": "wall-mount receptacle, class L"
+        },
+        {
+          "no": "MS3471L20-24P",
+          "desc": "cable-connecting receptacle, class L"
+        },
+        {
+          "no": "MS3474L20-24P",
+          "desc": "jam-nut receptacle, class L"
+        }
       ]
     },
     {
@@ -5935,6 +6580,21 @@
           "side": "auto",
           "link": "",
           "kind": "wire"
+        }
+      ],
+      "maker": "Amphenol",
+      "orders": [
+        {
+          "no": "MS3470L20-24S",
+          "desc": "wall-mount receptacle, class L"
+        },
+        {
+          "no": "MS3471L20-24S",
+          "desc": "cable-connecting receptacle, class L"
+        },
+        {
+          "no": "MS3474L20-24S",
+          "desc": "jam-nut receptacle, class L"
         }
       ]
     },
@@ -6302,6 +6962,21 @@
           "link": "",
           "kind": "wire"
         }
+      ],
+      "maker": "Amphenol",
+      "orders": [
+        {
+          "no": "MS3470L20-39P",
+          "desc": "wall-mount receptacle, class L"
+        },
+        {
+          "no": "MS3471L20-39P",
+          "desc": "cable-connecting receptacle, class L"
+        },
+        {
+          "no": "MS3474L20-39P",
+          "desc": "jam-nut receptacle, class L"
+        }
       ]
     },
     {
@@ -6667,6 +7342,21 @@
           "side": "auto",
           "link": "",
           "kind": "wire"
+        }
+      ],
+      "maker": "Amphenol",
+      "orders": [
+        {
+          "no": "MS3470L20-39S",
+          "desc": "wall-mount receptacle, class L"
+        },
+        {
+          "no": "MS3471L20-39S",
+          "desc": "cable-connecting receptacle, class L"
+        },
+        {
+          "no": "MS3474L20-39S",
+          "desc": "jam-nut receptacle, class L"
         }
       ]
     },
@@ -7052,6 +7742,21 @@
           "link": "",
           "kind": "wire"
         }
+      ],
+      "maker": "Amphenol",
+      "orders": [
+        {
+          "no": "MS3470L20-41P",
+          "desc": "wall-mount receptacle, class L"
+        },
+        {
+          "no": "MS3471L20-41P",
+          "desc": "cable-connecting receptacle, class L"
+        },
+        {
+          "no": "MS3474L20-41P",
+          "desc": "jam-nut receptacle, class L"
+        }
       ]
     },
     {
@@ -7436,6 +8141,21 @@
           "link": "",
           "kind": "wire"
         }
+      ],
+      "maker": "Amphenol",
+      "orders": [
+        {
+          "no": "MS3470L20-41S",
+          "desc": "wall-mount receptacle, class L"
+        },
+        {
+          "no": "MS3471L20-41S",
+          "desc": "cable-connecting receptacle, class L"
+        },
+        {
+          "no": "MS3474L20-41S",
+          "desc": "jam-nut receptacle, class L"
+        }
       ]
     },
     {
@@ -7559,6 +8279,21 @@
           "link": "",
           "kind": "wire"
         }
+      ],
+      "maker": "Amphenol",
+      "orders": [
+        {
+          "no": "MS3470L22-12P",
+          "desc": "wall-mount receptacle, class L"
+        },
+        {
+          "no": "MS3471L22-12P",
+          "desc": "cable-connecting receptacle, class L"
+        },
+        {
+          "no": "MS3474L22-12P",
+          "desc": "jam-nut receptacle, class L"
+        }
       ]
     },
     {
@@ -7681,6 +8416,21 @@
           "side": "auto",
           "link": "",
           "kind": "wire"
+        }
+      ],
+      "maker": "Amphenol",
+      "orders": [
+        {
+          "no": "MS3470L22-12S",
+          "desc": "wall-mount receptacle, class L"
+        },
+        {
+          "no": "MS3471L22-12S",
+          "desc": "cable-connecting receptacle, class L"
+        },
+        {
+          "no": "MS3474L22-12S",
+          "desc": "jam-nut receptacle, class L"
         }
       ]
     },
@@ -7868,6 +8618,21 @@
           "link": "",
           "kind": "wire"
         }
+      ],
+      "maker": "Amphenol",
+      "orders": [
+        {
+          "no": "MS3470L22-19P",
+          "desc": "wall-mount receptacle, class L"
+        },
+        {
+          "no": "MS3471L22-19P",
+          "desc": "cable-connecting receptacle, class L"
+        },
+        {
+          "no": "MS3474L22-19P",
+          "desc": "jam-nut receptacle, class L"
+        }
       ]
     },
     {
@@ -8053,6 +8818,21 @@
           "side": "auto",
           "link": "",
           "kind": "wire"
+        }
+      ],
+      "maker": "Amphenol",
+      "orders": [
+        {
+          "no": "MS3470L22-19S",
+          "desc": "wall-mount receptacle, class L"
+        },
+        {
+          "no": "MS3471L22-19S",
+          "desc": "cable-connecting receptacle, class L"
+        },
+        {
+          "no": "MS3474L22-19S",
+          "desc": "jam-nut receptacle, class L"
         }
       ]
     },
@@ -8258,6 +9038,21 @@
           "link": "",
           "kind": "wire"
         }
+      ],
+      "maker": "Amphenol",
+      "orders": [
+        {
+          "no": "MS3470L22-21P",
+          "desc": "wall-mount receptacle, class L"
+        },
+        {
+          "no": "MS3471L22-21P",
+          "desc": "cable-connecting receptacle, class L"
+        },
+        {
+          "no": "MS3474L22-21P",
+          "desc": "jam-nut receptacle, class L"
+        }
       ]
     },
     {
@@ -8461,6 +9256,21 @@
           "side": "auto",
           "link": "",
           "kind": "wire"
+        }
+      ],
+      "maker": "Amphenol",
+      "orders": [
+        {
+          "no": "MS3470L22-21S",
+          "desc": "wall-mount receptacle, class L"
+        },
+        {
+          "no": "MS3471L22-21S",
+          "desc": "cable-connecting receptacle, class L"
+        },
+        {
+          "no": "MS3474L22-21S",
+          "desc": "jam-nut receptacle, class L"
         }
       ]
     },
@@ -8765,6 +9575,21 @@
           "link": "",
           "kind": "wire"
         }
+      ],
+      "maker": "Amphenol",
+      "orders": [
+        {
+          "no": "MS3470L22-32P",
+          "desc": "wall-mount receptacle, class L"
+        },
+        {
+          "no": "MS3471L22-32P",
+          "desc": "cable-connecting receptacle, class L"
+        },
+        {
+          "no": "MS3474L22-32P",
+          "desc": "jam-nut receptacle, class L"
+        }
       ]
     },
     {
@@ -9067,6 +9892,21 @@
           "side": "auto",
           "link": "",
           "kind": "wire"
+        }
+      ],
+      "maker": "Amphenol",
+      "orders": [
+        {
+          "no": "MS3470L22-32S",
+          "desc": "wall-mount receptacle, class L"
+        },
+        {
+          "no": "MS3471L22-32S",
+          "desc": "cable-connecting receptacle, class L"
+        },
+        {
+          "no": "MS3474L22-32S",
+          "desc": "jam-nut receptacle, class L"
         }
       ]
     },
@@ -9452,6 +10292,21 @@
           "link": "",
           "kind": "wire"
         }
+      ],
+      "maker": "Amphenol",
+      "orders": [
+        {
+          "no": "MS3470L22-41P",
+          "desc": "wall-mount receptacle, class L"
+        },
+        {
+          "no": "MS3471L22-41P",
+          "desc": "cable-connecting receptacle, class L"
+        },
+        {
+          "no": "MS3474L22-41P",
+          "desc": "jam-nut receptacle, class L"
+        }
       ]
     },
     {
@@ -9835,6 +10690,21 @@
           "side": "auto",
           "link": "",
           "kind": "wire"
+        }
+      ],
+      "maker": "Amphenol",
+      "orders": [
+        {
+          "no": "MS3470L22-41S",
+          "desc": "wall-mount receptacle, class L"
+        },
+        {
+          "no": "MS3471L22-41S",
+          "desc": "cable-connecting receptacle, class L"
+        },
+        {
+          "no": "MS3474L22-41S",
+          "desc": "jam-nut receptacle, class L"
         }
       ]
     },
@@ -10346,6 +11216,21 @@
           "link": "",
           "kind": "wire"
         }
+      ],
+      "maker": "Amphenol",
+      "orders": [
+        {
+          "no": "MS3470L22-55P",
+          "desc": "wall-mount receptacle, class L"
+        },
+        {
+          "no": "MS3471L22-55P",
+          "desc": "cable-connecting receptacle, class L"
+        },
+        {
+          "no": "MS3474L22-55P",
+          "desc": "jam-nut receptacle, class L"
+        }
       ]
     },
     {
@@ -10856,6 +11741,21 @@
           "link": "",
           "kind": "wire"
         }
+      ],
+      "maker": "Amphenol",
+      "orders": [
+        {
+          "no": "MS3470L22-55S",
+          "desc": "wall-mount receptacle, class L"
+        },
+        {
+          "no": "MS3471L22-55S",
+          "desc": "cable-connecting receptacle, class L"
+        },
+        {
+          "no": "MS3474L22-55S",
+          "desc": "jam-nut receptacle, class L"
+        }
       ]
     },
     {
@@ -11158,6 +12058,21 @@
           "side": "auto",
           "link": "",
           "kind": "wire"
+        }
+      ],
+      "maker": "Amphenol",
+      "orders": [
+        {
+          "no": "MS3470L22-95P",
+          "desc": "wall-mount receptacle, class L"
+        },
+        {
+          "no": "MS3471L22-95P",
+          "desc": "cable-connecting receptacle, class L"
+        },
+        {
+          "no": "MS3474L22-95P",
+          "desc": "jam-nut receptacle, class L"
         }
       ]
     },
@@ -11462,6 +12377,21 @@
           "link": "",
           "kind": "wire"
         }
+      ],
+      "maker": "Amphenol",
+      "orders": [
+        {
+          "no": "MS3470L22-95S",
+          "desc": "wall-mount receptacle, class L"
+        },
+        {
+          "no": "MS3471L22-95S",
+          "desc": "cable-connecting receptacle, class L"
+        },
+        {
+          "no": "MS3474L22-95S",
+          "desc": "jam-nut receptacle, class L"
+        }
       ]
     },
     {
@@ -11648,6 +12578,21 @@
           "link": "",
           "kind": "wire"
         }
+      ],
+      "maker": "Amphenol",
+      "orders": [
+        {
+          "no": "MS3470L24-19P",
+          "desc": "wall-mount receptacle, class L"
+        },
+        {
+          "no": "MS3471L24-19P",
+          "desc": "cable-connecting receptacle, class L"
+        },
+        {
+          "no": "MS3474L24-19P",
+          "desc": "jam-nut receptacle, class L"
+        }
       ]
     },
     {
@@ -11833,6 +12778,21 @@
           "side": "auto",
           "link": "",
           "kind": "wire"
+        }
+      ],
+      "maker": "Amphenol",
+      "orders": [
+        {
+          "no": "MS3470L24-19S",
+          "desc": "wall-mount receptacle, class L"
+        },
+        {
+          "no": "MS3471L24-19S",
+          "desc": "cable-connecting receptacle, class L"
+        },
+        {
+          "no": "MS3474L24-19S",
+          "desc": "jam-nut receptacle, class L"
         }
       ]
     },
@@ -12128,6 +13088,21 @@
           "link": "",
           "kind": "wire"
         }
+      ],
+      "maker": "Amphenol",
+      "orders": [
+        {
+          "no": "MS3470L24-31P",
+          "desc": "wall-mount receptacle, class L"
+        },
+        {
+          "no": "MS3471L24-31P",
+          "desc": "cable-connecting receptacle, class L"
+        },
+        {
+          "no": "MS3474L24-31P",
+          "desc": "jam-nut receptacle, class L"
+        }
       ]
     },
     {
@@ -12421,6 +13396,21 @@
           "side": "auto",
           "link": "",
           "kind": "wire"
+        }
+      ],
+      "maker": "Amphenol",
+      "orders": [
+        {
+          "no": "MS3470L24-31S",
+          "desc": "wall-mount receptacle, class L"
+        },
+        {
+          "no": "MS3471L24-31S",
+          "desc": "cable-connecting receptacle, class L"
+        },
+        {
+          "no": "MS3474L24-31S",
+          "desc": "jam-nut receptacle, class L"
         }
       ]
     },
@@ -12986,6 +13976,21 @@
           "link": "",
           "kind": "wire"
         }
+      ],
+      "maker": "Amphenol",
+      "orders": [
+        {
+          "no": "MS3470L24-61P",
+          "desc": "wall-mount receptacle, class L"
+        },
+        {
+          "no": "MS3471L24-61P",
+          "desc": "cable-connecting receptacle, class L"
+        },
+        {
+          "no": "MS3474L24-61P",
+          "desc": "jam-nut receptacle, class L"
+        }
       ]
     },
     {
@@ -13549,6 +14554,21 @@
           "side": "auto",
           "link": "",
           "kind": "wire"
+        }
+      ],
+      "maker": "Amphenol",
+      "orders": [
+        {
+          "no": "MS3470L24-61S",
+          "desc": "wall-mount receptacle, class L"
+        },
+        {
+          "no": "MS3471L24-61S",
+          "desc": "cable-connecting receptacle, class L"
+        },
+        {
+          "no": "MS3474L24-61S",
+          "desc": "jam-nut receptacle, class L"
         }
       ]
     }

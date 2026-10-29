@@ -383,6 +383,11 @@ const DEFAULT_SETTINGS = {
   direction: "ltr",   // ltr | rtl: which way strips grow when adding, repeating and packing
   termSep: "-",       // joins part tag and terminal name in references, e.g. TB101-1
   wireStd: "us",      // us | metric: wire sizes (mm² or AWG) and line / neutral / earth colours
+  refStyle: "simple", // simple (K1, TB101-1) | iec: IEC 81346 reference designations (=PUMP+CAB1-K1:13)
+  slack: 100,         // extra wire at each end, in mm, added to estimated lengths
+  wireEnd: "ferrule", // how wire ends are finished unless their profile or the end says otherwise (WIRE_ENDS)
+  strip: 10,          // strip length at each wire end, in mm, likewise
+  ductFill: 60,       // fill wire ducts up to this percentage of their cross-section
 };
 
 // Paper sizes for printing, portrait, in mm. Each belongs to the American or metric standard, and other is
@@ -412,7 +417,7 @@ function printDefaults(std) {
   const us = std === "us";
   return {
     paper: us ? "letter" : "a4", orient: "auto", margin: us ? 12.7 : 10, scale: "fit", percent: 100, pages: "all",
-    head: true, wires: true, cables: true, buses: true, parts: true,
+    head: true, frame: false, wires: true, cables: true, buses: true, parts: true, strips: true, bom: true,
   };
 }
 

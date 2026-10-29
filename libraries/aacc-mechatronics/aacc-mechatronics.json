@@ -1,7 +1,7 @@
 {
   "type": "dinstack-library",
-  "app": "1.5.2",
-  "version": "1.0.1",
+  "app": "1.11.6",
+  "version": "1.1.2",
   "name": "AACC Mechatronics",
   "templates": [
     {
@@ -53,7 +53,15 @@
           "link": "1",
           "kind": "bus"
         }
-      ]
+      ],
+      "maker": "TE Connectivity (Entrelec)",
+      "orders": [
+        {
+          "no": "1SNK705010R0000",
+          "desc": ""
+        }
+      ],
+      "stripRole": "block"
     },
     {
       "id": "aacc-te-zk2-5-4p",
@@ -122,7 +130,15 @@
           "link": "1",
           "kind": "bus"
         }
-      ]
+      ],
+      "maker": "TE Connectivity (Entrelec)",
+      "orders": [
+        {
+          "no": "1SNK705012R0000",
+          "desc": ""
+        }
+      ],
+      "stripRole": "block"
     },
     {
       "id": "aacc-te-ek2-5",
@@ -136,7 +152,15 @@
       "fill": "#5f6368",
       "radius": 0.5,
       "showName": false,
-      "terminals": []
+      "terminals": [],
+      "maker": "TE Connectivity (Entrelec)",
+      "orders": [
+        {
+          "no": "1SNK705910R0000",
+          "desc": ""
+        }
+      ],
+      "stripRole": "divider"
     },
     {
       "id": "aacc-te-ek2-5-4p",
@@ -150,7 +174,15 @@
       "fill": "#5f6368",
       "radius": 0.5,
       "showName": false,
-      "terminals": []
+      "terminals": [],
+      "maker": "TE Connectivity (Entrelec)",
+      "orders": [
+        {
+          "no": "1SNK705912R0000",
+          "desc": ""
+        }
+      ],
+      "stripRole": "divider"
     },
     {
       "id": "aacc-tb-2503",
@@ -513,6 +545,13 @@
           "link": "",
           "kind": "port"
         }
+      ],
+      "maker": "Allen-Bradley",
+      "orders": [
+        {
+          "no": "1763-L16AWA",
+          "desc": ""
+        }
       ]
     },
     {
@@ -825,6 +864,13 @@
           "link": "",
           "kind": "port"
         }
+      ],
+      "maker": "Allen-Bradley",
+      "orders": [
+        {
+          "no": "1763-L16BWA",
+          "desc": ""
+        }
       ]
     },
     {
@@ -1100,6 +1146,13 @@
           "side": "left",
           "link": "",
           "kind": "port"
+        }
+      ],
+      "maker": "Allen-Bradley",
+      "orders": [
+        {
+          "no": "1763-L16BBB",
+          "desc": ""
         }
       ]
     },
@@ -1395,6 +1448,13 @@
           "link": "",
           "kind": "port"
         }
+      ],
+      "maker": "Allen-Bradley",
+      "orders": [
+        {
+          "no": "1763-L16DWD",
+          "desc": ""
+        }
       ]
     },
     {
@@ -1472,6 +1532,13 @@
           "side": "bottom",
           "link": "",
           "kind": "port"
+        }
+      ],
+      "maker": "Siemens",
+      "orders": [
+        {
+          "no": "6GK7277-1AA10-0AA0",
+          "desc": ""
         }
       ]
     },
@@ -1551,6 +1618,13 @@
           "link": "M",
           "kind": "wire"
         }
+      ],
+      "maker": "Siemens",
+      "orders": [
+        {
+          "no": "6EP1332-1SH71",
+          "desc": ""
+        }
       ]
     },
     {
@@ -1610,6 +1684,13 @@
           "side": "bottom",
           "link": "",
           "kind": "wire"
+        }
+      ],
+      "maker": "AutomationDirect",
+      "orders": [
+        {
+          "no": "PSP05-020S",
+          "desc": ""
         }
       ]
     }

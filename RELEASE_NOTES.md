@@ -2,6 +2,139 @@
 
 Changes to the ready-made libraries are listed separately: each library's folder in [`libraries/`](libraries/README.md) has its own release notes.
 
+## 1.11.11 — 2026-10-29
+
+### New features
+
+- **What's in a duct.** Ducts are labelled D1, D2… on their covers. Select one to see the wires and cables running through it, with *Select them* and *Show only these wires*.
+- **Duct fill.** Each duct shows how full it is: its wires' and cables' cross-sections against its width × depth. Over the limit in Settings (60 %), it's outlined in red with its fill on the cover. Cable profiles have a new *Ø* column for their outside diameter; left empty, it's worked out from the cores.
+- **Pick the ducts a wire goes through.** Ctrl+click wires or cables with some ducts, then *Route through …* (panel or right-click). They visit those ducts, nearest first, and their lengths follow. Their panels show the route, and *Shortest way* undoes it.
+
+### Improvements
+
+- Only ends within 50 mm of each other (such as jumpers between neighbouring terminals) skip the ducts; other wires go through them, as they would in a panel.
+
+## 1.11.10 — 2026-10-29
+
+### New features
+
+- **Wire ducts.** Right-click → *Wire duct here*, across or upright. Set the length, width and depth in the panel; R turns a duct. Ducts that touch are joined, and the bill of materials lists them as lengths to cut.
+- **Back plate.** Right-click → *Back plate round the drawing* draws the plate (or enclosure) under everything. It's picked up by its edge, so clicks inside it still reach the drawing, and it goes in the bill of materials.
+- **Wire lengths.** Every wire's length is estimated along the ducts by the shortest way, plus spare at each end (100 mm, in Settings), or across and down where there's no duct. Type a length into a wire's panel to use your own. Cables are estimated between their ends too, or take a length in metres. The wire and cable lists, their CSV files and the printout show lengths, with ≈ for estimates.
+- **Wires and cables by the metre.** The bill of materials adds up each wire and cable profile's length and rounds it up to whole metres. Cable cores are no longer counted as separate wires.
+- **Wire ends.** Each end is finished with a ferrule, twin ferrule, ring or fork lug, or nothing, with a strip length: set for the drawing in Settings, for a wire profile (new *Ends* and *Strip* columns), or for each end in the wire's panel. A ferrule where two wires share a terminal becomes a twin ferrule.
+- **Wire processing list.** *File → Export… → Wire processing* lists every wire and core with its length, profile, colour, size, and each end's finish and strip length.
+
+### Improvements
+
+- The selection filter can pick only wire ducts or only back plates. A selection box takes in a duct or back plate only when it covers all of it, as with rails.
+- Settings has a new *Lengths and wire ends* group, and the help a new *Lengths and wire ends* page.
+
+## 1.11.9 — 2026-10-29
+
+### New features
+
+- **Labels.** *File → Export…* makes a CSV file of markers and labels for label printer software: terminal markers (one per block, or per level), wire markers (each end of each loose wire, with where the other end goes if you like), cable labels (each end, with the cable's type), core markers, device labels and connector labels. Each label has its text, a second line and where it goes. Pick the kinds, order them by name or by position, get one file or one per kind, and see a preview first.
+- **Cable list as CSV**, from *File → Export…* or *CSV* above the cable list.
+
+### Improvements
+
+- *File → Export…* (Ctrl+E) gathers everything that downloads: the SVG and PNG images, the wire list, cable list, bill of materials and terminal strips, and the labels. It replaces the five export entries in the File menu.
+
+## 1.11.8 — 2026-10-29
+
+### Improvements
+
+- **Shift+click selects a run along a rail:** every part on the same DIN rail from the last part clicked to this one. Ctrl+Shift+click adds the run to the selection.
+- **Ctrl+click adds single things to the selection** (or takes them out), as Shift+click used to. Dragging a selection with Ctrl held still pushes the parts beside it along.
+- **Shift+drag always draws a selection box**, even starting on a rail or part, so it no longer picks up and moves the rail. A box only selects a DIN rail when it covers the whole rail.
+
+## 1.11.7 — 2026-10-29
+
+### New features
+
+- **Library updates when opening a diagram.** When you open a diagram, load the example or carry on with yours, DIN Stack checks whether any of its included libraries have a newer version out. If so, it lists them with their old and new versions and offers to update them all. *Not now* stops it asking about those versions until DIN Stack is next opened, and the check can be turned off from the same window or in Settings.
+
+### Improvements
+
+- *Refresh all* in the library manager is now one undo step, rather than one per library.
+
+## 1.11.6 — 2026-10-29
+
+### New features
+
+- **Terminal strip report.** The new *Terminals* tab lists each terminal strip, with a row for each level of each block: the wires on its top and bottom, where they go and their cable and core, the bus bars through it and its circuit. End covers, plates and clamps show where they sit, and unused levels say *spare*. Pick one strip or see them all, click a strip's heading to select its blocks, and print them or download them as CSV (also *File → Terminal strips (CSV)*).
+- **Strip names.** Blocks side by side on a rail make a strip, called by their tags until named. Give a block a strip name (e.g. X1) in its panel, and the blocks beside it join that strip.
+- **Make one strip.** Select terminal blocks anywhere, even apart from each other or on other pages, and click *Make one strip* (or right-click → *Make one terminal strip*) to list them as one strip.
+- **Terminal strip setting for object types.** The type designer says whether a type is a terminal block, a divider (end cover, plate or clamp) or neither; *Automatic* goes by its category.
+
+### Improvements
+
+- Wire profiles and cable profiles share one *Profiles* tab at the bottom, each under its own heading with its buttons, leaving room for the new tab.
+- In a narrower window, the lists' filter box is just its icon until clicked, so all the tabs fit.
+- The Phoenix Contact UT, AACC mechatronics and American Electrical fuse holder libraries are updated to 1.1.2.
+
+### Bug fixes
+
+- The bill of materials tab is remembered when DIN Stack opens again, like the other tabs.
+
+## 1.11.5 — 2026-10-29
+
+### New features
+
+- **Import libraries and profiles.** *File → Import libraries and profiles…* opens another diagram (or a library file) and lets you tick which of its libraries, wire profiles and cable profiles to bring in. Profiles from a diagram in the other wire standard are converted.
+
+### Improvements
+
+- *Import a library file…* in the library now asks which of the file's libraries and profiles to bring in, rather than taking everything.
+
+## 1.11.4 — 2026-10-29
+
+### Improvements
+
+- The New diagram dialog now says its choices can always be changed later.
+
+## 1.11.3 — 2026-10-29
+
+### New features
+
+- **New diagram dialog.** *File → New diagram* and the start screen's *New diagram* ask for the title, the wire standard (American or metric) and the reference designations, and whether to bring over the open diagram's libraries, wire profiles and cable profiles. The tick boxes are remembered.
+
+### Improvements
+
+- The start screen's *Keep my libraries* tick box has moved into the New diagram dialog.
+
+## 1.11.2 — 2026-10-29
+
+### New features
+
+- **IEC 81346 reference designations.** *Reference designations* in Settings switches from tags (K1, TB101-1) to designations: parts are `-K1`, led by a function (`=PUMP`) and location (`+CAB1`), so terminals read `=PUMP+CAB1-K1:13`.
+  - Each page can have its own function and location, set in the panel with nothing selected; the title block sets them for pages without.
+  - Labels on the drawing leave out the function and location they share with their page; the lists, exports and bill of materials give them in full.
+  - Tags are numbered within each function and location, so `+CAB1-K1` and `+DOOR-K1` can both exist.
+  - Switching to IEC joins terminals with `:` (and back to `-` when switching back).
+- **Drawing frame.** *Around the drawing* in the print settings can put each sheet in a frame: a border with zones numbered across and lettered down, and a title strip with the title, page, revision, date, author and sheet number. The printed parts list then says which zone each part is in, e.g. `K1 (B3)`.
+
+### Improvements
+
+- In Settings, the reference style and terminal reference are side by side under *Standards*.
+- The print settings' *Heading on every sheet* tick box is now the *Around the drawing* choice: a heading, the frame, or nothing.
+
+## 1.11.1 — 2026-10-29
+
+### New features
+
+- **Bill of materials.** A new **BOM** tab under the drawing lists everything to order, grouped by maker and order number: parts with the accessories ordered with them, DIN rails with the lengths to cut, bus bars, wires and cables. Click a line to select what it counts.
+  - **+ Line** adds lines for things that aren't drawn, such as the enclosure or screws, typed straight into the list.
+  - Exports as CSV (the list's **CSV** button or **File → Bill of materials (CSV)**), and prints with the lists (*Bill of materials* in the print settings).
+- **Order data.** The object type designer has an **Ordering** tab: the maker, the order numbers the type covers (the first is the default), and accessories ordered with each part. A part picks its order number under *Ordering* in its panel. DIN rails and bus bars have a maker and order number in their panels, and wire and cable profiles in the profiles dialog.
+
+### Improvements
+
+- The object type designer's settings are in three tabs, **Part**, **Add terminals** and **Ordering**, instead of one long column.
+- The lists at the bottom are in two groups: wires, cables, bus bars and the profiles, then parts and the bill of materials. The tabs are a little tighter, and the filter box stays small until it's used, so they all fit.
+- Ready-made libraries updated with makers and order numbers: [AutomationDirect DIN-rail relays and pushbuttons](libraries/automationdirect/RELEASE_NOTES.md) to 1.1.1, [Phoenix Contact UT terminal blocks](libraries/phoenix-contact-ut/RELEASE_NOTES.md) to 1.1.1, [Amphenol 26482 Series 2 connectors](libraries/amphenol-26482-series-2/RELEASE_NOTES.md) to 1.1.1, [Misc networking](libraries/misc-networking/RELEASE_NOTES.md) to 1.1.1, [AACC Mechatronics](libraries/aacc-mechatronics/RELEASE_NOTES.md) to 1.1.1 and [American Electrical fuse holders](libraries/american-electrical/RELEASE_NOTES.md) to 1.1.1.
+
 ## 1.10.38 — 2026-10-28
 
 ### Improvements
