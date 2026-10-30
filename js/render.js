@@ -42,6 +42,13 @@ function textFrame(it) {
   return { x: it.x, y: it.y, w: longest * it.size * 0.56, h: lines.length * it.size * 1.25, rot: ((+it.rot || 0) % 360 + 360) % 360 };
 }
 
+// What the View menu calls an item, to show or hide it: "plate", "duct", "rail", "text", "terminal" (terminal
+// blocks and the end covers, plates and clamps between them) or "device" (any other part).
+function viewKindOf(it, tpl) {
+  if (it.kind !== "part") return it.kind;
+  return tpl && stripRole(tpl) !== "none" ? "terminal" : "device";
+}
+
 // Bounding box of any diagram item in world coordinates.
 function itemBox(it, tpl) {
   if (it.kind === "rail") return { x: it.x, y: it.y, w: it.length, h: it.height };
@@ -727,6 +734,10 @@ function renderDiagram(doc, opt = {}) {
   const conns = allConns.filter((c) => endHere(c.a) || endHere(c.b));
   const bothHere = (c) => !onOther(c.a) && !onOther(c.b);
   const ia = !!opt.interactive;
+  // opt.hide: kinds left off the drawing (the View menu): those of viewKindOf, and "wire", "cable" and "bus".
+  // A hidden part's terminals still place the wires on them.
+  const hide = opt.hide || new Set();
+  const shown = (it) => !hide.has(viewKindOf(it, tpls.get(it.tpl)));
   // Wires are drawn as a stub at each terminal ("off"), or as "straight" or "curved" lines between terminals.
   // Labels say where each wire goes, at its terminals; wire names put its number in a stub's label, or at
   // the middle of its line.
@@ -771,7 +782,7 @@ function renderDiagram(doc, opt = {}) {
   // Back plates under everything, then rails and ducts, then parts.
   const plates = [], rails = [], bodies = [], texts = [];
   for (const it of doc.items) {
-    if (!here(it)) continue;
+    if (!here(it) || !shown(it)) continue;
     const a = ia ? `data-item="${esc(it.id)}" class="item"` : "";
     if (it.kind === "plate") plates.push(renderPlate(it, a));
     else if (it.kind === "rail") rails.push(renderRail(it, a));
@@ -813,7 +824,7 @@ function renderDiagram(doc, opt = {}) {
   // Bus bars: a thick bar through the bridged terminals, drawn under the terminal screws.
   const busPathD = (keys) => "M" + busOrder(keys.map((k) => termPos.get(k))).map((p) => `${n(p.x)} ${n(p.y)}`).join(" L");
   let busLayer = "";
-  for (const b of buses) {
+  for (const b of hide.has("bus") ? [] : buses) {
     // Only the terminals on this page, should a bar's parts have been split between pages.
     const bt = b.terms.filter(endHere);
     if (bt.length < 2) continue;
@@ -846,7 +857,7 @@ function renderDiagram(doc, opt = {}) {
   const showLabels = destOn || conns.some((c) => !isLine(c)); // terminals get lanes for stubs and/or labels
   const connMap = new Map(allConns.map((c) => [c.id, c]));
   let cableLayer = "", cableTop = "";
-  for (const cb of cables) {
+  for (const cb of hide.has("cable") ? [] : cables) {
     // The terminals and connectors the cable is on, and whether any are on this page or another.
     const ends = [cb.portA, cb.portB, ...cb.plugsA, ...cb.plugsB, ...cb.wires.flatMap((id) => [connMap.get(id).a, connMap.get(id).b])]
       .map((e) => e && termPos.get(e.item + "|" + e.term)).filter(Boolean);
@@ -1039,7 +1050,7 @@ function renderDiagram(doc, opt = {}) {
   // Connection lines, each with its wire number at the middle.
   let lines = "", lineLabels = "";
   for (const c of conns) {
-    if (bundled.has(c.id) || !isLine(c)) continue; // cable cores are drawn as part of their cable
+    if (bundled.has(c.id) || !isLine(c) || hide.has("wire")) continue; // cable cores are drawn as part of their cable
     const p1 = termPos.get(c.a.item + "|" + c.a.term), p2 = termPos.get(c.b.item + "|" + c.b.term);
     let d, mid;
     if (isCurved(c)) {
@@ -1068,7 +1079,8 @@ function renderDiagram(doc, opt = {}) {
   const ls = st.labelSize;
   for (const [k, p] of termPos) {
     if (!p.here) continue;
-    const r = termRadius(p.tpl);
+    const r = termRadius(p.tpl), partShown = shown(p.it);
+    if (isPort(p.t) && !partShown) continue;
     if (isPort(p.t)) {
       // Cable connectors take a cable's plug, not wires. The name goes on the side away from the cable.
       const a = portSize(p.tpl), h = a * 0.78;
@@ -1083,6 +1095,7 @@ function renderDiagram(doc, opt = {}) {
       }
       continue;
     }
+    if (isSlot(p.t) && !partShown) continue;
     if (isSlot(p.t)) {
       // Bus bar slots take bus bars only: no wires, and clickable only while picking for a bus bar.
       slots += slotRect(p.x, p.y, p.tpl, ' pointer-events="none"');
@@ -1090,7 +1103,7 @@ function renderDiagram(doc, opt = {}) {
       continue;
     }
     // A stub needs a lane even without labels, and so does a line labelled with its circuit's name.
-    const list = (atTerm.get(k) || []).filter((e) => destOn || !isLine(e.c) || circuitLabel(e.c));
+    const list = (atTerm.get(k) || []).filter((e) => !hide.has(bundled.has(e.c.id) ? "cable" : "wire") && (destOn || !isLine(e.c) || circuitLabel(e.c)));
     const v = SIDE_VEC[p.side];
     if (list.length) {
       const edge = { top: p.y - p.box.y, bottom: p.box.y + p.box.h - p.y, left: p.x - p.box.x, right: p.box.x + p.box.w - p.x }[p.side];
@@ -1150,6 +1163,7 @@ function renderDiagram(doc, opt = {}) {
       });
     }
 
+    if (!partShown) continue;
     const fill = p.it.color || p.tpl.fill;
     terms += `<g${ia ? ` class="term" data-term="${esc(k)}"` : ""}>`;
     // Mouse-over text: the terminal, what it's for (from its object type) and its connector label.
@@ -1181,7 +1195,7 @@ function renderDiagram(doc, opt = {}) {
   if (ia) {
     for (const k of circ.terms) {
       const p = termPos.get(k);
-      if (p?.here) rings += `<circle cx="${n(p.x)}" cy="${n(p.y)}" r="${n(termRadius(p.tpl) + 0.8)}" fill="none" stroke="#93c5fd" stroke-width="0.5" pointer-events="none"/>`;
+      if (p?.here && shown(p.it)) rings += `<circle cx="${n(p.x)}" cy="${n(p.y)}" r="${n(termRadius(p.tpl) + 0.8)}" fill="none" stroke="#93c5fd" stroke-width="0.5" pointer-events="none"/>`;
     }
     // The selected wires' own ends are marked in the app's overlay, at a fixed size on screen.
     if (be) {
@@ -1199,7 +1213,7 @@ function renderDiagram(doc, opt = {}) {
   let selBoxes = "";
   if (ia) {
     for (const it of doc.items) {
-      if (!sel.has(it.id) || !here(it)) continue;
+      if (!sel.has(it.id) || !here(it) || !shown(it)) continue;
       const b = itemBox(it, tpls.get(it.tpl));
       selBoxes += `<rect x="${n(b.x - 1)}" y="${n(b.y - 1)}" width="${n(b.w + 2)}" height="${n(b.h + 2)}" fill="none" stroke="#3b82f6" stroke-width="0.5" stroke-dasharray="1.5 1" pointer-events="none"/>`;
     }

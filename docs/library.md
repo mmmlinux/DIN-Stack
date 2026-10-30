@@ -111,6 +111,7 @@ About the Amphenol 26482 Series 2 library:
 - **Contacts are shown from the wire side**, the way you see them when wiring the back of a panel. Socket inserts look as they do in the catalog's insert drawings; pin inserts are mirrored left to right. The master key is at the top.
 - **Contact positions** were measured from the insert drawings in Amphenol's catalog and scaled to the shell, so they're close but not exact. Contact letters are the catalog's. The contact sizes (#20, #16, #12) are in each type's name.
 - **The outline** is the square flange of the MS3470 wall-mount receptacle. Jam-nut and cable-connecting receptacles are a different shape on the outside, but their inserts are the same.
+- **Machining** follows the order number picked. The wall-mount receptacle (MS3470, the default) has its round panel cutout and four screw holes; the jam-nut receptacle (MS3474) a cutout with one flat, drawn at the top (check where it falls against the receptacle's key); the cable-connecting receptacle (MS3471) none. Sizes are the panel cutouts given for each shell size in MS3470 and MS3474 data sheets.
 - Plugs (MS3476, MS3475), protective caps, backshells and the alternate insert positions (W, X, Y, Z) aren't included.
 
 About the AutomationDirect pushbuttons & pilot lights library:
@@ -118,6 +119,7 @@ About the AutomationDirect pushbuttons & pilot lights library:
 - **One type per series and contact arrangement**, not per colour or legend. A red 1 N.C. pushbutton and a red 1 N.C. mushroom E-stop wire the same way, so they share a type. Each name gives example part numbers; search for one, such as `GCX3100`, `AR30`, `NDT` or `EF103.2`, to find its type.
 - **Drawn from the wiring side**, as you see the device from inside the enclosure door. Types are *Loose*, with tag prefix `S` (or `PL` for pilot lights).
 - **Terminal names** use the block's position and function: the first block (left) is `13`/`14` when N.O. or `11`/`12` when N.C., the second block (right) `23`/`24` or `21`/`22`, and a lamp is `X1`/`X2`. The blocks themselves are marked 3-4 and 1-2, so rename the terminals if your drawings use those.
+- **Cutouts** are round and centred on the device: Ø 22.3 mm for GCX devices and the Schmersal joysticks, Ø 30.5 mm for Fuji and Eaton devices. The Schmersal N and E types are shared by both series, so they have none; set Ø 22.3 (N) or 30.5 mm (E) in the type's Machining tab. An anti-rotation notch, if your devices use one, can be added there too.
 - **Outlines** come from AutomationDirect's drawings (GCX 30 × 40 mm, Fuji AR30 30 × 44 mm). The Eaton HT800 outline (52 × 36 mm) and all terminal positions are approximate. Extra blocks stacked behind the first two sit in the same place in this view, so they're not drawn except where noted (Fuji 1 N.O. + 2 N.C. E-stop).
 - **Schmersal N and E series** are modular: you buy the operator (NDT, NDP, NDL, NW…, NDRZ, NML for 22 mm; EDT, EDP, EDL, EW…, ESS, EDRZ/EDRR, EML for 30 mm) and snap EF contact blocks and a light block onto its mounting flange. Both series use the same blocks, so they share types. There are two ways to draw them:
   - **A whole device** (category *Schmersal N 22mm & E 30mm*): the common arrangements, such as 1 N.O., 1 N.O. + 1 N.C., the E-stop blocks, illuminated pushbuttons and pilot lights. Each name lists the blocks it assumes.
@@ -139,7 +141,7 @@ About the AACC Mechatronics library:
 
 - **TE (Entrelec) ZK2.5 and ZK2.5-4P** blocks are 5.2 mm wide and 50.9 and 80.2 mm long. They work like the built-in terminal blocks, with the same internal terminal ids, two linked bridge slots in the middle (B1, B2), and terminals 1 and 2 at the ends (3 and 4 further in on the 4-connection block). The EK2.5 (52.2 mm) and EK2.5-4P (82.8 mm) end sections are 2 mm wide with no terminals. Lengths come from TE's and distributors' data; the clamp and bridge positions are approximate.
 - **TB-2503** is a generic barrier strip (50.5 × 28 mm, 10 mm pitch), *Loose*, drawn with its three positions side by side. Each position has a screw on both sides, named the same (1, 2, 3) and linked.
-- **MicroLogix 1100**: one type per version, 110 × 90 mm, with the input terminal block along the top and the output block along the bottom. Terminal names and order come from the terminal block layouts in Rockwell's user manual (1763-UM001); positions marked *NOT USED* are left out. Each block is drawn as a staggered double row, and the screw spacing is approximate. The RS-232 (CH0) and Ethernet (CH1) ports are cable ports on the left; their positions are approximate.
+- **MicroLogix 1100**: one type per version, 110 × 90 mm, with the input terminal block along the top and the output block along the bottom. Terminal names and order come from the terminal block layouts in Rockwell's user manual (1763-UM001); positions marked *NOT USED* are left out. Each block is drawn as a staggered double row, and the screw spacing is approximate. The RS-232 (CH0) and Ethernet (CH1) ports are cable ports on the left; their positions are approximate. The inputs and outputs are marked for the I/O list, addressed I:0/0–I:0/9 and O:0/0–O:0/5, with the analog inputs IV1 and IV2 at I:0.4 and I:0.5.
 - **CSM 1277** (45 × 100 mm) has its 3-pole 24 V DC terminal along the top and ports P1–P4 along the bottom. The terminals are named L+, M and PE here so new wires get DC colours; check the names printed on the unit.
 - **PM1207** (70 × 100 mm) has its input (L, N, PE) along the top and two L+ and two M output terminals along the bottom, as listed in Siemens' datasheet. Which edge each block is on, and the order of the outputs, are assumptions.
 - **RHINO PSP05-020S** is drawn from AutomationDirect's dimension drawing (27 × 75 mm front): output (+V, −V) at the top and input (PE, N, L) at the bottom. The parts list said PSP05-0205, which isn't a part number; PSP05-020S is the 5 V model in the range.
@@ -160,7 +162,7 @@ About the American Electrical fuse holders library:
 | Change an existing type | Hover over it in the library and click **✎ Edit**, or select a part on the diagram and click **Edit object type**. A type from another library is saved as an edited copy in *This project* (see below). |
 | Remove a type | Hover over it in the library and click **🗑 Delete**. Parts on the diagram that use it are removed too, so you're asked first. |
 
-The designer has the type's settings on the left, in three tabs (**Part**, **Add terminals** and **Ordering**), and a full-size preview on the right, with the terminal table below it. Click **Save** to keep your changes, or **Cancel** (or Esc) to discard them.
+The designer has the type's settings on the left, in five tabs (**Part**, **Terminals**, **Ordering**, **Machining** and **I/O**), and a full-size preview on the right, with the terminal table below it. Click **Save** to keep your changes, or **Cancel** (or Esc) to discard them.
 
 ## Type settings
 
@@ -187,6 +189,39 @@ The designer's **Ordering** tab feeds the bill of materials.
 | **Order numbers** | The part numbers this type covers, each with an optional description (e.g. *24 V DC coil*). The first is used unless a part picks another, so one type can cover the coil voltages or colours of the same housing. |
 | **Accessories** | Things ordered with every part of this type, such as a marker strip or the relay that plugs into a socket: how many per part, maker (the type's if blank), order number and description. An accessory with the same order number as a part on the drawing adds to that part's line. |
 
+### What each terminal takes
+
+Under *What each terminal takes* in the designer's **Terminals** tab, for the design checks (*Edit → Check the drawing*):
+
+| Setting | What it does |
+| --- | --- |
+| **Wires per terminal, at most** | More wires than this on one of the type's terminals is reported. |
+| **Thinnest wire / Thickest wire** | A wire outside this range on one of the type's terminals is reported. Sizes like `0.2 mm²` or `24 AWG`, and the two can be mixed. |
+
+Leave them blank for no limit. They apply to all the type's wire terminals.
+
+### Machining
+
+The designer's **Machining** tab gives what's cut in a door or panel for a device mounted through it. Both go in DXF drawings (*File → Export…*), on the CUTOUTS and HOLES layers, and show dashed in red on the designer's drawing of the part.
+
+| Setting | What it does |
+| --- | --- |
+| **Cutout** | The hole the device goes through: *Round* (Ø, with an optional anti-rotation notch at the top, its width and depth), *Round with one flat* (Ø, and from the flat across to the far side; the flat is at the top), *Round with two flats* (Ø, and across the flats, which are top and bottom) or *Rectangle* (width, height and corner radius). It's centred on the part unless a centre is given. Pushbuttons and pilot lights are usually Ø 22.3 mm or 30.5 mm. |
+| **Screw holes** | Each with its position, measured from the part's top left corner like the terminals, and its diameter. *Four in a square* adds four round the middle, for a flange-mounted connector. |
+
+Both turn with the part. DIN rails' mounting holes are set in Settings, under *DXF drawings*.
+
+### PLC I/O
+
+The designer's **I/O** tab is for PLCs and I/O modules. It feeds the I/O list under the drawing and the PLC tag exports.
+
+| Setting | What it does |
+| --- | --- |
+| **I/O** | For each terminal: *DI* (digital input), *DO* (digital output), *AI* (analog input), *AO* (analog output), or none. A change applies to all the selected terminals. **Guess from the names** marks terminals named like I0, IN3, I/2, %I0.1, O/2, Q0.0, AI1 or AO2. |
+| **Ch** | The channel. Left blank, the points of each kind count up from 0 in terminal order. |
+| **Address** | An address of the terminal's own, instead of the pattern's. |
+| **Addresses** | A pattern for each kind of point, or filled in for Siemens S7 (`%I{byte}.{bit}`, `%IW{word}`), Rockwell Logix (`Local:{slot}:I.Data.{ch}`) or MicroLogix / SLC 500 (`I:{slot}/{ch}`). `{ch}` is the channel and `{slot}` the part's slot; `{byte}.{bit}` counts 8 points to a byte and `{word}` one 2-byte word to each channel, from the start byte beside the pattern. A part can set its own slot and start bytes in its panel. |
+
 ### Loose connectors
 
 The library's *Enclosure connectors* group has 2-, 4- and 8-pin panel connectors and a round M12 4-pin connector, all set to *Loose* with the tag prefix `X`. Their pins are named 1, 2, 3…, so wires read like `X1-3`. The M12's pins are numbered clockwise from the top left, so rename them if your connector's face is laid out differently. For other connectors, duplicate one of these and change the size and pins. For a round body, make the width and height equal and set the corner radius to half the width.
@@ -206,7 +241,7 @@ A terminal is a point where wires (or bus bars) attach. Each one has a name, a p
 | Method | How |
 | --- | --- |
 | **Click** | Click on the preview to add a terminal there. It's named after the previous one, counting up (1 → 2, IN1 → IN2). Drag a terminal to move it. **Snap** above the preview sets the grid it moves on (0.1–2.5 mm). |
-| **Add a row** | Fill in *Add a row* under the **Add terminals** tab on the left and click **Add row**. This is the quickest way to get a neat screw row. |
+| **Add a row** | Fill in *Add a row* under the **Terminals** tab on the left and click **Add row**. This is the quickest way to get a neat screw row. |
 | **Type it in** | Edit X and Y in the table for exact positions from a dimension drawing. |
 
 Settings for **Add a row**:
@@ -222,7 +257,7 @@ Settings for **Add a row**:
 
 ### Adding a grid of terminals
 
-*Add a grid*, also under **Add terminals**, places a block of terminals in one go, such as a 2 × 16 pin header or an IC footprint.
+*Add a grid*, also under **Terminals**, places a block of terminals in one go, such as a 2 × 16 pin header or an IC footprint.
 
 | Setting | Meaning |
 | --- | --- |
@@ -334,7 +369,7 @@ The built-in 2-wire, blue, ground and 4-wire terminal blocks have two slots each
 Say you have a relay module that's 45 mm wide and 90 mm tall. It has four control inputs and a common along the top, and four normally-open contacts along the bottom, each with a common (C) and a normally-open (NO) terminal.
 
 1. Click **+ New part**. Set **Name** to `Relay module, 4-channel`, **Category** to `Control`, **Width** to `45`, **Height** to `90` and **Tag prefix** to `K`. Tick **Show type name on part**.
-2. Open the **Add terminals** tab and add the input row. Set **Edge** to *Top*, **Count** to `5`, **First name** to `IN1`, **Inset** to `6` and **Pitch** to `8`. Leave **Start offset** blank and click **Add row**. That gives IN1–IN5 centred along the top. In the table, rename IN5 to `COM`.
+2. Open the **Terminals** tab and add the input row. Set **Edge** to *Top*, **Count** to `5`, **First name** to `IN1`, **Inset** to `6` and **Pitch** to `8`. Leave **Start offset** blank and click **Add row**. That gives IN1–IN5 centred along the top. In the table, rename IN5 to `COM`.
 3. Add the contact commons. Set **Edge** to *Bottom*, **Count** to `4`, **First name** to `C1`, **Inset** to `6` and **Pitch** to `10`, and click **Add row** (C1–C4).
 4. Add the normally-open contacts. Keep the same settings but change **First name** to `NO1` and **Inset** to `14`, and click **Add row** (NO1–NO4, just above the commons).
 5. Leave **Link** empty everywhere. A contact is only connected when its relay is on.
@@ -427,9 +462,15 @@ The top-level `name` is optional: it names the library that types without their 
 | `radius` | no | Corner radius in mm. |
 | `showName` | no | `true` to print the type name on parts. |
 | `maker` | no | The manufacturer, for the bill of materials. |
-| `orders` | no | Order numbers the type covers, as `[{ "no": "3044076", "desc": "" }]`. The first is the default. |
+| `orders` | no | Order numbers the type covers, as `[{ "no": "3044076", "desc": "" }]`. The first is the default. An order number can have its own `cutout` and `holes` (as below), used instead of the type's when a part is ordered by it; `{ "shape": "none" }` and `[]` mean none, as for a cable-connecting version of a panel connector. |
 | `stripRole` | no | `block`, `divider` or `none`: how parts show in the terminal strip report. Left out, it goes by the category (see *Terminal strip* above). |
 | `accessories` | no | Things ordered with each part, as `[{ "qty": 1, "maker": "", "no": "ZB 5", "desc": "Marker strip" }]`. A blank `maker` means the type's. |
+| `cutout` | no | The hole cut for the part in a door or panel: `{ "shape": "round", "d": 22.3 }`. `shape` is `round` (with `d`, and optionally `notchW` and `notchD` for a notch at the top), `d` (one flat at the top: `d` and `flat`, from the flat to the far side), `dd` (two flats: `d` and `flat`, across them) or `rect` (`w`, `h`, `r`). `x` and `y` give its centre on the part; left out, it's the middle. |
+| `holes` | no | Screw holes, as `[{ "x": 3, "y": 3, "d": 3.2 }]`, measured from the part's top left corner. |
+| `maxWires` | no | How many wires each terminal takes, for the design checks. |
+| `sizeMin`, `sizeMax` | no | The thinnest and thickest wire the terminals take, such as `"0.2 mm²"` or `"12 AWG"`, for the design checks. |
+| `ioAddr` | no | Address patterns for the PLC I/O list, per kind of point: `{ "DI": "%I{byte}.{bit}", "DO": "%Q{byte}.{bit}" }`. Placeholders: `{slot}`, `{ch}`, `{byte}`, `{bit}`, `{word}` (see *PLC I/O* above). |
+| `ioStart` | no | The start byte of each kind of point, for `{byte}` and `{word}`: `{ "AI": 64 }`. 0 when left out. |
 | `terminals` | no | List of terminals (below). |
 
 ### Terminal fields
@@ -442,6 +483,9 @@ The top-level `name` is optional: it names the library that types without their 
 | `side` | `auto`, `top`, `right`, `bottom` or `left`. |
 | `link` | Internal link value. Same value = connected inside the part. Empty for none. |
 | `kind` | `wire` (default), `bus` for a bus bar slot, or `port` for a cable connector (a socket such as an RJ45 port that takes a cable's plug, not single wires). |
+| `io` | `DI`, `DO`, `AI` or `AO` for a PLC input or output. Left out for anything else. |
+| `ch` | The point's channel. Left out, the points of each kind count up from 0 in terminal order. |
+| `addr` | The point's own address, instead of the type's `ioAddr` pattern. |
 
 ### Wire profile fields
 

@@ -346,3 +346,205 @@ function processingCsvRows(doc, h) {
   }
   return out;
 }
+
+// ---------- PLC I/O ----------
+
+// The kinds of I/O point a terminal can be (terminal.io), with its channel number (terminal.ch).
+const IO_KINDS = [["DI", "Digital input"], ["DO", "Digital output"], ["AI", "Analog input"], ["AO", "Analog output"]];
+const isIoKind = (k) => IO_KINDS.some(([v]) => v === k);
+const ioTerms = (tpl) => (tpl?.terminals || []).filter((t) => isIoKind(t.io) && !isSlot(t) && !isPort(t));
+
+// Address patterns, per kind of point (type.ioAddr). {slot} is the part's slot, {ch} the channel, and {byte},
+// {bit} and {word} count from the start byte of that kind of point (the part's ioStart, or else its type's):
+// {byte}.{bit} for 8 points a byte, {word} for one 2-byte word a channel.
+const IO_PRESETS = [
+  ["s7", "Siemens S7: %I0.0, %Q0.0, %IW64", { DI: "%I{byte}.{bit}", DO: "%Q{byte}.{bit}", AI: "%IW{word}", AO: "%QW{word}" }],
+  ["logix", "Rockwell Logix, local chassis: Local:1:I.Data.0", { DI: "Local:{slot}:I.Data.{ch}", DO: "Local:{slot}:O.Data.{ch}", AI: "Local:{slot}:I.Ch{ch}Data", AO: "Local:{slot}:O.Ch{ch}Data" }],
+  ["slc", "Rockwell MicroLogix / SLC 500: I:1/0, O:1/0, I:1.0", { DI: "I:{slot}/{ch}", DO: "O:{slot}/{ch}", AI: "I:{slot}.{ch}", AO: "O:{slot}.{ch}" }],
+];
+const ioUses = (tpl, ph) => Object.values(tpl?.ioAddr || {}).some((p) => String(p || "").includes("{" + ph + "}"));
+const finiteOr = (v, d) => (v !== "" && v !== null && v !== undefined && Number.isFinite(+v) ? +v : d);
+const ioStartOf = (it, tpl, kind) => finiteOr(it.ioStart?.[kind], finiteOr(tpl.ioStart?.[kind], 0));
+const ioSlotOf = (it) => finiteOr(it.slot, 0);
+
+// A point's channel: its own number, or else where it comes among its type's points of the same kind.
+function ioChannel(tpl, t) {
+  if (t.ch !== "" && t.ch !== undefined && t.ch !== null && Number.isFinite(+t.ch)) return Math.max(0, Math.round(+t.ch));
+  return ioTerms(tpl).filter((x) => x.io === t.io).indexOf(t);
+}
+
+// A point's address: the terminal's own (terminal.addr), or else its type's pattern filled in. "" for none.
+function ioAddress(it, tpl, t) {
+  return String(t.addr || "").trim() || ioPatternAddress(it, tpl, t);
+}
+
+// A point's address from its type's pattern alone.
+function ioPatternAddress(it, tpl, t) {
+  const pat = String(tpl.ioAddr?.[t.io] || "").trim();
+  if (!pat) return "";
+  const ch = ioChannel(tpl, t), start = ioStartOf(it, tpl, t.io);
+  const v = { slot: ioSlotOf(it), ch, byte: start + Math.floor(ch / 8), bit: ch % 8, word: start + 2 * ch };
+  return pat.replace(/\{(slot|ch|byte|bit|word)\}/g, (m, k) => v[k]);
+}
+
+// A name made fit for a PLC tag: letters, digits and underscores ("S1 Start" -> "S1_Start").
+const ioName = (s) => String(s || "").trim().replace(/[^A-Za-z0-9_]+/g, "_").replace(/_+/g, "_").replace(/^_|_$/g, "");
+
+// The I/O list: a row for each I/O point of each part, by tag and then in the type's order: { it, tpl, t, key,
+// module, term, kind, ch, addr, symbol, desc, wired, suggest: { symbol, desc }, circuit, page }. wired lists
+// what the point is wired to: the devices on its circuit (wires, bus bars and links, not names), or with none,
+// the terminal blocks and cable cores it goes through. suggest is what Suggest from wiring would fill in.
+// h as for stripRows: { ref(end) }.
+function ioRows(doc, h, items = doc.items) {
+  const imap = itemMap(doc), tpls = tplMap(doc);
+  const conns = validConnections(doc, imap, tpls), buses = validBuses(doc, imap, tpls);
+  const find = buildCircuits(doc, imap, tpls, conns, buses, { physical: true });
+  const names = circuitNames(doc), multi = (doc.pages || []).length > 1;
+  // What's on each circuit: part terminals, and the far ends of one-ended cables' cores.
+  const on = new Map();
+  const add = (k, x) => { const r = find(k); if (!on.has(r)) on.set(r, []); on.get(r).push(x); };
+  for (const it of imap.values()) {
+    const tpl = it.kind === "part" && tpls.get(it.tpl);
+    if (tpl) for (const t of tpl.terminals) if (!isSlot(t) && !isPort(t)) add(it.id + "|" + t.id, { it, tpl, t });
+  }
+  for (const c of conns) for (const e of [c.a, c.b]) if (!imap.has(e.item)) add(e.item + "|" + e.term, { e });
+  const parts = items.filter((it) => it.kind === "part" && ioTerms(tpls.get(it.tpl)).length)
+    .sort((a, b) => naturalCmp(a.tag || "~", b.tag || "~"));
+  const rows = [];
+  for (const it of parts) {
+    const tpl = tpls.get(it.tpl), module = partRef(doc, it, tpl);
+    for (const t of ioTerms(tpl)) {
+      const key = it.id + "|" + t.id;
+      const others = (on.get(find(key)) || []).filter((x) => x.it !== it);
+      const devices = others.filter((x) => x.it && stripRole(x.tpl) === "none");
+      const via = others.filter((x) => !x.it || stripRole(x.tpl) !== "none");
+      const refOf = (x) => h.ref(x.e || { item: x.it.id, term: x.t.id });
+      const wired = (devices.length ? devices : via).map(refOf);
+      const circuit = names.term(key);
+      const dev = devices[0], what = dev && String(dev.it.desc || "").trim();
+      const own = it.io?.[t.id] || {};
+      rows.push({
+        it, tpl, t, key, module, term: t.name, kind: t.io, ch: ioChannel(tpl, t), addr: ioAddress(it, tpl, t),
+        symbol: String(own.symbol || ""), desc: String(own.desc || ""), wired, circuit,
+        suggest: {
+          symbol: ioName(circuit || (dev ? [dev.it.tag, what].filter(Boolean).join(" ") : "")),
+          desc: dev ? [partRef(doc, dev.it, dev.tpl), what || dev.tpl.name.split(/\s·\s|\s\(|:/)[0].trim()].filter(Boolean).join(" ") : circuit || "",
+        },
+        page: multi ? pageName(doc, pageOf(doc, it)) : "",
+      });
+    }
+  }
+  // A suggested symbol already in use, or suggested for an earlier point, gets the terminal's name added.
+  const used = new Set(rows.map((r) => r.symbol.trim().toLowerCase()).filter(Boolean));
+  for (const r of rows) {
+    if (r.symbol.trim() || !r.suggest.symbol) continue;
+    if (used.has(r.suggest.symbol.toLowerCase())) r.suggest.symbol = ioName(r.suggest.symbol + " " + r.term);
+    used.add(r.suggest.symbol.toLowerCase());
+  }
+  return rows;
+}
+
+// The I/O list as CSV rows, with a heading row.
+function ioCsvRows(doc, rows) {
+  const multi = (doc.pages || []).length > 1;
+  const out = [["Module", "Terminal", "I/O", "Channel", "Address", "Symbol", "Description", "Wired to", "Circuit", ...(multi ? ["Page"] : [])]];
+  for (const r of rows) out.push([r.module, r.term, r.kind, r.ch, r.addr, r.symbol, r.desc, r.wired.join("; "), r.circuit, ...(multi ? [r.page] : [])]);
+  return out;
+}
+
+// Tag names as each PLC program takes them. Logix: a letter or underscore first, then letters, digits and
+// single underscores, up to 40. RSLogix 500: capitals, digits and underscores, up to 20.
+const logixName = (s) => { const n = ioName(s); return (/^\d/.test(n) ? "_" + n : n).slice(0, 40).replace(/_$/, ""); };
+const slcName = (s) => { const n = ioName(s).toUpperCase(); return (/^\d/.test(n) ? "_" + n : n).slice(0, 20).replace(/_$/, ""); };
+
+// Points to export: those with an address and, for programs that need one, a name. { list, skipped }.
+function ioExportable(rows, needName) {
+  const list = rows.filter((r) => r.addr && (!needName || r.symbol.trim()));
+  return { list, skipped: rows.length - list.length };
+}
+
+// Studio 5000 Logix Designer (RSLogix 5000) tags: a CSV of alias tags for File > Import > Tags. Each named point
+// becomes an alias for its address, which must be a tag that exists (Local:1:I.Data.0 once module 1 is set up).
+function logixCsv(doc, rows, date = new Date()) {
+  const q = (s) => '"' + String(s).replace(/[\r\n]+/g, " ").replace(/"/g, '""') + '"';
+  const d = date.toString(), when = d.slice(0, 11) + d.slice(16, 24) + " " + d.slice(11, 15); // as Logix writes it: Tue Sep 25 15:46:27 2012
+  const lines = ['remark,"CSV-Import-Export"', "remark," + q("Date = " + when), "remark," + q("Owner = " + (doc.meta.author || "")),
+    "remark," + q("Company = "), "0.3", "TYPE,SCOPE,NAME,DESCRIPTION,DATATYPE,SPECIFIER,ATTRIBUTES"];
+  for (const r of rows) lines.push(`ALIAS,,${logixName(r.symbol)},${q(r.desc)},"",${q(r.addr)},"(RADIX := Decimal, ExternalAccess := Read/Write)"`);
+  return lines.join("\r\n") + "\r\n";
+}
+
+// RSLogix 500 address, symbol and description CSV, as its Tools > Database > ASCII Export writes it (and its
+// ASCII Import reads): no heading; address, 0, symbol, then five description lines of up to 20 characters.
+function slcCsv(rows) {
+  const lines = [];
+  for (const r of rows) {
+    const words = String(r.desc || "").replace(/"/g, "'").replace(/,/g, ";").split(/\s+/).filter(Boolean);
+    const desc = [""];
+    for (const w of words) {
+      const cur = desc[desc.length - 1];
+      if (!cur) desc[desc.length - 1] = w.slice(0, 20);
+      else if ((cur + " " + w).length <= 20) desc[desc.length - 1] = cur + " " + w;
+      else desc.push(w.slice(0, 20));
+    }
+    while (desc.length < 5) desc.push("");
+    lines.push(`${r.addr},0,${slcName(r.symbol)},${desc.slice(0, 5).map((d) => `"${d}"`).join(",")},0,,,0,`);
+  }
+  return lines.join("\r\n") + "\r\n";
+}
+
+// TIA Portal PLC tags, as its tag table export writes them: a "PLC Tags" sheet and a "TagTable Properties"
+// sheet, for an .xlsx file (see xlsxFile). Addresses get the % they need (I0.0 -> %I0.0).
+function tiaSheets(rows, table) {
+  const tags = [["Name", "Path", "Data Type", "Logical Address", "Comment", "Hmi Visible", "Hmi Accessible", "Hmi Writeable", "Typeobject ID", "Version ID"]];
+  for (const r of rows) {
+    const addr = /^[IQM][WDB]?\d/i.test(r.addr) ? "%" + r.addr.toUpperCase() : r.addr;
+    tags.push([r.symbol.replace(/"/g, "'").trim().slice(0, 128), table, /^A/.test(r.kind) ? "Int" : "Bool", addr, r.desc, "True", "True", "True", "", ""]);
+  }
+  return [{ name: "PLC Tags", rows: tags }, { name: "TagTable Properties", rows: [["Path", "BelongsToUnit", "Accessibility"], [table, "", ""]] }];
+}
+
+// Names and descriptions read from a CSV (an I/O list from here, or a PLC program's): which points they belong
+// to, matched by address, or else by module and terminal. Takes the parsed rows, heading first. Returns
+// { found: [{ row, symbol, desc }], unmatched }, or null when there's no column to match by.
+function ioImport(table, rows) {
+  const head = (table[0] || []).map((x) => String(x).trim().toLowerCase());
+  const col = (...names) => head.findIndex((x) => names.includes(x));
+  const cA = col("address", "logical address", "specifier", "addr"), cM = col("module", "device", "part"), cT = col("terminal", "pin");
+  const cS = col("symbol", "name", "tag name", "symbol name", "tag"), cD = col("description", "comment", "desc");
+  if ((cA < 0 && (cM < 0 || cT < 0)) || (cS < 0 && cD < 0)) return null;
+  const norm = (s) => String(s || "").trim().toLowerCase().replace(/^%/, "");
+  const byAddr = new Map(rows.filter((r) => r.addr).map((r) => [norm(r.addr), r]));
+  const byTerm = new Map(rows.map((r) => [norm(r.module) + "|" + norm(r.term), r]));
+  const found = [];
+  let unmatched = 0;
+  for (const line of table.slice(1)) {
+    if (!line.some((v) => String(v).trim())) continue;
+    const r = (cA >= 0 && byAddr.get(norm(line[cA]))) || (cM >= 0 && cT >= 0 && byTerm.get(norm(line[cM]) + "|" + norm(line[cT])));
+    if (!r) { unmatched++; continue; }
+    found.push({ row: r, symbol: cS >= 0 ? String(line[cS] ?? "").trim() : undefined, desc: cD >= 0 ? String(line[cD] ?? "").trim() : undefined });
+  }
+  return { found, unmatched };
+}
+
+// A CSV file's text as rows of cells: commas or semicolons (whichever the first line has more of), quotes.
+function parseCsv(text) {
+  text = String(text).replace(/^﻿/, "");
+  const first = text.split(/\r?\n/, 1)[0];
+  const sep = (first.match(/;/g) || []).length > (first.match(/,/g) || []).length ? ";" : ",";
+  const rows = [];
+  let row = [], cell = "", quoted = false;
+  for (let i = 0; i < text.length; i++) {
+    const c = text[i];
+    if (quoted) {
+      if (c === '"' && text[i + 1] === '"') { cell += '"'; i++; } else if (c === '"') quoted = false; else cell += c;
+    } else if (c === '"') quoted = true;
+    else if (c === sep) { row.push(cell); cell = ""; }
+    else if (c === "\n" || c === "\r") {
+      if (c === "\r" && text[i + 1] === "\n") i++;
+      row.push(cell); rows.push(row); row = []; cell = "";
+    } else cell += c;
+  }
+  if (cell || row.length) { row.push(cell); rows.push(row); }
+  return rows;
+}

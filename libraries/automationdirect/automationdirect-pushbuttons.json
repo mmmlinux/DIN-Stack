@@ -1,7 +1,7 @@
 {
   "type": "dinstack-library",
-  "app": "1.11.1",
-  "version": "1.1.1",
+  "app": "1.12.1",
+  "version": "1.2.1",
   "name": "AutomationDirect pushbuttons & pilot lights",
   "templates": [
     {
@@ -74,7 +74,11 @@
           "no": "GCX1107",
           "desc": ""
         }
-      ]
+      ],
+      "cutout": {
+        "shape": "round",
+        "d": 22.3
+      }
     },
     {
       "id": "ad-gcx22-1nc",
@@ -126,7 +130,11 @@
           "no": "GCX1106",
           "desc": ""
         }
-      ]
+      ],
+      "cutout": {
+        "shape": "round",
+        "d": 22.3
+      }
     },
     {
       "id": "ad-gcx22-1no2nc",
@@ -196,7 +204,11 @@
           "no": "GCX1152",
           "desc": ""
         }
-      ]
+      ],
+      "cutout": {
+        "shape": "round",
+        "d": 22.3
+      }
     },
     {
       "id": "ad-gcx22-1no2no",
@@ -248,7 +260,11 @@
           "kind": "wire"
         }
       ],
-      "maker": "AutomationDirect"
+      "maker": "AutomationDirect",
+      "cutout": {
+        "shape": "round",
+        "d": 22.3
+      }
     },
     {
       "id": "ad-gcx22-1nc2nc",
@@ -300,7 +316,11 @@
           "kind": "wire"
         }
       ],
-      "maker": "AutomationDirect"
+      "maker": "AutomationDirect",
+      "cutout": {
+        "shape": "round",
+        "d": 22.3
+      }
     },
     {
       "id": "ad-gcx22-1no-lit",
@@ -352,7 +372,11 @@
           "kind": "wire"
         }
       ],
-      "maker": "AutomationDirect"
+      "maker": "AutomationDirect",
+      "cutout": {
+        "shape": "round",
+        "d": 22.3
+      }
     },
     {
       "id": "ad-gcx22-1nc-lit",
@@ -414,7 +438,11 @@
           "no": "GCX3221",
           "desc": ""
         }
-      ]
+      ],
+      "cutout": {
+        "shape": "round",
+        "d": 22.3
+      }
     },
     {
       "id": "ad-gcx22-1no2nc-lit",
@@ -484,7 +512,11 @@
           "kind": "wire"
         }
       ],
-      "maker": "AutomationDirect"
+      "maker": "AutomationDirect",
+      "cutout": {
+        "shape": "round",
+        "d": 22.3
+      }
     },
     {
       "id": "ad-gcx22-1no2no-lit",
@@ -554,7 +586,11 @@
           "kind": "wire"
         }
       ],
-      "maker": "AutomationDirect"
+      "maker": "AutomationDirect",
+      "cutout": {
+        "shape": "round",
+        "d": 22.3
+      }
     },
     {
       "id": "ad-gcx22-pl",
@@ -588,7 +624,11 @@
           "kind": "wire"
         }
       ],
-      "maker": "AutomationDirect"
+      "maker": "AutomationDirect",
+      "cutout": {
+        "shape": "round",
+        "d": 22.3
+      }
     },
     {
       "id": "ad-fuji-ar30-1no",
@@ -622,7 +662,11 @@
           "kind": "wire"
         }
       ],
-      "maker": "Fuji Electric"
+      "maker": "Fuji Electric",
+      "cutout": {
+        "shape": "round",
+        "d": 30.5
+      }
     },
     {
       "id": "ad-fuji-ar30-1nc",
@@ -674,7 +718,11 @@
           "no": "AR30VPR-01R",
           "desc": ""
         }
-      ]
+      ],
+      "cutout": {
+        "shape": "round",
+        "d": 30.5
+      }
     },
     {
       "id": "ad-fuji-ar30-1no2nc",
@@ -732,7 +780,11 @@
           "no": "AR30Q2R-11RZC",
           "desc": ""
         }
-      ]
+      ],
+      "cutout": {
+        "shape": "round",
+        "d": 30.5
+      }
     },
     {
       "id": "ad-fuji-ar30-1no2nc3nc",
@@ -808,7 +860,11 @@
           "no": "AR30VPR-12R",
           "desc": ""
         }
-      ]
+      ],
+      "cutout": {
+        "shape": "round",
+        "d": 30.5
+      }
     },
     {
       "id": "ad-fuji-ar30-1no-lit",
@@ -860,7 +916,11 @@
           "kind": "wire"
         }
       ],
-      "maker": "Fuji Electric"
+      "maker": "Fuji Electric",
+      "cutout": {
+        "shape": "round",
+        "d": 30.5
+      }
     },
     {
       "id": "ad-fuji-ar30-1nc-lit",
@@ -930,7 +990,11 @@
           "no": "AR30VPL-01E3R",
           "desc": ""
         }
-      ]
+      ],
+      "cutout": {
+        "shape": "round",
+        "d": 30.5
+      }
     },
     {
       "id": "ad-fuji-ar30-1no2nc-lit",
@@ -1000,7 +1064,11 @@
           "kind": "wire"
         }
       ],
-      "maker": "Fuji Electric"
+      "maker": "Fuji Electric",
+      "cutout": {
+        "shape": "round",
+        "d": 30.5
+      }
     },
     {
       "id": "ad-fuji-ar30-pl",
@@ -1034,7 +1102,11 @@
           "kind": "wire"
         }
       ],
-      "maker": "Fuji Electric"
+      "maker": "Fuji Electric",
+      "cutout": {
+        "shape": "round",
+        "d": 30.5
+      }
     },
     {
       "id": "ad-ht800-1no",
@@ -1068,7 +1140,11 @@
           "kind": "wire"
         }
       ],
-      "maker": "Eaton"
+      "maker": "Eaton",
+      "cutout": {
+        "shape": "round",
+        "d": 30.5
+      }
     },
     {
       "id": "ad-ht800-1nc",
@@ -1102,7 +1178,11 @@
           "kind": "wire"
         }
       ],
-      "maker": "Eaton"
+      "maker": "Eaton",
+      "cutout": {
+        "shape": "round",
+        "d": 30.5
+      }
     },
     {
       "id": "ad-ht800-1no2nc",
@@ -1160,7 +1240,11 @@
           "no": "HT8ABHAB",
           "desc": ""
         }
-      ]
+      ],
+      "cutout": {
+        "shape": "round",
+        "d": 30.5
+      }
     },
     {
       "id": "ad-ht800-1no2no",
@@ -1212,7 +1296,11 @@
           "kind": "wire"
         }
       ],
-      "maker": "Eaton"
+      "maker": "Eaton",
+      "cutout": {
+        "shape": "round",
+        "d": 30.5
+      }
     },
     {
       "id": "ad-ht800-1no2nc-lit",
@@ -1282,7 +1370,11 @@
           "kind": "wire"
         }
       ],
-      "maker": "Eaton"
+      "maker": "Eaton",
+      "cutout": {
+        "shape": "round",
+        "d": 30.5
+      }
     },
     {
       "id": "ad-ht800-pl",
@@ -1316,7 +1408,11 @@
           "kind": "wire"
         }
       ],
-      "maker": "Eaton"
+      "maker": "Eaton",
+      "cutout": {
+        "shape": "round",
+        "d": 30.5
+      }
     },
     {
       "id": "ad-sch-1no",
@@ -2759,7 +2855,11 @@
           "no": "RK-T-41-1ST8-2",
           "desc": ""
         }
-      ]
+      ],
+      "cutout": {
+        "shape": "round",
+        "d": 22.3
+      }
     },
     {
       "id": "ad-sch-joy-2",
@@ -2811,7 +2911,11 @@
           "no": "RK-T-42-2ST8-2",
           "desc": ""
         }
-      ]
+      ],
+      "cutout": {
+        "shape": "round",
+        "d": 22.3
+      }
     }
   ]
 }

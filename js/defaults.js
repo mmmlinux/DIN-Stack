@@ -388,6 +388,9 @@ const DEFAULT_SETTINGS = {
   wireEnd: "ferrule", // how wire ends are finished unless their profile or the end says otherwise (WIRE_ENDS)
   strip: 10,          // strip length at each wire end, in mm, likewise
   ductFill: 60,       // fill wire ducts up to this percentage of their cross-section
+  railHoles: 150,     // DIN rails' mounting holes in DXF drawings: no more than this far apart, in mm (0: none)
+  railHoleD: 5.5,     // their diameter, in mm
+  railHoleEnd: 15,    // the first and last this far from the rail's ends, in mm
 };
 
 // Paper sizes for printing, portrait, in mm. Each belongs to the American or metric standard, and other is
@@ -417,7 +420,7 @@ function printDefaults(std) {
   const us = std === "us";
   return {
     paper: us ? "letter" : "a4", orient: "auto", margin: us ? 12.7 : 10, scale: "fit", percent: 100, pages: "all",
-    head: true, frame: false, wires: true, cables: true, buses: true, parts: true, strips: true, bom: true,
+    head: true, frame: false, wires: true, cables: true, buses: true, parts: true, strips: true, io: true, bom: true,
   };
 }
 
@@ -447,7 +450,7 @@ function exampleProject() {
   // A project type: the door's pilot light isn't one of the built-in types.
   p.templates.push({
     id: "pilot22", name: "Pilot light, 22 mm", category: "Pilot lights", prefix: "H", mount: "free", library: PROJECT_LIBRARY,
-    w: 30, h: 30, fill: "#f0c000", radius: 15, showName: false,
+    w: 30, h: 30, fill: "#f0c000", radius: 15, showName: false, cutout: { shape: "round", d: 22.3 },
     terminals: [{ ...T("x1", "X1", 9, 6), side: "top" }, { ...T("x2", "X2", 21, 6), side: "top" }],
   });
   p.settings.print = { ...printDefaults(p.settings.wireStd), head: false, frame: true, scale: "shrink" };

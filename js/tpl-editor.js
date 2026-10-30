@@ -62,7 +62,110 @@ const TplEditor = (() => {
     $("teFill").value = ed.tpl.fill || "#e6e8eb";
     $("teShowName").checked = !!ed.tpl.showName;
     $("teMaker").value = ed.tpl.maker || "";
+    $("teMaxWires").value = ed.tpl.maxWires || "";
+    $("teSizeMin").value = ed.tpl.sizeMin || "";
+    $("teSizeMax").value = ed.tpl.sizeMax || "";
     renderOrdering();
+    renderMachining();
+    renderIo();
+  }
+
+  // ---------- PLC I/O: which terminals are inputs and outputs, and how their addresses go ----------
+  const ioPoint = (t) => !isSlot(t) && !isPort(t);
+
+  // A terminal's kind of point guessed from its name: I0, IN3, I/2, DI4, X1, %I0.3 (channel 3) are digital
+  // inputs; O, OUT, Q, DO, Y and %Q outputs; AI, AIN, IV and %IW analog inputs; AO, AOUT and %QW analog outputs.
+  function guessIo(name) {
+    const s = String(name).trim();
+    let m = /^%?([IQ])\s*(\d+)\.([0-7])$/i.exec(s);
+    if (m) return { io: m[1].toUpperCase() === "I" ? "DI" : "DO", ch: +m[2] * 8 + +m[3] };
+    m = /^%?([IQ])W\s*\d+$/i.exec(s);
+    if (m) return { io: m[1].toUpperCase() === "I" ? "AI" : "AO" };
+    m = /^(AIN|AOUT|AI|AO|IV|DI|DO|INPUT|OUTPUT|IN|OUT|I|O|Q|X|Y)\s*[/._:-]?\s*\d+(\s*\([+-]\))?$/i.exec(s);
+    if (!m) return null;
+    const p = m[1].toUpperCase();
+    return { io: /^(AIN|AI|IV)$/.test(p) ? "AI" : /^(AOUT|AO)$/.test(p) ? "AO" : /^(DI|INPUT|IN|I|X)$/.test(p) ? "DI" : "DO" };
+  }
+
+  function renderIo() {
+    const t = ed.tpl;
+    $("teIoTerms").innerHTML = t.terminals.filter(ioPoint).map((x) => {
+      const on = isIoKind(x.io);
+      return `<tr data-tid="${esc(x.id)}" class="${ed.sel.has(x.id) ? "sel" : ""}"><td title="${esc(x.desc || "")}">${esc(x.name)}</td>
+        <td><select data-io="io"><option value="">—</option>${IO_KINDS.map(([k, l]) => `<option value="${k}"${x.io === k ? " selected" : ""} title="${l}">${k}</option>`).join("")}</select></td>
+        <td><input data-io="ch" type="number" min="0" step="1" value="${esc(x.ch ?? "")}"${on ? "" : " disabled"}></td>
+        <td><input data-io="addr" type="text" value="${esc(x.addr || "")}"${on ? "" : " disabled"}></td></tr>`;
+    }).join("") || '<tr><td colspan="4" class="muted">No terminals for wires yet.</td></tr>';
+    $("teIoPreset").innerHTML = '<option value="">Fill in for a PLC family…</option>' + IO_PRESETS.map(([id, label]) => `<option value="${id}">${esc(label)}</option>`).join("");
+    $("teIoAddr").innerHTML = IO_KINDS.map(([k, l]) => `<div class="io-addr-row"><span title="${l}">${k}</span>
+      <input data-ia="${k}" type="text" value="${esc(t.ioAddr?.[k] || "")}" placeholder="e.g. ${esc(IO_PRESETS[0][2][k])}" title="${l} address pattern">
+      <input data-is="${k}" type="number" min="0" step="1" value="${esc(t.ioStart?.[k] ?? "")}" placeholder="0" title="Start byte: the first ${l.toLowerCase()} byte, for {byte} and {word}. Each part can set its own."></div>`).join("");
+    ioPlaceholders();
+  }
+
+  // What a blank channel or address comes to, greyed in its box; the start bytes show for patterns using them.
+  function ioPlaceholders() {
+    const t = ed.tpl;
+    for (const tr of $("teIoTerms").querySelectorAll("tr[data-tid]")) {
+      const x = t.terminals.find((y) => y.id === tr.dataset.tid);
+      if (!x) continue;
+      const on = isIoKind(x.io);
+      tr.querySelector('[data-io="ch"]').placeholder = on ? ioTerms(t).filter((y) => y.io === x.io).indexOf(x) : "";
+      tr.querySelector('[data-io="addr"]').placeholder = on ? ioPatternAddress({}, t, x) || "none" : "";
+    }
+    for (const box of $("teIoAddr").querySelectorAll("[data-is]")) box.hidden = !/\{(byte|word)\}/.test(String(t.ioAddr?.[box.dataset.is] || ""));
+  }
+
+  // Leave out I/O settings that aren't used, and empty values.
+  function tidyIo(t) {
+    for (const x of t.terminals) {
+      if (!isIoKind(x.io) || !ioPoint(x)) { delete x.io; delete x.ch; delete x.addr; continue; }
+      if (x.ch === "" || x.ch === null || !Number.isFinite(+x.ch)) delete x.ch; else x.ch = Math.max(0, Math.round(+x.ch));
+      if (String(x.addr || "").trim()) x.addr = String(x.addr).trim(); else delete x.addr;
+    }
+    const addr = {}, start = {};
+    for (const [k] of IO_KINDS) {
+      if (String(t.ioAddr?.[k] || "").trim()) addr[k] = String(t.ioAddr[k]).trim();
+      const v = t.ioStart?.[k];
+      if (v !== "" && v !== null && v !== undefined && Number.isFinite(+v)) start[k] = Math.max(0, Math.round(+v));
+    }
+    if (Object.keys(addr).length) t.ioAddr = addr; else delete t.ioAddr;
+    if (Object.keys(start).length) t.ioStart = start; else delete t.ioStart;
+  }
+
+  // ---------- machining: the cutout and screw holes ----------
+  // The cutout's size fields for each shape: [key, label], then its centre for all of them.
+  const CUT_FIELDS = {
+    round: [["d", "Ø (mm)"], ["notchW", "Notch width"], ["notchD", "Notch depth"]],
+    d: [["d", "Ø (mm)"], ["flat", "Flat to far side"]],
+    dd: [["d", "Ø (mm)"], ["flat", "Across the flats"]],
+    rect: [["w", "Width (mm)"], ["h", "Height (mm)"], ["r", "Corner radius"]],
+  };
+
+  function renderMachining() {
+    const c = ed.tpl.cutout, shape = c && CUT_FIELDS[c.shape] ? c.shape : "";
+    $("teCutShape").innerHTML = [["", "None"], ...CUTOUT_SHAPES].map(([v, l]) => `<option value="${v}"${v === shape ? " selected" : ""}>${l}</option>`).join("");
+    const f = (k, label, ph = "") => `<label>${label} <input data-cf="${k}" type="number" min="0" step="0.1" value="${esc(c[k] ?? "")}"${ph ? ` placeholder="${ph}"` : ""}></label>`;
+    $("teCutFields").innerHTML = shape ? `<div class="row3">${CUT_FIELDS[shape].map(([k, l]) => f(k, l, k === "notchW" || k === "notchD" ? "none" : "")).join("")}</div>
+      <div class="row2">${f("x", "Centre X", "middle")}${f("y", "Centre Y", "middle")}</div>` : "";
+    const x = '<button class="icon-btn danger" data-hdel title="Remove"><svg class="ic sm"><use href="#i-x"/></svg></button>';
+    $("teHoles").innerHTML = (ed.tpl.holes || []).map((h, i) => `<div class="order-row" data-hi="${i}">
+        <span>X</span><input data-hf="x" type="number" step="0.1" value="${esc(h.x)}"><span>Y</span><input data-hf="y" type="number" step="0.1" value="${esc(h.y)}">
+        <span>Ø</span><input data-hf="d" type="number" min="0" step="0.1" value="${esc(h.d)}">${x}</div>`).join("")
+      || '<p class="muted">None.</p>';
+  }
+
+  // Leave out a cutout with no shape and holes with no size, and empty values.
+  function tidyMachining(t) {
+    const c = t.cutout;
+    if (c && CUT_FIELDS[c.shape]) {
+      for (const k of Object.keys(c)) {
+        if (k === "shape") continue;
+        if (c[k] !== "" && c[k] !== null && Number.isFinite(+c[k])) c[k] = +c[k]; else delete c[k];
+      }
+    } else delete t.cutout;
+    t.holes = (t.holes || []).map((h) => ({ x: +h.x || 0, y: +h.y || 0, d: +h.d })).filter((h) => h.d > 0);
+    if (!t.holes.length) delete t.holes;
   }
 
   // ---------- ordering: order numbers and accessories ----------
@@ -85,7 +188,7 @@ const TplEditor = (() => {
   function tidyOrdering(t) {
     const txt = (v) => String(v || "").trim();
     t.maker = txt(t.maker);
-    t.orders = (t.orders || []).map((o) => ({ no: txt(o.no), desc: txt(o.desc) })).filter((o) => o.no || o.desc);
+    t.orders = (t.orders || []).map((o) => ({ ...o, no: txt(o.no), desc: txt(o.desc) })).filter((o) => o.no || o.desc); // ...o keeps a library's machining per order number
     t.accessories = (t.accessories || []).map((a) => ({ qty: a.qty > 0 ? a.qty : 1, maker: txt(a.maker), no: txt(a.no), desc: txt(a.desc) })).filter((a) => a.no || a.desc);
     for (const k of ["maker", "orders", "accessories"]) if (!t[k] || !t[k].length) delete t[k];
   }
@@ -110,7 +213,7 @@ const TplEditor = (() => {
     ed = null;
   }
 
-  function renderAll() { renderPreview(); renderTable(); renderSelBar(); updateWarn(); }
+  function renderAll() { renderPreview(); renderTable(); renderIo(); renderSelBar(); updateWarn(); }
 
   function updateWarn() {
     const w = $("teWarn");
@@ -141,6 +244,11 @@ const TplEditor = (() => {
     for (let x = 0; x <= t.w + 1e-6; x += step) s += `<line x1="${x}" y1="${vb.y}" x2="${x}" y2="${vb.y + vb.h}" stroke="#e1e6ec" stroke-width="${unit}"/>`;
     for (let y = 0; y <= t.h + 1e-6; y += step) s += `<line x1="${vb.x}" y1="${y}" x2="${vb.x + vb.w}" y2="${y}" stroke="#e1e6ec" stroke-width="${unit}"/>`;
     s += `<rect width="${t.w}" height="${t.h}" rx="${t.radius || 0}" fill="${esc(t.fill)}" stroke="${darken(t.fill, 0.55)}" stroke-width="${unit * 1.5}"/>`;
+    // The cutout and screw holes, dashed in red.
+    const cut = cutoutOutline(t.cutout && t.cutout.shape ? t.cutout : null, t);
+    const red = `fill="none" stroke="#d32f2f" stroke-width="${unit * 1.5}" stroke-dasharray="${unit * 5} ${unit * 3}" pointer-events="none"`;
+    if (cut) s += `<path d="${outlinePath(cut)}" ${red}/>`;
+    for (const h of t.holes || []) if (+h.d > 0) s += `<circle cx="${+h.x}" cy="${+h.y}" r="${+h.d / 2}" ${red}/>`;
     const dim = 11 * unit;
     s += `<text x="${t.w / 2}" y="${-2.5 * dim / 2}" font-size="${dim}" text-anchor="middle" fill="#69717c" font-family="${FONT}">${round(t.w)} mm</text>`;
     s += `<text x="${-dim}" y="${t.h / 2}" font-size="${dim}" text-anchor="middle" fill="#69717c" font-family="${FONT}" transform="rotate(-90 ${-dim} ${t.h / 2})">${round(t.h)} mm</text>`;
@@ -242,7 +350,7 @@ const TplEditor = (() => {
   function setSel(ids) {
     ed.sel = new Set(ids);
     renderPreview();
-    for (const tr of $("teTerms").querySelectorAll("tr")) tr.classList.toggle("sel", ed.sel.has(tr.dataset.tid));
+    for (const tr of document.querySelectorAll("#teTerms tr, #teIoTerms tr")) tr.classList.toggle("sel", ed.sel.has(tr.dataset.tid));
     renderSelBar();
   }
 
@@ -431,6 +539,9 @@ const TplEditor = (() => {
     $("teFill").addEventListener("input", () => { before(); ed.tpl.fill = $("teFill").value; renderPreview(); });
     $("teShowName").addEventListener("change", () => { remember(); ed.tpl.showName = $("teShowName").checked; });
     $("teMaker").addEventListener("input", () => { before(); ed.tpl.maker = $("teMaker").value; });
+    $("teMaxWires").addEventListener("input", () => { before(); ed.tpl.maxWires = parseInt($("teMaxWires").value, 10) || 0; });
+    $("teSizeMin").addEventListener("input", () => { before(); ed.tpl.sizeMin = $("teSizeMin").value; });
+    $("teSizeMax").addEventListener("input", () => { before(); ed.tpl.sizeMax = $("teSizeMax").value; });
     $("teOrderAdd").addEventListener("click", () => {
       remember();
       ed.tpl.orders = [...(ed.tpl.orders || []), { no: "", desc: "" }];
@@ -461,6 +572,58 @@ const TplEditor = (() => {
         renderOrdering();
       });
     }
+    $("teCutShape").addEventListener("change", () => {
+      remember();
+      const v = $("teCutShape").value, old = ed.tpl.cutout || {};
+      if (!v) delete ed.tpl.cutout;
+      else {
+        // Keep the sizes the shapes share; a new round one starts at the 22.3 mm of a pushbutton.
+        ed.tpl.cutout = { ...old, shape: v };
+        if (v !== "rect" && !(+old.d > 0)) ed.tpl.cutout.d = 22.3;
+        if (v === "rect" && !(+old.w > 0 && +old.h > 0)) Object.assign(ed.tpl.cutout, { w: round(ed.tpl.w * 0.8), h: round(ed.tpl.h * 0.8) });
+      }
+      renderMachining();
+      renderPreview();
+    });
+    $("teCutFields").addEventListener("input", (e) => {
+      const k = e.target.dataset.cf;
+      if (!k || !ed.tpl.cutout) return;
+      before();
+      if (e.target.value === "") delete ed.tpl.cutout[k]; else ed.tpl.cutout[k] = parseFloat(e.target.value);
+      renderPreview();
+    });
+    $("teHoles").addEventListener("input", (e) => {
+      const row = e.target.closest("[data-hi]"), k = e.target.dataset.hf, h = row && ed.tpl.holes?.[+row.dataset.hi];
+      if (!h || !k) return;
+      before();
+      h[k] = parseFloat(e.target.value) || 0;
+      renderPreview();
+    });
+    $("teHoles").addEventListener("click", (e) => {
+      const row = e.target.closest("[data-hi]");
+      if (!row || !e.target.closest("[data-hdel]")) return;
+      remember();
+      ed.tpl.holes.splice(+row.dataset.hi, 1);
+      renderMachining();
+      renderPreview();
+    });
+    $("teHoleAdd").addEventListener("click", () => {
+      remember();
+      ed.tpl.holes = [...(ed.tpl.holes || []), { x: round(ed.tpl.w / 2), y: round(ed.tpl.h / 2), d: 3.2 }];
+      renderMachining();
+      renderPreview();
+      const xs = $("teHoles").querySelectorAll('[data-hf="x"]');
+      xs[xs.length - 1].focus();
+    });
+    $("teSqAdd").addEventListener("click", () => {
+      const sp = parseFloat($("teSqS").value), d = parseFloat($("teSqD").value);
+      if (!(sp > 0 && d > 0)) { $("teWarn").textContent = "Give the spacing between the holes and their diameter."; return; }
+      remember();
+      const cx = ed.tpl.w / 2, cy = ed.tpl.h / 2;
+      ed.tpl.holes = [...(ed.tpl.holes || []), ...[[-1, -1], [1, -1], [1, 1], [-1, 1]].map(([a, b]) => ({ x: round(cx + (a * sp) / 2), y: round(cy + (b * sp) / 2), d }))];
+      renderMachining();
+      renderPreview();
+    });
     $("rgAdd").addEventListener("click", addRow);
     $("gdAdd").addEventListener("click", addGrid);
     $("teLinkAll").addEventListener("click", () => { remember(); for (const t of ed.tpl.terminals) t.link = "1"; renderAll(); });
@@ -543,6 +706,77 @@ const TplEditor = (() => {
       renderAll();
     });
 
+    // PLC I/O: a terminal's kind applies to every selected terminal when its row is one of them.
+    const iot = $("teIoTerms");
+    iot.addEventListener("input", (e) => {
+      const tr = e.target.closest("tr[data-tid]"), f = e.target.dataset.io;
+      if (!tr || !f || f === "io") return;
+      before();
+      const x = ed.tpl.terminals.find((y) => y.id === tr.dataset.tid);
+      if (f === "ch") { const v = parseInt(e.target.value, 10); if (v >= 0) x.ch = v; else delete x.ch; }
+      else if (e.target.value.trim()) x.addr = e.target.value.trim(); else delete x.addr;
+      ioPlaceholders();
+    });
+    iot.addEventListener("change", (e) => {
+      const tr = e.target.closest("tr[data-tid]");
+      if (!tr || e.target.dataset.io !== "io") return;
+      remember();
+      const x = ed.tpl.terminals.find((y) => y.id === tr.dataset.tid);
+      for (const y of ed.sel.has(x.id) ? selected().filter(ioPoint) : [x]) {
+        if (e.target.value) y.io = e.target.value; else { delete y.io; delete y.ch; delete y.addr; }
+      }
+      renderIo();
+    });
+    iot.addEventListener("focusin", (e) => {
+      const tr = e.target.closest("tr[data-tid]");
+      if (tr && !ed.sel.has(tr.dataset.tid)) setSel([tr.dataset.tid]);
+    });
+    iot.addEventListener("click", (e) => {
+      const tr = e.target.closest("tr[data-tid]");
+      if (!tr) return;
+      const id = tr.dataset.tid;
+      if (e.shiftKey || e.ctrlKey || e.metaKey) {
+        const s = new Set(ed.sel);
+        if (s.has(id) && s.size > 1) s.delete(id); else s.add(id);
+        setSel(s);
+      } else if (!/INPUT|SELECT/.test(e.target.tagName) && !(ed.sel.size === 1 && ed.sel.has(id))) setSel([id]);
+    });
+    $("teIoAddr").addEventListener("input", (e) => {
+      const k = e.target.dataset.ia || e.target.dataset.is;
+      if (!k) return;
+      before();
+      const key = e.target.dataset.ia ? "ioAddr" : "ioStart";
+      ed.tpl[key] = { ...(ed.tpl[key] || {}), [k]: e.target.dataset.ia ? e.target.value : e.target.value === "" ? "" : +e.target.value };
+      ioPlaceholders();
+    });
+    $("teIoPreset").addEventListener("change", (e) => {
+      const p = IO_PRESETS.find(([id]) => id === e.target.value);
+      if (!p) return;
+      remember();
+      ed.tpl.ioAddr = { ...p[2] };
+      renderIo();
+    });
+    $("teIoGuess").addEventListener("click", () => {
+      remember();
+      let n = 0;
+      for (const x of ed.tpl.terminals.filter(ioPoint)) {
+        const g = guessIo(x.name);
+        if (!g) continue;
+        x.io = g.io;
+        if ("ch" in g) x.ch = g.ch; else delete x.ch;
+        delete x.addr;
+        n++;
+      }
+      renderIo();
+      $("teWarn").textContent = n ? `${n} terminal${n > 1 ? "s" : ""} marked from ${n > 1 ? "their names" : "its name"}. Check them over.` : "No terminal has a name like I0, IN3, O/2, Q0.1, AI1 or AO2.";
+      $("teWarn").classList.add("note");
+    });
+    $("teIoClear").addEventListener("click", () => {
+      remember();
+      for (const x of ed.tpl.terminals) { delete x.io; delete x.ch; delete x.addr; }
+      renderIo();
+    });
+
     const tb = $("teTerms");
     tb.addEventListener("input", (e) => {
       const tr = e.target.closest("tr[data-tid]");
@@ -566,7 +800,10 @@ const TplEditor = (() => {
       renderPreview();
       updateWarn();
     });
-    tb.addEventListener("change", (e) => { if (/^(side|kind)$/.test(e.target.dataset.k)) renderTable(); });
+    tb.addEventListener("change", (e) => {
+      if (/^(side|kind)$/.test(e.target.dataset.k)) renderTable();
+      if (/^(kind|name)$/.test(e.target.dataset.k)) renderIo();
+    });
     tb.addEventListener("focusin", (e) => {
       const tr = e.target.closest("tr[data-tid]");
       if (tr && !ed.sel.has(tr.dataset.tid)) setSel([tr.dataset.tid]);
@@ -621,6 +858,11 @@ const TplEditor = (() => {
       t.library = (t.library || "").trim() || PROJECT_LIBRARY;
       t.category = (t.category || "").trim() || "Custom";
       tidyOrdering(t);
+      tidyMachining(t);
+      tidyIo(t);
+      // What each terminal takes, for the design checks: left out when there's no limit.
+      if (t.maxWires > 0) t.maxWires = Math.round(t.maxWires); else delete t.maxWires;
+      for (const k of ["sizeMin", "sizeMax"]) if (String(t[k] || "").trim()) t[k] = String(t[k]).trim(); else delete t[k];
       const done = ed.opts.onSave;
       const copy = JSON.parse(JSON.stringify(t));
       close();

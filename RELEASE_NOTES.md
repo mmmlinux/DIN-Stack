@@ -2,9 +2,94 @@
 
 Changes to the ready-made libraries are listed separately: each library's folder in [`libraries/`](libraries/README.md) has its own release notes.
 
+## 1.12.7 — 2026-10-30
+
+### New features
+
+- **Design checks.** *Edit → Check the drawing* opens a new *Checks* tab listing problems as you work, worst first:
+  - **Errors:** tags used twice, a wire number used in different circuits, a cable name used twice, one circuit with two names, too many wires on a terminal, a wire too thin or thick for its terminal, and parts on top of each other.
+  - **Warnings:** parts off the end of their DIN rail, connector labels that join nothing, cables leaving the drawing with no destination, parts with nothing connected, wired PLC points with no symbol, and parts with no order number.
+  - **Notes** (off to begin with): wires and cables with no length, and unused terminals.
+
+  Click a line to select what it's about. *Choose checks* turns each one on or off for the drawing.
+- **What a terminal takes.** Object types can say how many wires each terminal takes and the thinnest and thickest wire, in the designer's *Terminals* tab.
+- **Spare terminals.** Right-click a terminal → *Mark as spare* for one left unwired on purpose, so the checks don't report it.
+
+### Improvements
+
+- The tabs under the drawing fit in narrower windows: they sit closer together, then drop their counts (except the checks'), and scroll sideways if they still don't fit, keeping the open one in sight.
+
+## 1.12.6 — 2026-10-30
+
+### New features
+
+- **PLC I/O list.** A new *I/O* tab at the bottom lists every input and output of the drawing's PLCs and I/O modules, with its address, symbol, description and what it's wired to. Type the symbols and descriptions straight into the list, or let *Suggest names from wiring* fill the empty ones from the circuit names and the devices each point is wired to. *Import names…* reads them back from a CSV file.
+- **PLC exports.** *File → Export…* downloads the I/O list as CSV, alias tags for Studio 5000 Logix Designer, symbols and descriptions for RSLogix 500, and a PLC tag table for TIA Portal (.xlsx). The I/O list can be printed too.
+- **I/O in object types.** A new *I/O* tab in the type designer marks which terminals are digital or analog inputs and outputs (or guesses from their names), and sets the pattern their addresses follow, with ready-made ones for Siemens S7, Rockwell Logix and MicroLogix / SLC 500. A part's panel has its slot and start bytes, and the address range of each kind of point.
+
+### Improvements
+
+- The type designer's *Add terminals* tab is now called *Terminals*, to make room for the new tab.
+- AACC Mechatronics library updated to 1.2.1.
+
+## 1.12.5 — 2026-10-30
+
+### Improvements
+
+- *Actual size* (100%) is on the = key instead of 1. Zoom in stays on +.
+
+## 1.12.4 — 2026-10-30
+
+### New features
+
+- **Zoom keys.** + and − zoom in and out, and 1 zooms to actual size (100%).
+
+### Improvements
+
+- **The View menu has everything about how the drawing looks**, in submenus: *Show* (what's shown or hidden, and *Show everything*), *Wires* and *Cables* (how they're drawn and labelled, as in their buttons at the bottom right), *Select only* (the selection filter), then *Zoom in*, *Zoom out*, *Actual size* and *Fit the drawing in the window*. Hover over an entry with an arrow, or click it, to open its submenu.
+
+## 1.12.3 — 2026-10-30
+
+### New features
+
+- **View menu.** A new *View* menu in the top bar shows or hides kinds of things on the drawing: back plates, wire ducts, DIN rails, devices, terminal blocks (with their end covers, plates and clamps), wires, cables, bus bars, text notes and the 0,0 marker. Hidden things can't be clicked or box-selected. While anything is hidden, a *Hidden: … · Show* button at the bottom right of the drawing brings it all back. It's only the drawing on screen, remembered in this browser; printing and exports always have everything.
+
+### Improvements
+
+- The 0,0 marker is shown or hidden from the View menu, instead of Settings.
+- *Fit the drawing in the window* (F) is in the View menu too.
+
+## 1.12.2 — 2026-10-30
+
+### New features
+
+- **0,0 on the drawing.** A marker shows where each page's DXF drawings are measured from, with red X and green Y arrows. Drag it to move it: it snaps to the corners and edge middles of the plate, rails, ducts and parts (Alt places it exactly).
+- **Setting 0,0.** With nothing selected, the panel's new *0,0 for DXF* section says where it is and takes exact distances along X and Y. *Auto* puts it back at the back plate's bottom left corner, and *Place on the drawing…* puts it where you click. Each page has its own, and it moves with the back plate.
+
+### Improvements
+
+- *Mirror left to right* for DXF drawings is now saved with the page, as it's the page that's drawn from behind, rather than being one choice for every page. On a mirrored page, the marker's X arrow points left and 0,0 starts at the plate's bottom right corner (its bottom left, seen from the front).
+- Settings' *DXF drawings* group can hide the 0,0 marker.
+
+## 1.12.1 — 2026-10-30
+
+### New features
+
+- **DXF drawings.** *File → Export…* has a new *DXF drawing* of the page you're on, for CAD programs and for machining the back plate or door. It's at 1:1 in millimetres, with the origin at the back plate's bottom left corner, and each kind of thing is on its own layer: PLATE, RAILS, DUCTS, PARTS, TEXT, CUTOUTS and HOLES. *Machining only* leaves just the plates, cutouts and holes, and *Mirror left to right* turns a page drawn from behind (a door seen from the wiring side) round to be machined from the front.
+- **Cutouts and screw holes.** The object type designer has a new *Machining* tab. A type can have a cutout for a device mounted through a door or panel (round, with an optional anti-rotation notch; round with one or two flats; or a rectangle with rounded corners) and screw holes. They show dashed in red on the type's drawing, turn with the part, and a part's panel says what's cut for it.
+- **DIN rail mounting holes.** Settings has a new *DXF drawings* group: DIN rails get mounting holes in DXF drawings, every 150 mm at most, Ø 5.5 mm, the first 15 mm from each end, to start with. 0 leaves them out.
+
+### Improvements
+
+- [AutomationDirect pushbuttons & pilot lights](libraries/automationdirect/RELEASE_NOTES.md) updated to 1.2.1.
+- [Amphenol 26482 Series 2 connectors](libraries/amphenol-26482-series-2/RELEASE_NOTES.md) updated to 1.2.1.
+- The Export window's *Drawing* section names the page it's of in its heading, with the DXF beside the SVG and PNG.
+- In the example, the door's pilot light H1 has its Ø 22.3 mm cutout, for the Door page's DXF drawing.
+- The help's Settings page now covers the *Lengths and wire ends* group too.
+
 ## 1.11.12 — 2026-10-29
 
-Numbered by hand to stay in the 1.11 series. These changes were first published as 1.12.1, which is no longer used.
+Version number set by hand.
 
 ### Improvements
 

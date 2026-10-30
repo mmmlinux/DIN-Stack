@@ -74,7 +74,7 @@
             <button data-cmd="save"><span>Save</span><kbd class="mod-key">Ctrl+S</kbd></button>
             <button data-cmd="saveAs"><span>Save as…</span><kbd class="mod-key">Ctrl+Shift+S</kbd></button>
             <div class="menu-sep"></div>
-            <button data-cmd="exportOpen" title="Images of the drawing, the lists as CSV files, and labels for a label printer"><span>Export…</span><kbd class="mod-key">Ctrl+E</kbd></button>
+            <button data-cmd="exportOpen" title="Images and DXF drawings of the page, the lists as CSV files, and labels for a label printer"><span>Export…</span><kbd class="mod-key">Ctrl+E</kbd></button>
             <button data-cmd="print"><span>Print / PDF…</span><kbd class="mod-key">Ctrl+P</kbd></button>
           </div>
         </div>
@@ -93,8 +93,54 @@
             <button data-cmd="selectAll"><span>Select all</span><kbd class="mod-key">Ctrl+A</kbd></button>
             <button data-cmd="selectNone" data-needs="sel"><span>Select none</span><kbd>Esc</kbd></button>
             <button data-cmd="find"><span>Find in the lists…</span><kbd class="mod-key">Ctrl+F</kbd></button>
+            <button data-cmd="check" title="Look for problems: tags used twice, too many wires on a terminal, parts off their rail…"><span>Check the drawing</span></button>
             <div class="menu-sep"></div>
             <button data-cmd="settings"><span>Settings…</span></button>
+          </div>
+        </div>
+        <div class="menu">
+          <button data-menu="viewMenu" id="viewMenuBtn" aria-haspopup="true">View <svg class="ic sm"><use href="#i-chev-d"/></svg></button>
+          <div class="menu-list" id="viewMenu" role="menu" hidden>
+            <div class="menu-sub">
+              <button class="sub-open" data-sub="viewShowSub" aria-haspopup="true" title="Kinds of things to show or hide on the drawing"><span>Show</span><svg class="ic sm sub-arrow"><use href="#i-chev-d"/></svg></button>
+              <div class="menu-list sub-list" id="viewShowSub" role="menu" hidden>
+                <button data-view="plate" role="menuitemcheckbox"><span>Back plates</span><svg class="ic sm check"><use href="#i-check"/></svg></button>
+                <button data-view="duct" role="menuitemcheckbox"><span>Wire ducts</span><svg class="ic sm check"><use href="#i-check"/></svg></button>
+                <button data-view="rail" role="menuitemcheckbox"><span>DIN rails</span><svg class="ic sm check"><use href="#i-check"/></svg></button>
+                <button data-view="device" role="menuitemcheckbox" title="Parts other than terminal blocks"><span>Devices</span><svg class="ic sm check"><use href="#i-check"/></svg></button>
+                <button data-view="terminal" role="menuitemcheckbox" title="Terminal blocks, and the end covers, plates and clamps between them"><span>Terminal blocks</span><svg class="ic sm check"><use href="#i-check"/></svg></button>
+                <div class="menu-sep"></div>
+                <button data-view="wire" role="menuitemcheckbox"><span>Wires</span><svg class="ic sm check"><use href="#i-check"/></svg></button>
+                <button data-view="cable" role="menuitemcheckbox" title="Cables, with their cores"><span>Cables</span><svg class="ic sm check"><use href="#i-check"/></svg></button>
+                <button data-view="bus" role="menuitemcheckbox"><span>Bus bars</span><svg class="ic sm check"><use href="#i-check"/></svg></button>
+                <div class="menu-sep"></div>
+                <button data-view="text" role="menuitemcheckbox"><span>Text notes</span><svg class="ic sm check"><use href="#i-check"/></svg></button>
+                <button data-view="origin" role="menuitemcheckbox" title="The marker showing where DXF drawings are measured from"><span>0,0 for DXF</span><svg class="ic sm check"><use href="#i-check"/></svg></button>
+                <div class="menu-sep"></div>
+                <button data-cmd="showEverything"><span>Show everything</span></button>
+                <p class="menu-hint">Printing and exports always have everything.</p>
+              </div>
+            </div>
+            <div class="menu-sub">
+              <button class="sub-open" data-sub="viewWiresSub" aria-haspopup="true" title="How wires are drawn and labelled (also the wire button at the bottom right)"><span>Wires</span><svg class="ic sm sub-arrow"><use href="#i-chev-d"/></svg></button>
+              <div class="menu-list sub-list" id="viewWiresSub" role="menu" hidden>
+              </div>
+            </div>
+            <div class="menu-sub">
+              <button class="sub-open" data-sub="viewCablesSub" aria-haspopup="true" title="How cables are drawn and labelled (also the cable button at the bottom right)"><span>Cables</span><svg class="ic sm sub-arrow"><use href="#i-chev-d"/></svg></button>
+              <div class="menu-list sub-list" id="viewCablesSub" role="menu" hidden>
+              </div>
+            </div>
+            <div class="menu-sub">
+              <button class="sub-open" data-sub="viewFilterSub" aria-haspopup="true" title="The selection filter: pick only certain kinds of things (also the funnel at the bottom right)"><span>Select only</span><svg class="ic sm sub-arrow"><use href="#i-chev-d"/></svg></button>
+              <div class="menu-list sub-list" id="viewFilterSub" role="menu" hidden>
+              </div>
+            </div>
+            <div class="menu-sep"></div>
+            <button data-cmd="zoomIn"><span>Zoom in</span><kbd>+</kbd></button>
+            <button data-cmd="zoomOut"><span>Zoom out</span><kbd>−</kbd></button>
+            <button data-cmd="zoom100" title="100%: real size on a typical screen"><span>Actual size</span><kbd>=</kbd></button>
+            <button data-cmd="fit"><span>Fit the drawing in the window</span><kbd>F</kbd></button>
           </div>
         </div>
         <div class="menu">
@@ -220,6 +266,7 @@
               <p class="menu-hint">Space or Esc turns the filter off.</p>
             </div>
           </div>
+          <button id="btnShowViews" class="filter-chip" data-cmd="showEverything" title="Some kinds of things are hidden from the View menu. Click to show everything again." hidden></button>
           <button id="btnShowAll" class="filter-chip" data-cmd="showAllWires" title="Some wires are hidden by Show only these wires. Click to show them all again." hidden></button>
         </div>
         <div class="float" role="group" aria-label="Zoom">
@@ -247,7 +294,10 @@
           <span class="tab-sep" aria-hidden="true"></span>
           <button data-tab="parts">Parts <span class="count" data-count="parts"></span></button>
           <button data-tab="terminals" title="Terminal strips: each block's wiring, top and bottom">Terminals <span class="count" data-count="terminals"></span></button>
+          <button data-tab="io" title="PLC I/O: each input and output with its address, symbol and what it's wired to">I/O <span class="count" data-count="io"></span></button>
           <button data-tab="bom" title="Bill of materials: everything to order, by maker and order number">BOM <span class="count" data-count="bom"></span></button>
+          <span class="tab-sep" aria-hidden="true"></span>
+          <button data-tab="checks" id="checksTab" title="Design checks">Checks <span class="count" data-count="checks"></span></button>
         </div>
         <div class="drawer-tools">
           <label class="search-box compact"><svg class="ic sm"><use href="#i-search"/></svg><input id="listFilter" type="search" placeholder="Filter…" aria-label="Filter the list"></label>
@@ -271,8 +321,10 @@
         <div class="tpl-form" data-tabs>
           <div class="mini-tabs main-tabs">
             <button data-pane-btn="te-part" class="on" id="teTabPart">Part</button>
-            <button data-pane-btn="te-terms">Add terminals</button>
+            <button data-pane-btn="te-terms" title="Add rows or grids of terminals">Terminals</button>
             <button data-pane-btn="te-order">Ordering</button>
+            <button data-pane-btn="te-mach">Machining</button>
+            <button data-pane-btn="te-io" title="PLC inputs and outputs, and their addresses">I/O</button>
           </div>
           <div data-pane="te-part" class="tpl-pane">
           <div class="form-sec">
@@ -380,6 +432,15 @@
             </div>
           </div>
           <p class="hint-text">Or click on the drawing to add terminals one at a time.</p>
+          <div class="form-sec">
+            <h4>What each terminal takes</h4>
+            <label>Wires per terminal, at most <input id="teMaxWires" type="number" min="0" step="1" placeholder="No limit"></label>
+            <div class="row2">
+              <label>Thinnest wire <input id="teSizeMin" type="text" list="gaugeList" placeholder="e.g. 0.2 mm²"></label>
+              <label>Thickest wire <input id="teSizeMax" type="text" list="gaugeList" placeholder="e.g. 4 mm²"></label>
+            </div>
+            <p class="hint-text">For the design checks (Edit → Check the drawing). Leave blank for no limit. mm² and AWG sizes can be mixed.</p>
+          </div>
           </div>
           <div data-pane="te-order" class="tpl-pane" hidden>
             <div class="form-sec">
@@ -398,6 +459,43 @@
               <div id="teAccs" class="order-rows"></div>
               <button id="teAccAdd" class="small"><svg class="ic sm"><use href="#i-plus"/></svg> Add accessory</button>
               <p class="hint-text">Ordered with every part of this type, such as a marker strip, or the relay for a socket. With no maker given, the type's is used.</p>
+            </div>
+          </div>
+          <div data-pane="te-mach" class="tpl-pane" hidden>
+            <div class="form-sec">
+              <h4>Cutout</h4>
+              <label>Shape <select id="teCutShape"></select></label>
+              <div id="teCutFields"></div>
+              <p class="hint-text">The hole cut in a door or panel for a device mounted through it, such as a pushbutton (Ø 22.3 or 30.5 mm) or a panel connector. A notch is at the top, as is a single flat.</p>
+            </div>
+            <div class="form-sec">
+              <h4>Screw holes</h4>
+              <div id="teHoles" class="order-rows"></div>
+              <button id="teHoleAdd" class="small"><svg class="ic sm"><use href="#i-plus"/></svg> Add hole</button>
+              <div class="hole-square">
+                <span>Four in a square round the middle:</span>
+                <input id="teSqS" type="number" min="0" step="0.1" placeholder="Spacing" title="Centre to centre, mm">
+                <input id="teSqD" type="number" min="0" step="0.1" placeholder="Ø" title="Hole diameter, mm">
+                <button id="teSqAdd" class="small">Add</button>
+              </div>
+              <p class="hint-text">Measured from the part's top left corner, like the terminals. The cutout and holes show in red on the drawing of the part, and go in DXF drawings (File → Export…).</p>
+            </div>
+          </div>
+          <div data-pane="te-io" class="tpl-pane" hidden>
+            <div class="form-sec">
+              <h4>PLC inputs and outputs</h4>
+              <div class="io-term-wrap"><table class="term-table io-term-table">
+                <thead><tr><th>Terminal</th><th title="DI digital input, DO digital output, AI analog input, AO analog output">I/O</th><th title="Channel. Left blank, the points of each kind count up from 0 in this list's order.">Ch</th><th title="Left blank, the address comes from the pattern below">Address</th></tr></thead>
+                <tbody id="teIoTerms"></tbody>
+              </table></div>
+              <div class="btn-row"><button id="teIoGuess" class="small" title="Mark terminals named like I0, IN3, I/2, %I0.1, O/2, Q0.0, AI1 or AO2">Guess from the names</button><button id="teIoClear" class="small">Clear all</button></div>
+              <p class="hint-text">For a PLC or I/O module: mark which terminals are inputs and outputs. A change applies to all the selected terminals. Blank boxes show what they come to.</p>
+            </div>
+            <div class="form-sec">
+              <h4>Addresses</h4>
+              <select id="teIoPreset" aria-label="Fill in the patterns for a PLC family"></select>
+              <div id="teIoAddr" class="io-addr"></div>
+              <p class="hint-text">A pattern for each kind of point. <b>{ch}</b> is the channel and <b>{slot}</b> the part's slot. <b>{byte}.{bit}</b> counts 8 points to a byte, and <b>{word}</b> a 2-byte word to each channel, from the start byte in the box beside it (each part can set its own).</p>
             </div>
           </div>
         </div>
@@ -495,6 +593,8 @@
           <h4>Output and reference</h4>
           <button data-pane-btn="h-lists">Lists and printing</button>
           <button data-pane-btn="h-bom">Bill of materials</button>
+          <button data-pane-btn="h-io">PLC I/O</button>
+          <button data-pane-btn="h-checks">Design checks</button>
           <button data-pane-btn="h-settings">Settings</button>
           <button data-pane-btn="h-keys">Keyboard and menus</button>
         </nav>
@@ -506,7 +606,7 @@
               <li><b>Drawing</b> (middle): your DIN rails, parts, wires and cables, at their real size in millimetres.</li>
               <li><b>Inspector</b> (right): the settings of whatever is selected. With nothing selected, it shows the diagram's title block (revision, date, author, notes).</li>
               <li><b>Lists</b> (bottom): wires, cables, bus bars, wire profiles and cable profiles, then the parts and the bill of materials (BOM). Drag the top edge to resize them, or use the arrow at the right to hide them.</li>
-              <li><b>Top bar:</b> the <b>File</b>, <b>Edit</b> and <b>Help</b> menus, undo and redo, and the diagram's title (click it to rename). <b>Settings…</b> is in the Edit menu.</li>
+              <li><b>Top bar:</b> the <b>File</b>, <b>Edit</b>, <b>View</b> and <b>Help</b> menus, undo and redo, and the diagram's title (click it to rename). <b>Settings…</b> and <b>Check the drawing</b> are in the Edit menu.</li>
               <li><b>Bottom left of the drawing:</b> the diagram's pages, one tab each, and <b>+</b> to add one.</li>
               <li><b>Bottom right of the drawing:</b> the <b>Select</b> and <b>Wire</b> tools, buttons for how wires and cables are drawn, the selection filter, and zoom.</li>
               <li><b>Right-click</b> anything, or empty space, for what you can do with it.</li>
@@ -525,7 +625,9 @@
           <section data-pane="h-view" hidden>
             <h3>Moving around</h3>
             <ul>
-              <li>Drag empty space to pan (or hold <b>Space</b> and drag). Use the mouse wheel to zoom, or the zoom buttons at the bottom right. <b>F</b> fits the diagram to the window.</li>
+              <li>Drag empty space to pan (or hold <b>Space</b> and drag). Use the mouse wheel to zoom, the zoom buttons at the bottom right, or <b>View</b> → <i>Zoom in</i> (+), <i>Zoom out</i> (−) and <i>Actual size</i> (=, 100%). <b>F</b> fits the diagram to the window.</li>
+              <li>The <b>View</b> menu gathers how the drawing looks: <b>Show</b>, <b>Wires</b> and <b>Cables</b> (the same choices as the wire and cable buttons at the bottom right), <b>Select only</b> (the selection filter, the funnel there) and zoom. Hover over an entry with <b>›</b>, or click it, to open its submenu.</li>
+              <li><b>View → Show</b> shows or hides kinds of things on the drawing: back plates, wire ducts, DIN rails, devices (parts other than terminal blocks), terminal blocks (with their end covers, plates and clamps), wires, cables, bus bars, text notes and the 0,0 marker. Hidden things can't be clicked or picked up by a selection box, and are taken out of the selection. While anything is hidden, a <b>Hidden: … · Show</b> button at the bottom right brings it all back, as does <b>View → Show → Show everything</b>. Wires on a hidden part still show, from where its terminals are. It's only the drawing on screen, remembered in this browser: printing and exports always have everything.</li>
               <li>With the <b>Measure</b> tool (M), drag across the drawing to measure a distance in mm and inches. The ends snap to terminals and to the corners and edges of parts and rails. Hold <b>Shift</b> to keep the line level or upright, or <b>Alt</b> to turn snapping off. A measurement at an angle also shows its distance across and down. Click or press Esc to clear it.</li>
             </ul>
             <h3>Selecting</h3>
@@ -803,8 +905,10 @@
             <h3>Designing a type</h3>
             <ul>
               <li><b>+ New part</b> opens the designer. Set the name, library, category, tag prefix and size in millimetres.</li>
-              <li>Click on the preview to add a terminal there, or add a whole row or grid at once from the <b>Add terminals</b> tab.</li>
+              <li>Click on the preview to add a terminal there, or add a whole row or grid at once from the <b>Terminals</b> tab. It also says what each terminal takes (how many wires, and the thinnest and thickest), for the design checks.</li>
               <li>The <b>Ordering</b> tab holds the maker, the order numbers the type covers, and any accessories ordered with each part (see <i>Bill of materials</i>).</li>
+              <li>The <b>Machining</b> tab gives what's cut in a door or panel for a device mounted through it, for DXF drawings: a <b>cutout</b> (round, with an optional anti-rotation notch; round with one or two flats; or a rectangle with rounded corners) and <b>screw holes</b>. They show dashed in red on the part's drawing there.</li>
+              <li>The <b>I/O</b> tab is for PLCs and I/O modules: which terminals are inputs and outputs, and the pattern their addresses follow (see <i>PLC I/O</i>).</li>
               <li><b>Terminal strip</b> says whether parts of the type are terminal blocks (a row in the terminal strip report for each level), dividers such as end covers, or neither. <i>Automatic</i> goes by the category: types in <i>Terminal blocks</i> are blocks, or dividers if they have no terminals for wires.</li>
               <li><b>Add a grid</b> places blocks like a 2 × 16 header or an IC. Numbering can wrap by rows or columns, go around like an IC, or use row letters (A1… B1…), starting from any corner.</li>
               <li>Drag over empty space to select several terminals, then drag one to move them all. Shift+click adds to the selection, the arrow keys nudge, Ctrl+D copies, Delete removes and Ctrl+Z undoes.</li>
@@ -831,7 +935,7 @@
           <section data-pane="h-lists" hidden>
             <h3>The lists</h3>
             <ul>
-              <li>The tabs at the bottom list the diagram's wires, cables, bus bars and profiles (wire profiles, then cable profiles), then its parts, terminal strips and bill of materials. Click a row to select it on the drawing.</li>
+              <li>The tabs at the bottom list the diagram's wires, cables, bus bars and profiles (wire profiles, then cable profiles), then its parts, terminal strips, PLC I/O and bill of materials, and last the problems the design checks find. Click a row to select it on the drawing.</li>
               <li>The <b>Filter</b> box shows only the rows containing what you type. In a narrower window it's just a magnifying glass until you click it.</li>
               <li>The parts list ends with a count of each type.</li>
             </ul>
@@ -842,14 +946,62 @@
               <li>Each sheet of drawing gets a page to itself, with a heading at the top that's the same on every sheet (title, page, revision, and which sheet it is when a page takes several), and the drawing centred under it. The notes go under the heading on the first sheet. The lists start on a new page. Choose which drawing pages to print (all, the one open, or none) and which lists.</li>
               <li><b>Around the drawing</b> picks the heading, nothing, or a <b>drawing frame</b>: a border with zones numbered across and lettered down, and a title strip along the bottom with the title, page (and its function and location), revision, date, author and sheet number. With the frame, the printed parts list gives each part's zone, e.g. <code>K1 (B3)</code>, or <code>2/B3</code> on page 2, and the notes print with the lists.</li>
               <li>Paper sizes and margins follow the wire standard: American uses Letter, Legal, Tabloid… and inches, metric uses A4, A3… and mm. Switching the standard in Settings switches the paper to the nearest size.</li>
-              <li><b>File → Export…</b> (Ctrl+E) gathers everything that downloads: an <b>SVG image</b> true to scale, for printing at 1:1 or using in other drawings, or a <b>PNG image</b>, both of the page you're on; the wire list, cable list, bill of materials, terminal strips and wire processing list as CSV files for a spreadsheet; and labels (below).</li>
-              <li><b>CSV</b> above the wire, cable, terminal strip and bill of materials lists downloads the list shown.</li>
+              <li><b>File → Export…</b> (Ctrl+E) gathers everything that downloads: an <b>SVG image</b> true to scale, for printing at 1:1 or using in other drawings, or a <b>PNG image</b>, both of the page you're on; a <b>DXF drawing</b> of it (below); the wire list, cable list, bill of materials, terminal strips and wire processing list as CSV files for a spreadsheet; the PLC I/O list and tags for PLC programs (see <i>PLC I/O</i>); and labels (below).</li>
+              <li><b>CSV</b> above the wire, cable, terminal strip, I/O and bill of materials lists downloads the list shown.</li>
+            </ul>
+            <h3>DXF drawings</h3>
+            <ul>
+              <li><b>File → Export… → DXF drawing</b> makes a DXF file of the page you're on for CAD programs and for machining the back plate or door, at 1:1 in millimetres.</li>
+              <li><b>0,0</b> is shown on the drawing by a marker with red X and green Y arrows. It starts at the back plate's bottom left corner (or the drawing's, with no plate). Drag the marker to move it: it snaps to the corners and edge middles of the plate, rails, ducts and parts, and Alt places it exactly. With nothing selected, the panel's <b>0,0 for DXF</b> section says where it is, takes exact distances along X and Y, and has <b>Auto</b> (back to the corner) and <b>Place on the drawing…</b> (click where it goes). Each page has its own. Hide the marker with <b>View → 0,0 for DXF</b>.</li>
+              <li>Each kind of thing is on its own layer: <b>PLATE</b>, <b>RAILS</b>, <b>DUCTS</b>, <b>PARTS</b> (outlines), <b>TEXT</b> (tags, labels and notes), <b>CUTOUTS</b> (the holes cut for door and panel devices, from their types' Machining tab) and <b>HOLES</b> (the parts' screw holes, and mounting holes along each DIN rail, spaced as set in Settings).</li>
+              <li><b>Machining only</b> leaves just the plates, cutouts and holes. <b>Mirror left to right</b> is for a page drawn from behind, such as a door seen from the wiring side, so it comes out as seen from the front. It's saved with the page (also in the <b>0,0 for DXF</b> section), and the marker's X arrow then points left, with 0,0 starting at the plate's bottom right corner, which is its bottom left seen from the front.</li>
+              <li>A part's panel says what's cut for it. For a panel connector, that can depend on the order number picked (a jam-nut receptacle has a different hole from a wall-mount one).</li>
             </ul>
             <h3>Labels</h3>
             <ul>
               <li>The <b>Labels</b> part of <b>File → Export…</b> makes a CSV file of markers and labels for label printer software (or a spreadsheet): <b>terminal markers</b> (one per block, or per level), <b>wire markers</b> (one per end of each loose wire, with where its other end goes if you like), <b>cable labels</b> (each end, with the cable's type), <b>core markers</b> (each end of each cable core), <b>device labels</b> (tagged parts on rails, with their description) and <b>connector labels</b> (tagged loose parts).</li>
               <li>Each row has the label's <b>Text</b>, a <b>Detail</b> for a second line, and <b>At</b>, where it goes. Tick the kinds to include; each shows how many there are. Order them by name or by position, and get one file with a <i>Kind</i> column or a file per kind. A preview shows the first few.</li>
               <li>With IEC designations, labels name parts as on the drawing (<code>-K1</code>), or in full if you tick <i>Designations in full</i>.</li>
+            </ul>
+          </section>
+          <section data-pane="h-io" hidden>
+            <h3>PLC I/O</h3>
+            <ul>
+              <li>The <b>I/O</b> tab at the bottom lists every input and output of the drawing's PLCs and I/O modules: its terminal, kind (DI, DO, AI or AO), address, symbol, description and what it's wired to. The rows of each part come under its tag; click one to select the part.</li>
+              <li>Type a point's <b>symbol</b> (its tag name in the PLC program) and <b>description</b> straight into the list. A box left empty shows greyed what <b>Suggest names from wiring</b> would put there: the name of the circuit, or the device the point is wired to, through terminal blocks. The suggestion only fills empty boxes.</li>
+              <li><b>Wired to</b> lists the devices on the point's circuit, or, with none, the terminal blocks and cable cores it goes out through.</li>
+              <li><b>Import names…</b> reads symbols and descriptions back from a CSV file: an I/O list from here (edited in a spreadsheet, say), a Studio 5000 tag export, an RSLogix 500 export, or a TIA Portal tag table saved as CSV. Rows are matched by address, or else by module and terminal.</li>
+            </ul>
+            <h3>Setting up a PLC's type</h3>
+            <ul>
+              <li>In the object type's <b>I/O</b> tab, give each input and output terminal its kind. <b>Guess from the names</b> marks terminals named like I0, IN3, I/2, %I0.1, O/2, Q0.0, AI1 or AO2. A change applies to all the selected terminals.</li>
+              <li>Under <b>Addresses</b>, give a pattern for each kind of point, or fill them in for Siemens S7, Rockwell Logix or MicroLogix / SLC 500. In a pattern, <code>{ch}</code> is the channel and <code>{slot}</code> the part's slot; <code>{byte}.{bit}</code> counts 8 points to a byte and <code>{word}</code> one 2-byte word to each channel, from the start byte beside the pattern.</li>
+              <li>Channels count up from 0 among the points of each kind, in terminal order, unless one is typed in. A terminal can also have an address of its own, such as the MicroLogix 1100's analog inputs at I:0.4 and I:0.5.</li>
+              <li>A part's panel has a <b>PLC I/O</b> section with its slot and start bytes, when its addresses use them, and the address range of each kind of point.</li>
+            </ul>
+            <h3>Exports</h3>
+            <ul>
+              <li><b>File → Export…</b> downloads the I/O list as CSV, and files to import into the PLC program:</li>
+              <li><b>Studio 5000 tags:</b> alias tags for Studio 5000 Logix Designer or RSLogix 5000 (<i>File → Import → Tags</i>). Each alias points at the point's address, such as <code>Local:1:I.Data.0</code>, which the program must already have.</li>
+              <li><b>RSLogix 500:</b> symbols and descriptions for MicroLogix and SLC 500 (<i>Tools → Database → ASCII Import</i>). Symbols are made capitals, up to 20 characters, and descriptions are split into lines of 20.</li>
+              <li><b>TIA Portal tags (.xlsx):</b> a PLC tag table to import in TIA Portal (open <i>PLC tags</i>, then <i>Import</i>). Name the tag table in the Export window.</li>
+              <li>Those three take the points with an address and a symbol (RSLogix 500: a symbol or a description), and say if a symbol is used twice. <i>PLC I/O list</i> in the print settings adds the list to the printout.</li>
+            </ul>
+          </section>
+          <section data-pane="h-checks" hidden>
+            <h3>Design checks</h3>
+            <ul>
+              <li><b>Edit → Check the drawing</b> opens the <b>Checks</b> tab at the bottom. It lists what's wrong as you work, worst first: a red dot for an error, yellow for a warning and blue for a note. The count on the tab takes the colour of the worst.</li>
+              <li>Click a line to select what it's about, on its page.</li>
+              <li><b>Choose checks</b> turns each check on or off for this drawing. <i>No length</i> and <i>Unused terminals</i> are off to begin with.</li>
+            </ul>
+            <h3>What they look for</h3>
+            <ul>
+              <li><b>Errors:</b> two parts with the same tag; the same wire number in different circuits (one number for a whole circuit is fine), or two cables with the same name; one circuit with two names; more wires on a terminal than it takes; a wire too thin or thick for its terminal; parts on top of each other.</li>
+              <li><b>Warnings:</b> a part hanging off the end of its DIN rail; a connector label whose name isn't used anywhere else, so it joins nothing; a cable leaving the drawing with no destination; a part with nothing connected; a wired PLC point with no symbol; parts with no order number.</li>
+              <li><b>Notes:</b> wires and cables with no length (estimated or set); terminals with no wire.</li>
+              <li>How many wires a terminal takes, and the thinnest and thickest wire, are set in the object type, in the <b>Terminals</b> tab under <i>What each terminal takes</i>. mm² and AWG sizes can be mixed.</li>
+              <li>A terminal left unwired on purpose can be marked spare: right-click it → <i>Mark as spare</i>, or <b>Mark spare</b> on an <i>Unused terminals</i> line. Spare terminals aren't reported, and say so in the part's panel.</li>
             </ul>
           </section>
           <section data-pane="h-bom" hidden>
@@ -874,7 +1026,9 @@
             <ul>
               <li><b>Standards:</b> the wire standard (American or metric) and how terminals are referenced (<code>TB101-1</code>, <code>TB101:1</code>…), with buttons for the wire profiles and print settings.</li>
               <li><b>Wires</b> and <b>Cables:</b> how they're drawn and what their labels show, as in the wires and cables buttons at the bottom right.</li>
+              <li><b>DXF drawings:</b> the mounting holes along each DIN rail: how far apart they go at most, their size, and how far the first and last are from the rail's ends.</li>
               <li><b>Labels and text:</b> page names for ends on another page, terminal names, and the tag and label text heights.</li>
+              <li><b>Lengths and wire ends:</b> the spare wire at each end, how ends are finished and stripped, and how full wire ducts may get.</li>
               <li><b>Placing parts:</b> the snap grid, snapping to neighbours and rails, and the build direction.</li>
               <li><b>Starting up:</b> whether the start screen appears when DIN Stack opens. This one is saved in the browser.</li>
             </ul>
@@ -901,6 +1055,7 @@
               <tr><td>R / Shift+R</td><td>Rotate selected 90° right / left (a wire duct turns between across and upright)</td></tr>
               <tr><td>Arrow keys</td><td>Nudge one grid step (Shift = ×10)</td></tr>
               <tr><td>F</td><td>Fit to window</td></tr>
+              <tr><td>+ / − / =</td><td>Zoom in / zoom out / actual size (100%)</td></tr>
               <tr><td>Space + drag</td><td>Pan</td></tr>
               <tr><td>Alt + drag</td><td>Move without snapping</td></tr>
               <tr><td>Ctrl + click</td><td>Add to the selection, or take out</td></tr>
@@ -1128,6 +1283,7 @@
   <div id="printArea" class="print-area"></div>
   <input id="fileInput" type="file" accept=".json,application/json" hidden>
   <input id="libFileInput" type="file" accept=".json,application/json" hidden>
+  <input id="ioFileInput" type="file" accept=".csv,.txt,text/csv" hidden>
   <div id="toast" class="toast" hidden></div>
 
   <script src="js/version.js"></script>
@@ -1136,6 +1292,9 @@
   <script src="js/render.js"></script>
   <script src="js/reports.js"></script>
   <script src="js/routing.js"></script>
+  <script src="js/dxf.js"></script>
+  <script src="js/xlsx.js"></script>
+  <script src="js/checks.js"></script>
   <script src="js/tpl-editor.js"></script>
   <script src="js/app.js"></script>
 </body>

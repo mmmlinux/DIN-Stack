@@ -347,6 +347,13 @@ body.lib-dragging, body.lib-dragging * { cursor: copy !important; user-select: n
 .menu-list .check { visibility: hidden; color: var(--accent); }
 .menu-list .on .check { visibility: visible; }
 .menu-list button.on { font-weight: 600; }
+/* Submenus open beside their item: on hover, or a click for touch. */
+.menu-sub { position: relative; display: flex; flex-direction: column; }
+.menu-sub > .sub-list { left: calc(100% + 2px); top: -5px; }
+.menu-list .sub-arrow { transform: rotate(-90deg); color: var(--muted); }
+.menu-sub > .sub-open.open { background: var(--accent-soft); }
+.menus button.some-hidden::after { content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--accent); margin-left: 2px; }
+#viewMenu button:not(.on)[data-view] span { color: var(--muted); }
 .float > button { background: none; border-color: transparent; padding: 4px 8px; }
 .float > button:hover { background: var(--panel-3); }
 .float > .icon-btn { padding: 4px; }
@@ -413,15 +420,24 @@ body.lib-dragging, body.lib-dragging * { cursor: copy !important; user-select: n
 .drawer-tabs button.active { border-bottom-color: var(--accent); color: var(--text); font-weight: 600; }
 .drawer-tabs .count { font-size: 11px; font-weight: 500; background: var(--panel-3); color: var(--muted); border-radius: 9px; padding: 0 6px; min-width: 18px; }
 .drawer-tabs button.active .count { background: var(--accent-soft); color: var(--accent); }
-/* A narrower drawer: the filter is just its icon until it's clicked or has text, and the tabs sit closer
-   together; narrower still, the tabs lose their counts. (After the rules above, so these win.) */
-@container (max-width: 800px) {
+/* A narrower drawer: the tabs and their counts sit closer together; then the filter is just its icon until
+   it's clicked or has text; then the tabs lose their counts, except the checks', whose colour says how bad
+   things are. When they still don't all fit, the tabs scroll sideways. (After the rules above, so these win.) */
+@container (max-width: 1000px) {
+  .drawer-tabs button { padding: 7px 6px 6px; }
+  .drawer-tabs .count { padding: 0 5px; min-width: 16px; }
+  .drawer-tabs .tab-sep { margin: 7px 2px; }
+}
+@container (max-width: 920px) {
   .drawer-tools .search-box.compact { flex-basis: 28px; min-width: 28px; cursor: text; }
   .drawer-tools .search-box.compact:not(:focus-within):has(input:placeholder-shown) input { width: 0; flex: 0; }
-  .drawer-tabs button { padding: 7px 6px 6px; }
+}
+@container (max-width: 780px) {
+  .drawer-tabs button:not(#checksTab) .count { display: none; }
 }
 @container (max-width: 640px) {
-  .drawer-tabs .count { display: none; }
+  .drawer-tabs button { padding: 7px 3px 6px; }
+  .drawer-tabs .tab-sep { display: none; }
 }
 .drawer-tools { display: flex; align-items: center; gap: 6px; margin-left: auto; }
 .drawer.collapsed .drawer-tools > :not(#btnDrawerToggle) { display: none; }
@@ -458,6 +474,29 @@ body.lib-dragging, body.lib-dragging * { cursor: copy !important; user-select: n
 .strip-table td .muted { margin-left: 6px; }
 .strip-table tr[data-strip] { cursor: pointer; }
 .strip-table tr[data-strip]:hover td { background: var(--panel-3); }
+/* PLC I/O: a heading row per module; the symbol and description are typed in place. */
+.io-table tr.group td { background: var(--panel-2); font-weight: 700; padding-top: 6px; }
+.io-table tr.group .muted { font-weight: 400; }
+.io-table td { vertical-align: middle; }
+.io-table td.wrap { white-space: normal; min-width: 140px; }
+.io-table input { width: 100%; min-width: 120px; padding: 2px 4px; }
+.io-table td:nth-child(5) input { min-width: 200px; }
+.io-sum { margin: 0 0 6px; padding-left: 18px; font-size: 12px; }
+/* Design checks: a dot for how bad each is; the choice of checks above the list. */
+.lvl { display: inline-block; width: 9px; height: 9px; border-radius: 50%; vertical-align: 0; }
+.lvl-error { background: #d32f2f; }
+.lvl-warn { background: #e6a700; }
+.lvl-info { background: #3b82f6; }
+.drawer-tabs button .count.lvl-error { background: #d32f2f; color: #fff; }
+.drawer-tabs button .count.lvl-warn { background: #e6a700; color: #1d2126; }
+.check-table tbody tr[data-check] { cursor: pointer; }
+.check-table tbody tr[data-check]:hover { background: var(--panel-2); }
+.check-table td:first-child { width: 1px; }
+.check-table td.wrap { white-space: normal; }
+.check-table td .small { margin-left: 6px; padding: 1px 8px; }
+.check-pick { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 2px 14px; padding: 4px 12px 10px; font-size: 12px; border-bottom: 1px solid var(--border); }
+.check-pick .check { margin: 0; }
+.list-head button.on { background: var(--accent-soft); }
 .strip-pick { display: flex; align-items: center; gap: 6px; }
 .strip-pick select { width: auto; max-width: 220px; padding: 2px 6px; font-size: 12px; }
 /* Profiles: wire profiles and cable profiles, one under the other */
@@ -493,6 +532,7 @@ body.lib-dragging, body.lib-dragging * { cursor: copy !important; user-select: n
 .set-group .field { margin-bottom: 10px; }
 .set-group .check { margin-bottom: 6px; }
 .set-group .row2.wide-first { grid-template-columns: 3fr 2fr; }
+.set-group .dxf-mirror { align-self: end; margin-bottom: 7px; }
 .modal.settings-modal { width: min(860px, 100%); }
 #settingsBody { display: grid; grid-template-columns: 1fr 1fr; gap: 0 24px; align-items: start; }
 @media (max-width: 720px) { #settingsBody { grid-template-columns: 1fr; } .set-col + .set-col { margin-top: 16px; } }
@@ -628,7 +668,7 @@ body.lib-dragging, body.lib-dragging * { cursor: copy !important; user-select: n
 .tpl-form label { display: flex; flex-direction: column; gap: 3px; font-size: 12px; color: var(--muted); margin-bottom: 8px; }
 .tpl-form label input, .tpl-form label select { width: 100%; }
 .mini-tabs { display: flex; gap: 2px; margin: -4px -4px 10px; padding: 2px; background: var(--panel-3); border-radius: 7px; }
-.mini-tabs button { flex: 1; border: none; background: none; padding: 4px 8px; border-radius: 5px; color: var(--muted); font-size: 12px; }
+.mini-tabs button { flex: 1; border: none; background: none; padding: 4px 6px; border-radius: 5px; color: var(--muted); font-size: 12px; white-space: nowrap; }
 .mini-tabs button.on { background: var(--panel); color: var(--text); font-weight: 600; box-shadow: var(--shadow-sm); }
 .mini-tabs.main-tabs { margin: 0; }
 .tpl-pane { display: flex; flex-direction: column; gap: 10px; }
@@ -644,6 +684,10 @@ body.lib-dragging, body.lib-dragging * { cursor: copy !important; user-select: n
 .order-row .icon-btn { padding: 2px; }
 .order-card { display: flex; flex-direction: column; gap: 4px; padding: 6px; border: 1px solid var(--border); border-radius: 6px; }
 .order-card .order-row:last-child { padding-right: 24px; }
+.order-row > span { font-size: 12px; color: var(--muted); flex: 0 0 auto; }
+.hole-square { display: flex; flex-wrap: wrap; gap: 4px; align-items: center; margin-bottom: 8px; font-size: 12px; color: var(--muted); }
+.hole-square input { width: 72px; padding: 3px 5px; }
+.hole-square > span { flex-basis: 100%; }
 [data-pane][hidden] { display: none !important; }
 .tpl-preview-col { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
 .tpl-preview-tools { display: flex; justify-content: space-between; align-items: center; gap: 10px; color: var(--muted); font-size: 12px; }
@@ -655,6 +699,18 @@ label.inline { display: inline-flex; align-items: center; gap: 6px; color: var(-
 .sel-bar[hidden] { display: none; }
 .sel-bar .muted { margin-right: 4px; }
 .term-table-wrap { max-height: 200px; overflow: auto; border: 1px solid var(--border); border-radius: 8px; }
+/* The type designer's PLC I/O tab: a row for each terminal, then a pattern (and start byte) for each kind. */
+.io-term-wrap { max-height: 300px; overflow: auto; border: 1px solid var(--border); border-radius: 8px; margin-bottom: 8px; }
+.io-term-table td:first-child { max-width: 80px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.io-term-table td:nth-child(2) { width: 58px; }
+.io-term-table td:nth-child(3) { width: 46px; }
+.io-term-table input:disabled { background: transparent; border-color: transparent; }
+.io-addr { display: flex; flex-direction: column; gap: 4px; margin: 6px 0 8px; }
+.io-addr-row { display: flex; gap: 4px; align-items: center; }
+.io-addr-row > span { flex: 0 0 24px; font-size: 12px; font-weight: 600; color: var(--muted); }
+.io-addr-row input[data-ia] { flex: 1; min-width: 0; padding: 3px 5px; }
+.io-addr-row input[data-is] { flex: 0 0 56px; padding: 3px 5px; }
+#teIoPreset { width: 100%; }
 .term-table { width: 100%; border-collapse: collapse; font-size: 12px; }
 .term-table th { position: sticky; top: 0; background: var(--panel-2); text-align: left; padding: 4px 6px; color: var(--muted); font-weight: 600; }
 .term-table td { padding: 2px 4px; border-top: 1px solid var(--border); }
@@ -703,7 +759,6 @@ label.inline { display: inline-flex; align-items: center; gap: 6px; color: var(-
   #app { grid-template-columns: 230px minmax(0, 1fr) 270px; }
   #app.left-collapsed { grid-template-columns: 36px minmax(0, 1fr) 270px; }
   .menus > .menu > button { padding: 4px 6px; }
-  .drawer-tabs button { padding: 7px 7px 6px; }
 }
 @media (max-width: 900px) {
   body { overflow: auto; }

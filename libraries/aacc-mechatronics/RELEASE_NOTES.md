@@ -4,6 +4,10 @@ This library has its own version number (MAJOR.COMMIT.CHANGE), separate from DIN
 
 To get a newer version into a diagram, click **+** beside the library drop-down and use **Refresh** next to the library. It's highlighted when the diagram has an older version.
 
+## 1.2.1 — 2026-10-30
+
+- The MicroLogix 1100's inputs and outputs are marked for DIN Stack's PLC I/O list, with their addresses: I:0/0 to I:0/9, O:0/0 to O:0/5, and the analog inputs IV1 and IV2 at I:0.4 and I:0.5. Needs DIN Stack 1.12.6 or later.
+
 ## 1.1.2 — 2026-10-29
 
 - The TE terminal blocks and their end sections are marked as such, for DIN Stack's terminal strip report. Needs DIN Stack 1.11.6 or later.

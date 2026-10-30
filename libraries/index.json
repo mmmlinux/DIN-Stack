@@ -17,14 +17,14 @@
     },
     {
       "file": "amphenol-26482-series-2/amphenol-26482-series-2.json",
-      "version": "1.1.1",
+      "version": "1.2.1",
       "name": "Amphenol 26482 Series 2 connectors",
       "description": "MIL-DTL-26482 Series 2 circular receptacles (MS3470, MS3471, MS3474): all 34 insert arrangements, shell sizes 8 to 24, in pin and socket versions, with contacts placed as seen from the wire side.",
       "types": 68
     },
     {
       "file": "automationdirect/automationdirect-pushbuttons.json",
-      "version": "1.1.1",
+      "version": "1.2.1",
       "name": "AutomationDirect pushbuttons & pilot lights",
       "description": "22 mm GCX pushbuttons, selector switches, E-stops and pilot lights, Fuji Command and Eaton HT800 30 mm devices, and Schmersal N (22 mm) and E (30 mm) devices with their EF contact and light blocks and NK-T/RK-T joysticks, one type per contact arrangement, drawn from the wiring side.",
       "types": 52
@@ -38,7 +38,7 @@
     },
     {
       "file": "aacc-mechatronics/aacc-mechatronics.json",
-      "version": "1.1.2",
+      "version": "1.2.1",
       "name": "AACC Mechatronics",
       "description": "Parts for the AACC Mechatronics panel: TE (Entrelec) ZK2.5 and ZK2.5-4P PI-spring terminal blocks with their EK2.5 end sections, a TB-2503 barrier strip, the Allen-Bradley MicroLogix 1100 PLC (all four 1763-L16 versions), the Siemens CSM 1277 switch and PM1207 power supply, and the RHINO PSP05-020S 5 V supply.",
       "types": 12

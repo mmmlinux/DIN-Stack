@@ -29,6 +29,10 @@ The library as first published in DIN Stack 1.1.2, before libraries had version 
 
 File: [`automationdirect-pushbuttons.json`](automationdirect-pushbuttons.json)
 
+### 1.2.1 — 2026-10-30
+
+- Panel cutouts for DIN Stack's DXF drawings: Ø 22.3 mm for the GCX devices and the Schmersal joysticks, Ø 30.5 mm for the Fuji Command and Eaton HT800 devices, centred on the device. The Schmersal N/E types cover both 22 mm and 30 mm devices, so they're left without one. Needs DIN Stack 1.12.1 or later.
+
 ### 1.1.1 — 2026-10-29
 
 - Makers and order numbers filled in for DIN Stack's bill of materials, where the type's name gives whole part numbers: GCX, Fuji and Eaton devices, the Schmersal EF contact blocks and the joysticks. Types whose names only give families (such as GCX119x) have their maker only.

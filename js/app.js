@@ -179,6 +179,70 @@
     }
     return best ? { x: r3(best.x), y: r3(best.y) } : exact;
   }
+  // ---------- 0,0 for DXF drawings ----------
+  // originPick: placing it with the next click; originHover: where that click would put it.
+  let originPick = false, originHover = null;
+  const curPage = () => doc.pages.find((p) => p.id === doc.page);
+  const ORIGIN_TIP = "Click where 0,0 goes: it snaps to the corners and edge middles of the plate, rails, ducts and parts · Alt places it exactly · Esc cancels";
+  // Where 0,0 lands: the nearest corner or edge middle of something on the page, within a few pixels, or the
+  // snap grid. Alt places it exactly.
+  function originSnap(w, free) {
+    if (free) return { x: r3(w.x), y: r3(w.y) };
+    let best = null, bd = 10 / view.scale;
+    for (const b of pageItems().filter((it) => it.kind !== "text").map(boxOf)) {
+      for (const fx of [0, 0.5, 1]) for (const fy of [0, 0.5, 1]) {
+        if (fx === 0.5 && fy === 0.5) continue;
+        const x = b.x + b.w * fx, y = b.y + b.h * fy, d = Math.hypot(x - w.x, y - w.y);
+        if (d < bd) { bd = d; best = { x, y }; }
+      }
+    }
+    const g = doc.settings.grid || 0;
+    return best ? { x: r3(best.x), y: r3(best.y) } : { x: g > 0 ? Math.round(w.x / g) * g : r3(w.x), y: g > 0 ? Math.round(w.y / g) * g : r3(w.y) };
+  }
+  // Put the open page's 0,0 at p, a point on the drawing: stored as how far it is from the page's corner.
+  function setOrigin(p) {
+    const pg = curPage(), c = originCorner(doc, doc.page);
+    if (!pg || !c) return;
+    const dx = r3(pg.mirror ? c.x - p.x : p.x - c.x), dy = r3(c.y - p.y);
+    if (dx || dy) { pg.ox = dx; pg.oy = dy; } else { delete pg.ox; delete pg.oy; }
+  }
+  function startOriginPick() {
+    if (!originCorner(doc, doc.page)) { toast("Put something on the page first"); return; }
+    originPick = true;
+    originHover = null;
+    setHint(ORIGIN_TIP);
+    renderOverlay();
+  }
+  function endOriginPick() {
+    originPick = false;
+    originHover = null;
+    setHint("");
+    renderOverlay();
+  }
+  // The 0,0 marker, at a fixed size on screen: X (red) and Y (green) arrows the way they go in the DXF,
+  // and a ring to drag it by. While placing it, a faded copy follows the pointer.
+  function originOverlay(px) {
+    if (!viewShows("origin") && !originPick) return "";
+    const o = dxfOrigin(doc, doc.page);
+    if (!o) return "";
+    const mark = (x, y, ghost) => {
+      const L = 30 * px, h = 6 * px, sx = o.mirror ? -1 : 1;
+      const arrow = (x2, y2, c, tip) => `<line x1="${x}" y1="${y}" x2="${x2}" y2="${y2}" stroke="${c}" stroke-width="${2 * px}"/><path d="${tip}" fill="${c}"/>`;
+      const xEnd = x + sx * L, yEnd = y - L;
+      let s = `<g pointer-events="none"${ghost ? ' opacity="0.5"' : ""}>`
+        + arrow(xEnd, y, "#dc2626", `M${xEnd + sx * h} ${y}L${xEnd} ${y - h * 0.6}L${xEnd} ${y + h * 0.6}Z`)
+        + arrow(x, yEnd, "#16a34a", `M${x} ${yEnd - h}L${x - h * 0.6} ${yEnd}L${x + h * 0.6} ${yEnd}Z`)
+        + `<text x="${xEnd + sx * (h + 3 * px)}" y="${y + 4 * px}" font-size="${11 * px}" font-family="${FONT}" font-weight="bold" fill="#dc2626"${o.mirror ? ' text-anchor="end"' : ""}>X</text>`
+        + `<text x="${x + 5 * px}" y="${yEnd - 2 * px}" font-size="${11 * px}" font-family="${FONT}" font-weight="bold" fill="#16a34a">Y</text>`
+        + `<text x="${x - sx * 6 * px}" y="${y + 15 * px}" font-size="${11 * px}" font-family="${FONT}" fill="#1d2126" stroke="#fff" stroke-width="${3 * px}" paint-order="stroke"${o.mirror ? "" : ' text-anchor="end"'}>0,0</text>`
+        + `<circle cx="${x}" cy="${y}" r="${5 * px}" fill="#fff" stroke="#1d2126" stroke-width="${2 * px}"/><circle cx="${x}" cy="${y}" r="${1.5 * px}" fill="#1d2126"/></g>`;
+      // A larger invisible ring to grab it by.
+      if (!ghost) s += `<circle class="origin-grip" data-origin="1" cx="${x}" cy="${y}" r="${10 * px}" fill="transparent"><title>0,0 for DXF drawings: drag to move it (it snaps to corners), or set it in the panel with nothing selected. Hide it from the View menu.</title></circle>`;
+      return s;
+    };
+    return mark(o.x, o.y, false) + (originPick && originHover ? mark(originHover.x, originHover.y, true) : "");
+  }
+
   // The end of a measurement from a, snapped, and with Shift held kept level or upright.
   function measureEnd(a, w, e) {
     const b = measureSnap(w, e.altKey);
@@ -445,14 +509,31 @@
     updateToolbar();
   }
   const allows = (kind) => !selFilter || selFilter.has(kind);
+  // ---------- the View menu: kinds of things shown or hidden on the drawing ----------
+  // ui.hidden: the kinds hidden in this browser (viewKindOf's, "wire", "cable", "bus" and "origin"). Only
+  // the drawing on screen: printing and exports have everything.
+  const VIEW_KINDS = { plate: "back plates", duct: "wire ducts", rail: "DIN rails", device: "devices", terminal: "terminal blocks", wire: "wires", cable: "cables", bus: "bus bars", text: "text notes", origin: "0,0" };
+  const viewShows = (k) => !(ui.hidden || []).includes(k);
+  const inView = (it) => viewShows(viewKindOf(it, tplOf(it)));
+  function setViewHidden(list) {
+    ui.hidden = list.filter((k) => k in VIEW_KINDS);
+    saveUi();
+    // Nothing hidden stays selected.
+    for (const id of [...sel]) {
+      const it = itemById(id), c = !it && connById(id);
+      const off = it ? !inView(it) : c ? !viewShows(cableOf(id) ? "cable" : "wire") : cableById(id) ? !viewShows("cable") : busById(id) ? !viewShows("bus") : false;
+      if (off) sel.delete(id);
+    }
+    refresh();
+  }
   // Everything the filter lets through, for Ctrl+A.
   function selectableAll() {
-    if (!selFilter) return pageItems().map((i) => i.id);
+    if (!selFilter) return pageItems().filter(inView).map((i) => i.id);
     return [
-      ...pageItems().filter((i) => allows(i.kind)).map((i) => i.id),
-      ...(allows("wire") ? doc.connections.filter((c) => (!hiddenWires || !hiddenWires.has(c.id)) && (endHere(c.a) || endHere(c.b))).map((c) => c.id) : []),
-      ...(allows("bus") ? doc.buses.filter((b) => b.terms.some(endHere)).map((b) => b.id) : []),
-      ...(allows("cable") ? doc.cables.filter((cb) => pagesOf(cb.id).includes(doc.page)).map((cb) => cb.id) : []),
+      ...pageItems().filter((i) => allows(i.kind) && inView(i)).map((i) => i.id),
+      ...(allows("wire") && viewShows("wire") ? doc.connections.filter((c) => (!hiddenWires || !hiddenWires.has(c.id)) && (endHere(c.a) || endHere(c.b))).map((c) => c.id) : []),
+      ...(allows("bus") && viewShows("bus") ? doc.buses.filter((b) => b.terms.some(endHere)).map((b) => b.id) : []),
+      ...(allows("cable") && viewShows("cable") ? doc.cables.filter((cb) => pagesOf(cb.id).includes(doc.page)).map((cb) => cb.id) : []),
     ];
   }
 
@@ -691,7 +772,7 @@
   function renderCanvas() {
     // Ducts show their fill, red when over the limit.
     const ductFill = pageItems().some((i) => i.kind === "duct") ? ductContents() : null;
-    content.innerHTML = renderDiagram(doc, { interactive: true, sel, pending, busEdit, hideWires: hiddenWires, page: doc.page, ductFill });
+    content.innerHTML = renderDiagram(doc, { interactive: true, sel, pending, busEdit, hideWires: hiddenWires, page: doc.page, ductFill, hide: new Set(ui.hidden || []) });
     svg.classList.toggle("wiring", !!pending || !!busEdit);
     svg.classList.toggle("filtering", !!selFilter && !busEdit);
     renderOverlay();
@@ -796,6 +877,7 @@
       const p = endHere(from) && termPoint(from);
       if (p) s += `<line x1="${p.x}" y1="${p.y}" x2="${mouse.x}" y2="${mouse.y}" stroke="#f59e0b" stroke-width="${2 * px}" stroke-dasharray="${6 * px} ${4 * px}" pointer-events="none"/>`;
     }
+    s += originOverlay(px);
     s += selectedEnds(px);
     s += measureOverlay(px);
     s += pickedCoreBadges(px);
@@ -809,25 +891,36 @@
   function updateToolbar() {
     $("btnUndo").disabled = !undoStack.length;
     $("btnRedo").disabled = !redoStack.length;
-    const look = [];
+    // The wire and cable choices, in their menus at the bottom right and in View.
+    const lookOn = (b) => (b.dataset.lines ? b.dataset.lines === doc.settings.lines
+      : b.dataset.cables ? b.dataset.cables === doc.settings.cables
+      : b.dataset.lname ? b.dataset.lname === doc.settings.labelName : doc.settings[b.dataset.wopt] !== false);
+    for (const b of document.querySelectorAll("[data-lines], [data-wopt], [data-lname], [data-cables]")) {
+      b.classList.toggle("on", lookOn(b));
+      b.setAttribute("aria-checked", String(lookOn(b)));
+    }
     for (const menu of ["linesMenu", "cablesMenu"]) {
       const look = [];
       for (const b of $(menu).querySelectorAll("[data-lines], [data-wopt], [data-lname], [data-cables]")) {
-        const on = b.dataset.lines ? b.dataset.lines === doc.settings.lines
-          : b.dataset.cables ? b.dataset.cables === doc.settings.cables
-          : b.dataset.lname ? b.dataset.lname === doc.settings.labelName : doc.settings[b.dataset.wopt] !== false;
-        b.classList.toggle("on", on);
-        b.setAttribute("aria-checked", String(on));
-        if (on) look.push(b.textContent.trim().toLowerCase());
+        if (lookOn(b)) look.push(b.textContent.trim().toLowerCase());
       }
       const what = menu === "linesMenu" ? ["btnLines", "Wires"] : ["btnCables", "Cables"];
       $(what[0]).title = `${what[1]}: ${look.join(", ")}. Click to change how they're drawn.`;
     }
+    for (const b of document.querySelectorAll("#viewMenu [data-view]")) {
+      const on = viewShows(b.dataset.view);
+      b.classList.toggle("on", on);
+      b.setAttribute("aria-checked", String(on));
+    }
+    const off = Object.keys(VIEW_KINDS).filter((k) => !viewShows(k));
+    $("btnShowViews").hidden = !off.length;
+    if (off.length) $("btnShowViews").innerHTML = `Hidden: ${esc(off.map((k) => VIEW_KINDS[k]).join(", "))} · <b>Show</b>`;
+    $("viewMenuBtn").classList.toggle("some-hidden", !!off.length);
     const hidden = hiddenWires ? doc.connections.filter((c) => hiddenWires.has(c.id)).length : 0;
     if (!hidden) hiddenWires = null; // the hidden wires were all deleted
     $("btnShowAll").hidden = !hidden;
     if (hidden) $("btnShowAll").innerHTML = `Showing ${doc.connections.length - hidden} of ${plural(doc.connections.length, "wire")} · <b>Show all</b>`;
-    for (const b of document.querySelectorAll("#selFilterMenu [data-selkind]")) {
+    for (const b of document.querySelectorAll("[data-selkind]")) {
       const on = b.dataset.selkind ? !!selFilter && selFilter.has(b.dataset.selkind) : !selFilter;
       b.classList.toggle("on", on);
       b.setAttribute("aria-checked", String(on));
@@ -2841,6 +2934,19 @@
     let itemEl = e.target.closest("[data-item]");
     const handleEl = e.target.closest("[data-cable-handle]");
 
+    if (originPick) {
+      checkpoint();
+      setOrigin(originSnap(w, e.altKey));
+      endOriginPick();
+      refresh();
+      return;
+    }
+    if (e.target.closest("[data-origin]") && !busEdit) {
+      drag = { type: "origin", sx: e.clientX, sy: e.clientY, moved: false };
+      svg.setPointerCapture(e.pointerId);
+      return;
+    }
+
     if (tool === "measure" && !busEdit) {
       pending = null;
       const a = measureSnap(w, e.altKey);
@@ -2981,6 +3087,11 @@
     if (!drag) {
       const t = e.target.closest && e.target.closest("[data-term]");
       if (busEdit) return;
+      if (originPick) {
+        originHover = originSnap(w, e.altKey);
+        renderOverlay();
+        return;
+      }
       if (tool === "measure") {
         measureHover = measureSnap(w, e.altKey);
         setHint(measure ? `${measureText(measure).main} — click to clear, or drag to measure again` : MEASURE_TIP);
@@ -3054,6 +3165,13 @@
       note.gap = Math.max(0, Math.round(out * 2) / 2);
       setHint(`Bracket ${note.gap} mm from the items`);
       renderCanvas();
+    } else if (drag.type === "origin") {
+      if (!drag.moved && Math.hypot(e.clientX - drag.sx, e.clientY - drag.sy) < 3) return;
+      if (!drag.moved) { checkpoint(); drag.moved = true; }
+      setOrigin(originSnap(w, e.altKey));
+      const pg = curPage();
+      setHint(`0,0 is ${originText(pg)}`);
+      renderOverlay();
     } else if (drag.type === "cablept") {
       if (!drag.moved && Math.hypot(e.clientX - drag.sx, e.clientY - drag.sy) < 3) return;
       const cb = cableById(drag.id);
@@ -3091,6 +3209,9 @@
     svg.classList.remove("panning");
     if (d.type === "pan") {
       if (!d.moved && !d.keepSel) { sel.clear(); refresh(); }
+    } else if (d.type === "origin") {
+      setHint("");
+      if (d.moved) refresh();
     } else if (d.type === "cablept") {
       if (d.moved) refresh();
     } else if (d.type === "bracket") {
@@ -3121,7 +3242,7 @@
       const y1 = Math.min(d.start.y, d.cur.y), y2 = Math.max(d.start.y, d.cur.y);
       sel = new Set(d.base);
       for (const it of pageItems()) {
-        if (!allows(it.kind)) continue;
+        if (!allows(it.kind) || !inView(it)) continue;
         const b = boxOf(it);
         // A rail, duct or back plate only when the box takes in all of it, so boxing the parts on a rail (or
         // beside a duct, or on the plate) doesn't pick it up too.
@@ -3132,9 +3253,9 @@
         // Filtered boxes also pick wires, bus bars and cables with an end in the box.
         const inBox = (e) => { const p = endHere(e) && termPoint(e); return !!p && p.x >= x1 && p.x <= x2 && p.y >= y1 && p.y <= y2; };
         const wireIn = (c) => !!c && [c.a, c.b].some(inBox);
-        if (allows("wire")) for (const c of doc.connections) if ((!hiddenWires || !hiddenWires.has(c.id)) && wireIn(c)) sel.add(c.id);
-        if (allows("bus")) for (const b of doc.buses) if (b.terms.some(inBox)) sel.add(b.id);
-        if (allows("cable")) for (const cb of doc.cables) if (cablePlugs(cb).some(inBox) || cb.wires.some((id) => wireIn(connById(id)))) sel.add(cb.id);
+        if (allows("wire") && viewShows("wire")) for (const c of doc.connections) if ((!hiddenWires || !hiddenWires.has(c.id)) && !cableOf(c.id) && wireIn(c)) sel.add(c.id);
+        if (allows("bus") && viewShows("bus")) for (const b of doc.buses) if (b.terms.some(inBox)) sel.add(b.id);
+        if (allows("cable") && viewShows("cable")) for (const cb of doc.cables) if (cablePlugs(cb).some(inBox) || cb.wires.some((id) => wireIn(connById(id)))) sel.add(cb.id);
       }
       refresh();
     }
@@ -3371,6 +3492,9 @@
         } },
         { label: "Bus bar from here…", run: () => { startBus(null); toggleBusTerm(term.item + "|" + term.term); } },
         { label: "Cable from here…", run: () => startCable(null, term.item + "|" + term.term) },
+        it.spare?.[term.term]
+          ? { label: "Not a spare", run: () => { checkpoint(); setSpare(it, [term.term], false); refresh(); } }
+          : { label: "Mark as spare (not to be wired)", run: () => { checkpoint(); setSpare(it, [term.term], true); refresh(); } },
         "-");
     }
     out.push(
@@ -3627,6 +3751,7 @@
     else if (mod && k.toLowerCase() === "v") { e.preventDefault(); paste(); }
     else if (mod && k.toLowerCase() === "a") { e.preventDefault(); sel = new Set(selectableAll()); refresh(); }
     else if (k === "Delete" || k === "Backspace") { e.preventDefault(); deleteSelection(); }
+    else if (k === "Escape" && originPick) endOriginPick();
     else if (k === "Escape") {
       if (measure && !drag) { measure = null; setHint(""); renderOverlay(); }
       else if (pending) { pending = null; setHint(""); renderCanvas(); }
@@ -3638,6 +3763,9 @@
     else if ((k === "m" || k === "M") && !mod) setTool("measure");
     else if (k === "r" || k === "R") rotateSelection(e.shiftKey ? -1 : 1);
     else if ((k === "f" || k === "F") && !mod) fit();
+    else if (k === "+" && !mod) zoomAt(1.25);
+    else if ((k === "-" || k === "_") && !mod) zoomAt(0.8);
+    else if (k === "=" && !mod) zoomAt(PX_PER_MM / view.scale);
     else if (k === "?") openHelp();
     else if (k === " ") {
       if (selFilter && !e.repeat) setSelFilter(null);
@@ -3857,7 +3985,33 @@
         ${iecRefs(doc) ? `<div class="row2">${field("Function (=)", inp("meta.func", m.func, "text", 'placeholder="e.g. PUMP"'))}${field("Location (+)", inp("meta.location", m.location, "text", 'placeholder="e.g. CAB1"'))}</div>` : ""}
         ${field("Notes", area("meta.notes", m.notes, 3))}
         <p class="hint-text">Shown on the printout and at the top of exported images. The title is at the top of the window.${iecRefs(doc) ? " The function and location apply to pages that don't set their own." : ""}</p>`)
-      + (iecRefs(doc) ? pageAspectSection() : ""));
+      + (iecRefs(doc) ? pageAspectSection() : "")
+      + originSection());
+  }
+
+  // Where the open page's 0,0 is, in words: "at the back plate's bottom left corner", or how far from it.
+  function originText(pg) {
+    const c = originCorner(doc, pg.id);
+    if (!c) return "";
+    const corner = `${c.plate ? "the back plate's" : "the drawing's"} bottom ${pg.mirror ? "right" : "left"} corner`;
+    const dx = +pg.ox || 0, dy = +pg.oy || 0;
+    if (!dx && !dy) return "at " + corner;
+    const side = pg.mirror ? ["left", "right"] : ["right", "left"];
+    const parts = [dx && `${mmText(Math.abs(dx))} ${dx > 0 ? side[0] : side[1]}`, dy && `${mmText(Math.abs(dy))} ${dy > 0 ? "up" : "down"}`].filter(Boolean);
+    return `${parts.join(" and ")} from ${corner}`;
+  }
+
+  // The open page's 0,0 for DXF drawings, and whether it's drawn from behind.
+  function originSection() {
+    const i = doc.pages.findIndex((p) => p.id === doc.page), p = doc.pages[i];
+    const o = dxfOrigin(doc, p.id);
+    return section("diag.origin", `0,0 for DXF · ${esc(p.name)}`, `
+      ${o ? `<p class="hint-text" id="originText">0,0 is ${esc(originText(p))}.</p>
+      <div class="row2">${field(`Along X (mm, ${p.mirror ? "left" : "right"})`, num(`pages.${i}.ox`, +p.ox || 0, 1))}${field("Along Y (mm, up)", num(`pages.${i}.oy`, +p.oy || 0, 1))}</div>
+      <div class="btn-row"><button class="small" data-act="originAuto" id="originAuto"${o.auto ? " disabled" : ""} title="Back to the ${o.plate ? "back plate's" : "drawing's"} corner">Auto</button><button class="small" data-act="originPick" title="Click on the drawing where it goes">Place on the drawing…</button></div>`
+        : '<p class="hint-text">Once there\'s something on this page, 0,0 is at the back plate\'s bottom left corner, or the drawing\'s.</p>'}
+      ${chk(`pages.${i}.mirror`, !!p.mirror, "Drawn from behind: mirror DXF drawings left to right (a door seen from the wiring side)")}
+      <p class="hint-text">Drag the 0,0 marker on the drawing to move it; it snaps to corners and edge middles. DXF drawings are measured from it.</p>`);
   }
 
   // The page open's function and location, for IEC designations.
@@ -3892,7 +4046,9 @@
     }).map(({ t, refs }) => {
       const label = isSlot(t) ? "" : `<input type="text" class="term-label" data-tl="${esc(t.id)}" list="netList" value="${esc(it.termLabels?.[t.id] || "")}" placeholder="Connector label" title="Name the circuit at this terminal, e.g. +24V. Terminals with the same label are connected.">`;
       const desc = String(t.desc || "").trim();
-      return `<tr><td>${esc(t.name)}${desc ? `<br><span class="muted">${esc(desc)}</span>` : ""}</td><td>${label}${refs || (isSlot(t) ? '<span class="muted">Bus bar slot</span>' : "")}</td></tr>`;
+      const point = isIoKind(t.io) && !isSlot(t) && !isPort(t) ? [t.io, ioAddress(it, tpl, t), it.io?.[t.id]?.symbol].filter(Boolean).join(" · ") : "";
+      const spare = it.spare?.[t.id] ? '<br><span class="muted" title="Marked spare: not to be wired. Right-click the terminal to unmark it.">spare</span>' : "";
+      return `<tr><td>${esc(t.name)}${desc ? `<br><span class="muted">${esc(desc)}</span>` : ""}${point ? `<br><span class="muted io-point">${esc(point)}</span>` : ""}${spare}</td><td>${label}${refs || (isSlot(t) ? '<span class="muted">Bus bar slot</span>' : "")}</td></tr>`;
     }).join("");
     const prefix = tagPrefix(it.tag);
     const sub = `${esc(tpl.name)} · ${r3(b.w)} × ${r3(b.h)} mm${it.rot ? ` · rotated ${it.rot}°` : ""}${isLoose(tpl) ? " · loose" : ""}`;
@@ -3916,7 +4072,29 @@
           ${prefix ? `<button class="small" data-act="selPrefix" title="Select every part tagged ${esc(prefix)} plus a number">All “${esc(prefix)}…”</button>` : ""}
         </div></div>
         <div class="btn-row"><button class="small" data-act="busNew" title="Bridge terminals with a bus bar">${ic("bus", "sm")} New bus bar…</button></div>`)
+      + (ioTerms(tpl).length ? section("part.io", "PLC I/O", partIoFields(it, tpl), ioTerms(tpl).length) : "")
       + section("part.terms", "Terminals", tpl.terminals.length ? `<table class="term-list">${rows}</table>` : '<p class="muted">This type has no terminals.</p>', tpl.terminals.length));
+  }
+
+  // A PLC's or I/O module's points: its slot and start bytes when its addresses use them, and the address
+  // range of each kind of point.
+  function partIoFields(it, tpl) {
+    const pts = ioTerms(tpl), kinds = IO_KINDS.filter(([k]) => pts.some((t) => t.io === k));
+    const f = [];
+    if (ioUses(tpl, "slot")) f.push(field("Slot", num("slot", it.slot, 1, 'min="0" placeholder="0"')));
+    if (ioUses(tpl, "byte") || ioUses(tpl, "word")) {
+      for (const [k] of kinds) if (/\{(byte|word)\}/.test(String(tpl.ioAddr?.[k] || ""))) f.push(field(`${k} start byte`, num("ioStart." + k, it.ioStart?.[k], 1, `min="0" placeholder="${finiteOr(tpl.ioStart?.[k], 0)}"`)));
+    }
+    const lines = kinds.map(([k, name]) => {
+      const ts = pts.filter((t) => t.io === k), a = ioAddress(it, tpl, ts[0]), b = ioAddress(it, tpl, ts[ts.length - 1]);
+      return `<li>${plural(ts.length, name.toLowerCase())}${a ? `: ${esc(a)}${ts.length > 1 ? ` … ${esc(b)}` : ""}` : ""}</li>`;
+    }).join("");
+    const named = pts.filter((t) => String(it.io?.[t.id]?.symbol || "").trim()).length;
+    const rows = [];
+    for (let i = 0; i < f.length; i += 2) rows.push(`<div class="row2">${f[i]}${f[i + 1] || ""}</div>`);
+    return `${rows.join("")}<ul class="io-sum">${lines}</ul>
+      <p class="hint-text">${named ? `${named} of ${pts.length} named.` : "None named yet."} Symbols and descriptions are typed in the I/O list.${pts.some((t) => !ioAddress(it, tpl, t)) ? " Some points have no address: the type's PLC I/O tab sets the pattern." : ""}</p>
+      <div class="btn-row"><button class="small" data-act="ioList">Open the I/O list</button><button class="small" data-act="ioSuggest" title="Fill in this part's empty symbols and descriptions from what each point is wired to">Suggest names from wiring</button></div>`;
   }
 
   // A part's order number: the type's numbers to pick from, or any other typed in. With nothing picked, the
@@ -3929,9 +4107,12 @@
     const maker = types.size === 1 ? tpl.maker || "" : "";
     const acc = types.size === 1 ? (tpl.accessories || []).length : 0;
     const v = same(parts, (p) => p.orderNo || "");
+    // What's cut for it, which can depend on the order number (a jam nut receptacle's hole, say).
+    const cuts = new Set(parts.map((p) => machiningText(partMachining(p, tplOf(p)))));
+    const cut = cuts.size === 1 ? [...cuts][0] : "";
     return `<datalist id="partOrderList">${types.size === 1 ? orders.map((o) => `<option value="${esc(o.no)}">${esc(o.desc || "")}</option>`).join("") : ""}</datalist>
       ${field("Order no.", inp("orderNo", v, "text", `list="partOrderList" placeholder="${esc(def ? def + " (the type's)" : "e.g. 3044076")}"`))}
-      <p class="hint-text">${types.size > 1 ? "These parts are of different types. " : ""}${maker ? `Made by ${esc(maker)}. ` : ""}${acc ? `${plural(acc, "accessory", "accessories")} ordered with each. ` : ""}The maker, order numbers and accessories are set in the object type, under Ordering.</p>`;
+      <p class="hint-text">${types.size > 1 ? "These parts are of different types. " : ""}${maker ? `Made by ${esc(maker)}. ` : ""}${acc ? `${plural(acc, "accessory", "accessories")} ordered with each. ` : ""}${cut ? `Machining: ${esc(cut)}. ` : ""}The maker, order numbers and accessories are set in the object type, under Ordering${cut ? ", and the cutout and holes under Machining" : ""}.</p>`;
   }
 
   // The strip name of terminal blocks or dividers, with the strip they're in now as its placeholder. With
@@ -4574,6 +4755,15 @@
     const { kind, list } = editTargets(el);
     if (!k || !list.length) return;
     const v = readInput(el);
+    if (k === "slot" || k.startsWith("ioStart.")) {
+      for (const target of list) {
+        if (k === "slot") { if (v === undefined) delete target.slot; else target.slot = Math.max(0, Math.round(v)); continue; }
+        const kind = k.slice(8), st = { ...(target.ioStart || {}) };
+        if (v === undefined) delete st[kind]; else st[kind] = Math.max(0, Math.round(v));
+        if (Object.keys(st).length) target.ioStart = st; else delete target.ioStart;
+      }
+      return;
+    }
     if (v === undefined || v === "__mixed") return;
     if (k === "settings.wireStd") {
       setWireStd(v);
@@ -4659,6 +4849,11 @@
     renderDrawer();
     updateToolbar();
     scheduleSave();
+    // Typing where 0,0 goes: say where that is now, without redrawing the panel being typed in.
+    if (/^pages\.\d+\.o[xy]$/.test(el.dataset.k) && $("originText")) {
+      $("originText").textContent = `0,0 is ${originText(curPage())}.`;
+      $("originAuto").disabled = !!dxfOrigin(doc, doc.page)?.auto;
+    }
   });
   props.addEventListener("change", (e) => {
     const el = e.target;
@@ -4729,8 +4924,8 @@
       checkpoint();
       applyProp(el);
       refresh();
-    } else if (/^(tag|wire|color|gauge)$/.test(el.dataset.k)) {
-      renderProps(); // refresh headings and swatches once editing finishes
+    } else if (/^(tag|wire|color|gauge|slot|ioStart\..+)$/.test(el.dataset.k)) {
+      renderProps(); // refresh headings, swatches and I/O addresses once editing finishes
     }
   });
   props.addEventListener("click", (e) => {
@@ -4793,6 +4988,8 @@
       case "busAlt1": alternateBus(1); break;
       case "selType": selectSameType(target); break;
       case "makeStrip": makeStrip(); break;
+      case "ioList": showDrawerTab("io"); break;
+      case "ioSuggest": suggestIo([target]); break;
       case "selPrefix": selectSamePrefix(target); break;
       case "dir": checkpoint(); doc.settings.direction = b.dataset.dir; refresh(); break;
       case "repeat": repeatSideways(target.id, Math.min(200, parseInt($("repeatCount").value, 10) || 0)); break;
@@ -4809,6 +5006,8 @@
       case "cableReset": checkpoint(); resetLayout(target); refresh(); break;
       case "fitRail": fitRail(target); break;
       case "fitPlate": fitPlate(target); break;
+      case "originAuto": { checkpoint(); const pg = curPage(); delete pg.ox; delete pg.oy; refresh(); break; }
+      case "originPick": startOriginPick(); break;
       case "ductSelect": sel = new Set(ductRouted(target).ids); refresh(); break;
       case "ductShow": showOnlyWires(ductRouted(target).wires); break;
       case "routeVia": routeVia([...sel].map(itemById).filter((i) => i && i.kind === "duct")); break;
@@ -5323,6 +5522,15 @@
           ${field("Drawn", sel_("settings.cables", s.cables, [["full", "Full length"], ["break", "Broken: a tail at each end"]]))}
           ${chk("settings.labelCable", s.labelCable, "Cable names in labels (C1 → K1)")}
         </div>
+        <div class="set-group">
+          <h4>DXF drawings</h4>
+          <div class="row3">
+            ${field("DIN rail holes every (mm)", num("settings.railHoles", s.railHoles, 10, 'min="0"'))}
+            ${field("Hole Ø (mm)", num("settings.railHoleD", s.railHoleD, 0.1, 'min="0"'))}
+            ${field("First from the ends (mm)", num("settings.railHoleEnd", s.railHoleEnd, 1, 'min="0"'))}
+          </div>
+          <p class="hint-text">Mounting holes along each DIN rail in DXF drawings (File → Export…), evenly spaced and no further apart than this; 0 leaves them out. Door and panel devices' cutouts and screw holes come from their types.</p>
+        </div>
       </div>
       <div class="set-col">
         <div class="set-group">
@@ -5440,11 +5648,19 @@
   function renderDrawer() {
     const body = $("drawerBody");
     const bom = bomOf(), strips = terminalStrips(doc);
-    const counts = { wires: doc.connections.length, cables: doc.cables.length, buses: doc.buses.length, parts: doc.items.filter((i) => i.kind === "part").length, profiles: doc.wireProfiles.length + doc.cableProfiles.length, terminals: strips.length, bom: bom.length };
+    const ioCount = doc.items.reduce((n, i) => n + (i.kind === "part" ? ioTerms(tplOf(i)).length : 0), 0);
+    const checks = checksNow();
+    const counts = { wires: doc.connections.length, cables: doc.cables.length, buses: doc.buses.length, parts: doc.items.filter((i) => i.kind === "part").length, profiles: doc.wireProfiles.length + doc.cableProfiles.length, terminals: strips.length, io: ioCount, bom: bom.length, checks: checks.length };
     for (const el of document.querySelectorAll("[data-count]")) el.textContent = counts[el.dataset.count];
+    const worst = checks[0]?.level || "";
+    $("checksTab").querySelector(".count").className = "count" + (worst ? " lvl-" + worst : "");
+    $("checksTab").title = checks.length ? `Design checks: ${plural(checks.filter((c) => c.level === "error").length, "error")}, ${plural(checks.filter((c) => c.level === "warn").length, "warning")} and ${plural(checks.filter((c) => c.level === "info").length, "note")}` : "Design checks: nothing found";
     for (const b of document.querySelectorAll(".drawer-tabs [data-tab]")) b.classList.toggle("active", b.dataset.tab === drawerTab);
-    $("btnListCsv").hidden = !["wires", "cables", "bom", "terminals"].includes(drawerTab);
-    $("btnListCsv").title = { cables: "Download the cable list as a CSV file", bom: "Download the bill of materials as a CSV file", terminals: "Download the terminal strip shown (or all of them) as a CSV file" }[drawerTab] || "Download the wire list as a CSV file";
+    // In a narrow window the tabs scroll sideways: keep the one shown in sight.
+    const at = document.querySelector(".drawer-tabs button.active"), row = at?.parentElement;
+    if (at && (at.offsetLeft < row.scrollLeft || at.offsetLeft + at.offsetWidth > row.scrollLeft + row.clientWidth)) row.scrollLeft = at.offsetLeft - (row.clientWidth - at.offsetWidth) / 2;
+    $("btnListCsv").hidden = !["wires", "cables", "bom", "terminals", "io"].includes(drawerTab);
+    $("btnListCsv").title = { cables: "Download the cable list as a CSV file", bom: "Download the bill of materials as a CSV file", terminals: "Download the terminal strip shown (or all of them) as a CSV file", io: "Download the I/O list as a CSV file (File → Export… has the PLC programs' formats)" }[drawerTab] || "Download the wire list as a CSV file";
     $("btnBomAdd").hidden = drawerTab !== "bom";
     if ($("drawer").classList.contains("collapsed")) return; // filled in when it's opened
     // With more than one page, the wires, cables, bus bars and parts lists say which page each is on.
@@ -5510,6 +5726,10 @@
       body.innerHTML = bar + stripTable(shownStrips(), true);
     } else if (drawerTab === "bom") {
       body.innerHTML = bomTable(bom);
+    } else if (drawerTab === "io") {
+      body.innerHTML = ioTable(ioList(), multi);
+    } else if (drawerTab === "checks") {
+      body.innerHTML = checksTable(checks, multi);
     } else {
       const parts = doc.items.filter((i) => i.kind === "part" && tplOf(i)).sort((a, b) => natural(a.tag || "~", b.tag || "~"));
       const summary = partsSummary().map((g) => `${g.tags.length} × ${esc(g.tpl.name)}`).join(" · ");
@@ -5568,13 +5788,61 @@
     return `<table class="${live ? "data-table " : ""}strip-table"><thead><tr><th>Block</th><th>Terminals</th><th>Top</th><th>Bottom</th><th>Bus bars</th><th>Circuit</th>${multi ? "<th>Page</th>" : ""}</tr></thead><tbody>${s}</tbody></table>`;
   }
 
+  // The PLC I/O list: a heading row for each module, then a row for each of its points, with boxes for the
+  // symbol and description. A box left empty shows what Suggest from wiring would put in it.
+  function ioTable(rows, multi) {
+    const cols = multi ? 7 : 6;
+    const head = `<div class="list-head"><button class="small" data-lact="ioSuggest" title="Fill in the empty symbols and descriptions from what each point is wired to (shown greyed in the boxes)">Suggest names from wiring</button>
+      <button class="small" data-lact="ioImport" title="Read symbols and descriptions from a CSV file: an I/O list, a Studio 5000 tag export, an RSLogix 500 export, or a TIA Portal tag table saved as CSV">Import names…</button>
+      <span class="muted">Type a point's symbol and description straight into the list.</span></div>`;
+    let s = "", mod = null;
+    for (const r of rows) {
+      if (r.it !== mod) {
+        mod = r.it;
+        s += `<tr class="group" data-sel="${esc(r.it.id)}" title="Select this part"><td colspan="${cols}">${esc(r.module || "—")} <span class="muted">· ${esc(r.tpl.name)}</span></td></tr>`;
+      }
+      const box = (f, ph) => `<input data-io="${f}" value="${esc(r[f])}" placeholder="${esc(ph)}">`;
+      s += `<tr data-sel="${esc(r.it.id)}" data-iokey="${esc(r.key)}" class="${sel.has(r.it.id) ? "sel" : ""}"><td><b>${esc(r.term)}</b></td><td title="${esc(IO_KINDS.find(([k]) => k === r.kind)[1])}">${esc(r.kind)}</td>
+        <td>${r.addr ? esc(r.addr) : '<span class="muted" title="No address: give the type address patterns in its PLC I/O tab">—</span>'}</td><td>${box("symbol", r.suggest.symbol)}</td><td>${box("desc", r.suggest.desc)}</td>
+        <td class="wrap">${esc(r.wired.join(", ")) || '<span class="muted">not wired</span>'}</td>${multi ? `<td>${esc(r.page)}</td>` : ""}</tr>`;
+    }
+    if (!rows.length) s = `<tr><td colspan="${cols}" class="empty">No PLC inputs or outputs yet. Mark which terminals of a PLC or I/O module are inputs and outputs in the <b>PLC I/O</b> tab of its object type, with the pattern its addresses follow. The MicroLogix 1100 in the AACC Mechatronics library has them already.</td></tr>`;
+    return (rows.length ? head : "") + `<table class="data-table io-table"><thead><tr><th>Terminal</th><th>I/O</th><th>Address</th><th>Symbol</th><th>Description</th><th>Wired to</th>${multi ? "<th>Page</th>" : ""}</tr></thead><tbody>${s}</tbody></table>`;
+  }
+
+  // ---------- design checks ----------
+  const checksNow = () => designChecks(doc, { ref: refOf, cableLength: (cb) => cableLength(cb), cableTo: (cb) => (cb.open && !cb.portB ? cb.to || "" : null) });
+
+  // What the checks found, worst first, with which checks run (ticked) above when that's opened.
+  function checksTable(found, multi) {
+    const name = Object.fromEntries(CHECKS.map((c) => [c[0], c[1]]));
+    const n = (id) => found.filter((f) => f.check === id).length;
+    const ran = CHECKS.filter((c) => checkOn(doc, c[0])).length;
+    const head = `<div class="list-head"><span class="muted">${found.length ? "Click a line to select what it's about." : ""} ${ran} of ${CHECKS.length} checks run.</span>
+      <button class="small${ui.checkPick ? " on" : ""}" data-lact="checkPick" title="Choose which checks run">${ic("sliders", "sm")} Choose checks</button></div>`;
+    const pick = !ui.checkPick ? "" : `<div class="check-pick">${CHECKS.map(([id, label, level, , what]) => `<label class="check" title="${esc(what)}"><input type="checkbox" data-chk="${id}"${checkOn(doc, id) ? " checked" : ""}>
+      <span class="lvl lvl-${level}" title="${CHECK_LEVELS[level]}"></span> ${esc(label)}${checkOn(doc, id) && n(id) ? ` <span class="muted">(${n(id)})</span>` : ""}</label>`).join("")}</div>`;
+    const rows = found.map((f, i) => `<tr data-check="${i}"><td><span class="lvl lvl-${f.level}" title="${CHECK_LEVELS[f.level]}"></span></td><td>${esc(name[f.check])}</td>
+      <td class="wrap">${esc(f.text)}${f.fix?.spare ? ` <button class="small" data-cfix="${i}" title="Mark these terminals as spare, so they're not reported again">Mark spare</button>` : ""}</td>
+      ${multi ? `<td>${esc([...new Set(f.ids.flatMap(pagesOf))].map((p) => pageName(doc, p)).join(", "))}</td>` : ""}</tr>`).join("");
+    const none = `<tr><td colspan="${multi ? 4 : 3}" class="empty">Nothing found${ran < CHECKS.length ? ` by the ${ran} checks that run` : ""}.</td></tr>`;
+    return head + pick + `<table class="data-table check-table"><thead><tr><th></th><th>Check</th><th>What</th>${multi ? "<th>Page</th>" : ""}</tr></thead><tbody>${rows || none}</tbody></table>`;
+  }
+
+  // Mark terminals spare (not to be wired), or not: part.spare is { terminal id: true }.
+  function setSpare(it, terms, on) {
+    const s = { ...(it.spare || {}) };
+    for (const t of terms) if (on) s[t] = true; else delete s[t];
+    if (Object.keys(s).length) it.spare = s; else delete it.spare;
+  }
+
   // Hide list rows that don't contain the filter text.
   function filterDrawer() {
     const q = $("listFilter").value.trim().toLowerCase();
-    const rows = [...$("drawerBody").querySelectorAll("tbody tr[data-sel], tbody tr[data-prof], tbody tr[data-cprof], tbody tr[data-bom]")];
+    const rows = [...$("drawerBody").querySelectorAll("tbody tr[data-sel], tbody tr[data-prof], tbody tr[data-cprof], tbody tr[data-bom], tbody tr[data-check]")];
     let shown = 0;
     for (const r of rows) {
-      const on = !q || r.textContent.toLowerCase().includes(q);
+      const on = !q || (r.textContent + " " + [...r.querySelectorAll("input")].map((i) => i.value).join(" ")).toLowerCase().includes(q);
       r.hidden = !on;
       if (on) shown++;
     }
@@ -5603,14 +5871,22 @@
     if (tab) { showDrawerTab(tab.dataset.tab); return; }
     if (e.target.closest("#btnDrawerToggle")) { setDrawerClosed(!$("drawer").classList.contains("collapsed")); return; }
     const lact = e.target.closest("[data-lact]")?.dataset.lact;
-    if (lact) { if (lact === "cableLib") openCableLib(); else openProfiles(lact === "cprofiles"); return; }
+    if (lact) {
+      if (lact === "cableLib") openCableLib();
+      else if (lact === "ioSuggest") suggestIo();
+      else if (lact === "ioImport") $("ioFileInput").click();
+      else if (lact === "checkPick") { ui.checkPick = !ui.checkPick; saveUi(); renderDrawer(); }
+      else openProfiles(lact === "cprofiles");
+      return;
+    }
     const fb = e.target.closest("[data-fav]");
     if (fb) { toggleFav(fb); return; }
     const prof = e.target.closest("[data-prof]");
     if (prof) { sel = new Set(doc.connections.filter((c) => c.profile === prof.dataset.prof).map((c) => c.id)); refresh(); return; }
     const cprof = e.target.closest("[data-cprof]");
     if (cprof) { sel = new Set(doc.cables.filter((cb) => cb.profile === cprof.dataset.cprof).map((cb) => cb.id)); refresh(); return; }
-    if (e.target.closest("#btnListCsv")) { ({ bom: exportBOM, terminals: () => exportStrips(shownStrips()), cables: exportCablesCSV }[drawerTab] || exportCSV)(); return; }
+    if (e.target.closest("#btnListCsv")) { ({ bom: exportBOM, terminals: () => exportStrips(shownStrips()), cables: exportCablesCSV, io: () => exportIo("csv") }[drawerTab] || exportCSV)(); return; }
+    if (e.target.closest("[data-io]")) return; // typing a point's symbol or description
     if (e.target.closest("#btnBomAdd")) {
       checkpoint();
       doc.bomExtra.push({ qty: 1, maker: "", no: "", desc: "" });
@@ -5621,6 +5897,26 @@
     }
     const xdel = e.target.closest("[data-xdel]");
     if (xdel) { checkpoint(); doc.bomExtra.splice(+xdel.closest("[data-extra]").dataset.extra, 1); refresh(); return; }
+    const fix = e.target.closest("[data-cfix]");
+    if (fix) {
+      const f = checksNow()[+fix.dataset.cfix];
+      if (!f?.fix?.spare) return;
+      checkpoint();
+      for (const s of f.fix.spare) { const it = itemById(s.item); if (it) setSpare(it, s.terms, true); }
+      refresh();
+      toast("Marked spare. Right-click a terminal to unmark it.");
+      return;
+    }
+    const cl = e.target.closest("[data-check]");
+    if (cl) {
+      const ids = (checksNow()[+cl.dataset.check]?.ids || []).filter(exists);
+      if (!ids.length) return;
+      const pgs = [...new Set(ids.flatMap(pagesOf))];
+      if (pgs.length && !pgs.includes(doc.page)) doc.page = pgs[0];
+      sel = new Set(ids);
+      refresh();
+      return;
+    }
     // A line of the bill of materials selects what it counts, going to its page if none is on this one.
     const bl = e.target.closest("[data-bom]");
     if (bl) {
@@ -5656,13 +5952,34 @@
     if (!e.target.closest("button, input")) setDrawerClosed(!$("drawer").classList.contains("collapsed"));
   });
   $("listFilter").addEventListener("input", filterDrawer);
+  // The mouse wheel scrolls the tabs sideways when they don't all fit.
+  document.querySelector(".drawer-tabs").addEventListener("wheel", (e) => {
+    const row = e.currentTarget;
+    if (row.scrollWidth <= row.clientWidth || Math.abs(e.deltaX) > Math.abs(e.deltaY)) return;
+    row.scrollLeft += e.deltaY;
+    e.preventDefault();
+  }, { passive: false });
   $("drawerBody").addEventListener("change", (e) => {
     if (e.target.id === "stripPick") { ui.strip = e.target.value; saveUi(); renderDrawer(); }
+    if (e.target.dataset.chk) {
+      checkpoint();
+      doc.settings.checks = { ...(doc.settings.checks || {}), [e.target.dataset.chk]: e.target.checked };
+      refresh();
+    }
   });
   // Lines of the bill of materials typed in by hand: one undo step per box visited.
   let extraCheckpointed = false;
-  $("drawerBody").addEventListener("focusin", (e) => { if (e.target.dataset.x) extraCheckpointed = false; });
+  $("drawerBody").addEventListener("focusin", (e) => { if (e.target.dataset.x || e.target.dataset.io) extraCheckpointed = false; });
   $("drawerBody").addEventListener("input", (e) => {
+    const io = e.target.dataset.io, point = e.target.closest("[data-iokey]");
+    if (io && point) {
+      const { item, term } = termKeyParts(point.dataset.iokey), it = itemById(item);
+      if (!it) return;
+      if (!extraCheckpointed) { checkpoint(); extraCheckpointed = true; }
+      setIoName(it, term, { [io]: e.target.value });
+      scheduleSave();
+      return;
+    }
     const f = e.target.dataset.x, row = e.target.closest("[data-extra]");
     const x = row && doc.bomExtra[+row.dataset.extra];
     if (!f || !x) return;
@@ -6240,6 +6557,25 @@
     }
   }
 
+  // ---------- DXF ----------
+  // The choice, remembered in this browser. what: "all" or "machining". Mirroring is the page's own.
+  const dxfOpts = () => Object.assign({ what: "all" }, ui.dxf || {});
+
+  // What the open page's DXF will have to machine, for the Export window.
+  function dxfCountText() {
+    const { count: c } = dxfShapes(doc, doc.page);
+    const what = [c.cutouts && plural(c.cutouts, "cutout"), c.holes && plural(c.holes, "screw hole"), c.railHoles && plural(c.railHoles, "DIN rail hole")].filter(Boolean);
+    if (!what.length) return "There's nothing to machine on this page yet: cutouts and screw holes are set in an object type's <b>Machining</b> tab, and DIN rail holes in Settings.";
+    return "This page has " + what.join(", ").replace(/, ([^,]*)$/, " and $1") + ".";
+  }
+
+  function exportDXF() {
+    const o = dxfOpts(), machining = o.what === "machining";
+    const text = dxfFile(doc, doc.page, { machining });
+    if (!text) { toast(machining ? "There's nothing to machine on this page" : "There's nothing on this page to export"); return; }
+    download(pageFileName() + (machining ? "-machining" : "") + ".dxf", cp1252Bytes(text), "application/dxf");
+  }
+
   // ---------- the Export window ----------
   // Images of the drawing, the lists as CSV, and labels with their choices and a preview.
   function openExport() {
@@ -6248,7 +6584,7 @@
   }
 
   function renderExport() {
-    const o = labelOpts(), every = labelRows(o, true), rows = labelRows(o);
+    const o = labelOpts(), every = labelRows(o, true), rows = labelRows(o), dx = dxfOpts();
     const n = (k) => every.filter((r) => r.kind === k).length;
     const opt = (k, opts) => `<select data-lo="${k}">${opts.map(([v, l]) => `<option value="${v}"${String(o[k]) === String(v) ? " selected" : ""}>${l}</option>`).join("")}</select>`;
     const box = (k, label) => `<label class="check"><input data-lo="${k}" type="checkbox"${o[k] ? " checked" : ""}> ${label}</label>`;
@@ -6256,14 +6592,19 @@
     const preview = rows.slice(0, 5).map((r) => `<tr><td>${esc(name[r.kind])}</td><td><b>${esc(r.text)}</b></td><td>${esc(r.detail)}</td><td>${esc(r.at)}</td>${o.page ? `<td>${esc(r.page)}</td>` : ""}</tr>`).join("");
     $("exportBody").innerHTML = `
       <div class="set-group">
-        <h4>Drawing</h4>
-        <div class="btn-row"><button data-ex="svg">${ic("download", "sm")} SVG image (true scale)</button><button data-ex="png">${ic("download", "sm")} PNG image</button></div>
-        <p class="hint-text">Of the page you're on${doc.pages.length > 1 ? ` (${esc(pageName(doc, doc.page))})` : ""}. The SVG is at real size, for printing at 1:1 or using in other drawings.</p>
+        <h4>Drawing of the page you're on${doc.pages.length > 1 ? ` (${esc(pageName(doc, doc.page))})` : ""}</h4>
+        <div class="btn-row"><button data-ex="svg">${ic("download", "sm")} SVG image (true scale)</button><button data-ex="png">${ic("download", "sm")} PNG image</button><button data-ex="dxf" title="For CAD programs and for machining the back plate or door">${ic("download", "sm")} DXF drawing</button></div>
+        <p class="hint-text">The SVG is at real size, for printing at 1:1 or using in other drawings. The DXF is for CAD and machining: at 1:1 in mm, each kind of thing on its own layer, measured from the page's 0,0 (the marker on the drawing). ${dxfCountText()}</p>
+        <div class="row2 wide-first">
+          ${field("DXF has", `<select data-dxo="what">${[["all", "Everything: plates, rails, ducts, parts and text"], ["machining", "Machining only: plates, cutouts and holes"]].map(([v, l]) => `<option value="${v}"${dx.what === v ? " selected" : ""}>${l}</option>`).join("")}</select>`)}
+          <label class="check dxf-mirror" title="For a page drawn from behind, such as a door seen from the wiring side, to be machined from the front. Saved with the page."><input data-dxo="mirror" type="checkbox"${curPage()?.mirror ? " checked" : ""}> Mirror left to right (this page is drawn from behind)</label>
+        </div>
       </div>
       <div class="set-group">
         <h4>Lists (CSV)</h4>
         <div class="btn-row"><button data-ex="wires">${ic("download", "sm")} Wire list</button><button data-ex="cables">${ic("download", "sm")} Cable list</button><button data-ex="bom">${ic("download", "sm")} Bill of materials</button><button data-ex="strips">${ic("download", "sm")} Terminal strips</button><button data-ex="processing" title="Each wire and core with its length, and how each end is finished: ferrule, lug, strip length">${ic("download", "sm")} Wire processing</button></div>
       </div>
+      ${ioExportGroup()}
       <div class="set-group">
         <h4>Labels (CSV)</h4>
         <div class="label-kinds">${LABEL_KINDS.map(([k, nm, what]) => `<label class="check${n(k) ? "" : " off"}"><input data-lo="${k}" type="checkbox"${o[k] ? " checked" : ""}> <span>${nm} <span class="muted">(${n(k)})</span><small>${what}</small></span></label>`).join("")}</div>
@@ -6285,6 +6626,21 @@
   }
 
   $("exportBody").addEventListener("change", (e) => {
+    if (e.target.dataset.ioo) { ui.io = { ...ioOpts(), [e.target.dataset.ioo]: e.target.value.trim() }; saveUi(); return; }
+    const dk = e.target.dataset.dxo;
+    if (dk === "mirror") {
+      checkpoint();
+      curPage().mirror = e.target.checked;
+      if (!e.target.checked) delete curPage().mirror;
+      refresh();
+      renderExport();
+      return;
+    }
+    if (dk) {
+      ui.dxf = { ...dxfOpts(), [dk]: e.target.value };
+      saveUi();
+      return;
+    }
     const k = e.target.dataset.lo;
     if (!k) return;
     ui.labels = { ...labelOpts(), [k]: e.target.type === "checkbox" ? e.target.checked : e.target.value === "true" ? true : e.target.value === "false" ? false : e.target.value };
@@ -6297,13 +6653,104 @@
     ({
       svg: () => download(pageFileName() + ".svg", exportSVGString().svg, "image/svg+xml"),
       png: exportPNG,
+      dxf: exportDXF,
       wires: exportCSV,
       cables: exportCablesCSV,
       bom: exportBOM,
       strips: () => exportStrips(terminalStrips(doc)),
       processing: exportProcessing,
       labels: exportLabels,
+      io: () => exportIo("csv"),
+      logix: () => exportIo("logix"),
+      slc: () => exportIo("slc"),
+      tia: () => exportIo("tia"),
     })[b.dataset.ex]();
+  });
+
+  // ---------- PLC I/O ----------
+  const ioOpts = () => Object.assign({ table: "Default tag table" }, ui.io || {});
+  const ioList = (items) => ioRows(doc, { ref: refOf }, items);
+
+  // Set a point's symbol and/or description ({ symbol, desc }), dropping the entry when both are empty.
+  function setIoName(it, term, v) {
+    const cur = { ...(it.io?.[term] || {}), ...v };
+    for (const k of ["symbol", "desc"]) if (!String(cur[k] || "").trim()) delete cur[k];
+    it.io = { ...(it.io || {}) };
+    if (Object.keys(cur).length) it.io[term] = cur; else delete it.io[term];
+    if (!Object.keys(it.io).length) delete it.io;
+  }
+
+  // Fill in the empty symbols and descriptions (of the given parts, or all) from what each point is wired to.
+  function suggestIo(parts) {
+    const rows = ioList(parts).filter((r) => (!r.symbol && r.suggest.symbol) || (!r.desc && r.suggest.desc));
+    if (!rows.length) { toast(ioList(parts).length ? "Nothing to fill in: the points are named already, or not wired to anything with a name" : "There are no PLC inputs or outputs"); return; }
+    checkpoint();
+    for (const r of rows) setIoName(r.it, r.t.id, { symbol: r.symbol || r.suggest.symbol, desc: r.desc || r.suggest.desc });
+    refresh();
+    toast(`${plural(rows.length, "point")} filled in from the wiring. Check them over in the I/O list.`);
+  }
+
+  // The Export window's PLC I/O downloads.
+  function ioExportGroup() {
+    const rows = ioList(), named = rows.filter((r) => r.symbol.trim()).length, addressed = rows.filter((r) => r.addr).length;
+    const off = rows.length ? "" : " disabled";
+    const say = rows.length ? `${plural(rows.length, "point")}, ${addressed} with an address and ${named} with a symbol. The PLC programs' files have the points with both (RSLogix 500: an address and a symbol or description).`
+      : "No PLC inputs or outputs yet: mark them in the <b>PLC I/O</b> tab of a PLC's or I/O module's object type.";
+    return `<div class="set-group">
+        <h4>PLC I/O</h4>
+        <div class="btn-row"><button data-ex="io"${off}>${ic("download", "sm")} I/O list (CSV)</button><button data-ex="logix"${off} title="Alias tags for Studio 5000 Logix Designer / RSLogix 5000: File → Import → Tags">${ic("download", "sm")} Studio 5000 tags</button>
+          <button data-ex="slc"${off} title="Symbols and descriptions for RSLogix 500 (MicroLogix, SLC 500): Tools → Database → ASCII Import">${ic("download", "sm")} RSLogix 500</button><button data-ex="tia"${off} title="A PLC tag table for TIA Portal: open PLC tags, then Import">${ic("download", "sm")} TIA Portal tags (.xlsx)</button></div>
+        <p class="hint-text">${say}</p>
+        ${rows.length ? `<div class="row2">${field("TIA Portal tag table", `<input data-ioo="table" value="${esc(ioOpts().table)}" placeholder="Default tag table">`)}</div>` : ""}
+      </div>`;
+  }
+
+  function exportIo(kind) {
+    const rows = ioList(), base = slug(doc.meta.title);
+    if (!rows.length) { toast("There are no PLC inputs or outputs to export"); return; }
+    if (kind === "csv") { csvDownload(base + "-io.csv", ioCsvRows(doc, rows)); return; }
+    let { list, skipped } = ioExportable(rows, kind !== "slc");
+    if (kind === "slc") { const n = list.length; list = list.filter((r) => r.symbol.trim() || r.desc.trim()); skipped += n - list.length; }
+    if (!list.length) { toast(kind === "slc" ? "No point has both an address and a symbol or description yet" : "No point has both an address and a symbol yet"); return; }
+    const name = { logix: logixName, slc: slcName, tia: (s) => s.trim() }[kind];
+    const seen = new Map();
+    for (const r of list) { const k = name(r.symbol).toLowerCase(); if (k) seen.set(k, (seen.get(k) || 0) + 1); }
+    const dup = [...seen].filter(([, n]) => n > 1).map(([k]) => k);
+    if (kind === "logix") download(base + "-studio5000-tags.csv", cp1252Bytes(logixCsv(doc, list)), "text/csv");
+    else if (kind === "slc") download(base + "-rslogix500.csv", cp1252Bytes(slcCsv(list)), "text/csv");
+    else download(base + "-tia-plc-tags.xlsx", xlsxFile(tiaSheets(list, ioOpts().table || "Default tag table")), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+    const notes = [skipped && `${plural(skipped, "point")} left out (no address${kind === "slc" ? ", or no symbol or description" : " or no symbol"})`, dup.length && `the same symbol is used twice: ${dup.slice(0, 3).join(", ")}${dup.length > 3 ? "…" : ""}`].filter(Boolean);
+    if (notes.length) toast("Downloaded, but " + notes.join("; and "));
+  }
+
+  // Names read from a CSV: an I/O list, a Studio 5000 tag export (its alias tags), an RSLogix 500 export (no
+  // heading: address, 0, symbol, description lines), or a TIA Portal tag table saved as CSV.
+  function ioCsvTable(text) {
+    const t = parseCsv(text);
+    if (/^remark$/i.test(String(t[0]?.[0] || "").trim())) {
+      const at = t.findIndex((r) => String(r[0]).trim().toUpperCase() === "TYPE");
+      return [["Symbol", "Description", "Address"], ...t.slice(at + 1).filter((r) => /^ALIAS$/i.test(String(r[0]).trim())).map((r) => [r[2], r[3], r[5]])];
+    }
+    if (/^[A-Z]{1,3}\d*:\d/i.test(String(t[0]?.[0] || "").trim())) return [["Address", "Symbol", "Description"], ...t.map((r) => [r[0], r[2], r.slice(3, 8).map((x) => String(x || "").trim()).filter(Boolean).join(" ")])];
+    return t;
+  }
+
+  $("ioFileInput").addEventListener("change", (e) => {
+    const f = e.target.files[0];
+    e.target.value = "";
+    if (!f) return;
+    const r = new FileReader();
+    r.onload = () => {
+      const got = ioImport(ioCsvTable(r.result), ioList());
+      if (!got) { alert("That file has no columns to go by. It needs an Address column (or Module and Terminal columns), and a Symbol or Description column."); return; }
+      const changed = got.found.filter((x) => (x.symbol !== undefined && x.symbol !== x.row.symbol) || (x.desc !== undefined && x.desc !== x.row.desc));
+      if (!changed.length) { toast(got.found.length ? "Nothing new in that file: the points already have those names" : `None of the file's ${plural(got.unmatched, "line")} matched a point here`); return; }
+      checkpoint();
+      for (const x of changed) setIoName(x.row.it, x.row.t.id, { ...(x.symbol !== undefined ? { symbol: x.symbol } : {}), ...(x.desc !== undefined ? { desc: x.desc } : {}) });
+      refresh();
+      toast(`${plural(changed.length, "point")} named from ${f.name}${got.unmatched ? `; ${plural(got.unmatched, "line")} matched nothing here` : ""}`);
+    };
+    r.readAsText(f);
   });
 
   // Download rows as a CSV file that Excel opens as UTF-8.
@@ -6463,7 +6910,7 @@
       const name = doc.pages.length > 1 ? d.page.name : "Drawing";
       parts.push(`${name}: ${plural(d.sheets, "sheet")}${d.sheets > 1 ? ` (${d.cols} across × ${d.rows} down)` : ""} at ${scaleText(d.s)}`);
     }
-    if (pr.wires || pr.cables || pr.buses || pr.parts || pr.strips || pr.bom) parts.push("then the lists, on a new sheet");
+    if (pr.wires || pr.cables || pr.buses || pr.parts || pr.strips || pr.io || pr.bom) parts.push("then the lists, on a new sheet");
     return parts.join(" · ");
   }
 
@@ -6508,7 +6955,8 @@
         <p class="hint-text">${pr.frame ? "The frame's zones are numbered across and lettered down, and the printed parts list says which zone each part is in. The notes print with the lists." : pr.head ? "The notes go under the heading on the first sheet." : ""}</p>
         <div class="row2">${check("wires", "Wire list")}${check("cables", "Cable list")}</div>
         <div class="row2">${check("buses", "Bus bar list")}${check("parts", "Parts list")}</div>
-        <div class="row2">${check("strips", "Terminal strips")}${check("bom", "Bill of materials")}</div>
+        <div class="row2">${check("strips", "Terminal strips")}${check("io", "PLC I/O list")}</div>
+        <div class="row2">${check("bom", "Bill of materials")}</div>
         ${doc.pages.length > 1 ? '<p class="hint-text">With one page printed, the lists only have what\'s on it.</p>' : ""}
       </div>`;
     $("printSummary").textContent = printSummary();
@@ -6597,6 +7045,17 @@
     }
     const strips = terminalStrips(doc).filter((st) => pr.pages !== "current" || st.parts.some(onPage));
     if (pr.strips && strips.length) lists += `<h2>Terminal strips</h2>${stripTable(strips, false)}`;
+    const io = pr.io ? ioList(pr.pages === "current" ? pageItems() : doc.items) : [];
+    if (io.length) {
+      const pc = doc.pages.length > 1;
+      lists += `<h2>PLC I/O</h2><table><thead><tr><th>Terminal</th><th>I/O</th><th>Address</th><th>Symbol</th><th>Description</th><th>Wired to</th>${pc ? "<th>Page</th>" : ""}</tr></thead><tbody>`;
+      let mod = null;
+      for (const r of io) {
+        if (r.it !== mod) { mod = r.it; lists += `<tr class="pgroup"><td colspan="${pc ? 7 : 6}">${esc(r.module || "—")} · ${esc(r.tpl.name)}</td></tr>`; }
+        lists += `<tr><td>${esc(r.term)}</td><td>${esc(r.kind)}</td><td>${esc(r.addr)}</td><td>${esc(r.symbol)}</td><td>${esc(r.desc)}</td><td>${esc(r.wired.join(", "))}</td>${pc ? `<td>${esc(r.page)}</td>` : ""}</tr>`;
+      }
+      lists += "</tbody></table>";
+    }
     const bom = bomOf(pr.pages === "current" ? pageItems() : doc.items);
     if (pr.bom && bom.length) {
       lists += `<h2>Bill of materials</h2><table><thead><tr><th>Qty</th><th>Maker</th><th>Order no.</th><th>Description</th><th>Used by</th></tr></thead><tbody>`;
@@ -6872,6 +7331,7 @@
     selectAll: () => { sel = new Set(selectableAll()); refresh(); },
     selectNone: () => { sel.clear(); refresh(); },
     find: findInLists,
+    check: () => showDrawerTab("checks"),
     example: loadExample,
     print: openPrint,
     doPrint: () => { $("printModal").hidden = true; printDoc(); },
@@ -6881,9 +7341,11 @@
     settings: openSettings,
     help: openHelp,
     showAllWires,
+    showEverything: () => setViewHidden([]),
     welcome: openWelcome,
     zoomIn: () => zoomAt(1.25),
     zoomOut: () => zoomAt(0.8),
+    zoom100: () => zoomAt(PX_PER_MM / view.scale),
     fit,
     newType: newTemplate,
     libManage: openLibManager,
@@ -6938,14 +7400,22 @@
 
   for (const b of document.querySelectorAll(".mod-key")) b.textContent = b.textContent.replace("Ctrl+", mod);
   // Picking a kind with no filter on selects only that kind; with a filter on, it adds or removes the kind.
-  $("selFilterMenu").addEventListener("click", (e) => {
+  // The View menu's Wires, Cables and Select only are copies of the menus at the bottom right, minus their
+  // headings, so the two always match.
+  for (const [from, to] of [["linesMenu", "viewWiresSub"], ["cablesMenu", "viewCablesSub"], ["selFilterMenu", "viewFilterSub"]]) {
+    $(to).innerHTML = $(from).innerHTML;
+    const head = $(to).firstElementChild;
+    if (head?.classList.contains("menu-head")) head.remove();
+  }
+  const filterClick = (e) => {
     const b = e.target.closest("[data-selkind]");
     if (!b) return;
     if (!b.dataset.selkind) { setSelFilter(null); closeMenus(); return; }
     const next = new Set(selFilter || []);
     if (next.has(b.dataset.selkind)) next.delete(b.dataset.selkind); else next.add(b.dataset.selkind);
     setSelFilter(next);
-  });
+  };
+  for (const m of ["selFilterMenu", "viewFilterSub"]) $(m).addEventListener("click", filterClick);
   // The wire and cable menus. The wire style closes the menu; the other choices leave it open to change several.
   const viewMenuClick = (e) => {
     const cs = e.target.closest("[data-cables]");
@@ -6979,7 +7449,35 @@
     doc.settings.lines = b.dataset.lines;
     refresh();
   };
-  for (const m of ["linesMenu", "cablesMenu"]) $(m).addEventListener("click", viewMenuClick);
+  for (const m of ["linesMenu", "cablesMenu", "viewWiresSub", "viewCablesSub"]) $(m).addEventListener("click", viewMenuClick);
+  // Submenus: the one under the pointer opens, and the others in its menu close; a click opens one too.
+  const showSub = (menu, sub) => {
+    for (const s of menu.querySelectorAll(":scope > .menu-sub")) {
+      const on = s === sub;
+      s.querySelector(".sub-list").hidden = !on;
+      s.querySelector(".sub-open").classList.toggle("open", on);
+      s.querySelector(".sub-open").setAttribute("aria-expanded", String(on));
+    }
+  };
+  for (const menu of document.querySelectorAll(".menu-list")) {
+    if (!menu.querySelector(":scope > .menu-sub")) continue;
+    menu.addEventListener("pointerover", (e) => {
+      if (e.target.closest(".menu-list") !== menu) return; // inside an open submenu
+      const sub = e.target.closest(".menu-sub");
+      showSub(menu, sub && sub.parentElement === menu ? sub : null);
+    });
+    menu.addEventListener("click", (e) => {
+      const b = e.target.closest(".sub-open");
+      if (b && b.closest(".menu-list") === menu) showSub(menu, b.parentElement);
+    });
+  }
+  // The View menu's ticks stay open for more; Show everything and Fit close it (they're commands).
+  $("viewMenu").addEventListener("click", (e) => {
+    const b = e.target.closest("[data-view]");
+    if (!b) return;
+    const k = b.dataset.view, list = ui.hidden || [];
+    setViewHidden(list.includes(k) ? list.filter((x) => x !== k) : [...list, k]);
+  });
   document.querySelectorAll("[data-close]").forEach((b) => b.addEventListener("click", () => { $(b.dataset.close).hidden = true; }));
   for (const id of DIALOGS) $(id).addEventListener("click", (e) => { if (e.target.id === id) $(id).hidden = true; });
   $("btnLibFold").addEventListener("click", () => {

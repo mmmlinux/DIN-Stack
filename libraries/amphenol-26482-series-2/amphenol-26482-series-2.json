@@ -1,7 +1,7 @@
 {
   "type": "dinstack-library",
-  "app": "1.11.1",
-  "version": "1.1.1",
+  "app": "1.12.1",
+  "version": "1.2.1",
   "name": "Amphenol 26482 Series 2 connectors",
   "templates": [
     {
@@ -53,11 +53,47 @@
         },
         {
           "no": "MS3471L8-33P",
-          "desc": "cable-connecting receptacle, class L"
+          "desc": "cable-connecting receptacle, class L",
+          "cutout": {
+            "shape": "none"
+          },
+          "holes": []
         },
         {
           "no": "MS3474L8-33P",
-          "desc": "jam-nut receptacle, class L"
+          "desc": "jam-nut receptacle, class L",
+          "cutout": {
+            "shape": "d",
+            "d": 14.53,
+            "flat": 13.61
+          },
+          "holes": []
+        }
+      ],
+      "cutout": {
+        "shape": "round",
+        "d": 14.43
+      },
+      "holes": [
+        {
+          "x": 2.96,
+          "y": 2.96,
+          "d": 3.17
+        },
+        {
+          "x": 18.04,
+          "y": 2.96,
+          "d": 3.17
+        },
+        {
+          "x": 18.04,
+          "y": 18.04,
+          "d": 3.17
+        },
+        {
+          "x": 2.96,
+          "y": 18.04,
+          "d": 3.17
         }
       ]
     },
@@ -110,11 +146,47 @@
         },
         {
           "no": "MS3471L8-33S",
-          "desc": "cable-connecting receptacle, class L"
+          "desc": "cable-connecting receptacle, class L",
+          "cutout": {
+            "shape": "none"
+          },
+          "holes": []
         },
         {
           "no": "MS3474L8-33S",
-          "desc": "jam-nut receptacle, class L"
+          "desc": "jam-nut receptacle, class L",
+          "cutout": {
+            "shape": "d",
+            "d": 14.53,
+            "flat": 13.61
+          },
+          "holes": []
+        }
+      ],
+      "cutout": {
+        "shape": "round",
+        "d": 14.43
+      },
+      "holes": [
+        {
+          "x": 2.96,
+          "y": 2.96,
+          "d": 3.17
+        },
+        {
+          "x": 18.04,
+          "y": 2.96,
+          "d": 3.17
+        },
+        {
+          "x": 18.04,
+          "y": 18.04,
+          "d": 3.17
+        },
+        {
+          "x": 2.96,
+          "y": 18.04,
+          "d": 3.17
         }
       ]
     },
@@ -167,11 +239,47 @@
         },
         {
           "no": "MS3471L8-98P",
-          "desc": "cable-connecting receptacle, class L"
+          "desc": "cable-connecting receptacle, class L",
+          "cutout": {
+            "shape": "none"
+          },
+          "holes": []
         },
         {
           "no": "MS3474L8-98P",
-          "desc": "jam-nut receptacle, class L"
+          "desc": "jam-nut receptacle, class L",
+          "cutout": {
+            "shape": "d",
+            "d": 14.53,
+            "flat": 13.61
+          },
+          "holes": []
+        }
+      ],
+      "cutout": {
+        "shape": "round",
+        "d": 14.43
+      },
+      "holes": [
+        {
+          "x": 2.96,
+          "y": 2.96,
+          "d": 3.17
+        },
+        {
+          "x": 18.04,
+          "y": 2.96,
+          "d": 3.17
+        },
+        {
+          "x": 18.04,
+          "y": 18.04,
+          "d": 3.17
+        },
+        {
+          "x": 2.96,
+          "y": 18.04,
+          "d": 3.17
         }
       ]
     },
@@ -224,11 +332,47 @@
         },
         {
           "no": "MS3471L8-98S",
-          "desc": "cable-connecting receptacle, class L"
+          "desc": "cable-connecting receptacle, class L",
+          "cutout": {
+            "shape": "none"
+          },
+          "holes": []
         },
         {
           "no": "MS3474L8-98S",
-          "desc": "jam-nut receptacle, class L"
+          "desc": "jam-nut receptacle, class L",
+          "cutout": {
+            "shape": "d",
+            "d": 14.53,
+            "flat": 13.61
+          },
+          "holes": []
+        }
+      ],
+      "cutout": {
+        "shape": "round",
+        "d": 14.43
+      },
+      "holes": [
+        {
+          "x": 2.96,
+          "y": 2.96,
+          "d": 3.17
+        },
+        {
+          "x": 18.04,
+          "y": 2.96,
+          "d": 3.17
+        },
+        {
+          "x": 18.04,
+          "y": 18.04,
+          "d": 3.17
+        },
+        {
+          "x": 2.96,
+          "y": 18.04,
+          "d": 3.17
         }
       ]
     },
@@ -308,11 +452,47 @@
         },
         {
           "no": "MS3471L10-6P",
-          "desc": "cable-connecting receptacle, class L"
+          "desc": "cable-connecting receptacle, class L",
+          "cutout": {
+            "shape": "none"
+          },
+          "holes": []
         },
         {
           "no": "MS3474L10-6P",
-          "desc": "jam-nut receptacle, class L"
+          "desc": "jam-nut receptacle, class L",
+          "cutout": {
+            "shape": "d",
+            "d": 17.7,
+            "flat": 16.79
+          },
+          "holes": []
+        }
+      ],
+      "cutout": {
+        "shape": "round",
+        "d": 17.4
+      },
+      "holes": [
+        {
+          "x": 2.97,
+          "y": 2.97,
+          "d": 3.17
+        },
+        {
+          "x": 21.23,
+          "y": 2.97,
+          "d": 3.17
+        },
+        {
+          "x": 21.23,
+          "y": 21.23,
+          "d": 3.17
+        },
+        {
+          "x": 2.97,
+          "y": 21.23,
+          "d": 3.17
         }
       ]
     },
@@ -392,11 +572,47 @@
         },
         {
           "no": "MS3471L10-6S",
-          "desc": "cable-connecting receptacle, class L"
+          "desc": "cable-connecting receptacle, class L",
+          "cutout": {
+            "shape": "none"
+          },
+          "holes": []
         },
         {
           "no": "MS3474L10-6S",
-          "desc": "jam-nut receptacle, class L"
+          "desc": "jam-nut receptacle, class L",
+          "cutout": {
+            "shape": "d",
+            "d": 17.7,
+            "flat": 16.79
+          },
+          "holes": []
+        }
+      ],
+      "cutout": {
+        "shape": "round",
+        "d": 17.4
+      },
+      "holes": [
+        {
+          "x": 2.97,
+          "y": 2.97,
+          "d": 3.17
+        },
+        {
+          "x": 21.23,
+          "y": 2.97,
+          "d": 3.17
+        },
+        {
+          "x": 21.23,
+          "y": 21.23,
+          "d": 3.17
+        },
+        {
+          "x": 2.97,
+          "y": 21.23,
+          "d": 3.17
         }
       ]
     },
@@ -449,11 +665,47 @@
         },
         {
           "no": "MS3471L12-3P",
-          "desc": "cable-connecting receptacle, class L"
+          "desc": "cable-connecting receptacle, class L",
+          "cutout": {
+            "shape": "none"
+          },
+          "holes": []
         },
         {
           "no": "MS3474L12-3P",
-          "desc": "jam-nut receptacle, class L"
+          "desc": "jam-nut receptacle, class L",
+          "cutout": {
+            "shape": "d",
+            "d": 22.73,
+            "flat": 20.93
+          },
+          "holes": []
+        }
+      ],
+      "cutout": {
+        "shape": "round",
+        "d": 21.95
+      },
+      "holes": [
+        {
+          "x": 2.99,
+          "y": 2.99,
+          "d": 3.17
+        },
+        {
+          "x": 23.61,
+          "y": 2.99,
+          "d": 3.17
+        },
+        {
+          "x": 23.61,
+          "y": 23.61,
+          "d": 3.17
+        },
+        {
+          "x": 2.99,
+          "y": 23.61,
+          "d": 3.17
         }
       ]
     },
@@ -506,11 +758,47 @@
         },
         {
           "no": "MS3471L12-3S",
-          "desc": "cable-connecting receptacle, class L"
+          "desc": "cable-connecting receptacle, class L",
+          "cutout": {
+            "shape": "none"
+          },
+          "holes": []
         },
         {
           "no": "MS3474L12-3S",
-          "desc": "jam-nut receptacle, class L"
+          "desc": "jam-nut receptacle, class L",
+          "cutout": {
+            "shape": "d",
+            "d": 22.73,
+            "flat": 20.93
+          },
+          "holes": []
+        }
+      ],
+      "cutout": {
+        "shape": "round",
+        "d": 21.95
+      },
+      "holes": [
+        {
+          "x": 2.99,
+          "y": 2.99,
+          "d": 3.17
+        },
+        {
+          "x": 23.61,
+          "y": 2.99,
+          "d": 3.17
+        },
+        {
+          "x": 23.61,
+          "y": 23.61,
+          "d": 3.17
+        },
+        {
+          "x": 2.99,
+          "y": 23.61,
+          "d": 3.17
         }
       ]
     },
@@ -608,11 +896,47 @@
         },
         {
           "no": "MS3471L12-8P",
-          "desc": "cable-connecting receptacle, class L"
+          "desc": "cable-connecting receptacle, class L",
+          "cutout": {
+            "shape": "none"
+          },
+          "holes": []
         },
         {
           "no": "MS3474L12-8P",
-          "desc": "jam-nut receptacle, class L"
+          "desc": "jam-nut receptacle, class L",
+          "cutout": {
+            "shape": "d",
+            "d": 22.73,
+            "flat": 20.93
+          },
+          "holes": []
+        }
+      ],
+      "cutout": {
+        "shape": "round",
+        "d": 21.95
+      },
+      "holes": [
+        {
+          "x": 2.99,
+          "y": 2.99,
+          "d": 3.17
+        },
+        {
+          "x": 23.61,
+          "y": 2.99,
+          "d": 3.17
+        },
+        {
+          "x": 23.61,
+          "y": 23.61,
+          "d": 3.17
+        },
+        {
+          "x": 2.99,
+          "y": 23.61,
+          "d": 3.17
         }
       ]
     },
@@ -710,11 +1034,47 @@
         },
         {
           "no": "MS3471L12-8S",
-          "desc": "cable-connecting receptacle, class L"
+          "desc": "cable-connecting receptacle, class L",
+          "cutout": {
+            "shape": "none"
+          },
+          "holes": []
         },
         {
           "no": "MS3474L12-8S",
-          "desc": "jam-nut receptacle, class L"
+          "desc": "jam-nut receptacle, class L",
+          "cutout": {
+            "shape": "d",
+            "d": 22.73,
+            "flat": 20.93
+          },
+          "holes": []
+        }
+      ],
+      "cutout": {
+        "shape": "round",
+        "d": 21.95
+      },
+      "holes": [
+        {
+          "x": 2.99,
+          "y": 2.99,
+          "d": 3.17
+        },
+        {
+          "x": 23.61,
+          "y": 2.99,
+          "d": 3.17
+        },
+        {
+          "x": 23.61,
+          "y": 23.61,
+          "d": 3.17
+        },
+        {
+          "x": 2.99,
+          "y": 23.61,
+          "d": 3.17
         }
       ]
     },
@@ -830,11 +1190,47 @@
         },
         {
           "no": "MS3471L12-10P",
-          "desc": "cable-connecting receptacle, class L"
+          "desc": "cable-connecting receptacle, class L",
+          "cutout": {
+            "shape": "none"
+          },
+          "holes": []
         },
         {
           "no": "MS3474L12-10P",
-          "desc": "jam-nut receptacle, class L"
+          "desc": "jam-nut receptacle, class L",
+          "cutout": {
+            "shape": "d",
+            "d": 22.73,
+            "flat": 20.93
+          },
+          "holes": []
+        }
+      ],
+      "cutout": {
+        "shape": "round",
+        "d": 21.95
+      },
+      "holes": [
+        {
+          "x": 2.99,
+          "y": 2.99,
+          "d": 3.17
+        },
+        {
+          "x": 23.61,
+          "y": 2.99,
+          "d": 3.17
+        },
+        {
+          "x": 23.61,
+          "y": 23.61,
+          "d": 3.17
+        },
+        {
+          "x": 2.99,
+          "y": 23.61,
+          "d": 3.17
         }
       ]
     },
@@ -950,11 +1346,47 @@
         },
         {
           "no": "MS3471L12-10S",
-          "desc": "cable-connecting receptacle, class L"
+          "desc": "cable-connecting receptacle, class L",
+          "cutout": {
+            "shape": "none"
+          },
+          "holes": []
         },
         {
           "no": "MS3474L12-10S",
-          "desc": "jam-nut receptacle, class L"
+          "desc": "jam-nut receptacle, class L",
+          "cutout": {
+            "shape": "d",
+            "d": 22.73,
+            "flat": 20.93
+          },
+          "holes": []
+        }
+      ],
+      "cutout": {
+        "shape": "round",
+        "d": 21.95
+      },
+      "holes": [
+        {
+          "x": 2.99,
+          "y": 2.99,
+          "d": 3.17
+        },
+        {
+          "x": 23.61,
+          "y": 2.99,
+          "d": 3.17
+        },
+        {
+          "x": 23.61,
+          "y": 23.61,
+          "d": 3.17
+        },
+        {
+          "x": 2.99,
+          "y": 23.61,
+          "d": 3.17
         }
       ]
     },
@@ -1016,11 +1448,47 @@
         },
         {
           "no": "MS3471L14-4P",
-          "desc": "cable-connecting receptacle, class L"
+          "desc": "cable-connecting receptacle, class L",
+          "cutout": {
+            "shape": "none"
+          },
+          "holes": []
         },
         {
           "no": "MS3474L14-4P",
-          "desc": "jam-nut receptacle, class L"
+          "desc": "jam-nut receptacle, class L",
+          "cutout": {
+            "shape": "d",
+            "d": 25.65,
+            "flat": 24.08
+          },
+          "holes": []
+        }
+      ],
+      "cutout": {
+        "shape": "round",
+        "d": 25.15
+      },
+      "holes": [
+        {
+          "x": 2.99,
+          "y": 2.99,
+          "d": 3.17
+        },
+        {
+          "x": 26.01,
+          "y": 2.99,
+          "d": 3.17
+        },
+        {
+          "x": 26.01,
+          "y": 26.01,
+          "d": 3.17
+        },
+        {
+          "x": 2.99,
+          "y": 26.01,
+          "d": 3.17
         }
       ]
     },
@@ -1082,11 +1550,47 @@
         },
         {
           "no": "MS3471L14-4S",
-          "desc": "cable-connecting receptacle, class L"
+          "desc": "cable-connecting receptacle, class L",
+          "cutout": {
+            "shape": "none"
+          },
+          "holes": []
         },
         {
           "no": "MS3474L14-4S",
-          "desc": "jam-nut receptacle, class L"
+          "desc": "jam-nut receptacle, class L",
+          "cutout": {
+            "shape": "d",
+            "d": 25.65,
+            "flat": 24.08
+          },
+          "holes": []
+        }
+      ],
+      "cutout": {
+        "shape": "round",
+        "d": 25.15
+      },
+      "holes": [
+        {
+          "x": 2.99,
+          "y": 2.99,
+          "d": 3.17
+        },
+        {
+          "x": 26.01,
+          "y": 2.99,
+          "d": 3.17
+        },
+        {
+          "x": 26.01,
+          "y": 26.01,
+          "d": 3.17
+        },
+        {
+          "x": 2.99,
+          "y": 26.01,
+          "d": 3.17
         }
       ]
     },
@@ -1157,11 +1661,47 @@
         },
         {
           "no": "MS3471L14-5P",
-          "desc": "cable-connecting receptacle, class L"
+          "desc": "cable-connecting receptacle, class L",
+          "cutout": {
+            "shape": "none"
+          },
+          "holes": []
         },
         {
           "no": "MS3474L14-5P",
-          "desc": "jam-nut receptacle, class L"
+          "desc": "jam-nut receptacle, class L",
+          "cutout": {
+            "shape": "d",
+            "d": 25.65,
+            "flat": 24.08
+          },
+          "holes": []
+        }
+      ],
+      "cutout": {
+        "shape": "round",
+        "d": 25.15
+      },
+      "holes": [
+        {
+          "x": 2.99,
+          "y": 2.99,
+          "d": 3.17
+        },
+        {
+          "x": 26.01,
+          "y": 2.99,
+          "d": 3.17
+        },
+        {
+          "x": 26.01,
+          "y": 26.01,
+          "d": 3.17
+        },
+        {
+          "x": 2.99,
+          "y": 26.01,
+          "d": 3.17
         }
       ]
     },
@@ -1232,11 +1772,47 @@
         },
         {
           "no": "MS3471L14-5S",
-          "desc": "cable-connecting receptacle, class L"
+          "desc": "cable-connecting receptacle, class L",
+          "cutout": {
+            "shape": "none"
+          },
+          "holes": []
         },
         {
           "no": "MS3474L14-5S",
-          "desc": "jam-nut receptacle, class L"
+          "desc": "jam-nut receptacle, class L",
+          "cutout": {
+            "shape": "d",
+            "d": 25.65,
+            "flat": 24.08
+          },
+          "holes": []
+        }
+      ],
+      "cutout": {
+        "shape": "round",
+        "d": 25.15
+      },
+      "holes": [
+        {
+          "x": 2.99,
+          "y": 2.99,
+          "d": 3.17
+        },
+        {
+          "x": 26.01,
+          "y": 2.99,
+          "d": 3.17
+        },
+        {
+          "x": 26.01,
+          "y": 26.01,
+          "d": 3.17
+        },
+        {
+          "x": 2.99,
+          "y": 26.01,
+          "d": 3.17
         }
       ]
     },
@@ -1343,11 +1919,47 @@
         },
         {
           "no": "MS3471L14-9P",
-          "desc": "cable-connecting receptacle, class L"
+          "desc": "cable-connecting receptacle, class L",
+          "cutout": {
+            "shape": "none"
+          },
+          "holes": []
         },
         {
           "no": "MS3474L14-9P",
-          "desc": "jam-nut receptacle, class L"
+          "desc": "jam-nut receptacle, class L",
+          "cutout": {
+            "shape": "d",
+            "d": 25.65,
+            "flat": 24.08
+          },
+          "holes": []
+        }
+      ],
+      "cutout": {
+        "shape": "round",
+        "d": 25.15
+      },
+      "holes": [
+        {
+          "x": 2.99,
+          "y": 2.99,
+          "d": 3.17
+        },
+        {
+          "x": 26.01,
+          "y": 2.99,
+          "d": 3.17
+        },
+        {
+          "x": 26.01,
+          "y": 26.01,
+          "d": 3.17
+        },
+        {
+          "x": 2.99,
+          "y": 26.01,
+          "d": 3.17
         }
       ]
     },
@@ -1454,11 +2066,47 @@
         },
         {
           "no": "MS3471L14-9S",
-          "desc": "cable-connecting receptacle, class L"
+          "desc": "cable-connecting receptacle, class L",
+          "cutout": {
+            "shape": "none"
+          },
+          "holes": []
         },
         {
           "no": "MS3474L14-9S",
-          "desc": "jam-nut receptacle, class L"
+          "desc": "jam-nut receptacle, class L",
+          "cutout": {
+            "shape": "d",
+            "d": 25.65,
+            "flat": 24.08
+          },
+          "holes": []
+        }
+      ],
+      "cutout": {
+        "shape": "round",
+        "d": 25.15
+      },
+      "holes": [
+        {
+          "x": 2.99,
+          "y": 2.99,
+          "d": 3.17
+        },
+        {
+          "x": 26.01,
+          "y": 2.99,
+          "d": 3.17
+        },
+        {
+          "x": 26.01,
+          "y": 26.01,
+          "d": 3.17
+        },
+        {
+          "x": 2.99,
+          "y": 26.01,
+          "d": 3.17
         }
       ]
     },
@@ -1592,11 +2240,47 @@
         },
         {
           "no": "MS3471L14-12P",
-          "desc": "cable-connecting receptacle, class L"
+          "desc": "cable-connecting receptacle, class L",
+          "cutout": {
+            "shape": "none"
+          },
+          "holes": []
         },
         {
           "no": "MS3474L14-12P",
-          "desc": "jam-nut receptacle, class L"
+          "desc": "jam-nut receptacle, class L",
+          "cutout": {
+            "shape": "d",
+            "d": 25.65,
+            "flat": 24.08
+          },
+          "holes": []
+        }
+      ],
+      "cutout": {
+        "shape": "round",
+        "d": 25.15
+      },
+      "holes": [
+        {
+          "x": 2.99,
+          "y": 2.99,
+          "d": 3.17
+        },
+        {
+          "x": 26.01,
+          "y": 2.99,
+          "d": 3.17
+        },
+        {
+          "x": 26.01,
+          "y": 26.01,
+          "d": 3.17
+        },
+        {
+          "x": 2.99,
+          "y": 26.01,
+          "d": 3.17
         }
       ]
     },
@@ -1730,11 +2414,47 @@
         },
         {
           "no": "MS3471L14-12S",
-          "desc": "cable-connecting receptacle, class L"
+          "desc": "cable-connecting receptacle, class L",
+          "cutout": {
+            "shape": "none"
+          },
+          "holes": []
         },
         {
           "no": "MS3474L14-12S",
-          "desc": "jam-nut receptacle, class L"
+          "desc": "jam-nut receptacle, class L",
+          "cutout": {
+            "shape": "d",
+            "d": 25.65,
+            "flat": 24.08
+          },
+          "holes": []
+        }
+      ],
+      "cutout": {
+        "shape": "round",
+        "d": 25.15
+      },
+      "holes": [
+        {
+          "x": 2.99,
+          "y": 2.99,
+          "d": 3.17
+        },
+        {
+          "x": 26.01,
+          "y": 2.99,
+          "d": 3.17
+        },
+        {
+          "x": 26.01,
+          "y": 26.01,
+          "d": 3.17
+        },
+        {
+          "x": 2.99,
+          "y": 26.01,
+          "d": 3.17
         }
       ]
     },
@@ -1895,11 +2615,47 @@
         },
         {
           "no": "MS3471L14-15P",
-          "desc": "cable-connecting receptacle, class L"
+          "desc": "cable-connecting receptacle, class L",
+          "cutout": {
+            "shape": "none"
+          },
+          "holes": []
         },
         {
           "no": "MS3474L14-15P",
-          "desc": "jam-nut receptacle, class L"
+          "desc": "jam-nut receptacle, class L",
+          "cutout": {
+            "shape": "d",
+            "d": 25.65,
+            "flat": 24.08
+          },
+          "holes": []
+        }
+      ],
+      "cutout": {
+        "shape": "round",
+        "d": 25.15
+      },
+      "holes": [
+        {
+          "x": 2.99,
+          "y": 2.99,
+          "d": 3.17
+        },
+        {
+          "x": 26.01,
+          "y": 2.99,
+          "d": 3.17
+        },
+        {
+          "x": 26.01,
+          "y": 26.01,
+          "d": 3.17
+        },
+        {
+          "x": 2.99,
+          "y": 26.01,
+          "d": 3.17
         }
       ]
     },
@@ -2060,11 +2816,47 @@
         },
         {
           "no": "MS3471L14-15S",
-          "desc": "cable-connecting receptacle, class L"
+          "desc": "cable-connecting receptacle, class L",
+          "cutout": {
+            "shape": "none"
+          },
+          "holes": []
         },
         {
           "no": "MS3474L14-15S",
-          "desc": "jam-nut receptacle, class L"
+          "desc": "jam-nut receptacle, class L",
+          "cutout": {
+            "shape": "d",
+            "d": 25.65,
+            "flat": 24.08
+          },
+          "holes": []
+        }
+      ],
+      "cutout": {
+        "shape": "round",
+        "d": 25.15
+      },
+      "holes": [
+        {
+          "x": 2.99,
+          "y": 2.99,
+          "d": 3.17
+        },
+        {
+          "x": 26.01,
+          "y": 2.99,
+          "d": 3.17
+        },
+        {
+          "x": 26.01,
+          "y": 26.01,
+          "d": 3.17
+        },
+        {
+          "x": 2.99,
+          "y": 26.01,
+          "d": 3.17
         }
       ]
     },
@@ -2252,11 +3044,47 @@
         },
         {
           "no": "MS3471L14-18P",
-          "desc": "cable-connecting receptacle, class L"
+          "desc": "cable-connecting receptacle, class L",
+          "cutout": {
+            "shape": "none"
+          },
+          "holes": []
         },
         {
           "no": "MS3474L14-18P",
-          "desc": "jam-nut receptacle, class L"
+          "desc": "jam-nut receptacle, class L",
+          "cutout": {
+            "shape": "d",
+            "d": 25.65,
+            "flat": 24.08
+          },
+          "holes": []
+        }
+      ],
+      "cutout": {
+        "shape": "round",
+        "d": 25.15
+      },
+      "holes": [
+        {
+          "x": 2.99,
+          "y": 2.99,
+          "d": 3.17
+        },
+        {
+          "x": 26.01,
+          "y": 2.99,
+          "d": 3.17
+        },
+        {
+          "x": 26.01,
+          "y": 26.01,
+          "d": 3.17
+        },
+        {
+          "x": 2.99,
+          "y": 26.01,
+          "d": 3.17
         }
       ]
     },
@@ -2444,11 +3272,47 @@
         },
         {
           "no": "MS3471L14-18S",
-          "desc": "cable-connecting receptacle, class L"
+          "desc": "cable-connecting receptacle, class L",
+          "cutout": {
+            "shape": "none"
+          },
+          "holes": []
         },
         {
           "no": "MS3474L14-18S",
-          "desc": "jam-nut receptacle, class L"
+          "desc": "jam-nut receptacle, class L",
+          "cutout": {
+            "shape": "d",
+            "d": 25.65,
+            "flat": 24.08
+          },
+          "holes": []
+        }
+      ],
+      "cutout": {
+        "shape": "round",
+        "d": 25.15
+      },
+      "holes": [
+        {
+          "x": 2.99,
+          "y": 2.99,
+          "d": 3.17
+        },
+        {
+          "x": 26.01,
+          "y": 2.99,
+          "d": 3.17
+        },
+        {
+          "x": 26.01,
+          "y": 26.01,
+          "d": 3.17
+        },
+        {
+          "x": 2.99,
+          "y": 26.01,
+          "d": 3.17
         }
       ]
     },
@@ -2645,11 +3509,47 @@
         },
         {
           "no": "MS3471L14-19P",
-          "desc": "cable-connecting receptacle, class L"
+          "desc": "cable-connecting receptacle, class L",
+          "cutout": {
+            "shape": "none"
+          },
+          "holes": []
         },
         {
           "no": "MS3474L14-19P",
-          "desc": "jam-nut receptacle, class L"
+          "desc": "jam-nut receptacle, class L",
+          "cutout": {
+            "shape": "d",
+            "d": 25.65,
+            "flat": 24.08
+          },
+          "holes": []
+        }
+      ],
+      "cutout": {
+        "shape": "round",
+        "d": 25.15
+      },
+      "holes": [
+        {
+          "x": 2.99,
+          "y": 2.99,
+          "d": 3.17
+        },
+        {
+          "x": 26.01,
+          "y": 2.99,
+          "d": 3.17
+        },
+        {
+          "x": 26.01,
+          "y": 26.01,
+          "d": 3.17
+        },
+        {
+          "x": 2.99,
+          "y": 26.01,
+          "d": 3.17
         }
       ]
     },
@@ -2846,11 +3746,47 @@
         },
         {
           "no": "MS3471L14-19S",
-          "desc": "cable-connecting receptacle, class L"
+          "desc": "cable-connecting receptacle, class L",
+          "cutout": {
+            "shape": "none"
+          },
+          "holes": []
         },
         {
           "no": "MS3474L14-19S",
-          "desc": "jam-nut receptacle, class L"
+          "desc": "jam-nut receptacle, class L",
+          "cutout": {
+            "shape": "d",
+            "d": 25.65,
+            "flat": 24.08
+          },
+          "holes": []
+        }
+      ],
+      "cutout": {
+        "shape": "round",
+        "d": 25.15
+      },
+      "holes": [
+        {
+          "x": 2.99,
+          "y": 2.99,
+          "d": 3.17
+        },
+        {
+          "x": 26.01,
+          "y": 2.99,
+          "d": 3.17
+        },
+        {
+          "x": 26.01,
+          "y": 26.01,
+          "d": 3.17
+        },
+        {
+          "x": 2.99,
+          "y": 26.01,
+          "d": 3.17
         }
       ]
     },
@@ -2948,11 +3884,47 @@
         },
         {
           "no": "MS3471L16-8P",
-          "desc": "cable-connecting receptacle, class L"
+          "desc": "cable-connecting receptacle, class L",
+          "cutout": {
+            "shape": "none"
+          },
+          "holes": []
         },
         {
           "no": "MS3474L16-8P",
-          "desc": "jam-nut receptacle, class L"
+          "desc": "jam-nut receptacle, class L",
+          "cutout": {
+            "shape": "d",
+            "d": 28.83,
+            "flat": 27.23
+          },
+          "holes": []
+        }
+      ],
+      "cutout": {
+        "shape": "round",
+        "d": 28.27
+      },
+      "holes": [
+        {
+          "x": 3.34,
+          "y": 3.34,
+          "d": 3.17
+        },
+        {
+          "x": 27.96,
+          "y": 3.34,
+          "d": 3.17
+        },
+        {
+          "x": 27.96,
+          "y": 27.96,
+          "d": 3.17
+        },
+        {
+          "x": 3.34,
+          "y": 27.96,
+          "d": 3.17
         }
       ]
     },
@@ -3050,11 +4022,47 @@
         },
         {
           "no": "MS3471L16-8S",
-          "desc": "cable-connecting receptacle, class L"
+          "desc": "cable-connecting receptacle, class L",
+          "cutout": {
+            "shape": "none"
+          },
+          "holes": []
         },
         {
           "no": "MS3474L16-8S",
-          "desc": "jam-nut receptacle, class L"
+          "desc": "jam-nut receptacle, class L",
+          "cutout": {
+            "shape": "d",
+            "d": 28.83,
+            "flat": 27.23
+          },
+          "holes": []
+        }
+      ],
+      "cutout": {
+        "shape": "round",
+        "d": 28.27
+      },
+      "holes": [
+        {
+          "x": 3.34,
+          "y": 3.34,
+          "d": 3.17
+        },
+        {
+          "x": 27.96,
+          "y": 3.34,
+          "d": 3.17
+        },
+        {
+          "x": 27.96,
+          "y": 27.96,
+          "d": 3.17
+        },
+        {
+          "x": 3.34,
+          "y": 27.96,
+          "d": 3.17
         }
       ]
     },
@@ -3287,11 +4295,47 @@
         },
         {
           "no": "MS3471L16-23P",
-          "desc": "cable-connecting receptacle, class L"
+          "desc": "cable-connecting receptacle, class L",
+          "cutout": {
+            "shape": "none"
+          },
+          "holes": []
         },
         {
           "no": "MS3474L16-23P",
-          "desc": "jam-nut receptacle, class L"
+          "desc": "jam-nut receptacle, class L",
+          "cutout": {
+            "shape": "d",
+            "d": 28.83,
+            "flat": 27.23
+          },
+          "holes": []
+        }
+      ],
+      "cutout": {
+        "shape": "round",
+        "d": 28.27
+      },
+      "holes": [
+        {
+          "x": 3.34,
+          "y": 3.34,
+          "d": 3.17
+        },
+        {
+          "x": 27.96,
+          "y": 3.34,
+          "d": 3.17
+        },
+        {
+          "x": 27.96,
+          "y": 27.96,
+          "d": 3.17
+        },
+        {
+          "x": 3.34,
+          "y": 27.96,
+          "d": 3.17
         }
       ]
     },
@@ -3524,11 +4568,47 @@
         },
         {
           "no": "MS3471L16-23S",
-          "desc": "cable-connecting receptacle, class L"
+          "desc": "cable-connecting receptacle, class L",
+          "cutout": {
+            "shape": "none"
+          },
+          "holes": []
         },
         {
           "no": "MS3474L16-23S",
-          "desc": "jam-nut receptacle, class L"
+          "desc": "jam-nut receptacle, class L",
+          "cutout": {
+            "shape": "d",
+            "d": 28.83,
+            "flat": 27.23
+          },
+          "holes": []
+        }
+      ],
+      "cutout": {
+        "shape": "round",
+        "d": 28.27
+      },
+      "holes": [
+        {
+          "x": 3.34,
+          "y": 3.34,
+          "d": 3.17
+        },
+        {
+          "x": 27.96,
+          "y": 3.34,
+          "d": 3.17
+        },
+        {
+          "x": 27.96,
+          "y": 27.96,
+          "d": 3.17
+        },
+        {
+          "x": 3.34,
+          "y": 27.96,
+          "d": 3.17
         }
       ]
     },
@@ -3788,11 +4868,47 @@
         },
         {
           "no": "MS3471L16-26P",
-          "desc": "cable-connecting receptacle, class L"
+          "desc": "cable-connecting receptacle, class L",
+          "cutout": {
+            "shape": "none"
+          },
+          "holes": []
         },
         {
           "no": "MS3474L16-26P",
-          "desc": "jam-nut receptacle, class L"
+          "desc": "jam-nut receptacle, class L",
+          "cutout": {
+            "shape": "d",
+            "d": 28.83,
+            "flat": 27.23
+          },
+          "holes": []
+        }
+      ],
+      "cutout": {
+        "shape": "round",
+        "d": 28.27
+      },
+      "holes": [
+        {
+          "x": 3.34,
+          "y": 3.34,
+          "d": 3.17
+        },
+        {
+          "x": 27.96,
+          "y": 3.34,
+          "d": 3.17
+        },
+        {
+          "x": 27.96,
+          "y": 27.96,
+          "d": 3.17
+        },
+        {
+          "x": 3.34,
+          "y": 27.96,
+          "d": 3.17
         }
       ]
     },
@@ -4052,11 +5168,47 @@
         },
         {
           "no": "MS3471L16-26S",
-          "desc": "cable-connecting receptacle, class L"
+          "desc": "cable-connecting receptacle, class L",
+          "cutout": {
+            "shape": "none"
+          },
+          "holes": []
         },
         {
           "no": "MS3474L16-26S",
-          "desc": "jam-nut receptacle, class L"
+          "desc": "jam-nut receptacle, class L",
+          "cutout": {
+            "shape": "d",
+            "d": 28.83,
+            "flat": 27.23
+          },
+          "holes": []
+        }
+      ],
+      "cutout": {
+        "shape": "round",
+        "d": 28.27
+      },
+      "holes": [
+        {
+          "x": 3.34,
+          "y": 3.34,
+          "d": 3.17
+        },
+        {
+          "x": 27.96,
+          "y": 3.34,
+          "d": 3.17
+        },
+        {
+          "x": 27.96,
+          "y": 27.96,
+          "d": 3.17
+        },
+        {
+          "x": 3.34,
+          "y": 27.96,
+          "d": 3.17
         }
       ]
     },
@@ -4154,11 +5306,47 @@
         },
         {
           "no": "MS3471L18-8P",
-          "desc": "cable-connecting receptacle, class L"
+          "desc": "cable-connecting receptacle, class L",
+          "cutout": {
+            "shape": "none"
+          },
+          "holes": []
         },
         {
           "no": "MS3474L18-8P",
-          "desc": "jam-nut receptacle, class L"
+          "desc": "jam-nut receptacle, class L",
+          "cutout": {
+            "shape": "d",
+            "d": 32.0,
+            "flat": 30.4
+          },
+          "holes": []
+        }
+      ],
+      "cutout": {
+        "shape": "round",
+        "d": 31.5
+      },
+      "holes": [
+        {
+          "x": 3.36,
+          "y": 3.36,
+          "d": 3.17
+        },
+        {
+          "x": 30.34,
+          "y": 3.36,
+          "d": 3.17
+        },
+        {
+          "x": 30.34,
+          "y": 30.34,
+          "d": 3.17
+        },
+        {
+          "x": 3.36,
+          "y": 30.34,
+          "d": 3.17
         }
       ]
     },
@@ -4256,11 +5444,47 @@
         },
         {
           "no": "MS3471L18-8S",
-          "desc": "cable-connecting receptacle, class L"
+          "desc": "cable-connecting receptacle, class L",
+          "cutout": {
+            "shape": "none"
+          },
+          "holes": []
         },
         {
           "no": "MS3474L18-8S",
-          "desc": "jam-nut receptacle, class L"
+          "desc": "jam-nut receptacle, class L",
+          "cutout": {
+            "shape": "d",
+            "d": 32.0,
+            "flat": 30.4
+          },
+          "holes": []
+        }
+      ],
+      "cutout": {
+        "shape": "round",
+        "d": 31.5
+      },
+      "holes": [
+        {
+          "x": 3.36,
+          "y": 3.36,
+          "d": 3.17
+        },
+        {
+          "x": 30.34,
+          "y": 3.36,
+          "d": 3.17
+        },
+        {
+          "x": 30.34,
+          "y": 30.34,
+          "d": 3.17
+        },
+        {
+          "x": 3.36,
+          "y": 30.34,
+          "d": 3.17
         }
       ]
     },
@@ -4385,11 +5609,47 @@
         },
         {
           "no": "MS3471L18-11P",
-          "desc": "cable-connecting receptacle, class L"
+          "desc": "cable-connecting receptacle, class L",
+          "cutout": {
+            "shape": "none"
+          },
+          "holes": []
         },
         {
           "no": "MS3474L18-11P",
-          "desc": "jam-nut receptacle, class L"
+          "desc": "jam-nut receptacle, class L",
+          "cutout": {
+            "shape": "d",
+            "d": 32.0,
+            "flat": 30.4
+          },
+          "holes": []
+        }
+      ],
+      "cutout": {
+        "shape": "round",
+        "d": 31.5
+      },
+      "holes": [
+        {
+          "x": 3.36,
+          "y": 3.36,
+          "d": 3.17
+        },
+        {
+          "x": 30.34,
+          "y": 3.36,
+          "d": 3.17
+        },
+        {
+          "x": 30.34,
+          "y": 30.34,
+          "d": 3.17
+        },
+        {
+          "x": 3.36,
+          "y": 30.34,
+          "d": 3.17
         }
       ]
     },
@@ -4514,11 +5774,47 @@
         },
         {
           "no": "MS3471L18-11S",
-          "desc": "cable-connecting receptacle, class L"
+          "desc": "cable-connecting receptacle, class L",
+          "cutout": {
+            "shape": "none"
+          },
+          "holes": []
         },
         {
           "no": "MS3474L18-11S",
-          "desc": "jam-nut receptacle, class L"
+          "desc": "jam-nut receptacle, class L",
+          "cutout": {
+            "shape": "d",
+            "d": 32.0,
+            "flat": 30.4
+          },
+          "holes": []
+        }
+      ],
+      "cutout": {
+        "shape": "round",
+        "d": 31.5
+      },
+      "holes": [
+        {
+          "x": 3.36,
+          "y": 3.36,
+          "d": 3.17
+        },
+        {
+          "x": 30.34,
+          "y": 3.36,
+          "d": 3.17
+        },
+        {
+          "x": 30.34,
+          "y": 30.34,
+          "d": 3.17
+        },
+        {
+          "x": 3.36,
+          "y": 30.34,
+          "d": 3.17
         }
       ]
     },
@@ -4814,11 +6110,47 @@
         },
         {
           "no": "MS3471L18-30P",
-          "desc": "cable-connecting receptacle, class L"
+          "desc": "cable-connecting receptacle, class L",
+          "cutout": {
+            "shape": "none"
+          },
+          "holes": []
         },
         {
           "no": "MS3474L18-30P",
-          "desc": "jam-nut receptacle, class L"
+          "desc": "jam-nut receptacle, class L",
+          "cutout": {
+            "shape": "d",
+            "d": 32.0,
+            "flat": 30.4
+          },
+          "holes": []
+        }
+      ],
+      "cutout": {
+        "shape": "round",
+        "d": 31.5
+      },
+      "holes": [
+        {
+          "x": 3.36,
+          "y": 3.36,
+          "d": 3.17
+        },
+        {
+          "x": 30.34,
+          "y": 3.36,
+          "d": 3.17
+        },
+        {
+          "x": 30.34,
+          "y": 30.34,
+          "d": 3.17
+        },
+        {
+          "x": 3.36,
+          "y": 30.34,
+          "d": 3.17
         }
       ]
     },
@@ -5114,11 +6446,47 @@
         },
         {
           "no": "MS3471L18-30S",
-          "desc": "cable-connecting receptacle, class L"
+          "desc": "cable-connecting receptacle, class L",
+          "cutout": {
+            "shape": "none"
+          },
+          "holes": []
         },
         {
           "no": "MS3474L18-30S",
-          "desc": "jam-nut receptacle, class L"
+          "desc": "jam-nut receptacle, class L",
+          "cutout": {
+            "shape": "d",
+            "d": 32.0,
+            "flat": 30.4
+          },
+          "holes": []
+        }
+      ],
+      "cutout": {
+        "shape": "round",
+        "d": 31.5
+      },
+      "holes": [
+        {
+          "x": 3.36,
+          "y": 3.36,
+          "d": 3.17
+        },
+        {
+          "x": 30.34,
+          "y": 3.36,
+          "d": 3.17
+        },
+        {
+          "x": 30.34,
+          "y": 30.34,
+          "d": 3.17
+        },
+        {
+          "x": 3.36,
+          "y": 30.34,
+          "d": 3.17
         }
       ]
     },
@@ -5432,11 +6800,47 @@
         },
         {
           "no": "MS3471L18-32P",
-          "desc": "cable-connecting receptacle, class L"
+          "desc": "cable-connecting receptacle, class L",
+          "cutout": {
+            "shape": "none"
+          },
+          "holes": []
         },
         {
           "no": "MS3474L18-32P",
-          "desc": "jam-nut receptacle, class L"
+          "desc": "jam-nut receptacle, class L",
+          "cutout": {
+            "shape": "d",
+            "d": 32.0,
+            "flat": 30.4
+          },
+          "holes": []
+        }
+      ],
+      "cutout": {
+        "shape": "round",
+        "d": 31.5
+      },
+      "holes": [
+        {
+          "x": 3.36,
+          "y": 3.36,
+          "d": 3.17
+        },
+        {
+          "x": 30.34,
+          "y": 3.36,
+          "d": 3.17
+        },
+        {
+          "x": 30.34,
+          "y": 30.34,
+          "d": 3.17
+        },
+        {
+          "x": 3.36,
+          "y": 30.34,
+          "d": 3.17
         }
       ]
     },
@@ -5750,11 +7154,47 @@
         },
         {
           "no": "MS3471L18-32S",
-          "desc": "cable-connecting receptacle, class L"
+          "desc": "cable-connecting receptacle, class L",
+          "cutout": {
+            "shape": "none"
+          },
+          "holes": []
         },
         {
           "no": "MS3474L18-32S",
-          "desc": "jam-nut receptacle, class L"
+          "desc": "jam-nut receptacle, class L",
+          "cutout": {
+            "shape": "d",
+            "d": 32.0,
+            "flat": 30.4
+          },
+          "holes": []
+        }
+      ],
+      "cutout": {
+        "shape": "round",
+        "d": 31.5
+      },
+      "holes": [
+        {
+          "x": 3.36,
+          "y": 3.36,
+          "d": 3.17
+        },
+        {
+          "x": 30.34,
+          "y": 3.36,
+          "d": 3.17
+        },
+        {
+          "x": 30.34,
+          "y": 30.34,
+          "d": 3.17
+        },
+        {
+          "x": 3.36,
+          "y": 30.34,
+          "d": 3.17
         }
       ]
     },
@@ -5924,11 +7364,47 @@
         },
         {
           "no": "MS3471L20-16P",
-          "desc": "cable-connecting receptacle, class L"
+          "desc": "cable-connecting receptacle, class L",
+          "cutout": {
+            "shape": "none"
+          },
+          "holes": []
         },
         {
           "no": "MS3474L20-16P",
-          "desc": "jam-nut receptacle, class L"
+          "desc": "jam-nut receptacle, class L",
+          "cutout": {
+            "shape": "d",
+            "d": 35.18,
+            "flat": 33.58
+          },
+          "holes": []
+        }
+      ],
+      "cutout": {
+        "shape": "round",
+        "d": 34.62
+      },
+      "holes": [
+        {
+          "x": 3.82,
+          "y": 3.82,
+          "d": 3.17
+        },
+        {
+          "x": 33.18,
+          "y": 3.82,
+          "d": 3.17
+        },
+        {
+          "x": 33.18,
+          "y": 33.18,
+          "d": 3.17
+        },
+        {
+          "x": 3.82,
+          "y": 33.18,
+          "d": 3.17
         }
       ]
     },
@@ -6098,11 +7574,47 @@
         },
         {
           "no": "MS3471L20-16S",
-          "desc": "cable-connecting receptacle, class L"
+          "desc": "cable-connecting receptacle, class L",
+          "cutout": {
+            "shape": "none"
+          },
+          "holes": []
         },
         {
           "no": "MS3474L20-16S",
-          "desc": "jam-nut receptacle, class L"
+          "desc": "jam-nut receptacle, class L",
+          "cutout": {
+            "shape": "d",
+            "d": 35.18,
+            "flat": 33.58
+          },
+          "holes": []
+        }
+      ],
+      "cutout": {
+        "shape": "round",
+        "d": 34.62
+      },
+      "holes": [
+        {
+          "x": 3.82,
+          "y": 3.82,
+          "d": 3.17
+        },
+        {
+          "x": 33.18,
+          "y": 3.82,
+          "d": 3.17
+        },
+        {
+          "x": 33.18,
+          "y": 33.18,
+          "d": 3.17
+        },
+        {
+          "x": 3.82,
+          "y": 33.18,
+          "d": 3.17
         }
       ]
     },
@@ -6344,11 +7856,47 @@
         },
         {
           "no": "MS3471L20-24P",
-          "desc": "cable-connecting receptacle, class L"
+          "desc": "cable-connecting receptacle, class L",
+          "cutout": {
+            "shape": "none"
+          },
+          "holes": []
         },
         {
           "no": "MS3474L20-24P",
-          "desc": "jam-nut receptacle, class L"
+          "desc": "jam-nut receptacle, class L",
+          "cutout": {
+            "shape": "d",
+            "d": 35.18,
+            "flat": 33.58
+          },
+          "holes": []
+        }
+      ],
+      "cutout": {
+        "shape": "round",
+        "d": 34.62
+      },
+      "holes": [
+        {
+          "x": 3.82,
+          "y": 3.82,
+          "d": 3.17
+        },
+        {
+          "x": 33.18,
+          "y": 3.82,
+          "d": 3.17
+        },
+        {
+          "x": 33.18,
+          "y": 33.18,
+          "d": 3.17
+        },
+        {
+          "x": 3.82,
+          "y": 33.18,
+          "d": 3.17
         }
       ]
     },
@@ -6590,11 +8138,47 @@
         },
         {
           "no": "MS3471L20-24S",
-          "desc": "cable-connecting receptacle, class L"
+          "desc": "cable-connecting receptacle, class L",
+          "cutout": {
+            "shape": "none"
+          },
+          "holes": []
         },
         {
           "no": "MS3474L20-24S",
-          "desc": "jam-nut receptacle, class L"
+          "desc": "jam-nut receptacle, class L",
+          "cutout": {
+            "shape": "d",
+            "d": 35.18,
+            "flat": 33.58
+          },
+          "holes": []
+        }
+      ],
+      "cutout": {
+        "shape": "round",
+        "d": 34.62
+      },
+      "holes": [
+        {
+          "x": 3.82,
+          "y": 3.82,
+          "d": 3.17
+        },
+        {
+          "x": 33.18,
+          "y": 3.82,
+          "d": 3.17
+        },
+        {
+          "x": 33.18,
+          "y": 33.18,
+          "d": 3.17
+        },
+        {
+          "x": 3.82,
+          "y": 33.18,
+          "d": 3.17
         }
       ]
     },
@@ -6971,11 +8555,47 @@
         },
         {
           "no": "MS3471L20-39P",
-          "desc": "cable-connecting receptacle, class L"
+          "desc": "cable-connecting receptacle, class L",
+          "cutout": {
+            "shape": "none"
+          },
+          "holes": []
         },
         {
           "no": "MS3474L20-39P",
-          "desc": "jam-nut receptacle, class L"
+          "desc": "jam-nut receptacle, class L",
+          "cutout": {
+            "shape": "d",
+            "d": 35.18,
+            "flat": 33.58
+          },
+          "holes": []
+        }
+      ],
+      "cutout": {
+        "shape": "round",
+        "d": 34.62
+      },
+      "holes": [
+        {
+          "x": 3.82,
+          "y": 3.82,
+          "d": 3.17
+        },
+        {
+          "x": 33.18,
+          "y": 3.82,
+          "d": 3.17
+        },
+        {
+          "x": 33.18,
+          "y": 33.18,
+          "d": 3.17
+        },
+        {
+          "x": 3.82,
+          "y": 33.18,
+          "d": 3.17
         }
       ]
     },
@@ -7352,11 +8972,47 @@
         },
         {
           "no": "MS3471L20-39S",
-          "desc": "cable-connecting receptacle, class L"
+          "desc": "cable-connecting receptacle, class L",
+          "cutout": {
+            "shape": "none"
+          },
+          "holes": []
         },
         {
           "no": "MS3474L20-39S",
-          "desc": "jam-nut receptacle, class L"
+          "desc": "jam-nut receptacle, class L",
+          "cutout": {
+            "shape": "d",
+            "d": 35.18,
+            "flat": 33.58
+          },
+          "holes": []
+        }
+      ],
+      "cutout": {
+        "shape": "round",
+        "d": 34.62
+      },
+      "holes": [
+        {
+          "x": 3.82,
+          "y": 3.82,
+          "d": 3.17
+        },
+        {
+          "x": 33.18,
+          "y": 3.82,
+          "d": 3.17
+        },
+        {
+          "x": 33.18,
+          "y": 33.18,
+          "d": 3.17
+        },
+        {
+          "x": 3.82,
+          "y": 33.18,
+          "d": 3.17
         }
       ]
     },
@@ -7751,11 +9407,47 @@
         },
         {
           "no": "MS3471L20-41P",
-          "desc": "cable-connecting receptacle, class L"
+          "desc": "cable-connecting receptacle, class L",
+          "cutout": {
+            "shape": "none"
+          },
+          "holes": []
         },
         {
           "no": "MS3474L20-41P",
-          "desc": "jam-nut receptacle, class L"
+          "desc": "jam-nut receptacle, class L",
+          "cutout": {
+            "shape": "d",
+            "d": 35.18,
+            "flat": 33.58
+          },
+          "holes": []
+        }
+      ],
+      "cutout": {
+        "shape": "round",
+        "d": 34.62
+      },
+      "holes": [
+        {
+          "x": 3.82,
+          "y": 3.82,
+          "d": 3.17
+        },
+        {
+          "x": 33.18,
+          "y": 3.82,
+          "d": 3.17
+        },
+        {
+          "x": 33.18,
+          "y": 33.18,
+          "d": 3.17
+        },
+        {
+          "x": 3.82,
+          "y": 33.18,
+          "d": 3.17
         }
       ]
     },
@@ -8150,11 +9842,47 @@
         },
         {
           "no": "MS3471L20-41S",
-          "desc": "cable-connecting receptacle, class L"
+          "desc": "cable-connecting receptacle, class L",
+          "cutout": {
+            "shape": "none"
+          },
+          "holes": []
         },
         {
           "no": "MS3474L20-41S",
-          "desc": "jam-nut receptacle, class L"
+          "desc": "jam-nut receptacle, class L",
+          "cutout": {
+            "shape": "d",
+            "d": 35.18,
+            "flat": 33.58
+          },
+          "holes": []
+        }
+      ],
+      "cutout": {
+        "shape": "round",
+        "d": 34.62
+      },
+      "holes": [
+        {
+          "x": 3.82,
+          "y": 3.82,
+          "d": 3.17
+        },
+        {
+          "x": 33.18,
+          "y": 3.82,
+          "d": 3.17
+        },
+        {
+          "x": 33.18,
+          "y": 33.18,
+          "d": 3.17
+        },
+        {
+          "x": 3.82,
+          "y": 33.18,
+          "d": 3.17
         }
       ]
     },
@@ -8288,11 +10016,47 @@
         },
         {
           "no": "MS3471L22-12P",
-          "desc": "cable-connecting receptacle, class L"
+          "desc": "cable-connecting receptacle, class L",
+          "cutout": {
+            "shape": "none"
+          },
+          "holes": []
         },
         {
           "no": "MS3474L22-12P",
-          "desc": "jam-nut receptacle, class L"
+          "desc": "jam-nut receptacle, class L",
+          "cutout": {
+            "shape": "d",
+            "d": 38.35,
+            "flat": 36.75
+          },
+          "holes": []
+        }
+      ],
+      "cutout": {
+        "shape": "round",
+        "d": 37.85
+      },
+      "holes": [
+        {
+          "x": 4.12,
+          "y": 4.12,
+          "d": 3.17
+        },
+        {
+          "x": 35.88,
+          "y": 4.12,
+          "d": 3.17
+        },
+        {
+          "x": 35.88,
+          "y": 35.88,
+          "d": 3.17
+        },
+        {
+          "x": 4.12,
+          "y": 35.88,
+          "d": 3.17
         }
       ]
     },
@@ -8426,11 +10190,47 @@
         },
         {
           "no": "MS3471L22-12S",
-          "desc": "cable-connecting receptacle, class L"
+          "desc": "cable-connecting receptacle, class L",
+          "cutout": {
+            "shape": "none"
+          },
+          "holes": []
         },
         {
           "no": "MS3474L22-12S",
-          "desc": "jam-nut receptacle, class L"
+          "desc": "jam-nut receptacle, class L",
+          "cutout": {
+            "shape": "d",
+            "d": 38.35,
+            "flat": 36.75
+          },
+          "holes": []
+        }
+      ],
+      "cutout": {
+        "shape": "round",
+        "d": 37.85
+      },
+      "holes": [
+        {
+          "x": 4.12,
+          "y": 4.12,
+          "d": 3.17
+        },
+        {
+          "x": 35.88,
+          "y": 4.12,
+          "d": 3.17
+        },
+        {
+          "x": 35.88,
+          "y": 35.88,
+          "d": 3.17
+        },
+        {
+          "x": 4.12,
+          "y": 35.88,
+          "d": 3.17
         }
       ]
     },
@@ -8627,11 +10427,47 @@
         },
         {
           "no": "MS3471L22-19P",
-          "desc": "cable-connecting receptacle, class L"
+          "desc": "cable-connecting receptacle, class L",
+          "cutout": {
+            "shape": "none"
+          },
+          "holes": []
         },
         {
           "no": "MS3474L22-19P",
-          "desc": "jam-nut receptacle, class L"
+          "desc": "jam-nut receptacle, class L",
+          "cutout": {
+            "shape": "d",
+            "d": 38.35,
+            "flat": 36.75
+          },
+          "holes": []
+        }
+      ],
+      "cutout": {
+        "shape": "round",
+        "d": 37.85
+      },
+      "holes": [
+        {
+          "x": 4.12,
+          "y": 4.12,
+          "d": 3.17
+        },
+        {
+          "x": 35.88,
+          "y": 4.12,
+          "d": 3.17
+        },
+        {
+          "x": 35.88,
+          "y": 35.88,
+          "d": 3.17
+        },
+        {
+          "x": 4.12,
+          "y": 35.88,
+          "d": 3.17
         }
       ]
     },
@@ -8828,11 +10664,47 @@
         },
         {
           "no": "MS3471L22-19S",
-          "desc": "cable-connecting receptacle, class L"
+          "desc": "cable-connecting receptacle, class L",
+          "cutout": {
+            "shape": "none"
+          },
+          "holes": []
         },
         {
           "no": "MS3474L22-19S",
-          "desc": "jam-nut receptacle, class L"
+          "desc": "jam-nut receptacle, class L",
+          "cutout": {
+            "shape": "d",
+            "d": 38.35,
+            "flat": 36.75
+          },
+          "holes": []
+        }
+      ],
+      "cutout": {
+        "shape": "round",
+        "d": 37.85
+      },
+      "holes": [
+        {
+          "x": 4.12,
+          "y": 4.12,
+          "d": 3.17
+        },
+        {
+          "x": 35.88,
+          "y": 4.12,
+          "d": 3.17
+        },
+        {
+          "x": 35.88,
+          "y": 35.88,
+          "d": 3.17
+        },
+        {
+          "x": 4.12,
+          "y": 35.88,
+          "d": 3.17
         }
       ]
     },
@@ -9047,11 +10919,47 @@
         },
         {
           "no": "MS3471L22-21P",
-          "desc": "cable-connecting receptacle, class L"
+          "desc": "cable-connecting receptacle, class L",
+          "cutout": {
+            "shape": "none"
+          },
+          "holes": []
         },
         {
           "no": "MS3474L22-21P",
-          "desc": "jam-nut receptacle, class L"
+          "desc": "jam-nut receptacle, class L",
+          "cutout": {
+            "shape": "d",
+            "d": 38.35,
+            "flat": 36.75
+          },
+          "holes": []
+        }
+      ],
+      "cutout": {
+        "shape": "round",
+        "d": 37.85
+      },
+      "holes": [
+        {
+          "x": 4.12,
+          "y": 4.12,
+          "d": 3.17
+        },
+        {
+          "x": 35.88,
+          "y": 4.12,
+          "d": 3.17
+        },
+        {
+          "x": 35.88,
+          "y": 35.88,
+          "d": 3.17
+        },
+        {
+          "x": 4.12,
+          "y": 35.88,
+          "d": 3.17
         }
       ]
     },
@@ -9266,11 +11174,47 @@
         },
         {
           "no": "MS3471L22-21S",
-          "desc": "cable-connecting receptacle, class L"
+          "desc": "cable-connecting receptacle, class L",
+          "cutout": {
+            "shape": "none"
+          },
+          "holes": []
         },
         {
           "no": "MS3474L22-21S",
-          "desc": "jam-nut receptacle, class L"
+          "desc": "jam-nut receptacle, class L",
+          "cutout": {
+            "shape": "d",
+            "d": 38.35,
+            "flat": 36.75
+          },
+          "holes": []
+        }
+      ],
+      "cutout": {
+        "shape": "round",
+        "d": 37.85
+      },
+      "holes": [
+        {
+          "x": 4.12,
+          "y": 4.12,
+          "d": 3.17
+        },
+        {
+          "x": 35.88,
+          "y": 4.12,
+          "d": 3.17
+        },
+        {
+          "x": 35.88,
+          "y": 35.88,
+          "d": 3.17
+        },
+        {
+          "x": 4.12,
+          "y": 35.88,
+          "d": 3.17
         }
       ]
     },
@@ -9584,11 +11528,47 @@
         },
         {
           "no": "MS3471L22-32P",
-          "desc": "cable-connecting receptacle, class L"
+          "desc": "cable-connecting receptacle, class L",
+          "cutout": {
+            "shape": "none"
+          },
+          "holes": []
         },
         {
           "no": "MS3474L22-32P",
-          "desc": "jam-nut receptacle, class L"
+          "desc": "jam-nut receptacle, class L",
+          "cutout": {
+            "shape": "d",
+            "d": 38.35,
+            "flat": 36.75
+          },
+          "holes": []
+        }
+      ],
+      "cutout": {
+        "shape": "round",
+        "d": 37.85
+      },
+      "holes": [
+        {
+          "x": 4.12,
+          "y": 4.12,
+          "d": 3.17
+        },
+        {
+          "x": 35.88,
+          "y": 4.12,
+          "d": 3.17
+        },
+        {
+          "x": 35.88,
+          "y": 35.88,
+          "d": 3.17
+        },
+        {
+          "x": 4.12,
+          "y": 35.88,
+          "d": 3.17
         }
       ]
     },
@@ -9902,11 +11882,47 @@
         },
         {
           "no": "MS3471L22-32S",
-          "desc": "cable-connecting receptacle, class L"
+          "desc": "cable-connecting receptacle, class L",
+          "cutout": {
+            "shape": "none"
+          },
+          "holes": []
         },
         {
           "no": "MS3474L22-32S",
-          "desc": "jam-nut receptacle, class L"
+          "desc": "jam-nut receptacle, class L",
+          "cutout": {
+            "shape": "d",
+            "d": 38.35,
+            "flat": 36.75
+          },
+          "holes": []
+        }
+      ],
+      "cutout": {
+        "shape": "round",
+        "d": 37.85
+      },
+      "holes": [
+        {
+          "x": 4.12,
+          "y": 4.12,
+          "d": 3.17
+        },
+        {
+          "x": 35.88,
+          "y": 4.12,
+          "d": 3.17
+        },
+        {
+          "x": 35.88,
+          "y": 35.88,
+          "d": 3.17
+        },
+        {
+          "x": 4.12,
+          "y": 35.88,
+          "d": 3.17
         }
       ]
     },
@@ -10301,11 +12317,47 @@
         },
         {
           "no": "MS3471L22-41P",
-          "desc": "cable-connecting receptacle, class L"
+          "desc": "cable-connecting receptacle, class L",
+          "cutout": {
+            "shape": "none"
+          },
+          "holes": []
         },
         {
           "no": "MS3474L22-41P",
-          "desc": "jam-nut receptacle, class L"
+          "desc": "jam-nut receptacle, class L",
+          "cutout": {
+            "shape": "d",
+            "d": 38.35,
+            "flat": 36.75
+          },
+          "holes": []
+        }
+      ],
+      "cutout": {
+        "shape": "round",
+        "d": 37.85
+      },
+      "holes": [
+        {
+          "x": 4.12,
+          "y": 4.12,
+          "d": 3.17
+        },
+        {
+          "x": 35.88,
+          "y": 4.12,
+          "d": 3.17
+        },
+        {
+          "x": 35.88,
+          "y": 35.88,
+          "d": 3.17
+        },
+        {
+          "x": 4.12,
+          "y": 35.88,
+          "d": 3.17
         }
       ]
     },
@@ -10700,11 +12752,47 @@
         },
         {
           "no": "MS3471L22-41S",
-          "desc": "cable-connecting receptacle, class L"
+          "desc": "cable-connecting receptacle, class L",
+          "cutout": {
+            "shape": "none"
+          },
+          "holes": []
         },
         {
           "no": "MS3474L22-41S",
-          "desc": "jam-nut receptacle, class L"
+          "desc": "jam-nut receptacle, class L",
+          "cutout": {
+            "shape": "d",
+            "d": 38.35,
+            "flat": 36.75
+          },
+          "holes": []
+        }
+      ],
+      "cutout": {
+        "shape": "round",
+        "d": 37.85
+      },
+      "holes": [
+        {
+          "x": 4.12,
+          "y": 4.12,
+          "d": 3.17
+        },
+        {
+          "x": 35.88,
+          "y": 4.12,
+          "d": 3.17
+        },
+        {
+          "x": 35.88,
+          "y": 35.88,
+          "d": 3.17
+        },
+        {
+          "x": 4.12,
+          "y": 35.88,
+          "d": 3.17
         }
       ]
     },
@@ -11225,11 +13313,47 @@
         },
         {
           "no": "MS3471L22-55P",
-          "desc": "cable-connecting receptacle, class L"
+          "desc": "cable-connecting receptacle, class L",
+          "cutout": {
+            "shape": "none"
+          },
+          "holes": []
         },
         {
           "no": "MS3474L22-55P",
-          "desc": "jam-nut receptacle, class L"
+          "desc": "jam-nut receptacle, class L",
+          "cutout": {
+            "shape": "d",
+            "d": 38.35,
+            "flat": 36.75
+          },
+          "holes": []
+        }
+      ],
+      "cutout": {
+        "shape": "round",
+        "d": 37.85
+      },
+      "holes": [
+        {
+          "x": 4.12,
+          "y": 4.12,
+          "d": 3.17
+        },
+        {
+          "x": 35.88,
+          "y": 4.12,
+          "d": 3.17
+        },
+        {
+          "x": 35.88,
+          "y": 35.88,
+          "d": 3.17
+        },
+        {
+          "x": 4.12,
+          "y": 35.88,
+          "d": 3.17
         }
       ]
     },
@@ -11750,11 +13874,47 @@
         },
         {
           "no": "MS3471L22-55S",
-          "desc": "cable-connecting receptacle, class L"
+          "desc": "cable-connecting receptacle, class L",
+          "cutout": {
+            "shape": "none"
+          },
+          "holes": []
         },
         {
           "no": "MS3474L22-55S",
-          "desc": "jam-nut receptacle, class L"
+          "desc": "jam-nut receptacle, class L",
+          "cutout": {
+            "shape": "d",
+            "d": 38.35,
+            "flat": 36.75
+          },
+          "holes": []
+        }
+      ],
+      "cutout": {
+        "shape": "round",
+        "d": 37.85
+      },
+      "holes": [
+        {
+          "x": 4.12,
+          "y": 4.12,
+          "d": 3.17
+        },
+        {
+          "x": 35.88,
+          "y": 4.12,
+          "d": 3.17
+        },
+        {
+          "x": 35.88,
+          "y": 35.88,
+          "d": 3.17
+        },
+        {
+          "x": 4.12,
+          "y": 35.88,
+          "d": 3.17
         }
       ]
     },
@@ -12068,11 +14228,47 @@
         },
         {
           "no": "MS3471L22-95P",
-          "desc": "cable-connecting receptacle, class L"
+          "desc": "cable-connecting receptacle, class L",
+          "cutout": {
+            "shape": "none"
+          },
+          "holes": []
         },
         {
           "no": "MS3474L22-95P",
-          "desc": "jam-nut receptacle, class L"
+          "desc": "jam-nut receptacle, class L",
+          "cutout": {
+            "shape": "d",
+            "d": 38.35,
+            "flat": 36.75
+          },
+          "holes": []
+        }
+      ],
+      "cutout": {
+        "shape": "round",
+        "d": 37.85
+      },
+      "holes": [
+        {
+          "x": 4.12,
+          "y": 4.12,
+          "d": 3.17
+        },
+        {
+          "x": 35.88,
+          "y": 4.12,
+          "d": 3.17
+        },
+        {
+          "x": 35.88,
+          "y": 35.88,
+          "d": 3.17
+        },
+        {
+          "x": 4.12,
+          "y": 35.88,
+          "d": 3.17
         }
       ]
     },
@@ -12386,11 +14582,47 @@
         },
         {
           "no": "MS3471L22-95S",
-          "desc": "cable-connecting receptacle, class L"
+          "desc": "cable-connecting receptacle, class L",
+          "cutout": {
+            "shape": "none"
+          },
+          "holes": []
         },
         {
           "no": "MS3474L22-95S",
-          "desc": "jam-nut receptacle, class L"
+          "desc": "jam-nut receptacle, class L",
+          "cutout": {
+            "shape": "d",
+            "d": 38.35,
+            "flat": 36.75
+          },
+          "holes": []
+        }
+      ],
+      "cutout": {
+        "shape": "round",
+        "d": 37.85
+      },
+      "holes": [
+        {
+          "x": 4.12,
+          "y": 4.12,
+          "d": 3.17
+        },
+        {
+          "x": 35.88,
+          "y": 4.12,
+          "d": 3.17
+        },
+        {
+          "x": 35.88,
+          "y": 35.88,
+          "d": 3.17
+        },
+        {
+          "x": 4.12,
+          "y": 35.88,
+          "d": 3.17
         }
       ]
     },
@@ -12587,11 +14819,47 @@
         },
         {
           "no": "MS3471L24-19P",
-          "desc": "cable-connecting receptacle, class L"
+          "desc": "cable-connecting receptacle, class L",
+          "cutout": {
+            "shape": "none"
+          },
+          "holes": []
         },
         {
           "no": "MS3474L24-19P",
-          "desc": "jam-nut receptacle, class L"
+          "desc": "jam-nut receptacle, class L",
+          "cutout": {
+            "shape": "d",
+            "d": 41.53,
+            "flat": 39.93
+          },
+          "holes": []
+        }
+      ],
+      "cutout": {
+        "shape": "round",
+        "d": 41.05
+      },
+      "holes": [
+        {
+          "x": 4.14,
+          "y": 4.14,
+          "d": 3.94
+        },
+        {
+          "x": 39.06,
+          "y": 4.14,
+          "d": 3.94
+        },
+        {
+          "x": 39.06,
+          "y": 39.06,
+          "d": 3.94
+        },
+        {
+          "x": 4.14,
+          "y": 39.06,
+          "d": 3.94
         }
       ]
     },
@@ -12788,11 +15056,47 @@
         },
         {
           "no": "MS3471L24-19S",
-          "desc": "cable-connecting receptacle, class L"
+          "desc": "cable-connecting receptacle, class L",
+          "cutout": {
+            "shape": "none"
+          },
+          "holes": []
         },
         {
           "no": "MS3474L24-19S",
-          "desc": "jam-nut receptacle, class L"
+          "desc": "jam-nut receptacle, class L",
+          "cutout": {
+            "shape": "d",
+            "d": 41.53,
+            "flat": 39.93
+          },
+          "holes": []
+        }
+      ],
+      "cutout": {
+        "shape": "round",
+        "d": 41.05
+      },
+      "holes": [
+        {
+          "x": 4.14,
+          "y": 4.14,
+          "d": 3.94
+        },
+        {
+          "x": 39.06,
+          "y": 4.14,
+          "d": 3.94
+        },
+        {
+          "x": 39.06,
+          "y": 39.06,
+          "d": 3.94
+        },
+        {
+          "x": 4.14,
+          "y": 39.06,
+          "d": 3.94
         }
       ]
     },
@@ -13097,11 +15401,47 @@
         },
         {
           "no": "MS3471L24-31P",
-          "desc": "cable-connecting receptacle, class L"
+          "desc": "cable-connecting receptacle, class L",
+          "cutout": {
+            "shape": "none"
+          },
+          "holes": []
         },
         {
           "no": "MS3474L24-31P",
-          "desc": "jam-nut receptacle, class L"
+          "desc": "jam-nut receptacle, class L",
+          "cutout": {
+            "shape": "d",
+            "d": 41.53,
+            "flat": 39.93
+          },
+          "holes": []
+        }
+      ],
+      "cutout": {
+        "shape": "round",
+        "d": 41.05
+      },
+      "holes": [
+        {
+          "x": 4.14,
+          "y": 4.14,
+          "d": 3.94
+        },
+        {
+          "x": 39.06,
+          "y": 4.14,
+          "d": 3.94
+        },
+        {
+          "x": 39.06,
+          "y": 39.06,
+          "d": 3.94
+        },
+        {
+          "x": 4.14,
+          "y": 39.06,
+          "d": 3.94
         }
       ]
     },
@@ -13406,11 +15746,47 @@
         },
         {
           "no": "MS3471L24-31S",
-          "desc": "cable-connecting receptacle, class L"
+          "desc": "cable-connecting receptacle, class L",
+          "cutout": {
+            "shape": "none"
+          },
+          "holes": []
         },
         {
           "no": "MS3474L24-31S",
-          "desc": "jam-nut receptacle, class L"
+          "desc": "jam-nut receptacle, class L",
+          "cutout": {
+            "shape": "d",
+            "d": 41.53,
+            "flat": 39.93
+          },
+          "holes": []
+        }
+      ],
+      "cutout": {
+        "shape": "round",
+        "d": 41.05
+      },
+      "holes": [
+        {
+          "x": 4.14,
+          "y": 4.14,
+          "d": 3.94
+        },
+        {
+          "x": 39.06,
+          "y": 4.14,
+          "d": 3.94
+        },
+        {
+          "x": 39.06,
+          "y": 39.06,
+          "d": 3.94
+        },
+        {
+          "x": 4.14,
+          "y": 39.06,
+          "d": 3.94
         }
       ]
     },
@@ -13985,11 +16361,47 @@
         },
         {
           "no": "MS3471L24-61P",
-          "desc": "cable-connecting receptacle, class L"
+          "desc": "cable-connecting receptacle, class L",
+          "cutout": {
+            "shape": "none"
+          },
+          "holes": []
         },
         {
           "no": "MS3474L24-61P",
-          "desc": "jam-nut receptacle, class L"
+          "desc": "jam-nut receptacle, class L",
+          "cutout": {
+            "shape": "d",
+            "d": 41.53,
+            "flat": 39.93
+          },
+          "holes": []
+        }
+      ],
+      "cutout": {
+        "shape": "round",
+        "d": 41.05
+      },
+      "holes": [
+        {
+          "x": 4.14,
+          "y": 4.14,
+          "d": 3.94
+        },
+        {
+          "x": 39.06,
+          "y": 4.14,
+          "d": 3.94
+        },
+        {
+          "x": 39.06,
+          "y": 39.06,
+          "d": 3.94
+        },
+        {
+          "x": 4.14,
+          "y": 39.06,
+          "d": 3.94
         }
       ]
     },
@@ -14564,11 +16976,47 @@
         },
         {
           "no": "MS3471L24-61S",
-          "desc": "cable-connecting receptacle, class L"
+          "desc": "cable-connecting receptacle, class L",
+          "cutout": {
+            "shape": "none"
+          },
+          "holes": []
         },
         {
           "no": "MS3474L24-61S",
-          "desc": "jam-nut receptacle, class L"
+          "desc": "jam-nut receptacle, class L",
+          "cutout": {
+            "shape": "d",
+            "d": 41.53,
+            "flat": 39.93
+          },
+          "holes": []
+        }
+      ],
+      "cutout": {
+        "shape": "round",
+        "d": 41.05
+      },
+      "holes": [
+        {
+          "x": 4.14,
+          "y": 4.14,
+          "d": 3.94
+        },
+        {
+          "x": 39.06,
+          "y": 4.14,
+          "d": 3.94
+        },
+        {
+          "x": 39.06,
+          "y": 39.06,
+          "d": 3.94
+        },
+        {
+          "x": 4.14,
+          "y": 39.06,
+          "d": 3.94
         }
       ]
     }
